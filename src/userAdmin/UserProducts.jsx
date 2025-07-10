@@ -15,7 +15,6 @@ const UserProducts = () => {
     setActiveTab,
     backednUrl,
     fetchProductDiscount,
-    fetchBatchProductDiscounts,
     setTotalDiscount,
     totalDiscount,
     marginApi,
@@ -37,86 +36,120 @@ const UserProducts = () => {
   }, [newId, userOrder]);
 
   const handleReOrder = async () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    navigate('/signup');
-    return toast.error('Please login to re-order.');
-  }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/signup');
+      return toast.error('Please login to re-order.');
+    }
 
-  try {
-    // 1) Get all product IDs
-    const productIds = checkoutData.products.map(item => item.id);
+ 
+    const batchPromises = async (promises, batchSize = 10) => {
+  const results = [];
+  
+  for (let i = 0; i < promises.length; i += batchSize) {
+    const batch = promises.slice(i, i + batchSize);
+    const batchResults = await Promise.all(batch);
+    results.push(...batchResults);
+  }
+  
+  return results;
+};
+
+    const getDiscount = async () => {
+     try {
+    const discountPromises = checkoutData.products.map((item) =>
+      fetchProductDiscount(item.id)
+    );
     
-    // 2) Fetch all discounts in one batch request
-    const discountsArray = await fetchBatchProductDiscounts(productIds);
+    // Process in batches of 10 concurrent requests
+    const discountResults = await batchPromises(discountPromises, 10);
     
-    // 3) Create discount map for context
+    return discountResults.map(result => result.discount || 0);
+  } catch (error) {
+    console.error('Error fetching discounts:', error);
+    return checkoutData.products.map(() => 0);
+  }
+};
+
+    const discountsArray = await getDiscount();
+    console.log(discountsArray, 'discountsArray');
+
+    // 2) Populate context.totalDiscount as { [id]: pct }
     const discountMap = {};
-    discountsArray.forEach(item => {
-      discountMap[item.productId] = item.discount;
+    checkoutData.products.forEach((p, i) => {
+      discountMap[p.id] =  discountsArray[i];
     });
     setTotalDiscount(discountMap);
 
-    // 4) Batch fetch all product details
-    const productRequests = checkoutData.products.map(product =>
-      axios.get(`${backednUrl}/api/single-product/${product.id}`)
-    );
-    
-    const productResponses = await Promise.all(productRequests);
-    
-    // 5) Build line items with all data available
+    // 3) Build line items with margin + discount baked in
     const latestProducts = [];
     const gstRate = 0.1;
 
-    checkoutData.products.forEach((product, index) => {
-      const productData = productResponses[index].data.data;
-      const discountItem = discountsArray.find(d => d.productId == product.id);
-      const discountPct = discountItem ? discountItem.discount : 0;
+    for (let i = 0; i < checkoutData.products.length; i++) {
+      const product = checkoutData.products[i];
+      const discountPct = discountsArray[i];
 
-      // Get base price from price breaks
-      const groups = productData.product?.prices?.price_groups || [];
+      const resp = await axios.get(
+        `${backednUrl}/api/single-product/${product.id}`
+      );
+      const data = resp.data.data;
+
+      // get base price from your price breaks
+      const groups = data.product?.prices?.price_groups || [];
       const base = groups.find((g) => g.base_price) || {};
       const breaks = base.base_price?.price_breaks || [];
       const realPrice = breaks.length ? breaks[0].price : 0;
 
-      // Add margin
+      // 3a) add margin
       const marginEntry = marginApi[product.id] || { marginFlat: 0 };
       const priceWithMargin = realPrice + marginEntry.marginFlat;
 
-      // Apply discount
+      // 3b) subtract this product’s discount
       const discountedPrice = priceWithMargin * (1 - discountPct / 100);
+
+      // 3c) line‐item total
       const subTotal = discountedPrice * product.quantity;
 
       latestProducts.push({
-        id: productData.meta.id,
-        name: productData.product.name,
+        id: data.meta.id,
+        name: data.product.name,
         image: product.image,
         quantity: product.quantity,
-        price: discountedPrice,
-        subTotal,
-        discount: discountPct,
+        price: discountedPrice, // final per‐unit
+        subTotal, // final line total
+        discount: discountPct, // % for admin
         color: product.color,
         print: product.print,
         logoColor: product.logoColor,
         logo: product.logo,
       });
-    });
+    }
 
-    // 6) Calculate totals
     const netAmount = latestProducts.reduce((sum, p) => sum + p.subTotal, 0);
-    const totalDiscountPct = discountsArray.reduce((acc, curr) => acc + curr.discount, 0);
+
+    // Step 1: Get combined discount percentage (e.g., 3 + 5 = 8)
+    const totalDiscountPct = discountsArray.reduce(
+      (acc, curr) => acc + curr,
+      0
+    );
+
+    // Step 2: Apply discount to netAmount
     const discountedAmount = netAmount - (netAmount * totalDiscountPct) / 100;
+
+    // Step 3: Apply GST to discounted amount
     const gstAmount = discountedAmount * gstRate;
+
+    // Step 4: Final total
     const total = discountedAmount + gstAmount;
+    
 
-    console.log('Optimized Re-order calculations:', {
-      netAmount,
-      totalDiscountPct,
-      gstAmount,
-      total
-    });
 
-    // 7) Build payload and submit
+    console.log(netAmount, 'netAmount Re‑Order'); // ~148.09
+    console.log(totalDiscountPct, 'discountedAmount Re‑Order');
+    console.log(gstAmount, 'gstAmount Re‑Order'); // ~14.81
+    console.log(total, 'total Re‑Order'); // ~162.90
+
+    // 5) Build your payload
     const reOrderData = {
       user: checkoutData.user,
       billingAddress: checkoutData.billingAddress,
@@ -135,25 +168,26 @@ const UserProducts = () => {
         logo: p.logo,
       })),
       shipping: checkoutData.shipping,
-      discount: totalDiscountPct,
+      discount: totalDiscountPct, // <— A single number now
       gst: gstAmount,
       total: total,
     };
 
-    const res = await axios.post(
-      `${backednUrl}/api/checkout/checkout`,
-      reOrderData,
-      { headers: { token } }
-    );
-    
-    toast.success('Order placed successfully!');
-    navigate('/');
-    
-  } catch (err) {
-    console.error('Re-order failed:', err.response?.data || err.message);
-    toast.error('Re-order failed. Try again.');
-  }
-};
+    console.log(reOrderData, 'reOrderData');
+
+    try {
+      const res = await axios.post(
+        `${backednUrl}/api/checkout/checkout`,
+        reOrderData,
+        { headers: { token } }
+      );
+      toast.success('Order placed successfully!');
+      navigate('/');
+    } catch (err) {
+      console.error('Re-order failed:', err.response?.data || err.message);
+      toast.error('Re-order failed. Try again.');
+    }
+  };
 
   // const handleReOrder = async () => {
   //   const token = localStorage.getItem('token');

@@ -268,35 +268,6 @@ const AppContextProvider = (props) => {
     return { productId, discount: 0, discountPrice: 0 };
   }
 };
-
-const fetchBatchProductDiscounts = async (productIds) => {
-  if (!productIds || productIds.length === 0) {
-    return [];
-  }
-
-  try {
-    const res = await axios.post(
-      `${backednUrl}/api/add-discount/batch-discounts`,
-      { productIds },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }
-    );
-    
-    if (res.data && res.data.data) {
-      return res.data.data;
-    } else {
-      return productIds.map(id => ({ productId: id, discount: 0, discountPrice: 0 }));
-    }
-  } catch (error) {
-    console.error('Error fetching batch discounts:', error);
-    // Return default values for all products
-    return productIds.map(id => ({ productId: id, discount: 0, discountPrice: 0 }));
-  }
-};
-
   // ADD MARGIN API
 
   const [marginApi, setMarginApi] = useState({});
@@ -430,7 +401,6 @@ const fetchBatchProductDiscounts = async (productIds) => {
     options,
     categoryProducts,
     setCategoryProducts,
-    fetchBatchProductDiscounts,
     fetchCategories,
     discountPromo,
     setDiscountPromo,
