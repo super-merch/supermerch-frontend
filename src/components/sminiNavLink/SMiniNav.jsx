@@ -1750,7 +1750,7 @@ const SMiniNav = () => {
                           </CollapsibleContent>
                         )}
                         {link.name === 'Clothing' && (
-  <CollapsibleContent className=' space-y-2'>
+  <CollapsibleContent className='ml-4 space-y-2'>
     {megaMenuClothing?.map((item) => (
       <Collapsible
         key={item.id}
@@ -1769,13 +1769,14 @@ const SMiniNav = () => {
             />
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className='ml-6'>
-              <div className='grid grid-cols-4 gap-4'>
-                {/* Top Column */}
-                <div>
-                  <h3 className='text-sm font-semibold text-blue-500 mb-2'>Top</h3>
+            <div className='ml-6 space-y-2'>
+              {item.subTypes?.map((section, index) => (
+                <div key={index}>
+                  <h3 className='text-sm font-semibold text-blue-500'>
+                    {section.label}
+                  </h3>
                   <div className='space-y-2'>
-                    {item.subTypes?.find(section => section.label === 'Top')?.items?.map(
+                    {section.items?.map(
                       (subItem, itemIndex) => (
                         <button
                           key={itemIndex}
@@ -1784,7 +1785,7 @@ const SMiniNav = () => {
                               subItem.name,
                               subItem.id,
                               item.name,
-                              'Top'
+                              section.label
                             );
                             setIsSheetOpen(false);
                           }}
@@ -1796,123 +1797,7 @@ const SMiniNav = () => {
                     )}
                   </div>
                 </div>
-
-                {/* Pants Column */}
-                <div>
-                  <h3 className='text-sm font-semibold text-blue-500 mb-2'>Pants</h3>
-                  <div className='space-y-2'>
-                    {item.subTypes?.find(section => section.label === 'Pant')?.items?.map(
-                      (subItem, itemIndex) => (
-                        <button
-                          key={itemIndex}
-                          onClick={() => {
-                            handleSubCategories(
-                              subItem.name,
-                              subItem.id,
-                              item.name,
-                              'Pants'
-                            );
-                            setIsSheetOpen(false);
-                          }}
-                          className='font-semibold hover:underline text-[13px] block text-start text-black'
-                        >
-                          {subItem.name}
-                        </button>
-                      )
-                    )}
-                    {item.subTypes?.find(section => section.label === 'yPant')?.items?.map(
-                      (subItem, itemIndex) => (
-                        <button
-                          key={itemIndex}
-                          onClick={() => {
-                            handleSubCategories(
-                              subItem.name,
-                              subItem.id,
-                              item.name,
-                              'Pants'
-                            );
-                            setIsSheetOpen(false);
-                          }}
-                          className='font-semibold hover:underline text-[13px] block text-start text-black'
-                        >
-                          {subItem.name}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Outwears Column */}
-                <div>
-                  <h3 className='text-sm font-semibold text-blue-500 mb-2'>Outwears</h3>
-                  <div className='space-y-2'>
-                    {item.subTypes?.find(section => section.label === 'Out Wears')?.items?.map(
-                      (subItem, itemIndex) => (
-                        <button
-                          key={itemIndex}
-                          onClick={() => {
-                            handleSubCategories(
-                              subItem.name,
-                              subItem.id,
-                              item.name,
-                              'Outwears'
-                            );
-                            setIsSheetOpen(false);
-                          }}
-                          className='font-semibold hover:underline text-[13px] block text-start text-black'
-                        >
-                          {subItem.name}
-                        </button>
-                      )
-                    )}
-                    {item.subTypes?.find(section => section.label === 'yOut Wears')?.items?.map(
-                      (subItem, itemIndex) => (
-                        <button
-                          key={itemIndex}
-                          onClick={() => {
-                            handleSubCategories(
-                              subItem.name,
-                              subItem.id,
-                              item.name,
-                              'Outwears'
-                            );
-                            setIsSheetOpen(false);
-                          }}
-                          className='font-semibold hover:underline text-[13px] block text-start text-black'
-                        >
-                          {subItem.name}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Footwears Column */}
-                <div>
-                  <h3 className='text-sm font-semibold text-blue-500 mb-2'>Footwears</h3>
-                  <div className='space-y-2'>
-                    {item.subTypes?.find(section => section.label === 'Footwears')?.items?.map(
-                      (subItem, itemIndex) => (
-                        <button
-                          key={itemIndex}
-                          onClick={() => {
-                            handleSubCategories(
-                              subItem.name,
-                              subItem.id,
-                              item.name,
-                              'Footwears'
-                            );
-                            setIsSheetOpen(false);
-                          }}
-                          className='font-semibold hover:underline text-[13px] block text-start text-black'
-                        >
-                          {subItem.name}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </CollapsibleContent>
         </div>
