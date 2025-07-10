@@ -42,18 +42,34 @@ const UserProducts = () => {
       return toast.error('Please login to re-order.');
     }
 
+ 
+    const batchPromises = async (promises, batchSize = 10) => {
+  const results = [];
+  
+  for (let i = 0; i < promises.length; i += batchSize) {
+    const batch = promises.slice(i, i + batchSize);
+    const batchResults = await Promise.all(batch);
+    results.push(...batchResults);
+  }
+  
+  return results;
+};
+
     const getDiscount = async () => {
-      try {
-        const arr = await Promise.all(
-          checkoutData.products.map((item) =>
-            fetchProductDiscount(item.id).then((r) => r.discount || 0 )
-          )
-        );
-        return arr;
-      } catch {
-        return checkoutData.products.map(() => 0);
-      }
-    };
+     try {
+    const discountPromises = checkoutData.products.map((item) =>
+      fetchProductDiscount(item.id)
+    );
+    
+    // Process in batches of 10 concurrent requests
+    const discountResults = await batchPromises(discountPromises, 10);
+    
+    return discountResults.map(result => result.discount || 0);
+  } catch (error) {
+    console.error('Error fetching discounts:', error);
+    return checkoutData.products.map(() => 0);
+  }
+};
 
     const discountsArray = await getDiscount();
     console.log(discountsArray, 'discountsArray');
