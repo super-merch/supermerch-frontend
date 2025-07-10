@@ -1,0 +1,300 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { TbTruckDelivery } from "react-icons/tb";
+import { AiOutlineEye } from "react-icons/ai";
+import { BsCursor } from "react-icons/bs";
+import { CiHeart } from "react-icons/ci";
+import { IoCartOutline, IoClose } from "react-icons/io5";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useContext } from "react";
+import { AppContext } from "../../../context/AppContext";
+import noimage from "/noimage.png";
+import { useDispatch } from "react-redux";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
+
+const Headwear = ({ activeTab }) => {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const {
+    fetchProducts,
+    products,
+    error,
+    skeletonLoading,
+    marginApi,
+    totalDiscount,
+  } = useContext(AppContext);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleViewProduct = (productId) => {
+    navigate(`/product/${productId}`, { state: "Home" });
+  };
+
+  const handleOpenModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = "hidden";
+  };
+
+  // Function to close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    // Restore body scroll
+    document.body.style.overflow = "unset";
+  };
+
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isModalOpen) {
+        handleCloseModal();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isModalOpen]);
+
+  if (error)
+    return (
+      <div className="flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+      </div>
+    );
+  return (
+    <>
+      {activeTab === "Headwear" && (
+        <div className="pb-10 Mycontainer">
+          <div className="grid gap-5 max-default:grid-cols-1 lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2 ">
+            {skeletonLoading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="relative p-4 border rounded-lg shadow-md border-border2"
+                  >
+                    <Skeleton height={200} className="rounded-md" />
+                    <div className="p-4">
+                      <Skeleton height={20} width={120} className="rounded" />
+                      <Skeleton
+                        height={15}
+                        width={80}
+                        className="mt-2 rounded"
+                      />
+                      <Skeleton
+                        height={25}
+                        width={100}
+                        className="mt-3 rounded"
+                      />
+                      <Skeleton
+                        height={15}
+                        width={60}
+                        className="mt-2 rounded"
+                      />
+                      <div className="flex items-center justify-between pt-2">
+                        <Skeleton height={20} width={80} className="rounded" />
+                        <Skeleton height={20} width={80} className="rounded" />
+                      </div>
+                      <div className="flex justify-between gap-1 mt-6 mb-2">
+                        <Skeleton circle height={40} width={40} />
+                        <Skeleton height={40} width={120} className="rounded" />
+                        <Skeleton circle height={40} width={40} />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              : products
+                  ?.filter((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+                    // Check if there's at least one valid price
+                    return (
+                      priceBreaks.length > 0 &&
+                      priceBreaks[0]?.price !== undefined
+                    );
+                  })
+                  .slice(16, 20)
+                  .map((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+
+                    // Get an array of prices from priceBreaks
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
+
+                    // Calculate the minimum and maximum price values
+                    const minPrice =
+                      prices.length > 0 ? Math.min(...prices) : "0";
+                    const maxPrice =
+                      prices.length > 0 ? Math.max(...prices) : "0";
+
+                    const productId = product.meta.id;
+                    const marginEntry = marginApi[productId];
+                    const marginPrice = marginEntry?.baseMarginPrice;
+
+                    const displayPrice =
+                      marginPrice != null
+                        ? `${marginPrice.toFixed(2)} - ${minPrice.toFixed(2)}`
+                        : minPrice === maxPrice
+                        ? `${minPrice.toFixed(2)}`
+                        : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
+                    const discountPct = totalDiscount[productId] ?? 0;
+
+                    return (
+                      <div
+                        key={product.id}
+                        className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
+                      >
+                        {discountPct > 0 && (
+                          <span className="absolute px-2 py-1 text-xs font-bold text-white bg-red-500 rounded top-2 right-2">
+                            {discountPct}%
+                          </span>
+                        )}
+                        <div className="max-h-[50%] h-full border-b overflow-hidden">
+                          <img
+                            src={
+                              product.overview.hero_image
+                                ? product.overview.hero_image
+                                : noimage
+                            }
+                            alt=""
+                            className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
+                          />
+                        </div>
+                        <div className=" absolute top-[2%] left-[5%]">
+                          {product?.product?.colours?.list.length > 0 &&
+                            product?.product?.colours?.list?.map(
+                              (colorObj, index) => (
+                                <p key={index}>
+                                  {colorObj.colours.map((color, subIndex) => {
+                                    return (
+                                      <p
+                                        key={`${index}-${subIndex}`}
+                                        style={{
+                                          backgroundColor:
+                                            colorObj.swatch?.[subIndex] ||
+                                            color.toLowerCase(),
+                                        }} // Convert to lowercase
+                                        className={`w-fit px-2 rounded-sm text-xs py-1.5 mb-2 border-[1px] border-slate-900`}
+                                      />
+                                    );
+                                  })}
+                                </p>
+                              )
+                            )}
+                        </div>
+                        <div className="p-4 ">
+                          <div className="text-center">
+                            <h2 className="text-lg font-medium text-brand">
+                              {product.overview.name ||
+                              product.overview.name.length > 22
+                                ? product.overview.name.slice(0, 22) + "..."
+                                : "No Name "}
+                            </h2>
+                            <p className="font-normal text-brand">
+                              Code: {product.overview.code}
+                            </p>
+                            <h2 className="pt-2 text-xl font-semibold text-heading">
+                              ${displayPrice}
+                            </h2>
+                          </div>
+                          <div className="flex justify-between gap-1 mt-2 mb-1">
+                            <p
+                              onClick={() => {
+                                dispatch(addToFavourite(product));
+                                toast.success("Product added to favourites");
+                              }}
+                              className="p-3 text-2xl rounded-sm bg-icons"
+                            >
+                              <CiHeart />
+                            </p>
+                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                              <p className="text-xl">
+                                <IoCartOutline />
+                              </p>
+                              <button
+                                onClick={() =>
+                                  handleViewProduct(product.meta.id)
+                                }
+                                className="text-sm uppercase"
+                              >
+                                Add to cart
+                              </button>
+                            </div>
+                            <p
+                              onClick={() => handleOpenModal(product)}
+                              className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
+                            >
+                              <AiOutlineEye />
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+          </div>
+        </div>
+      )}
+      {isModalOpen && selectedProduct && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+            >
+              <IoClose className="text-2xl text-gray-600" />
+            </button>
+
+            {/* Image container */}
+            <div className="p-6">
+              <img
+                src={selectedProduct.overview.hero_image || noimage}
+                alt={selectedProduct.overview.name || "Product Image"}
+                className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
+              />
+
+              {/* Product info */}
+              <div className="mt-4 text-center">
+                <h2 className="text-2xl font-bold text-brand mb-2">
+                  {selectedProduct.overview.name || "No Name"}
+                </h2>
+                <p className="text-gray-600 mb-2">
+                  Code: {selectedProduct.overview.code}
+                </p>
+                {selectedProduct.overview.description && (
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {selectedProduct.overview.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Headwear;
