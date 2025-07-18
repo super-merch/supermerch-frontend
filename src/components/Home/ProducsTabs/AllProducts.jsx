@@ -21,6 +21,7 @@ const AllProducts = ({ activeTab }) => {
     error,
     skeletonLoading,
     marginApi,
+    getGlobalDiscount,
     totalDiscount,
   } = useContext(AppContext);
 
@@ -163,60 +164,74 @@ const AllProducts = ({ activeTab }) => {
                     const priceBreaks =
                       basePrice.base_price?.price_breaks || [];
 
-                    // Get an array of prices from priceBreaks
+                    // Get an array of prices from priceBreaks (these are already discounted)
                     const prices = priceBreaks
                       .map((breakItem) => breakItem.price)
                       .filter((price) => price !== undefined);
 
-                    const minPrice =
-                      prices.length > 0 ? Math.min(...prices) : "0";
-                    const maxPrice =
-                      prices.length > 0 ? Math.max(...prices) : "0";
+                    // 1) compute raw min/max
+                    let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                    let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
+                    // 2) pull margin info (guarding against undefined)
                     const productId = product.meta.id;
-                    const marginEntry = marginApi[productId];
-                    const marginPrice = marginEntry?.baseMarginPrice;
+                    const marginEntry = marginApi[productId] || {};
+                    const marginFlat =
+                      typeof marginEntry.marginFlat === "number"
+                        ? marginEntry.marginFlat
+                        : 0;
+                    const baseMarginPrice =
+                      typeof marginEntry.baseMarginPrice === "number"
+                        ? marginEntry.baseMarginPrice
+                        : 0;
 
-                    const displayPrice =
-                      marginPrice != null
-                        ? `${marginPrice.toFixed(2)} - ${minPrice.toFixed(2)}`
-                        : minPrice === maxPrice
-                        ? `${minPrice.toFixed(2)}`
-                        : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
+                    // 3) apply the flat margin to both ends of the range
+                    minPrice += marginFlat;
+                    maxPrice += marginFlat;
 
-                    const discountPct = totalDiscount[productId] ?? 0;
+                    // 4) build your display string
+                    let displayPrice;
+                    if (baseMarginPrice > 0) {
+                      // compare baseMarginPrice vs. (adjusted) minPrice
+                      const bm = baseMarginPrice.toFixed(2);
+                      const mp = minPrice.toFixed(2);
+
+                      displayPrice =
+                        bm === mp
+                          ? bm // single price
+                          : `${bm} - ${mp}`; // range from baseMarginPrice up to minPrice
+                    } else {
+                      // no baseMarginPrice, so just show the adjusted range
+                      displayPrice =
+                        minPrice === maxPrice
+                          ? minPrice.toFixed(2)
+                          : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
+                    }
+
+                    // Get discount percentage from product's discount info
+                    const discountPct = product.discountInfo?.discount || 0;
+                    const isGlobalDiscount =
+                      product.discountInfo?.isGlobal || false;
 
                     return (
                       <div
                         key={productId}
                         className="relative border border-border2 cursor-pointer max-h-[280px] sm:max-h-[350px] h-full group"
                       >
-                        {totalDiscount[productId] === undefined ? (
-                          // loading spinner
-                          <div className="w-full flex justify-end " >
-
-                          <Skeleton
-                          
-                          height={24}
-                          width={34}
-                          className="mt-2 mr-2"
-                          />
-                          </div>
-                        ) : (
-                          discountPct > 0 && (
-                            <span
-                              className="
-        absolute
-        px-1.5 py-0.5 sm:px-2 sm:py-1
-        text-xs font-bold text-white
-        bg-red-500 rounded
-        top-1 sm:top-2 right-1 sm:right-2
-      "
-                            >
+                        {/* Show discount badge */}
+                        {discountPct > 0 && (
+                          <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
+                            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
                               {discountPct}%
                             </span>
-                          )
+                            {isGlobalDiscount && (
+                              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
+                                Global
+                              </span>
+                            )}
+                          </div>
                         )}
+
                         <div className="max-h-[45%] sm:max-h-[50%] h-full border-b overflow-hidden">
                           <img
                             src={
@@ -228,6 +243,7 @@ const AllProducts = ({ activeTab }) => {
                             className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                           />
                         </div>
+
                         <div className="absolute top-[2%] left-[3%] sm:left-[5%]">
                           {product?.product?.colours?.list.length > 0 &&
                             product?.product?.colours?.list?.map(
@@ -248,6 +264,7 @@ const AllProducts = ({ activeTab }) => {
                               )
                             )}
                         </div>
+
                         <div className="p-2 sm:p-4">
                           <div className="text-center">
                             <h2 className="text-sm sm:text-lg font-medium text-brand leading-tight">
@@ -259,10 +276,20 @@ const AllProducts = ({ activeTab }) => {
                             <p className="text-xs sm:text-sm font-normal text-brand mt-1">
                               Code: {product.overview.code}
                             </p>
-                            <h2 className="pt-1 sm:pt-2 text-lg sm:text-xl font-semibold text-heading">
-                              ${displayPrice}
-                            </h2>
+
+                            {/* Price display with discount indication */}
+                            <div className="pt-1 sm:pt-2">
+                              <h2 className="text-lg sm:text-xl font-semibold text-heading">
+                                ${displayPrice}
+                              </h2>
+                              {discountPct > 0 && (
+                                <p className="text-xs text-green-600 font-medium">
+                                  {discountPct}% discount applied
+                                </p>
+                              )}
+                            </div>
                           </div>
+
                           <div className="flex justify-between gap-1 mt-2 sm:mt-2 mb-1">
                             <p
                               onClick={() => {

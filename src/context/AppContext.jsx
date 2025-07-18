@@ -11,6 +11,7 @@ const AppContextProvider = (props) => {
   const [activeFilterCategory, setActiveFilterCategory] = useState(null)
   const [sidebarActiveCategory, setSidebarActiveCategory] = useState(null)
   const [categoryProducts, setCategoryProducts] = useState([]);
+const [globalDiscount, setGlobalDiscount] = useState(null);
 
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
 
@@ -21,6 +22,21 @@ const AppContextProvider = (props) => {
   const [blogs, setBlogs] = useState([])
   console.log(blogs, "context blogs");
 
+  const getGlobalDiscount = async () => {
+  try {
+    const response = await axios.get(
+      `${backednUrl}/api/add-discount/global-discount`
+    );
+    if (response.data.data) {
+      setGlobalDiscount(response.data.data);
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching global discount:", error);
+    return null;
+  }
+};
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -213,25 +229,29 @@ const AppContextProvider = (props) => {
 
   // discountAPI
   const [discountPromo, setDiscountPromo] = useState([]);
+  const [totalDiscount, setTotalDiscount] = useState({});
 
   const listDiscount = async () => {
-    try {
-      const { data } = await axios.get(
-        `${backednUrl}/api/add-discount/list-discounts`
-      );
-      if (data.success) {
-        setDiscountPromo(data.discounts);
-      } else {
-        toast.error(data.message);
+  try {
+    const { data } = await axios.get(
+      `${backednUrl}/api/add-discount/list-discounts`
+    );
+    if (data.success) {
+      setDiscountPromo(data.discounts);
+      if (data.globalDiscount) {
+        setGlobalDiscount(data.globalDiscount);
       }
-    } catch (error) {
-      console.error(error);
+    } else {
+      toast.error(data.message);
     }
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 
 
-  const [totalDiscount, setTotalDiscount] = useState({});
+  
   // AppContext.jsx
  const fetchProductDiscount = async (productId) => {
   if (!productId) return { productId, discount: 0, discountPrice: 0 };
@@ -324,26 +344,15 @@ const AppContextProvider = (props) => {
   if (!products.length) return;
 
   const fetchDiscounts = async () => {
-      try {
-        // fire off all discount-fetch calls in parallel
-        const results = await Promise.all(
-          products.map(p => fetchProductDiscount(p.meta.id))
-        );
+    try {
+      // ... complex discount fetching logic
+    } catch (error) {
+      console.error('Error fetching discounts:', error);
+    }
+  };
 
-        // build a simple map { [productId]: discount }
-        const discountMap = results.reduce((map, { productId, discount }) => {
-          map[productId] = discount;
-          return map;
-        }, {});
-
-        setTotalDiscount(discountMap);
-      } catch (error) {
-        console.error('Error fetching discounts:', error);
-      }
-    };
-
-    fetchDiscounts();
-   }, [products]);
+  fetchDiscounts();
+}, [products]);
 
   useEffect(() => {
     if (products.length === 0) {
@@ -407,6 +416,10 @@ const AppContextProvider = (props) => {
     listDiscount,
     filterLocalProducts,
     setFilterLocalProducts,
+    discountPromo,
+  globalDiscount,
+  getGlobalDiscount,
+  listDiscount,
     activeFilterCategory,
     setActiveFilterCategory,
     fetchParamProducts,

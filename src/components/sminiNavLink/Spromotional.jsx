@@ -108,6 +108,7 @@ const Spromotional = () => {
     categoryProducts,
     filterLocalProducts,
     setFilterLocalProducts,
+    marginApi,
     fetchParamProducts,
     paramProducts,
     setParamProducts,
@@ -742,22 +743,74 @@ const Spromotional = () => {
                       const priceBreaks =
                         basePrice.base_price?.price_breaks || [];
 
-                      // Get an array of prices from priceBreaks
+                      // Get an array of prices from priceBreaks (these are already discounted)
                       const prices = priceBreaks
                         .map((breakItem) => breakItem.price)
                         .filter((price) => price !== undefined);
 
-                      // Calculate the minimum and maximum price values
-                      const minPrice =
-                        prices.length > 0 ? Math.min(...prices) : "0";
-                      const maxPrice =
-                        prices.length > 0 ? Math.max(...prices) : "0";
+                      // 1) compute raw min/max
+                      let minPrice =
+                        prices.length > 0 ? Math.min(...prices) : 0;
+                      let maxPrice =
+                        prices.length > 0 ? Math.max(...prices) : 0;
+
+                      // 2) pull margin info (guarding against undefined)
+                      const productId = product.meta.id;
+                      const marginEntry = marginApi[productId] || {};
+                      const marginFlat =
+                        typeof marginEntry.marginFlat === "number"
+                          ? marginEntry.marginFlat
+                          : 0;
+                      const baseMarginPrice =
+                        typeof marginEntry.baseMarginPrice === "number"
+                          ? marginEntry.baseMarginPrice
+                          : 0;
+
+                      // 3) apply the flat margin to both ends of the range
+                      minPrice += marginFlat;
+                      maxPrice += marginFlat;
+
+                      // 4) build your display string
+                      let displayPrice;
+                      if (baseMarginPrice > 0) {
+                        // compare baseMarginPrice vs. (adjusted) minPrice
+                        const bm = baseMarginPrice.toFixed(2);
+                        const mp = minPrice.toFixed(2);
+
+                        displayPrice =
+                          bm === mp
+                            ? bm // single price
+                            : `${bm} - ${mp}`; // range from baseMarginPrice up to minPrice
+                      } else {
+                        // no baseMarginPrice, so just show the adjusted range
+                        displayPrice =
+                          minPrice === maxPrice
+                            ? minPrice.toFixed(2)
+                            : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
+                      }
+
+                      // Get discount percentage from product's discount info
+                      const discountPct = product.discountInfo?.discount || 0;
+                      const isGlobalDiscount =
+                        product.discountInfo?.isGlobal || false;
                       return (
                         <div
                           key={product.id}
                           // onClick={() => handleViewProduct(product.meta.id)}
                           className="relative w-full border border-border2 h-full flex flex-col cursor-pointer max-h-[350px] group"
                         >
+                          {discountPct > 0 && (
+                            <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
+                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
+                                {discountPct}%
+                              </span>
+                              {isGlobalDiscount && (
+                                <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
+                                  Global
+                                </span>
+                              )}
+                            </div>
+                          )}
                           <div className="max-h-[50%] h-full border-b overflow-hidden">
                             <img
                               src={
@@ -807,10 +860,10 @@ const Spromotional = () => {
                               <h2 className="pt-2 text-xl font-semibold text-heading">
                                 {/* $<span>{realPrice}</span> */}$
                                 {minPrice === maxPrice ? (
-                                  <span>{minPrice}</span>
+                                  <span>{minPrice.toFixed(2)}</span>
                                 ) : (
                                   <span>
-                                    {minPrice} - ${maxPrice}
+                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
                                   </span>
                                 )}
                               </h2>
