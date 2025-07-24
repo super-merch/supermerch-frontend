@@ -10,8 +10,8 @@ import {
   updateCartItemQuantity,
   removeFromCart,
   updateCartItemImage,
-  incrementQuantityWithRecalculation,
-  decrementQuantityWithRecalculation,
+  incrementQuantity,
+  decrementQuantity,
 } from "../../redux/slices/cartSlice";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
@@ -22,7 +22,7 @@ const CartComponent = () => {
   const { items } = useSelector((state) => state.cart);
   const [value, setValue] = useState("");
 
-  const [customQuantities, setCustomQuantities] = useState({});
+  const [customQuantities, setCustomQuantities,orderDone] = useState({});
 
   useEffect(() => {
     const quantities = {};
@@ -36,6 +36,7 @@ const CartComponent = () => {
     (sum, item) => sum + (totalDiscount[item.id] || 0),
     0
   );
+  
 
   // 3) Compute your base total:
   const totalAmount = items.reduce(
@@ -69,6 +70,7 @@ const CartComponent = () => {
   const handleChange = (e) => {
     setValue(e.target.value);
   };
+  
 
   // Handle direct input changes
   const handleQuantityChange = (e, id) => {
@@ -183,7 +185,7 @@ const CartComponent = () => {
                         <button
                           onClick={() =>
                             dispatch(
-                              incrementQuantityWithRecalculation({
+                              incrementQuantity({
                                 id: item.id,
                               })
                             )
@@ -202,7 +204,7 @@ const CartComponent = () => {
                         <button
                           onClick={() =>
                             dispatch(
-                              decrementQuantityWithRecalculation({
+                              decrementQuantity({
                                 id: item.id,
                               })
                             )
@@ -301,7 +303,7 @@ const CartComponent = () => {
             to={"/checkout"}
             className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-smallHeader"
           >
-            <button>PROCEED TO CHECKOUT</button>
+            <button  >PROCEED TO CHECKOUT</button>
             <FaArrowRight />
           </Link>
         </div>

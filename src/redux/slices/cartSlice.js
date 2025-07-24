@@ -95,27 +95,13 @@
 
 
 
-
-
 import { createSlice } from '@reduxjs/toolkit';
-import { getPriceForQuantity } from '../helper';
-
-// cartSlice.js (top of file)
-function findPriceBreak(priceBreaks, quantity) {
-  const sorted = [...priceBreaks].sort((a, b) => a.qty - b.qty);
-  let selected = sorted[0];
-  for (const br of sorted) {
-    if (quantity >= br.qty) selected = br;
-    else break;
-  }
-  return selected;
-}
-function getBasePrice(id, quantity, state) {
-  const cached = state.cachedBasePrices || {};
-  if (!cached[id]) return 0;
-  const selectedBreak = findPriceBreak(cached[id], quantity);
-  return selectedBreak ? selectedBreak.price : 0;
-}
+const initialState = {
+  items: [],
+  totalQuantity: 0,
+  totalAmount: 0,
+  cachedBasePrices: {},
+};
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -127,162 +113,88 @@ const cartSlice = createSlice({
   },
   reducers: {
     addToCart: (state, action) => {
-      const {
-        id,
-        price,          // per unit price (after discount)
-        totalPrice,      // total for the quantity (including setup + freight)
-        setupFee = 0,
-        freightFee = 0,
-        quantity = 1,
-        basePrices,
-        marginFlat = 0,
-        discountPct = 0,
-        printMethodType,
-        priceBreaks = [],
-        ...rest
-      } = action.payload;
+      const { id, price, totalPrice, setupFee = 0, freightFee = 0, quantity = 1, ...rest } = action.payload;
 
-      // Cache basePrices for recalculation
-      if (basePrices) {
-        state.cachedBasePrices[id] = basePrices;
-      }
-
-      const existingItem = state.items.find((item) => item.id === id);
-
-      if (existingItem) {
-        // Increase quantity
-        const newQuantity = existingItem.quantity + quantity;
-
-        // Determine correct price break
-        const selectedBreak = findPriceBreak(
-          existingItem.priceBreaks || priceBreaks,
-          newQuantity
-        );
-
-        // Get base product price
-        const basePrice = getBasePrice(id, newQuantity, state);
-
-        // Calculate unit price
-        let unitPrice =
-          printMethodType === 'base'
-            ? selectedBreak.price
-            : basePrice + selectedBreak.price;
-        unitPrice = (unitPrice + marginFlat) * (1 - discountPct / 100);
-
-        // Update item fields
-        existingItem.quantity = newQuantity;
-        existingItem.price = unitPrice;
-        existingItem.totalPrice =
-          unitPrice * newQuantity + setupFee + freightFee;
+      // Push new item or update existing
+      const existing = state.items.find(item => item.id === id);
+      if (existing) {
+        existing.quantity += quantity;
+        existing.totalPrice = existing.price * existing.quantity + setupFee + freightFee;
       } else {
-        // New item
         state.items.push({
           id,
           price,
-          totalPrice: totalPrice || price * quantity,
+          totalPrice: totalPrice || price * quantity + setupFee + freightFee,
           setupFee,
           freightFee,
           quantity,
-          marginFlat,
-          discountPct,
-          printMethodType,
-          priceBreaks,
           ...rest,
         });
       }
 
-      // Recalculate cart totals
-      state.totalQuantity = state.items.reduce(
-        (sum, it) => sum + it.quantity,
-        0
-      );
-      state.totalAmount = state.items.reduce(
-        (sum, it) => sum + it.totalPrice,
-        0
-      );
+      // Recalculate totals
+      state.totalQuantity = state.items.reduce((sum, it) => sum + it.quantity, 0);
+      state.totalAmount = state.items.reduce((sum, it) => sum + it.totalPrice, 0);
     },
-incrementQuantityWithRecalculation: (state, action) => {
-  const { id } = action.payload;
-  const item = state.items.find(item => item.id === id);
-  if (item) {
-    const newQuantity = item.quantity + 1;
-    const selectedBreak = findPriceBreak(item.priceBreaks, newQuantity);
 
-    const basePrice = getBasePrice(id, newQuantity, state);
-    let unitPrice = item.printMethodType === 'base'
-      ? selectedBreak.price
-      : basePrice + selectedBreak.price;
-
-    unitPrice = (unitPrice + item.marginFlat) * (1 - item.discountPct / 100);
-
-    item.quantity = newQuantity;
-    item.price = unitPrice;
-    item.totalPrice = (unitPrice * newQuantity) + (item.freightFee || 0);
-  }
-},
-
-decrementQuantityWithRecalculation: (state, action) => {
-  const { id } = action.payload;
-  const item = state.items.find(item => item.id === id);
-  if (item) {
-    const newQuantity = Math.max(item.quantity - 1, 1);
-    const selectedBreak = findPriceBreak(item.priceBreaks, newQuantity);
-
-    const basePrice = getBasePrice(id, newQuantity, state);
-    let unitPrice = item.printMethodType === 'base'
-      ? selectedBreak.price
-      : basePrice + selectedBreak.price;
-
-    unitPrice = (unitPrice + item.marginFlat) * (1 - item.discountPct / 100);
-
-    item.quantity = newQuantity;
-    item.price = unitPrice;
-    item.totalPrice = (unitPrice * newQuantity) + (item.freightFee || 0);
-  }
-},
-    
-    
-    removeFromCart: (state, action) => {
-      const item = state.items.find((item) => item.id === action.payload);
+    // Increment uses current unit price
+    incrementQuantity: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find(it => it.id === id);
       if (item) {
-        state.totalQuantity -= item.quantity;
-        state.totalAmount -= item.price * item.quantity;
-        state.items = state.items.filter((item) => item.id !== action.payload);
+        item.quantity += 1;
+        item.totalPrice = item.price * item.quantity 
       }
+      state.totalQuantity = state.items.reduce((sum, it) => sum + it.quantity, 0);
+      state.totalAmount = state.items.reduce((sum, it) => sum + it.totalPrice, 0);
     },
+
+    // Decrement uses current unit price, min quantity =1
+    decrementQuantity: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find(it => it.id === id);
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
+        item.totalPrice = item.price * item.quantity 
+      }
+      state.totalQuantity = state.items.reduce((sum, it) => sum + it.quantity, 0);
+      state.totalAmount = state.items.reduce((sum, it) => sum + it.totalPrice, 0);
+    },
+
+    removeFromCart: (state, action) => {
+      state.items = state.items.filter(it => it.id !== action.payload);
+      state.totalQuantity = state.items.reduce((sum, it) => sum + it.quantity, 0);
+      state.totalAmount = state.items.reduce((sum, it) => sum + it.totalPrice, 0);
+    },
+
     updateCartItemImage: (state, action) => {
       const { id, dragdrop } = action.payload;
-      const item = state.items.find((item) => item.id === id);
-      if (item) {
-        item.dragdrop = dragdrop;
-      }
+      const item = state.items.find(it => it.id === id);
+      if (item) item.dragdrop = dragdrop;
     },
+
     updateCartItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
-      const item = state.items.find((item) => item.id === id);
-
+      const item = state.items.find(it => it.id === id);
       if (item) {
-        const newQty = Math.max(quantity, 1);
-        item.quantity = newQty;
-        let base = getPriceForQuantity(newQty, item.priceBreaks || []);
-        base += item.marginFlat || 0;
-        item.price = base * (1 - (item.discountPct || 0) / 100);
-        state.totalAmount = state.items.reduce(
-          (sum, it) => sum + it.price * it.quantity,
-          0
-        );
+        item.quantity = Math.max(quantity, 1);
+        item.totalPrice = item.price * item.quantity + (item.setupFee || 0) + (item.freightFee || 0);
       }
+      state.totalQuantity = state.items.reduce((sum, it) => sum + it.quantity, 0);
+      state.totalAmount = state.items.reduce((sum, it) => sum + it.totalPrice, 0);
     },
+    clearCart: () => initialState,
   },
 });
 
 export const {
   addToCart,
-  incrementQuantityWithRecalculation,
-  decrementQuantityWithRecalculation,
+  incrementQuantity,
+  decrementQuantity,
   removeFromCart,
   updateCartItemImage,
   updateCartItemQuantity,
+  clearCart
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

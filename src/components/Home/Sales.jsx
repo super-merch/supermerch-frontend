@@ -4,27 +4,43 @@ import { useNavigate } from 'react-router-dom';
 import noimage from '/noimage.png';
 
 const Sale = () => {
-  const { fetchProducts, products, error, skeletonLoading } =
+  const { fetchProducts, products,fetchBestSellerProducts,bestSellerProducts, error, skeletonLoading,fetchDiscountedProducts,discountedProducts, fetchTrendingProducts, fetchNewArrivalProducts, arrivalProducts, trendingProducts } =
     useContext(AppContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
+    fetchTrendingProducts(); // Fetch trending products
+    fetchNewArrivalProducts();
+    fetchDiscountedProducts(); // Fetch new arrival products
+    fetchBestSellerProducts()
   }, []);
 
   const categories = [
-    { title: 'Best Sellers' },
+    { title: 'Trendings' },
     { title: 'New Arrivals' },
-    { title: 'Bundles Deals' },
+    { title: 'Best Sellers' },
     { title: 'Sale' },
   ];
 
   // Distribute products among categories (ensuring different items in each)
   const chunkedProducts = categories.map(
-    (_, index) =>
-      products?.filter((_, i) => i % categories.length === index) || []
+    (_, index) => {
+      // For "Trendings" (index 0), use trending products
+      if (index === 0) {
+        return trendingProducts || [];
+      }
+      // For "New Arrivals" (index 1), use arrival products
+      if (index === 1) {
+        return arrivalProducts || [];
+      }
+      if (index === 3) {
+        return discountedProducts || [];
+      }
+      // For other categories, use regular products
+      return bestSellerProducts?.filter((_, i) => i % (categories.length - 2) === (index - 2)) || [];
+    }
   );
-
 
   // Handle product click
   const handleViewProduct = (productId) => {
@@ -66,7 +82,7 @@ const Sale = () => {
             {/* Section Header */}
             <div className='flex items-center justify-between mb-4'>
               <h3 className='text-base font-semibold'>{category.title}</h3>
-              <button onClick={() => navigate('/shop')} className='text-sm font-semibold border-b-2 text-smallHeader border-smallHeader'>
+              <button onClick={() => category.title === 'Trendings' ? navigate('/trendings') : category.title === 'New Arrivals' ? navigate('/new-arrivals') : category.title === 'Sale' ? navigate('/sales') : navigate('/bestSellers')} className='text-sm font-semibold border-b-2 text-smallHeader border-smallHeader'>
                 VIEW ALL
               </button>
             </div>
@@ -107,7 +123,7 @@ const Sale = () => {
                             : 'No Name '}
                         </p>
                         <p className='font-semibold text-smallHeader'>
-                          ${realPrice}
+                          ${realPrice.toFixed(2)}
                         </p>
                       </div>
                     </div>

@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import CreditCard from '../creditcard/CreditCard';
+import { clearCart } from '@/redux/slices/cartSlice';
 
 
 const Checkout = () => {
@@ -17,6 +18,7 @@ const Checkout = () => {
   const { token, addressData, backednUrl, totalDiscount } = useContext(AppContext);
 
   const [checkoutTab, setCheckoutTab] = useState('billing');
+  const dispatch = useDispatch()
 
   const {
     register,
@@ -133,6 +135,7 @@ const Checkout = () => {
       );
       navigate('/');
       toast.success('Order placed successfully!');
+      dispatch(clearCart());
       
     } catch (error) {
       console.error('Order Failed:', error.response?.data || error.message);

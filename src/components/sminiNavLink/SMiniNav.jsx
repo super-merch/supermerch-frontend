@@ -1540,6 +1540,7 @@ const SMiniNav = () => {
     }
   };
   const [activeItem, setActiveItem] = useState(megaMenu[0].id);
+  const [activeClothingItem, setActiveClothingItem] = useState(megaMenuClothing[0].id)
   const activeContent =
     megaMenu.find((item) => item.id === activeItem)?.subTypes || [];
   const [openPromoId, setOpenPromoId] = useState(null);
@@ -1967,12 +1968,12 @@ const SMiniNav = () => {
                     key={item.id}
                     className={cn(
                       'flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted',
-                      activeItem === item.id
+                      activeClothingItem === item.id
                         ? 'bg-muted font-medium text-primary'
                         : 'text-white'
                     )}
                     onMouseEnter={() =>
-                      setActiveItem(item.id)
+                      setActiveClothingItem(item.id)
                     }
                     onClick={() =>
                       handleNameCategories(
@@ -1991,7 +1992,7 @@ const SMiniNav = () => {
           <div className='w-full p-5'>
             <div className='flex justify-start gap-10'>
               {megaMenuClothing
-                .find((category) => category.id === activeItem)
+                .find((category) => category.id === activeClothingItem)
                 ?.subTypes?.map((section, index) => (
                   <div key={index} className='space-y-2'>
                     <h3 className='text-sm font-semibold text-blue-500'>
@@ -2007,7 +2008,7 @@ const SMiniNav = () => {
                                 subItem.name,
                                 subItem.id,
                                 megaMenuClothing.find(
-                                  (item) => item.id === activeItem
+                                  (item) => item.id === activeClothingItem
                                 )?.name,
                                 section.label
                               )

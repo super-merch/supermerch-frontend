@@ -189,25 +189,6 @@ const AllProducts = ({ activeTab }) => {
                     minPrice += marginFlat;
                     maxPrice += marginFlat;
 
-                    // 4) build your display string
-                    let displayPrice;
-                    if (baseMarginPrice > 0) {
-                      // compare baseMarginPrice vs. (adjusted) minPrice
-                      const bm = baseMarginPrice.toFixed(2);
-                      const mp = minPrice.toFixed(2);
-
-                      displayPrice =
-                        bm === mp
-                          ? bm // single price
-                          : `${bm} - ${mp}`; // range from baseMarginPrice up to minPrice
-                    } else {
-                      // no baseMarginPrice, so just show the adjusted range
-                      displayPrice =
-                        minPrice === maxPrice
-                          ? minPrice.toFixed(2)
-                          : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
-                    }
-
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
                     const isGlobalDiscount =
@@ -225,8 +206,8 @@ const AllProducts = ({ activeTab }) => {
                               {discountPct}%
                             </span>
                             {isGlobalDiscount && (
-                              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
-                                Global
+                              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                                Sale
                               </span>
                             )}
                           </div>
@@ -277,10 +258,17 @@ const AllProducts = ({ activeTab }) => {
                               Code: {product.overview.code}
                             </p>
 
-                            {/* Price display with discount indication */}
+                            {/* Updated Price display matching category page logic */}
                             <div className="pt-1 sm:pt-2">
                               <h2 className="text-lg sm:text-xl font-semibold text-heading">
-                                ${displayPrice}
+                                $
+                                {minPrice === maxPrice ? (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span>
+                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                  </span>
+                                )}
                               </h2>
                               {discountPct > 0 && (
                                 <p className="text-xs text-green-600 font-medium">

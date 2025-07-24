@@ -20,7 +20,6 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
   );
 
   const [blogs, setBlogs] = useState([])
-  console.log(blogs, "context blogs");
 
   const getGlobalDiscount = async () => {
   try {
@@ -141,6 +140,118 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       setSkeletonLoading(false);
     }
   };
+  const [trendingProducts,setTrendingProducts] = useState([])
+  const fetchTrendingProducts = async (page = 1, sort = '') => {
+    setSkeletonLoading(true);
+    try {
+      const limit = 100;
+      const response = await fetch(
+        `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch products');
+
+      const data = await response.json();
+
+      // Validate response structure if needed
+      if (!data || !data.data) {
+        throw new Error('Unexpected API response structure');
+      }
+
+      setTrendingProducts(data.data);
+      // Uncomment if total_pages is needed
+      // setTotalPages(data.total_pages);
+    } catch (err) {
+      setError(err.message);
+      setSkeletonLoading(false);
+    } finally {
+      setSkeletonLoading(false);
+    }
+  };
+  const [arrivalProducts,setArrivalProducts] = useState([])
+  const fetchNewArrivalProducts = async (page = 1, sort = '') => {
+    setSkeletonLoading(true);
+    try {
+      const limit = 100;
+      const response = await fetch(
+        `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch products');
+
+      const data = await response.json();
+
+      // Validate response structure if needed
+      if (!data || !data.data) {
+        throw new Error('Unexpected API response structure');
+      }
+
+      setArrivalProducts(data.data);
+      // Uncomment if total_pages is needed
+      // setTotalPages(data.total_pages);
+    } catch (err) {
+      setError(err.message);
+      setSkeletonLoading(false);
+    } finally {
+      setSkeletonLoading(false);
+    }
+  };
+  const [discountedProducts,setDiscountedProducts] = useState([])
+  const fetchDiscountedProducts = async (page = 1, sort = '') => {
+    setSkeletonLoading(true);
+    try {
+      const limit = 100;
+      const response = await fetch(
+        `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch products');
+
+      const data = await response.json();
+
+      // Validate response structure if needed
+      if (!data || !data.data) {
+        throw new Error('Unexpected API response structure');
+      }
+
+      setDiscountedProducts(data.data);
+      // Uncomment if total_pages is needed
+      // setTotalPages(data.total_pages);
+    } catch (err) {
+      setError(err.message);
+      setSkeletonLoading(false);
+    } finally {
+      setSkeletonLoading(false);
+    }
+  };
+const [bestSellerProducts,setBestSellerProducts] = useState([])
+  const fetchBestSellerProducts = async (page = 1, sort = '') => {
+    setSkeletonLoading(true);
+    try {
+      const limit = 100;
+      const response = await fetch(
+        `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch products');
+
+      const data = await response.json();
+
+      // Validate response structure if needed
+      if (!data || !data.data) {
+        throw new Error('Unexpected API response structure');
+      }
+
+      setBestSellerProducts(data.data);
+      // Uncomment if total_pages is needed
+      // setTotalPages(data.total_pages);
+    } catch (err) {
+      setError(err.message);
+      setSkeletonLoading(false);
+    } finally {
+      setSkeletonLoading(false);
+    }
+  };
   
 
   
@@ -175,7 +286,6 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
     }
   };
 
-  console.log(paramProducts, "these are op");
 
 
   const fetchCategories = async () => {
@@ -191,7 +301,6 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       }
 
       setCategoryProducts(data.data);
-      console.log(data.data, "category products");
       // console.log(data.data, "category products");
     } catch (err) {
       // console.error('Error fetching products:', err);
@@ -224,7 +333,6 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
     // }
   };
 
-  console.log(v1categories, "v1catgeories");
 
 
   // discountAPI
@@ -306,7 +414,6 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
             baseMarginPrice: item.marginPrice,
           };
         });
-        console.log(marginMap, 'marginFlat');
         
         setMarginApi(marginMap);
       } else {
@@ -395,7 +502,11 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
     newId,
     setNewId,
     userData,
+    fetchTrendingProducts,
+    trendingProducts,
     fetchProductDiscount,
+    fetchBestSellerProducts,
+    bestSellerProducts,
     backednUrl,
     totalDiscount,
     setTotalDiscount,
@@ -409,10 +520,14 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
     setBlogs,
     options,
     categoryProducts,
+    fetchDiscountedProducts,
+    discountedProducts,
     setCategoryProducts,
     fetchCategories,
     discountPromo,
     setDiscountPromo,
+    fetchNewArrivalProducts,
+    arrivalProducts,
     listDiscount,
     filterLocalProducts,
     setFilterLocalProducts,

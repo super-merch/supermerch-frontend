@@ -20,6 +20,10 @@ import BlogDetails from "./pages/BlogDetails";
 import PromotionalPage from "./components/miniNavLinks/promotionalComps/PromotionalPage";
 import SpromotionalPage from "./components/sminiNavLink/SpromotionalPage";
 import FavouritePage from "./pages/FavouritePage";
+import BestSellers from "./pages/BestSellers";
+import NewArrival from "./pages/NewArrival";
+import SalesPage from "./pages/SalesPage";
+import BestSellerPage from "./pages/BestSellerPage";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -58,6 +62,10 @@ const App = () => {
         {/* SHOPPAGE  */}
         <Route path='/category' element={<CategoryPage />} />
         <Route path='/shop' element={<ShopPage />} />
+        <Route path='/trendings' element={<BestSellers />} />
+        <Route path='/new-arrivals' element={<NewArrival />} />
+        <Route path='/sales' element={<SalesPage />} />
+        <Route path='/bestSellers' element={<BestSellerPage />} />
         {!token && <Route path='/signup' element={<SignUp />} />}
         <Route path='/cart' element={<Cart />} />
         <Route path='/contact' element={<ContactPage />} />
