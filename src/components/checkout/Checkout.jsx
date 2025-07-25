@@ -139,7 +139,7 @@ const Checkout = () => {
       
     } catch (error) {
       console.error('Order Failed:', error.response?.data || error.message);
-      alert('Failed to place the order. Please try again.');
+      toast.error('Failed to place the order. Please try again.');
     }
   };
 

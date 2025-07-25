@@ -87,11 +87,24 @@ const Cards = () => {
   }, []);
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
+    // Updated sorting logic to match AllProducts pricing calculation
     const getRealPrice = (product) => {
       const priceGroups = product.product?.prices?.price_groups || [];
       const basePrice = priceGroups.find((group) => group?.base_price) || {};
       const priceBreaks = basePrice.base_price?.price_breaks || [];
-      return priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+      
+      const prices = priceBreaks
+        .map((breakItem) => breakItem.price)
+        .filter((price) => price !== undefined);
+      
+      let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+      
+      // Apply margin calculation like in AllProducts
+      const productId = product.meta.id;
+      const marginEntry = marginApi[productId] || {};
+      const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
+      
+      return minPrice + marginFlat;
     };
 
     const priceA = getRealPrice(a);
@@ -337,36 +350,53 @@ const Cards = () => {
                       const priceBreaks =
                         basePrice.base_price?.price_breaks || [];
 
+                      // Get an array of prices from priceBreaks (these are already discounted)
                       const prices = priceBreaks
                         .map((breakItem) => breakItem.price)
                         .filter((price) => price !== undefined);
 
-                      const minPrice =
-                        prices.length > 0 ? Math.min(...prices) : "0";
-                      const maxPrice =
-                        prices.length > 0 ? Math.max(...prices) : "0";
+                      // 1) compute raw min/max - exactly like AllProducts
+                      let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                      let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
+                      // 2) pull margin info (guarding against undefined) - exactly like AllProducts
                       const productId = product.meta.id;
-                      const marginEntry = marginApi[productId];
-                      const marginPrice = marginEntry?.baseMarginPrice;
+                      const marginEntry = marginApi[productId] || {};
+                      const marginFlat =
+                        typeof marginEntry.marginFlat === "number"
+                          ? marginEntry.marginFlat
+                          : 0;
+                      const baseMarginPrice =
+                        typeof marginEntry.baseMarginPrice === "number"
+                          ? marginEntry.baseMarginPrice
+                          : 0;
 
-                      const displayPrice =
-                        marginPrice != null
-                          ? `${marginPrice.toFixed(2)} - ${minPrice.toFixed(2)}`
-                          : minPrice === maxPrice
-                          ? `${minPrice.toFixed(2)}`
-                          : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
-                      const discountPct = totalDiscount[productId] ?? 0;
+                      // 3) apply the flat margin to both ends of the range - exactly like AllProducts
+                      minPrice += marginFlat;
+                      maxPrice += marginFlat;
+
+                      // Get discount percentage from product's discount info - exactly like AllProducts
+                      const discountPct = product.discountInfo?.discount || 0;
+                      const isGlobalDiscount = product.discountInfo?.isGlobal || false;
+
                       return (
                         <div
                           key={product.id}
                           onClick={() => handleViewProduct(product.meta.id)}
                           className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
                         >
+                          {/* Show discount badge - updated to match AllProducts */}
                           {discountPct > 0 && (
-                            <span className="absolute px-2 py-1 text-xs font-bold text-white bg-red-500 rounded top-2 right-2">
-                              {discountPct}%
-                            </span>
+                            <div className="absolute top-2 right-2 z-10">
+                              <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
+                                {discountPct}%
+                              </span>
+                              {isGlobalDiscount && (
+                                <span className="block px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                                  Sale
+                                </span>
+                              )}
+                            </div>
                           )}
                           <div className="max-h-[50%] h-full border-b overflow-hidden">
                             <img
@@ -413,9 +443,25 @@ const Cards = () => {
                                 {" "}
                                 Code: {product.overview.code}
                               </p>
-                              <h2 className="pt-2 text-xl font-semibold text-heading">
-                                ${displayPrice}
-                              </h2>
+                              
+                              {/* Updated Price display matching AllProducts exactly */}
+                              <div className="pt-2">
+                                <h2 className="text-xl font-semibold text-heading">
+                                  $
+                                  {minPrice === maxPrice ? (
+                                    <span>{minPrice.toFixed(2)}</span>
+                                  ) : (
+                                    <span>
+                                      {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                    </span>
+                                  )}
+                                </h2>
+                                {discountPct > 0 && (
+                                  <p className="text-xs text-green-600 font-medium">
+                                    {discountPct}% discount applied
+                                  </p>
+                                )}
+                              </div>
                             </div>
                             <div className="flex justify-between gap-1 mt-2 mb-1">
                               <p className="p-3 text-2xl rounded-sm bg-icons">

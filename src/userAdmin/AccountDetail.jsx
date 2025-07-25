@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AccountDetail = () => {
     const { fetchWebUser, userData, token, backednUrl } = useContext(AppContext);
@@ -23,7 +24,7 @@ const AccountDetail = () => {
     const handleSaveChanges = async (e) => {
         e.preventDefault();
         if (newPassword && newPassword !== confirmNewPassword) {
-            alert("New password and confirm password do not match!");
+            toast.error("New password and confirm password do not match!");
             return;
         }
         try { 
@@ -36,18 +37,18 @@ const AccountDetail = () => {
             };
             const { data } = await axios.put(`${backednUrl}/api/auth/updateWeb-user`,  payload, { headers: { token } });
             if (data.success) {
-                alert("Changes saved successfully!");
+                toast.success("Changes saved successfully!");
                 await fetchWebUser();
                 setPassword("");
                 setNewPassword("");
                 setConfirmNewPassword("");
             } else {
-                alert(data.message || "Failed to save changes.");
+                toast.error(data.message || "Failed to save changes.");
             }
 
         } catch (error) {
-            console.log(error.message);
-            alert("An error occurred while saving changes.");
+            console.log(error);
+            toast.error(error.response.data.message || "Failed to save changes.");
         }
     };
     return (

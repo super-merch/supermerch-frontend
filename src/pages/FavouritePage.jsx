@@ -134,10 +134,10 @@ const FavouritePage = () => {
                       <h2 className="pt-2 text-xl font-semibold text-heading">
                         $
                         {minPrice === maxPrice ? (
-                          <span>{minPrice}</span>
+                          <span>{minPrice.toFixed(2)}</span>
                         ) : (
                           <span>
-                            {minPrice} - ${maxPrice}
+                            {minPrice.toFixed(2)}. - ${maxPrice.toFixed(2)}
                           </span>
                         )}
                       </h2>

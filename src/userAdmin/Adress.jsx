@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
 
 const Adress = () => {
   const { token, addressData, setAddressData,backednUrl } = useContext(AppContext);
@@ -27,13 +28,13 @@ const Adress = () => {
       );
 
       if (response.data.success) {
-        alert("Address saved successfully!");
+        toast.success("Address saved successfully!");
       } else {
-        alert("Failed to save address.");
+        toast.error("Failed to save address.");
       }
     } catch (error) {
       console.error("Error saving address:", error);
-      alert("An error occurred while saving the address.");
+      toast.error("An error occurred while saving the address.");
     }
   };
 

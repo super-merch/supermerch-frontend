@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { IoSearchSharp, IoCartOutline } from 'react-icons/io5';
 import { CiHeart } from 'react-icons/ci';
 import { BiUser } from 'react-icons/bi';
+import { googleLogout } from '@react-oauth/google';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoPricetagSharp } from 'react-icons/io5';
@@ -1377,6 +1378,7 @@ const SMiniNav = () => {
   const logout = () => {
     localStorage.removeItem('token');
     setToken('');
+    googleLogout()
     navigate('/signup');
   };
 

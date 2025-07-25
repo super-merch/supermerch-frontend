@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { googleLogout } from '@react-oauth/google';
 import { toast } from 'react-toastify';
 
 export const AppContext = createContext();
@@ -40,6 +41,10 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
   const handleLogout = () => {
     localStorage.removeItem('token');
     setToken('');
+    googleLogout()
+    if (window.google && window.google.accounts) {
+      window.google.accounts.id.disableAutoSelect();
+    }
     navigate('/signup');
   };
 
@@ -106,7 +111,7 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       }
     } catch (error) {
       // console.error('Error fetching user data:', error);
-      alert('An error occurred while fetching the address.');
+      toast.error('An error occurred while fetching the address.');
     }
   };
 
@@ -142,7 +147,6 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
   };
   const [trendingProducts,setTrendingProducts] = useState([])
   const fetchTrendingProducts = async (page = 1, sort = '') => {
-    setSkeletonLoading(true);
     try {
       const limit = 100;
       const response = await fetch(
@@ -163,14 +167,10 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       // setTotalPages(data.total_pages);
     } catch (err) {
       setError(err.message);
-      setSkeletonLoading(false);
-    } finally {
-      setSkeletonLoading(false);
     }
   };
   const [arrivalProducts,setArrivalProducts] = useState([])
   const fetchNewArrivalProducts = async (page = 1, sort = '') => {
-    setSkeletonLoading(true);
     try {
       const limit = 100;
       const response = await fetch(
@@ -191,14 +191,10 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       // setTotalPages(data.total_pages);
     } catch (err) {
       setError(err.message);
-      setSkeletonLoading(false);
-    } finally {
-      setSkeletonLoading(false);
     }
   };
   const [discountedProducts,setDiscountedProducts] = useState([])
   const fetchDiscountedProducts = async (page = 1, sort = '') => {
-    setSkeletonLoading(true);
     try {
       const limit = 100;
       const response = await fetch(
@@ -219,14 +215,10 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       // setTotalPages(data.total_pages);
     } catch (err) {
       setError(err.message);
-      setSkeletonLoading(false);
-    } finally {
-      setSkeletonLoading(false);
     }
   };
 const [bestSellerProducts,setBestSellerProducts] = useState([])
   const fetchBestSellerProducts = async (page = 1, sort = '') => {
-    setSkeletonLoading(true);
     try {
       const limit = 100;
       const response = await fetch(
@@ -245,11 +237,9 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
       setBestSellerProducts(data.data);
       // Uncomment if total_pages is needed
       // setTotalPages(data.total_pages);
+
     } catch (err) {
       setError(err.message);
-      setSkeletonLoading(false);
-    } finally {
-      setSkeletonLoading(false);
     }
   };
   
@@ -524,11 +514,9 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     discountedProducts,
     setCategoryProducts,
     fetchCategories,
-    discountPromo,
     setDiscountPromo,
     fetchNewArrivalProducts,
     arrivalProducts,
-    listDiscount,
     filterLocalProducts,
     setFilterLocalProducts,
     discountPromo,
