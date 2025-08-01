@@ -6,6 +6,7 @@ import TrendCards from '@/components/shop/TrendCards';
 import ArrivalCards from '@/components/shop/ArrivalCards';
 import SaleCards from '@/components/shop/SaleCards';
 import BestSellerCards from '@/components/shop/BestSellerCards';
+import TabsButtons from '@/components/Home/ProducsTabs/TabsButtons';
 const BestSellerPage = () => {
 
   return (
@@ -13,7 +14,7 @@ const BestSellerPage = () => {
       <BestSellerCards/>
       <div className='mt-10'>   
 
-    <TabsBtns/>
+    <TabsButtons/>
       </div>
     </div>
   );
