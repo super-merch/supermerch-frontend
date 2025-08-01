@@ -5,6 +5,7 @@ import TabsBtns from '../components/shop/ProducsTabs/TabsBtns';
 import TrendCards from '@/components/shop/TrendCards';
 import ArrivalCards from '@/components/shop/ArrivalCards';
 import SaleCards from '@/components/shop/SaleCards';
+import TabsButtons from '@/components/Home/ProducsTabs/TabsButtons';
 const SalesPage = () => {
 
   return (
@@ -12,7 +13,7 @@ const SalesPage = () => {
       <SaleCards/>
       <div className='mt-10'>   
 
-    <TabsBtns/>
+    <TabsButtons/>
       </div>
     </div>
   );

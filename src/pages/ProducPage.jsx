@@ -5,6 +5,7 @@ import TabsBtns from '../components/shop/ProducsTabs/TabsBtns'
 import DescripTabs from '../components/product/DescriptionTabs/DescripTabs'
 import useFetchProducts from '../hooks/useFetchProducts'
 import { useParams } from "react-router-dom";
+import TabsButtons from '@/components/Home/ProducsTabs/TabsButtons'
 
 
 const ProducPage = () => {
@@ -17,7 +18,7 @@ const ProducPage = () => {
       <ProductDetails  />
       {/* <DescripTabs/> */}
       <div className="">
-        <TabsBtns />
+        <TabsButtons />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import Navigate from '../components/shop/Navigate'
 import Cards from '../components/shop/Cards'
 import TabsBtns from '../components/shop/ProducsTabs/TabsBtns';
 import TrendCards from '@/components/shop/TrendCards';
+import TabsButtons from '@/components/Home/ProducsTabs/TabsButtons';
 const BestSellers = () => {
 
   return (
@@ -10,7 +11,7 @@ const BestSellers = () => {
       <TrendCards/>
       <div className='mt-10'>   
 
-    <TabsBtns/>
+    <TabsButtons/>
       </div>
     </div>
   );

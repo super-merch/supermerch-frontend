@@ -4,6 +4,7 @@ import Cards from '../components/shop/Cards'
 import TabsBtns from '../components/shop/ProducsTabs/TabsBtns';
 import TrendCards from '@/components/shop/TrendCards';
 import ArrivalCards from '@/components/shop/ArrivalCards';
+import TabsButtons from '@/components/Home/ProducsTabs/TabsButtons';
 const NewArrival = () => {
 
   return (
@@ -11,7 +12,7 @@ const NewArrival = () => {
       <ArrivalCards/>
       <div className='mt-10'>   
 
-    <TabsBtns/>
+    <TabsButtons/>
       </div>
     </div>
   );
