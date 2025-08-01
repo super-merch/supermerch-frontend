@@ -37,8 +37,7 @@ const Sale = () => {
       if (index === 3) {
         return discountedProducts || [];
       }
-      // For other categories, use regular products
-      return bestSellerProducts?.filter((_, i) => i % (categories.length - 2) === (index - 2)) || [];
+      return bestSellerProducts || [];
     }
   );
 
