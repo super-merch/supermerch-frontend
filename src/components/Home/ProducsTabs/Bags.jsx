@@ -37,7 +37,7 @@ const Bags = ({ activeTab }) => {
     setError(null);
     try {
       const response = await fetch(
-        `${import.meta.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/api/client-products/category?category=bag&page=1&limit=8&filter=true`
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products/category?category=bag&page=1&limit=8&filter=true`
       );
 
       if (!response.ok) throw new Error('Failed to fetch products');
