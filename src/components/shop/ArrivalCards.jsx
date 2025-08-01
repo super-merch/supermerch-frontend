@@ -411,28 +411,24 @@ const ArrivalCards = () => {
                               className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                             />
                           </div>
-                          <div className=" absolute top-[2%] left-[5%]">
-                            {product?.product?.colours?.list.length > 0 &&
-                              product?.product?.colours?.list?.map(
-                                (colorObj, index) => (
-                                  <p key={index}>
-                                    {colorObj.colours.map((color, subIndex) => {
-                                      return (
-                                        <p
-                                          key={`${index}-${subIndex}`}
-                                          style={{
-                                            backgroundColor:
-                                              colorObj.swatch?.[subIndex] ||
-                                              color.toLowerCase(),
-                                          }} // Convert to lowercase
-                                          className={`w-fit px-2 rounded-sm text-xs py-1.5 mb-2 border-[1px] border-slate-900`}
-                                        />
-                                      );
-                                    })}
-                                  </p>
-                                )
+                          <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
+                          {product?.product?.colours?.list.length > 0 &&
+                            product?.product?.colours?.list
+                              .slice(0, 15) // Limit to 15 colors
+                              .flatMap((colorObj, index) =>
+                                colorObj.colours.map((color, subIndex) => (
+                                  <div
+                                    key={`${index}-${subIndex}`}
+                                    style={{
+                                      backgroundColor:
+                                        colorObj.swatch?.[subIndex] ||
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                  />
+                                ))
                               )}
-                          </div>
+                        </div>
                           <div className="p-3">
                             <div className="text-center ">
                               <h2 className="text-lg font-medium text-brand ">

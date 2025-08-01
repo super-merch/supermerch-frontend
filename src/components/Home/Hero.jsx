@@ -16,9 +16,7 @@ const Hero = () => {
   //  const { fetchProducts, products, error } = useContext(AppContext);
    const navigate = useNavigate();
 
-  //  useEffect(() => {
-  //    fetchProducts();
-  //  }, []);
+
   const slider = [
     {
       id: 1,

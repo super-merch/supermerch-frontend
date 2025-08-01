@@ -5,6 +5,7 @@ import { FiMinus } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { IoArrowBack } from "react-icons/io5";
 import { FaArrowRight } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import {
   updateCartItemQuantity,
@@ -22,7 +23,14 @@ const CartComponent = () => {
   const { items } = useSelector((state) => state.cart);
   const [value, setValue] = useState("");
 
-  const [customQuantities, setCustomQuantities,orderDone] = useState({});
+  // Coupon states
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  const [customQuantities, setCustomQuantities] = useState({});
+
+  const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
   useEffect(() => {
     const quantities = {};
@@ -36,19 +44,24 @@ const CartComponent = () => {
     (sum, item) => sum + (totalDiscount[item.id] || 0),
     0
   );
-  
 
-  // 3) Compute your base total:
+  // Base total calculation
   const totalAmount = items.reduce(
     (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
     0
   );
 
-  // 4) Apply totalDiscountPercent *exactly* as before:
-  const discountedAmount =
+  // Apply product discounts first
+  const productDiscountedAmount =
     totalAmount - (totalAmount * totalDiscountPercent) / 100;
-  const gstAmount = discountedAmount * 0.1; // 10%
-  const total = discountedAmount + gstAmount;
+
+  // Apply coupon discount to the product-discounted amount
+  const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
+  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
+
+  // Calculate GST and final total
+  const gstAmount = finalDiscountedAmount * 0.1; // 10%
+  const total = finalDiscountedAmount + gstAmount;
 
   const [uploadedImage, setUploadedImage] = useState("/drag.png");
   const fileInputRef = useRef(null);
@@ -68,9 +81,57 @@ const CartComponent = () => {
   };
 
   const handleChange = (e) => {
-    setValue(e.target.value);
+    setValue(e.target.value.toUpperCase());
   };
-  
+
+  // Apply coupon function
+  const handleApplyCoupon = async () => {
+    if (!value.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    if (appliedCoupon) {
+      toast.error(
+        "A coupon is already applied. Remove it first to apply a new one."
+      );
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/coupen/match`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ coupen: value.trim() }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.valid) {
+        setAppliedCoupon(result.coupon);
+        setCouponDiscount(result.discount);
+        toast.success(`Coupon applied! You saved ${result.discount}%`);
+      } else {
+        toast.error(result.message || "Invalid coupon code");
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      toast.error("Network error. Please try again.");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  // Remove coupon function
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setValue("");
+    toast.success("Coupon removed successfully");
+  };
 
   // Handle direct input changes
   const handleQuantityChange = (e, id) => {
@@ -92,10 +153,44 @@ const CartComponent = () => {
     });
   };
 
+  const [openModel, setOpenModel] = useState(false);
+  const [id, setId] = useState(null);
+  const handleRemovefromCart = (id) => {
+    setOpenModel(true);
+    setId(id);
+  };
+
   return (
     <div className="flex flex-wrap justify-between gap-4 Mycontainer md:flex-wrap lg:flex-nowrap">
       <div className="w-full max-w-5xl">
         <h2 className="mt-2 mb-3 text-base font-medium">Shopping Cart</h2>
+        {openModel && (
+          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-md">
+              <p className="text-lg font-semibold mb-4">
+                Are you sure you want to remove this item from your cart?
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setOpenModel(false)}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    dispatch(removeFromCart(id));
+                    setOpenModel(false);
+                    setId(null);
+                  }}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead className="flex flex-col lg:table-header-group md:table-header-group sm:table-header-group">
@@ -125,7 +220,7 @@ const CartComponent = () => {
                   <tr key={item.id}>
                     <td className="flex items-start p-3 space-x-3">
                       <button
-                        onClick={() => dispatch(removeFromCart(item.id))}
+                        onClick={() => handleRemovefromCart(item.id)}
                         className="p-1 text-lg border rounded-full border-category"
                       >
                         <IoClose className="text-category" />
@@ -137,7 +232,6 @@ const CartComponent = () => {
                       />
                       <div>
                         <p className="text-sm font-medium">{item.name}</p>
-                        {/* <p className='py-1 text-xs font-normal'>{item.code}</p> */}
                         <p className="text-xs font-normal">
                           COLOUR: {item.color}
                         </p>
@@ -176,10 +270,9 @@ const CartComponent = () => {
                     <td className="p-3">
                       <p className="font-semibold text-center">
                         ${item.price.toFixed(2)}
-                        
                       </p>
                     </td>
-                    
+
                     <td className="p-3">
                       <div className="flex w-28 m-auto justify-center gap-3 bg-line border border-border2 items-center py-2.5">
                         <button
@@ -195,6 +288,7 @@ const CartComponent = () => {
                         </button>
                         <input
                           type="number"
+                          disabled
                           min="1"
                           value={customQuantities[item.id]}
                           onChange={(e) => handleQuantityChange(e, item.id)}
@@ -235,12 +329,6 @@ const CartComponent = () => {
             <IoArrowBack className="text-xl" />
             <button className="text-sm font-bold">RETURN TO SHOP</button>
           </Link>
-          <button
-            onClick={handleUpdateCart}
-            className="px-6 py-4 text-sm font-bold border-4 rounded text-smallHeader border-smallHeader hover:bg-gray-100"
-          >
-            UPDATE CART
-          </button>
         </div>
       </div>
       <div className="w-full mt-10 max-w-96">
@@ -264,11 +352,33 @@ const CartComponent = () => {
               <span className="text-sm font-medium text-brand">Free</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-normal text-stock">Discount:</span>
+              <span className="text-sm font-normal text-stock">
+                Product Discount:
+              </span>
               <span className="text-sm font-medium text-brand">
                 {totalDiscountPercent}%
               </span>
             </div>
+            {appliedCoupon && (
+              <div className="flex flex-col gap-3" >
+                <div className="flex justify-between">
+                  <span className="text-sm font-normal text-stock">
+                    Coupon ({appliedCoupon.coupen}):
+                  </span>
+                  <span className="text-sm font-medium text-green-600">
+                    -{couponDiscount}%
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm font-normal text-stock">
+                    Discounted Price:
+                  </span>
+                  <span className="text-sm font-medium text-green-600">
+                    {finalDiscountedAmount.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="flex justify-between pb-2">
               <span className="text-sm font-normal text-stock">GST(10%):</span>
               <span className="text-sm font-medium text-brand">
@@ -277,18 +387,50 @@ const CartComponent = () => {
             </div>
             <hr />
           </div>
-          <div>
-            <input
-              type="text"
-              value={value}
-              placeholder="Enter promo code"
-              className="w-full p-3 mt-4 border outline-none"
-              onChange={handleChange}
-            />
-            <button className="w-full py-4 mt-4 text-sm font-bold text-white bg-pink">
-              APPLY COUPON
-            </button>
-          </div>
+
+          {/* Applied Coupon Display */}
+          {appliedCoupon && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-green-800">
+                    ✅ Coupon Applied: {appliedCoupon.coupen}
+                  </p>
+                  <p className="text-xs text-green-600">
+                    You saved {couponDiscount}%
+                  </p>
+                </div>
+                <button
+                  onClick={handleRemoveCoupon}
+                  className="text-red-500 hover:text-red-700 text-sm underline"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Coupon Input - Only show if no coupon is applied */}
+          {!appliedCoupon && (
+            <div>
+              <input
+                type="text"
+                value={value}
+                placeholder="Enter coupon code"
+                className="w-full p-3 mt-4 border outline-none uppercase"
+                onChange={handleChange}
+                disabled={isApplyingCoupon}
+              />
+              <button
+                onClick={handleApplyCoupon}
+                disabled={isApplyingCoupon || !value.trim()}
+                className="w-full py-4 mt-4 text-sm font-bold text-white bg-pink disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {isApplyingCoupon ? "APPLYING..." : "APPLY COUPON"}
+              </button>
+            </div>
+          )}
+
           <div className="flex justify-between mt-8 text-lg font-bold">
             <span className="font-normal text-brand">Total:</span>
             <span className="font-semibold text-brand">
@@ -299,13 +441,30 @@ const CartComponent = () => {
               })}
             </span>
           </div>
-          <Link
-            to={"/checkout"}
-            className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-smallHeader"
-          >
-            <button  >PROCEED TO CHECKOUT</button>
-            <FaArrowRight />
-          </Link>
+
+          {total > 0 ? (
+            <Link
+              to={"/checkout"}
+              state={{
+                cartTotal: total,
+                appliedCoupon: appliedCoupon,
+                couponDiscount: couponDiscount,
+              }}
+              className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-smallHeader"
+            >
+              <button>PROCEED TO CHECKOUT</button>
+              <FaArrowRight />
+            </Link>
+          ) : (
+            <button
+              onClick={() => toast.error("Your cart is empty")}
+              disabled
+              className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-gray-400 cursor-not-allowed opacity-50"
+            >
+              PROCEED TO CHECKOUT
+              <FaArrowRight />
+            </button>
+          )}
         </div>
       </div>
     </div>

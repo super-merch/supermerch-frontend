@@ -14,11 +14,6 @@ import { BsCursor } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
 
 import Skeleton from "react-loading-skeleton";
-// import { fetchcategoryProduct } from "../../redux/slices/categorySlice";
-
-// import { selectProducts } from "../../redux/slices/filterSlice";
-// import useFetchLatestProducts from "../../hooks/useFetchLatestDeals";
-// import { setProducts } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
 
 import {
@@ -137,20 +132,11 @@ const Spromotional = () => {
     (state) => state.promotionals.filteredPromotionalProducts
   );
 
-  // console.log(filteredProducts, "spromotionla");
-
-  // const [filterLocalProducts, setFilterLocalProducts] = useState(filteredProducts)
-  // useEffect(() => {
-  //   setFilterLocalProducts(filteredProducts);
-  // }, [filterLocalProducts, currentPage]);
-
-  // console.log(filterLocalProducts, "locla state products");
 
   const matchedProducts = filteredProducts.filter((product) => {
     const typeId =
       product.product?.categorisation?.promodata_product_type?.type_id;
     if (!typeId) return false;
-    // Check if this typeId exists in any of the categoryProducts subTypes
     return categoryProducts.some((category) =>
       category.subTypes.some((sub) => sub.id === typeId)
     );
@@ -176,10 +162,6 @@ const Spromotional = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // useEffect(() => {
-  //   dispatch(applyFilters());
-  // }, [dispatch]);
-
   useEffect(() => {
     const handleResize = () => {
       setMaxVisiblePages(window.innerWidth <= 767 ? 4 : 6);
@@ -188,13 +170,6 @@ const Spromotional = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  // const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-  // const showPagination = sortedProducts.length > itemsPerPage;
-  // const currentItems = sortedProducts.slice(
-  //   (currentPage - 1) * itemsPerPage,
-  //   currentPage * itemsPerPage
-  // );
 
   const handleClearFilter = (filterType) => {
     if (filterType === "category") dispatch(setSelectedCategory("all"));
@@ -215,10 +190,6 @@ const Spromotional = () => {
     navigate(`/product/${productId}`, { state: "promotional" });
   };
 
-  // const setSearchTextChanger = (e) => {
-  //   dispatch(setSearchText(e.target.value));
-  //   dispatch(applyFilters());
-  // };
 
   const [searchProductName, setSearchProductName] = useState("");
   const setSearchTextChanger = (e) => setSearchProductName(e.target.value);
@@ -227,11 +198,6 @@ const Spromotional = () => {
     (state) => state.categoryProduct
   );
 
-  // useEffect(() => {
-  //   fetchProducts(currentPage);
-  // }, [currentPage]);
-
-  // Fetch products when currentPage (or sortOption) changes
   useEffect(() => {
     fetchProducts(currentPage, sortOption).then((response) => {
       // Assuming your API response includes total_pages
@@ -245,36 +211,6 @@ const Spromotional = () => {
     setFilterLocalProducts(filteredProducts);
   }, [filteredProducts]);
 
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage] = useState(9);
-  // const [maxVisiblePages, setMaxVisiblePages] = useState(6);
-  // const [sortOption, setSortOption] = useState("");
-  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const dropdownRef = useRef(null);
-
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // From AppContext, we fetch products and categoryProducts.
-  // const { fetchProducts, products: contextProducts, skeletonLoading, categoryProducts } = useContext(AppContext);
-
-  // Get filter-related data from Redux (if needed elsewhere).
-  // const { searchText, activeFilters, filteredCount } = useSelector((state) => state.filters);
-
-  // Define setSearchTextChanger if you use a search input.
-  // const setSearchTextChanger = (e) => {
-  //   dispatch(setSearchText(e.target.value));
-  //   dispatch(applyFilters());
-  // };
-
-  // Use only the promotional slice filtered products for display.
-  // const filteredProducts = useSelector((state) => state.promotionals.filteredPromotionalProducts);
-
-  // Fetch products on mount.
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [fetchProducts]);
-
-  // When contextProducts updates, set all products in the promotional slice.
   useEffect(() => {
     if (contextProducts) {
       dispatch(setAllProducts(contextProducts));
@@ -304,7 +240,6 @@ const Spromotional = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Adjust visible pages on window resize.
   useEffect(() => {
     const handleResize = () => {
       setMaxVisiblePages(window.innerWidth <= 767 ? 4 : 6);
@@ -324,12 +259,6 @@ const Spromotional = () => {
     titleName,
     labelName
   ) => {
-    // console.log("Clicked category:", subCategory, "with ID:", categoryId);
-    // if (!categoryId) {
-    //   toast.error("Category ID is missing!");
-    //   return;
-    // }
-    // setSearchParams({ categoryName: titleName, category: categoryId });
     const encodedTitleName = encodeURIComponent(titleName); // Encode the title
     const encodedlabelName = encodeURIComponent(labelName); // Encode the title
     setSearchParams({
@@ -354,17 +283,8 @@ const Spromotional = () => {
     setSidebarActiveLabel(decodedLabel);
 
     if (urlCategory && decodedCategoryName) {
-      // Set the selected category from URL
       setSelectedParamCategoryId(urlCategory);
-      // Loop over v1categories and their subTypes to find a matching sub-category
       let foundSubCategory = null;
-      // for (const category of v1categories) {
-      //   const sub = category.subTypes.find((item) => item.id === urlCategory);
-      //   if (sub) {
-      //     foundSubCategory = sub;
-      //     break;
-      //   }
-      // }
 
       for (const category of megaMenu) {
         // Check all subType groups in the category
@@ -429,11 +349,6 @@ const Spromotional = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  // console.log(paramProducts, "paramProducts");
-
-  // console.log(activeFilterCategory, "activeFilterCategory");
-
-  // console.log(sidebarActiveCategory, "sidebarActiveCategory");
   const filteredCategories = sidebarActiveCategory
     ? megaMenu.filter((category) => category.name === sidebarActiveCategory)
     : megaMenu;
@@ -477,8 +392,36 @@ const Spromotional = () => {
     );
   });
 
-  // console.log(activeFilterCategory, "activeFilterCategory");
-  // console.log(sidebarActiveLabel, "sidbearactiveLabel");
+  // Check if any filters are active
+  const hasActiveFilters = searchProductName.trim() !== "" || 
+    priceRangeFilter[0] !== 0 || 
+    priceRangeFilter[1] !== 1000;
+
+  // Calculate pagination based on filtered products when filters are active
+  const totalFilteredPages = hasActiveFilters 
+    ? Math.ceil(finalFilteredProducts.length / itemsPerPage)
+    : totalApiPages;
+
+  // Get current page products when filters are active
+  const getCurrentPageProducts = () => {
+    if (hasActiveFilters) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return finalFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // When no filters, show all products from current API page (limited to itemsPerPage)
+      return finalFilteredProducts.slice(0, itemsPerPage);
+    }
+  };
+
+  const currentPageProducts = getCurrentPageProducts();
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    if (hasActiveFilters) {
+      setCurrentPage(1);
+    }
+  }, [searchProductName, priceRangeFilter[0], priceRangeFilter[1]]);
 
   return (
     <>
@@ -675,7 +618,7 @@ const Spromotional = () => {
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
               {" "}
-              <span className="font-semibold text-brand">{filteredCount}</span>
+              <span className="font-semibold text-brand">{hasActiveFilters ? finalFilteredProducts.length : filteredCount}</span>
               <p className="">Results found</p>
             </div>
           </div>
@@ -719,9 +662,8 @@ const Spromotional = () => {
               paramProducts.data &&
               paramProducts.data.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {paramProducts?.data?.length !== 0 &&
-                  finalFilteredProducts
-                    .slice(0, 9)
+                {currentPageProducts.length > 0 &&
+                  currentPageProducts
                     .filter((product) => {
                       const priceGroups =
                         product.product?.prices?.price_groups || [];
@@ -822,28 +764,24 @@ const Spromotional = () => {
                               className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-105"
                             />
                           </div>
-                          <div className="absolute top-[2%] left-[5%] grid grid-cols-2 gap-1">
-                            {product?.product?.colours?.list.length > 0 &&
-                              product?.product?.colours?.list?.map(
-                                (colorObj, index) => (
-                                  <p key={index}>
-                                    {colorObj.colours.map((color, subIndex) => {
-                                      return (
-                                        <div
-                                          key={`${index}-${subIndex}`}
-                                          style={{
-                                            backgroundColor:
-                                              colorObj.swatch?.[subIndex] ||
-                                              color.toLowerCase(),
-                                          }} // Convert to lowercase
-                                          className={`w-fit px-2 rounded-sm text-xs py-1.5 border-[1px] border-slate-900`}
-                                        />
-                                      );
-                                    })}
-                                  </p>
-                                )
+                          <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
+                          {product?.product?.colours?.list.length > 0 &&
+                            product?.product?.colours?.list
+                              .slice(0, 15) // Limit to 15 colors
+                              .flatMap((colorObj, index) =>
+                                colorObj.colours.map((color, subIndex) => (
+                                  <div
+                                    key={`${index}-${subIndex}`}
+                                    style={{
+                                      backgroundColor:
+                                        colorObj.swatch?.[subIndex] ||
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                  />
+                                ))
                               )}
-                          </div>
+                        </div>
                           <div className="flex flex-col h-full p-3">
                             <div className="flex flex-col justify-center flex-grow text-center ">
                               <h2 className="text-lg font-medium text-brand">
@@ -910,7 +848,7 @@ const Spromotional = () => {
             )}
           </div>
 
-          {totalApiPages > 1 && (
+          {totalFilteredPages > 1 && (
             <div className="flex items-center justify-center mt-16 space-x-2 pagination">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -922,7 +860,7 @@ const Spromotional = () => {
 
               {getPaginationButtons(
                 currentPage,
-                totalApiPages,
+                totalFilteredPages,
                 maxVisiblePages
               ).map((page) => (
                 <button
@@ -940,9 +878,9 @@ const Spromotional = () => {
 
               <button
                 onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalApiPages))
+                  setCurrentPage((prev) => Math.min(prev + 1, totalFilteredPages))
                 }
-                disabled={currentPage === totalApiPages}
+                disabled={currentPage === totalFilteredPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
                 <IoMdArrowForward className="text-xl" />

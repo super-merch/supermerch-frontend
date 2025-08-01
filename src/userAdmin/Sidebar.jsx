@@ -45,7 +45,7 @@ export default function SidebarTabs() {
       <div className="flex flex-row justify-between bg-white border border-gray-300 shadow-xl ">
         {/* Sidebar */}
         <div
-          className={`fixed  z-50 inset-y-0 left-0 max-lg:z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`fixed  inset-y-0 left-0  w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
         >
           <div className="flex items-center justify-between p-4 border-b">
@@ -103,7 +103,7 @@ export default function SidebarTabs() {
         {/* Logout Confirmation Popup */}
         {showLogoutPopup && (
           <motion.div
-            className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-2">
+            className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-60 flex justify-center items-center p-2">
             <motion.div
               initial={{ opacity: 0.2, z: 50 }}
               transition={{ duration: 0.3 }}

@@ -17,6 +17,7 @@ const LatestDeals = () => {
 
   const { fetchProducts, products, error, skeletonLoading } = useContext(AppContext)
   useEffect(() => {
+    console.log("Latest deals")
     fetchProducts();
   }, []);
 

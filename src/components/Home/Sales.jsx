@@ -9,7 +9,7 @@ const Sale = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProducts();
+    // fetchProducts();
     fetchTrendingProducts(); // Fetch trending products
     fetchNewArrivalProducts();
     fetchDiscountedProducts(); // Fetch new arrival products

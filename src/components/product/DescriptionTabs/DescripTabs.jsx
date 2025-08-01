@@ -22,7 +22,7 @@ const DescripTabs = ({ single_product }) => {
             >
               About
             </button>
-            <button
+            {/* <button
               type='button'
               className={`  uppercase focus:outline-none text-sm font-semibold ${
                 activeTab === 'Specification'
@@ -54,15 +54,15 @@ const DescripTabs = ({ single_product }) => {
               onClick={() => setActiveTab('Download')}
             >
               Download
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
       <div>
         <AboutDescrip activeTab={activeTab} single_product={single_product} />
-        <Shipping activeTab={activeTab} />
+        {/* <Shipping activeTab={activeTab} />
         <Download activeTab={activeTab} />
-        <Specification activeTab={activeTab} />
+        <Specification activeTab={activeTab} /> */}
       </div>
     </div>
   );

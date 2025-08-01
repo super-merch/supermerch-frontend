@@ -23,8 +23,24 @@ const AccountDetail = () => {
 
     const handleSaveChanges = async (e) => {
         e.preventDefault();
+        if(!newPassword && !confirmNewPassword) {
+            toast.error("Please enter a new password!");
+            return;
+        }
         if (newPassword && newPassword !== confirmNewPassword) {
             toast.error("New password and confirm password do not match!");
+            return;
+        }
+        if(newPassword && newPassword.length < 6) {
+            toast.error("Password must be at least 6 characters long!");
+            return;
+        }
+        if(newPassword.includes(" ")) {
+            toast.error("Password cannot contain spaces!");
+            return;
+        }
+        if(newPassword && !/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(newPassword)) {
+            toast.error("Password must contain at least one letter and one number!");
             return;
         }
         try { 

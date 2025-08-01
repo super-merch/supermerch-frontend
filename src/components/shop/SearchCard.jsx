@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
 import { IoIosArrowDown } from "react-icons/io";
@@ -13,10 +13,8 @@ import { BsCursor } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
-
 import { setProducts } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
-
 import {
   setSelectedBrands,
   setMinPrice,
@@ -25,7 +23,22 @@ import {
 } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
 
-const SaleCards = () => {
+// Utility function to calculate visible page buttons (same as Spromotional)
+const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = startPage + maxVisiblePages - 1;
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+  return pages;
+};
+
+const SearchCard = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,32 +47,28 @@ const SaleCards = () => {
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [search, setSearch] = useSearchParams();
+  const searchParam = search.get('search');
+  
+  // Add states for local filtering (similar to Spromotional)
+  const [priceRangeFilter, setPriceRangeFilter] = useState([0, 1000]);
+  const [searchProductName, setSearchProductName] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const {
-    fetchDiscountedProducts,
-    discountedProducts: contextTrendingProducts,
-    skeletonLoading,
+    fetchSearchedProducts,
+    searchedProducts,
+    searchLoading,
     marginApi,
-    totalDiscount,
+    totalApiPages,
+    setTotalApiPages,
   } = useContext(AppContext);
 
   const { searchText, activeFilters, filteredCount } = useSelector(
     (state) => state.filters
   );
-  console.log(filteredCount, "filteredCount");
-
-  const filteredProducts = useSelector(
-    (state) => state.filters.filteredProducts
-  );
-
-  useEffect(() => {
-    if (contextTrendingProducts) {
-      dispatch(setProducts(contextTrendingProducts));
-    }
-  }, [contextTrendingProducts, dispatch]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -72,10 +81,6 @@ const SaleCards = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(applyFilters());
-  }, [dispatch]);
-
-  useEffect(() => {
     const handleResize = () => {
       setMaxVisiblePages(window.innerWidth <= 767 ? 4 : 6);
     };
@@ -84,59 +89,39 @@ const SaleCards = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const getRealPrice = (product) => {
-      const priceGroups = product.product?.prices?.price_groups || [];
-      const basePrice = priceGroups.find((group) => group?.base_price) || {};
-      const priceBreaks = basePrice.base_price?.price_breaks || [];
-      
-      const prices = priceBreaks
-        .map((breakItem) => breakItem.price)
-        .filter((price) => price !== undefined);
-      
-      let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-      
-      // Apply margin
-      const productId = product.meta.id;
-      const marginEntry = marginApi[productId] || {};
-      const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
-      minPrice += marginFlat;
-      
-      return minPrice;
-    };
-
-    const priceA = getRealPrice(a);
-    const priceB = getRealPrice(b);
-
-    if (sortOption === "lowToHigh") return priceA - priceB;
-    if (sortOption === "highToLow") return priceB - priceA;
-    return 0;
-  });
-
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-  const showPagination = sortedProducts.length > itemsPerPage;
-  const currentItems = sortedProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   const handleClearFilter = (filterType) => {
     if (filterType === "category") dispatch(setSelectedCategory("all"));
     if (filterType === "brand") dispatch(setSelectedBrands([]));
     if (filterType === "price") {
       dispatch(setMinPrice(0));
       dispatch(setMaxPrice(1000));
+      setPriceRangeFilter([0, 1000]);
     }
     dispatch(applyFilters());
   };
 
+  // Fetch products when page or sort changes (similar to Spromotional)
   useEffect(() => {
-    fetchDiscountedProducts(currentPage);
-  }, [currentPage]);
+    if (searchParam) {
+      fetchSearchedProducts(searchParam, currentPage, sortOption).then((response) => {
+        if (response && response.total_pages) {
+          setTotalApiPages(response.total_pages);
+        }
+      });
+    }
+  }, [currentPage, sortOption, searchParam]);
+
+  // Update total API pages based on the API response
+  useEffect(() => {
+    if (searchedProducts && searchedProducts.total_pages) {
+      setTotalApiPages(searchedProducts.total_pages);
+    }
+  }, [searchedProducts]);
 
   const handleSortSelection = (option) => {
     setSortOption(option);
     setIsDropdownOpen(false);
+    setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
   const handleViewProduct = (productId) => {
@@ -144,26 +129,21 @@ const SaleCards = () => {
   };
 
   const setSearchTextChanger = (e) => {
-    dispatch(setSearchText(e.target.value));
-    dispatch(applyFilters());
+    setSearchProductName(e.target.value);
   };
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
-    // Prevent body scroll when modal is open
     document.body.style.overflow = "hidden";
   };
 
-  // Function to close modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
-    // Restore body scroll
     document.body.style.overflow = "unset";
   };
 
-  // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && isModalOpen) {
@@ -174,11 +154,86 @@ const SaleCards = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
+  // Helper function to get real price (same as Spromotional)
+  const getRealPrice = (product) => {
+    const priceGroups = product.product?.prices?.price_groups || [];
+    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+    const priceBreaks = basePrice.base_price?.price_breaks || [];
+    return priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+  };
+
+  // Filter products from API response based on local filters
+  const filterSearchProducts = (searchedProducts.data || []).filter((product) => {
+    const price = getRealPrice(product);
+    return price >= priceRangeFilter[0] && price <= priceRangeFilter[1];
+  });
+
+  // Sort products
+  const sortedProducts = [...filterSearchProducts].sort((a, b) => {
+    const priceA = getRealPrice(a);
+    const priceB = getRealPrice(b);
+
+    if (sortOption === "lowToHigh") return priceA - priceB;
+    if (sortOption === "highToLow") return priceB - priceA;
+    return 0;
+  });
+
+  // Apply search text filter
+  const finalFilteredProducts = sortedProducts.filter((product) => {
+    const priceGroups = product.product?.prices?.price_groups || [];
+    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+    const priceBreaks = basePrice.base_price?.price_breaks || [];
+    const realPrice =
+      priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
+        ? priceBreaks[0].price
+        : "0";
+
+    const productName = product.overview.name || "";
+    return (
+      realPrice !== "0" &&
+      productName.toLowerCase().includes(searchProductName.toLowerCase())
+    );
+  });
+
+  // Check if any filters are active
+  const hasActiveFilters = searchProductName.trim() !== "" || 
+    priceRangeFilter[0] !== 0 || 
+    priceRangeFilter[1] !== 1000;
+
+  // Calculate pagination based on filtered products when filters are active
+  const totalFilteredPages = hasActiveFilters 
+    ? Math.ceil(finalFilteredProducts.length / itemsPerPage)
+    : totalApiPages;
+
+  // Get current page products when filters are active
+  const getCurrentPageProducts = () => {
+    if (hasActiveFilters) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return finalFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // When no filters, show all products from current API page (limited to itemsPerPage)
+      return finalFilteredProducts.slice(0, itemsPerPage);
+    }
+  };
+
+  const currentPageProducts = getCurrentPageProducts();
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    if (hasActiveFilters) {
+      setCurrentPage(1);
+    }
+  }, [searchProductName, priceRangeFilter[0], priceRangeFilter[1]]);
+
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          <Sidebar />
+          <Sidebar 
+            priceRangeFilter={priceRangeFilter}
+            setPriceRangeFilter={setPriceRangeFilter}
+          />
         </div>
 
         <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">
@@ -186,9 +241,9 @@ const SaleCards = () => {
             <div className="flex items-center justify-between border border-border2 px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               <input
                 type="text"
-                placeholder="Search for discounted products..."
+                placeholder={`Search for ${searchParam} products...`}
                 className="w-full border-none outline-none"
-                value={searchText}
+                value={searchProductName}
                 onChange={setSearchTextChanger}
               />
               <IoSearchOutline className="text-2xl" />
@@ -282,20 +337,21 @@ const SaleCards = () => {
             </div>
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
-              {" "}
-              <span className="font-semibold text-brand">{filteredCount}</span>
-              <p className="">DIscounted Results found</p>
+              <span className="font-semibold text-brand">
+                {hasActiveFilters ? finalFilteredProducts.length : filteredCount}
+              </span>
+              <p className="">{searchParam} Results found</p>
             </div>
           </div>
 
           <div
             className={`${
-              skeletonLoading
+              searchLoading
                 ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
-            {skeletonLoading ? (
+            {searchLoading ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
                 <div
                   key={index}
@@ -323,10 +379,12 @@ const SaleCards = () => {
                   </div>
                 </div>
               ))
-            ) : (
-              <div className="grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {currentItems.length !== 0 &&
-                  currentItems
+            ) : searchedProducts &&
+              searchedProducts.data &&
+              searchedProducts.data.length > 0 ? (
+              <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
+                {currentPageProducts.length > 0 &&
+                  currentPageProducts
                     .filter((product) => {
                       const priceGroups =
                         product.product?.prices?.price_groups || [];
@@ -334,7 +392,6 @@ const SaleCards = () => {
                         priceGroups.find((group) => group?.base_price) || {};
                       const priceBreaks =
                         basePrice.base_price?.price_breaks || [];
-                      // Check if there's at least one valid price
                       return (
                         priceBreaks.length > 0 &&
                         priceBreaks[0]?.price !== undefined
@@ -348,16 +405,13 @@ const SaleCards = () => {
                       const priceBreaks =
                         basePrice.base_price?.price_breaks || [];
 
-                      // Get an array of prices from priceBreaks (these are already discounted)
                       const prices = priceBreaks
                         .map((breakItem) => breakItem.price)
                         .filter((price) => price !== undefined);
 
-                      // 1) compute raw min/max
                       let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
                       let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-                      // 2) pull margin info (guarding against undefined)
                       const productId = product.meta.id;
                       const marginEntry = marginApi[productId] || {};
                       const marginFlat =
@@ -369,37 +423,29 @@ const SaleCards = () => {
                           ? marginEntry.baseMarginPrice
                           : 0;
 
-                      // 3) apply the flat margin to both ends of the range
                       minPrice += marginFlat;
                       maxPrice += marginFlat;
 
-                      // Get discount percentage from product's discount info
                       const discountPct = product.discountInfo?.discount || 0;
                       const isGlobalDiscount = product.discountInfo?.isGlobal || false;
 
                       return (
                         <div
                           key={product.id}
-                          onClick={() => handleViewProduct(product.meta.id)}
-                          className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
+                          className="relative w-full border border-border2 h-full flex flex-col cursor-pointer max-h-[350px] group"
                         >
-                          {/* Show discount badge */}
                           {discountPct > 0 && (
-                            <div className="absolute top-2 right-2 z-10">
-                              <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
+                            <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
+                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
                                 {discountPct}%
                               </span>
                               {isGlobalDiscount && (
-                                <span className="block px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
+                                <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
                                   Global
                                 </span>
                               )}
                             </div>
                           )}
-                          {/* Add trending badge */}
-                          <span className="absolute px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded top-2 left-2">
-                            Sale
-                          </span>
                           <div className="max-h-[50%] h-full border-b overflow-hidden">
                             <img
                               src={
@@ -408,57 +454,46 @@ const SaleCards = () => {
                                   : noimage
                               }
                               alt=""
-                              className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
+                              className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-105"
                             />
                           </div>
                           <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
-                          {product?.product?.colours?.list.length > 0 &&
-                            product?.product?.colours?.list
-                              .slice(0, 15) // Limit to 15 colors
-                              .flatMap((colorObj, index) =>
-                                colorObj.colours.map((color, subIndex) => (
-                                  <div
-                                    key={`${index}-${subIndex}`}
-                                    style={{
-                                      backgroundColor:
-                                        colorObj.swatch?.[subIndex] ||
-                                        color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-sm border border-slate-900"
-                                  />
-                                ))
-                              )}
-                        </div>
-                          <div className="p-3">
-                            <div className="text-center ">
-                              <h2 className="text-lg font-medium text-brand ">
-                                {product.overview.name ||
-                                product.overview.name.length > 22
-                                  ? product.overview.name.slice(0, 22) + "..."
-                                  : "No Name "}
-                              </h2>
-                              <p className="font-normal text-brand">
-                                {" "}
-                                Code: {product.overview.code}
-                              </p>
-                              {/* Updated Price display matching AllProducts logic */}
-                              <div className="pt-2">
-                                <h2 className="text-xl font-semibold text-heading">
-                                  $
-                                  {minPrice === maxPrice ? (
-                                    <span>{minPrice.toFixed(2)}</span>
-                                  ) : (
-                                    <span>
-                                      {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
-                                    </span>
-                                  )}
-                                </h2>
-                                {discountPct > 0 && (
-                                  <p className="text-xs text-green-600 font-medium">
-                                    {discountPct}% discount applied
-                                  </p>
+                            {product?.product?.colours?.list.length > 0 &&
+                              product?.product?.colours?.list
+                                .slice(0, 15)
+                                .flatMap((colorObj, index) =>
+                                  colorObj.colours.map((color, subIndex) => (
+                                    <div
+                                      key={`${index}-${subIndex}`}
+                                      style={{
+                                        backgroundColor:
+                                          colorObj.swatch?.[subIndex] ||
+                                          color.toLowerCase(),
+                                      }}
+                                      className="w-4 h-4 rounded-sm border border-slate-900"
+                                    />
+                                  ))
                                 )}
-                              </div>
+                          </div>
+                          <div className="flex flex-col h-full p-3">
+                            <div className="flex flex-col justify-center flex-grow text-center ">
+                              <h2 className="text-lg font-medium text-brand">
+                                {product.overview.name &&
+                                product.overview.name.length > 25
+                                  ? product.overview.name.slice(0, 25) + "..."
+                                  : product.overview.name || "No Name"}
+                              </h2>
+
+                              <h2 className="pt-2 text-xl font-semibold text-heading">
+                                $
+                                {minPrice === maxPrice ? (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span>
+                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                  </span>
+                                )}
+                              </h2>
                             </div>
                             <div className="flex justify-between gap-1 mt-2 mb-1">
                               <p className="p-3 text-2xl rounded-sm bg-icons">
@@ -468,7 +503,12 @@ const SaleCards = () => {
                                 <p className="text-xl">
                                   <IoCartOutline />
                                 </p>
-                                <button className="text-sm uppercase">
+                                <button
+                                  onClick={() =>
+                                    handleViewProduct(product.meta.id)
+                                  }
+                                  className="text-sm uppercase"
+                                >
                                   Add to cart
                                 </button>
                               </div>
@@ -484,41 +524,51 @@ const SaleCards = () => {
                       );
                     })}
               </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="pt-10 text-xl text-center text-red-500">
+                  No Product Found
+                </p>
+              </div>
             )}
           </div>
 
-          {showPagination && (
-            <div className="flex items-center justify-center mt-16 space-x-2">
+          {totalFilteredPages > 1 && (
+            <div className="flex items-center justify-center mt-16 space-x-2 pagination">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200"
+                className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
-                <IoMdArrowBack className="text-xl text-smallHeader" />
+                <IoMdArrowBack className="text-xl" />
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 border rounded-full ${
-                      currentPage === page
-                        ? "bg-smallHeader text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
+
+              {getPaginationButtons(
+                currentPage,
+                totalFilteredPages,
+                maxVisiblePages
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                    currentPage === page
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
               <button
                 onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  setCurrentPage((prev) => Math.min(prev + 1, totalFilteredPages))
                 }
-                disabled={currentPage === totalPages}
-                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200"
+                disabled={currentPage === totalFilteredPages}
+                className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
-                <IoMdArrowForward className="text-xl text-smallHeader" />
+                <IoMdArrowForward className="text-xl" />
               </button>
             </div>
           )}
@@ -533,7 +583,6 @@ const SaleCards = () => {
             className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
             <button
               onClick={handleCloseModal}
               className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
@@ -541,7 +590,6 @@ const SaleCards = () => {
               <IoClose className="text-2xl text-gray-600" />
             </button>
 
-            {/* Image container */}
             <div className="p-6">
               <img
                 src={selectedProduct.overview.hero_image || noimage}
@@ -549,7 +597,6 @@ const SaleCards = () => {
                 className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
               />
 
-              {/* Product info */}
               <div className="mt-4 text-center">
                 <h2 className="text-2xl font-bold text-brand mb-2">
                   {selectedProduct.overview.name || "No Name"}
@@ -571,4 +618,4 @@ const SaleCards = () => {
   );
 };
 
-export default SaleCards;
+export default SearchCard;

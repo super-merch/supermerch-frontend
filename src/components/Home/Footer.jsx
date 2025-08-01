@@ -203,13 +203,13 @@ const Footer = () => {
       {/* POLICY  */}
       <div className="Mycontainer pb-10 text-footer flex lg:flex-nowrap md:flex-nowrap  flex-wrap justify-between gap-6 ">
         <div>
+          <Link
+          to={'/privacy'}
+          >
           <p className="underline text-sm font-normal ">Privacy Policy</p>
+          </Link>
           <p className="pt-2 text-footer  text-[10px] font-medium  hover:text-white ">
-            ©2024 National Pen Company. All rights reserved. Pens.com and its
-            logo are trademarks of the National Pen Company.{" "}
-          </p>
-          <p className="pt-1 text-[10px] font-medium">
-            © Copyright 2024 Premium Goods . All rights reserved | Developed
+            © Copyright 2025 Super Merch.{" "}All rights reserved | Developed
             By DEVSRANK
           </p>
         </div>

@@ -141,7 +141,7 @@ const PopUp = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-auto py-4 border-t leading-5 text-[15px] relative px-5 text-center items-center justify-between">
+                <div className="flex flex-auto py-4 border-t leading-5 text-[15px] sticky bottom-0 bg-white px-5 text-center items-center justify-between">
                   <button
                     disabled={step === 1}
                     onClick={handleBack}
@@ -180,7 +180,7 @@ const PopUp = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-auto py-4 border-t leading-5 text-[15px] relative px-5 text-center items-center justify-between">
+                <div className=" flex flex-auto py-4 border-t leading-5 text-[15px] bg-white sticky bottom-0 px-5 text-center items-center justify-between">
                   <button
                     disabled={step === 1}
                     onClick={handleBack}
@@ -221,7 +221,7 @@ const PopUp = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-auto py-4 border-t leading-5 text-[15px] relative px-5 text-center items-center justify-between">
+                <div className="flex flex-auto py-4 border-t leading-5 text-[15px] sticky bottom-0 bg-white px-5 text-center items-center justify-between">
                   <button
                     disabled={step === 1}
                     onClick={handleBack}

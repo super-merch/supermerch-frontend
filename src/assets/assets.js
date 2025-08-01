@@ -398,7 +398,7 @@ export const megaMenu = [
                         "name": "Bottle Opener Keyrings"
                     },
                     {
-                        "id": "19",
+                        "id": "k-05",
                         "name": "Keyrings"
                     },
                 ],
@@ -411,7 +411,7 @@ export const megaMenu = [
                         "name": "Flags & Bunting"
                     },
                     {
-                        "id": "20",
+                        "id": "D-12",
                         "name": "Balloons"
                     },
                     {

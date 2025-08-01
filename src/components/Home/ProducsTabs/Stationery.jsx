@@ -10,48 +10,65 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useContext } from "react";
 import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
-import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { useDispatch } from "react-redux";
+import { toast } from 'react-toastify';
 
 const Stationery = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const {
-    fetchProducts,
-    products,
-    error,
-    skeletonLoading,
-    marginApi,
-    totalDiscount,
-  } = useContext(AppContext);
+  const { marginApi } = useContext(AppContext);
 
   const dispatch = useDispatch();
 
+  // Fetch products when tab opens
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (activeTab === "Stationery") {
+      fetchClothingProducts();
+    }
+  }, [activeTab]);
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const fetchClothingProducts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${import.meta.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/api/client-products/category?category=Stationery&page=1&limit=8&filter=true`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch products');
+
+      const data = await response.json();
+
+      if (!data || !data.data) {
+        throw new Error('Unexpected API response structure');
+      }
+
+      setProducts(data.data.slice(0, 8)); // Ensure only 8 products
+    } catch (err) {
+      console.error('Error fetching clothing products:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
-    // Prevent body scroll when modal is open
     document.body.style.overflow = "hidden";
   };
 
-  // Function to close modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
-    // Restore body scroll
     document.body.style.overflow = "unset";
   };
 
-  // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && isModalOpen) {
@@ -62,18 +79,27 @@ const Stationery = ({ activeTab }) => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
-  if (error)
+  const handleViewProduct = (productId) => {
+    navigate(`/product/${productId}`, { state: "Home" });
+  };
+
+  if (error) {
     return (
-      <div className="flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+      <div className="flex items-center justify-center min-h-[200px]">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin mx-auto mb-4"></div>
+          <p className="text-red-500">Error: {error}</p>
+        </div>
       </div>
     );
+  }
+
   return (
     <>
       {activeTab === "Stationery" && (
         <div className="pb-10 Mycontainer">
           <div className="grid gap-3 sm:gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {skeletonLoading
+            {loading
               ? Array.from({ length: 8 }).map((_, index) => (
                   <div
                     key={index}
@@ -146,13 +172,11 @@ const Stationery = ({ activeTab }) => {
                       priceGroups.find((group) => group?.base_price) || {};
                     const priceBreaks =
                       basePrice.base_price?.price_breaks || [];
-                    // Check if there's at least one valid price
                     return (
                       priceBreaks.length > 0 &&
                       priceBreaks[0]?.price !== undefined
                     );
                   })
-                  .slice(8, 16)
                   .map((product) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
@@ -161,16 +185,13 @@ const Stationery = ({ activeTab }) => {
                     const priceBreaks =
                       basePrice.base_price?.price_breaks || [];
 
-                    // Get an array of prices from priceBreaks (these are already discounted)
                     const prices = priceBreaks
                       .map((breakItem) => breakItem.price)
                       .filter((price) => price !== undefined);
 
-                    // 1) compute raw min/max
                     let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
                     let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-                    // 2) pull margin info (guarding against undefined)
                     const productId = product.meta.id;
                     const marginEntry = marginApi[productId] || {};
                     const marginFlat =
@@ -182,11 +203,9 @@ const Stationery = ({ activeTab }) => {
                         ? marginEntry.baseMarginPrice
                         : 0;
 
-                    // 3) apply the flat margin to both ends of the range
                     minPrice += marginFlat;
                     maxPrice += marginFlat;
 
-                    // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
                     const isGlobalDiscount =
                       product.discountInfo?.isGlobal || false;
@@ -196,7 +215,6 @@ const Stationery = ({ activeTab }) => {
                         key={productId}
                         className="relative border border-border2 cursor-pointer max-h-[280px] sm:max-h-[350px] h-full group"
                       >
-                        {/* Show discount badge */}
                         {discountPct > 0 && (
                           <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
                             <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
@@ -222,25 +240,23 @@ const Stationery = ({ activeTab }) => {
                           />
                         </div>
 
-                        <div className="absolute top-[2%] left-[3%] sm:left-[5%]">
+                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
                           {product?.product?.colours?.list.length > 0 &&
-                            product?.product?.colours?.list?.map(
-                              (colorObj, index) => (
-                                <div key={index}>
-                                  {colorObj.colours.map((color, subIndex) => (
-                                    <span
-                                      key={`${index}-${subIndex}`}
-                                      style={{
-                                        backgroundColor:
-                                          colorObj.swatch?.[subIndex] ||
-                                          color.toLowerCase(),
-                                      }}
-                                      className="inline-block w-fit px-1 sm:px-2 rounded-sm text-xs py-1 sm:py-1.5 mb-1 sm:mb-2 border border-slate-900"
-                                    />
-                                  ))}
-                                </div>
-                              )
-                            )}
+                            product?.product?.colours?.list
+                              .slice(0, 15) // Limit to 15 colors
+                              .flatMap((colorObj, index) =>
+                                colorObj.colours.map((color, subIndex) => (
+                                  <div
+                                    key={`${index}-${subIndex}`}
+                                    style={{
+                                      backgroundColor:
+                                        colorObj.swatch?.[subIndex] ||
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                  />
+                                ))
+                              )}
                         </div>
 
                         <div className="p-2 sm:p-4">
@@ -255,7 +271,6 @@ const Stationery = ({ activeTab }) => {
                               Code: {product.overview.code}
                             </p>
 
-                            {/* Updated Price display matching category page logic */}
                             <div className="pt-1 sm:pt-2">
                               <h2 className="text-lg sm:text-xl font-semibold text-heading">
                                 $
@@ -322,7 +337,6 @@ const Stationery = ({ activeTab }) => {
             className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
             <button
               onClick={handleCloseModal}
               className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
@@ -330,7 +344,6 @@ const Stationery = ({ activeTab }) => {
               <IoClose className="text-2xl text-gray-600" />
             </button>
 
-            {/* Image container */}
             <div className="p-6">
               <img
                 src={selectedProduct.overview.hero_image || noimage}
@@ -338,7 +351,6 @@ const Stationery = ({ activeTab }) => {
                 className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
               />
 
-              {/* Product info */}
               <div className="mt-4 text-center">
                 <h2 className="text-2xl font-bold text-brand mb-2">
                   {selectedProduct.overview.name || "No Name"}

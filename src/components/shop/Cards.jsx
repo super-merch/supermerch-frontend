@@ -14,8 +14,7 @@ import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 
-// import { selectProducts } from "../../redux/slices/filterSlice";
-// import useFetchLatestProducts from "../../hooks/useFetchLatestDeals";
+
 import { setProducts } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
 
@@ -51,7 +50,6 @@ const Cards = () => {
   const { searchText, activeFilters, filteredCount } = useSelector(
     (state) => state.filters
   );
-  console.log(filteredCount, "filteredCount");
 
   const filteredProducts = useSelector(
     (state) => state.filters.filteredProducts
@@ -86,7 +84,19 @@ const Cards = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  // Filter out products without valid prices FIRST, then apply sorting
+  const validProducts = filteredProducts.filter((product) => {
+    const priceGroups = product.product?.prices?.price_groups || [];
+    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+    const priceBreaks = basePrice.base_price?.price_breaks || [];
+    // Check if there's at least one valid price
+    return (
+      priceBreaks.length > 0 &&
+      priceBreaks[0]?.price !== undefined
+    );
+  });
+
+  const sortedProducts = [...validProducts].sort((a, b) => {
     // Updated sorting logic to match AllProducts pricing calculation
     const getRealPrice = (product) => {
       const priceGroups = product.product?.prices?.price_groups || [];
@@ -115,6 +125,7 @@ const Cards = () => {
     return 0;
   });
 
+  // Calculate pagination based on valid products only
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
   const showPagination = sortedProducts.length > itemsPerPage;
   const currentItems = sortedProducts.slice(
@@ -148,6 +159,8 @@ const Cards = () => {
   const setSearchTextChanger = (e) => {
     dispatch(setSearchText(e.target.value));
     dispatch(applyFilters());
+    // Reset to first page when searching
+    setCurrentPage(1);
   };
 
   const handleOpenModal = (product) => {
@@ -175,6 +188,11 @@ const Cards = () => {
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilters]);
 
   return (
     <>
@@ -285,7 +303,7 @@ const Cards = () => {
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
               {" "}
-              <span className="font-semibold text-brand">{filteredCount}</span>
+              <span className="font-semibold text-brand">{sortedProducts.length}</span>
               <p className="">Results found</p>
             </div>
           </div>
@@ -328,164 +346,146 @@ const Cards = () => {
             ) : (
               <div className="grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentItems.length !== 0 &&
-                  currentItems
-                    .filter((product) => {
-                      const priceGroups =
-                        product.product?.prices?.price_groups || [];
-                      const basePrice =
-                        priceGroups.find((group) => group?.base_price) || {};
-                      const priceBreaks =
-                        basePrice.base_price?.price_breaks || [];
-                      // Check if there's at least one valid price
-                      return (
-                        priceBreaks.length > 0 &&
-                        priceBreaks[0]?.price !== undefined
-                      );
-                    })
-                    .map((product) => {
-                      const priceGroups =
-                        product.product?.prices?.price_groups || [];
-                      const basePrice =
-                        priceGroups.find((group) => group?.base_price) || {};
-                      const priceBreaks =
-                        basePrice.base_price?.price_breaks || [];
+                  currentItems.map((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
 
-                      // Get an array of prices from priceBreaks (these are already discounted)
-                      const prices = priceBreaks
-                        .map((breakItem) => breakItem.price)
-                        .filter((price) => price !== undefined);
+                    // Get an array of prices from priceBreaks (these are already discounted)
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
 
-                      // 1) compute raw min/max - exactly like AllProducts
-                      let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-                      let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+                    // 1) compute raw min/max - exactly like AllProducts
+                    let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                    let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-                      // 2) pull margin info (guarding against undefined) - exactly like AllProducts
-                      const productId = product.meta.id;
-                      const marginEntry = marginApi[productId] || {};
-                      const marginFlat =
-                        typeof marginEntry.marginFlat === "number"
-                          ? marginEntry.marginFlat
-                          : 0;
-                      const baseMarginPrice =
-                        typeof marginEntry.baseMarginPrice === "number"
-                          ? marginEntry.baseMarginPrice
-                          : 0;
+                    // 2) pull margin info (guarding against undefined) - exactly like AllProducts
+                    const productId = product.meta.id;
+                    const marginEntry = marginApi[productId] || {};
+                    const marginFlat =
+                      typeof marginEntry.marginFlat === "number"
+                        ? marginEntry.marginFlat
+                        : 0;
+                    const baseMarginPrice =
+                      typeof marginEntry.baseMarginPrice === "number"
+                        ? marginEntry.baseMarginPrice
+                        : 0;
 
-                      // 3) apply the flat margin to both ends of the range - exactly like AllProducts
-                      minPrice += marginFlat;
-                      maxPrice += marginFlat;
+                    // 3) apply the flat margin to both ends of the range - exactly like AllProducts
+                    minPrice += marginFlat;
+                    maxPrice += marginFlat;
 
-                      // Get discount percentage from product's discount info - exactly like AllProducts
-                      const discountPct = product.discountInfo?.discount || 0;
-                      const isGlobalDiscount = product.discountInfo?.isGlobal || false;
+                    // Get discount percentage from product's discount info - exactly like AllProducts
+                    const discountPct = product.discountInfo?.discount || 0;
+                    const isGlobalDiscount = product.discountInfo?.isGlobal || false;
 
-                      return (
-                        <div
-                          key={product.id}
-                          onClick={() => handleViewProduct(product.meta.id)}
-                          className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
-                        >
-                          {/* Show discount badge - updated to match AllProducts */}
-                          {discountPct > 0 && (
-                            <div className="absolute top-2 right-2 z-10">
-                              <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
-                                {discountPct}%
+                    return (
+                      <div
+                        key={product.id}
+                        onClick={() => handleViewProduct(product.meta.id)}
+                        className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
+                      >
+                        {/* Show discount badge - updated to match AllProducts */}
+                        {discountPct > 0 && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
+                              {discountPct}%
+                            </span>
+                            {isGlobalDiscount && (
+                              <span className="block px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                                Sale
                               </span>
-                              {isGlobalDiscount && (
-                                <span className="block px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
-                                  Sale
-                                </span>
-                              )}
-                            </div>
-                          )}
-                          <div className="max-h-[50%] h-full border-b overflow-hidden">
-                            <img
-                              src={
-                                product.overview.hero_image
-                                  ? product.overview.hero_image
-                                  : noimage
-                              }
-                              alt=""
-                              className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
-                            />
+                            )}
                           </div>
-                          <div className=" absolute top-[2%] left-[5%]">
-                            {product?.product?.colours?.list.length > 0 &&
-                              product?.product?.colours?.list?.map(
-                                (colorObj, index) => (
-                                  <p key={index}>
-                                    {colorObj.colours.map((color, subIndex) => {
-                                      return (
-                                        <p
-                                          key={`${index}-${subIndex}`}
-                                          style={{
-                                            backgroundColor:
-                                              colorObj.swatch?.[subIndex] ||
-                                              color.toLowerCase(),
-                                          }} // Convert to lowercase
-                                          className={`w-fit px-2 rounded-sm text-xs py-1.5 mb-2 border-[1px] border-slate-900`}
-                                        />
-                                      );
-                                    })}
-                                  </p>
-                                )
+                        )}
+                        <div className="max-h-[50%] h-full border-b overflow-hidden">
+                          <img
+                            src={
+                              product.overview.hero_image
+                                ? product.overview.hero_image
+                                : noimage
+                            }
+                            alt=""
+                            className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
+                          />
+                        </div>
+                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
+                          {product?.product?.colours?.list.length > 0 &&
+                            product?.product?.colours?.list
+                              .slice(0, 15) // Limit to 15 colors
+                              .flatMap((colorObj, index) =>
+                                colorObj.colours.map((color, subIndex) => (
+                                  <div
+                                    key={`${index}-${subIndex}`}
+                                    style={{
+                                      backgroundColor:
+                                        colorObj.swatch?.[subIndex] ||
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                  />
+                                ))
                               )}
-                          </div>
-                          <div className="p-3">
-                            <div className="text-center ">
-                              <h2 className="text-lg font-medium text-brand ">
-                                {product.overview.name ||
-                                product.overview.name.length > 22
-                                  ? product.overview.name.slice(0, 22) + "..."
-                                  : "No Name "}
-                              </h2>
-                              <p className="font-normal text-brand">
-                                {" "}
-                                Code: {product.overview.code}
-                              </p>
-                              
-                              {/* Updated Price display matching AllProducts exactly */}
-                              <div className="pt-2">
-                                <h2 className="text-xl font-semibold text-heading">
-                                  $
-                                  {minPrice === maxPrice ? (
-                                    <span>{minPrice.toFixed(2)}</span>
-                                  ) : (
-                                    <span>
-                                      {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
-                                    </span>
-                                  )}
-                                </h2>
-                                {discountPct > 0 && (
-                                  <p className="text-xs text-green-600 font-medium">
-                                    {discountPct}% discount applied
-                                  </p>
+                        </div>
+                        <div className="p-3">
+                          <div className="text-center ">
+                            <h2 className="text-lg font-medium text-brand ">
+                              {product.overview.name ||
+                              product.overview.name.length > 22
+                                ? product.overview.name.slice(0, 22) + "..."
+                                : "No Name "}
+                            </h2>
+                            <p className="font-normal text-brand">
+                              {" "}
+                              Code: {product.overview.code}
+                            </p>
+                            
+                            {/* Updated Price display matching AllProducts exactly */}
+                            <div className="pt-2">
+                              <h2 className="text-xl font-semibold text-heading">
+                                $
+                                {minPrice === maxPrice ? (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span>
+                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                  </span>
                                 )}
-                              </div>
-                            </div>
-                            <div className="flex justify-between gap-1 mt-2 mb-1">
-                              <p className="p-3 text-2xl rounded-sm bg-icons">
-                                <CiHeart />
-                              </p>
-                              <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
-                                <p className="text-xl">
-                                  <IoCartOutline />
+                              </h2>
+                              {discountPct > 0 && (
+                                <p className="text-xs text-green-600 font-medium">
+                                  {discountPct}% discount applied
                                 </p>
-                                <button className="text-sm uppercase">
-                                  Add to cart
-                                </button>
-                              </div>
-                              <p
-                                onClick={() => handleOpenModal(product)}
-                                className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
-                              >
-                                <AiOutlineEye />
-                              </p>
+                              )}
                             </div>
+                          </div>
+                          <div className="flex justify-between gap-1 mt-2 mb-1">
+                            <p className="p-3 text-2xl rounded-sm bg-icons">
+                              <CiHeart />
+                            </p>
+                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                              <p className="text-xl">
+                                <IoCartOutline />
+                              </p>
+                              <button className="text-sm uppercase">
+                                Add to cart
+                              </button>
+                            </div>
+                            <p
+                              onClick={() => handleOpenModal(product)}
+                              className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
+                            >
+                              <AiOutlineEye />
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    );
+                  })}
               </div>
             )}
           </div>
@@ -495,7 +495,7 @@ const Cards = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200"
+                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <IoMdArrowBack className="text-xl text-smallHeader" />
               </button>
@@ -519,7 +519,7 @@ const Cards = () => {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200"
+                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <IoMdArrowForward className="text-xl text-smallHeader" />
               </button>

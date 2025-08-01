@@ -36,7 +36,7 @@ const DashBoard = () => {
     return (
       <>
         <div className='w-full px-4 pt-2 pb-4 text-xl lg:px-8 md:px-8 lg:pt-6 md:pt-6 '>
-          {loading ? <h1>Loading...</h1> : <h1>
+          {loading ? <h1>Loading...</h1> : userEmail ? <h1>
             Welcome{' '}
             <span className='font-semibold text-black '>{userEmail}</span> (not{' '}
             <span className='font-semibold text-black'>{userEmail}? </span>{' '}
@@ -46,7 +46,7 @@ const DashBoard = () => {
             >
               Log out)
             </span>{' '}
-          </h1>}
+          </h1>: <h1>User not Logged In.</h1>}
         </div>
       </>
     );

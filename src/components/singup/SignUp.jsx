@@ -7,6 +7,8 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { SiApple } from "react-icons/si";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { loadFavouritesFromDB, clearFavourites } from "../../redux/slices/favouriteSlice";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -14,6 +16,7 @@ import { toast } from "react-toastify";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSignUp, setIsSignUp] = useState(true);
 
   const { token, setToken, backednUrl } = useContext(AppContext);
@@ -97,6 +100,10 @@ const SignUp = () => {
             toast.success("Login successful!");
 
             localStorage.setItem("token", token);
+            
+            // Load user's favourites from database
+            dispatch(loadFavouritesFromDB(backednUrl));
+            
             navigate("/");
           }
         }
@@ -199,6 +206,9 @@ const SignUp = () => {
             setGoogleData(null);
             setShowGooglePasswordPrompt(false);
             setGooglePassword("");
+            
+            // Load user's favourites from database
+            dispatch(loadFavouritesFromDB(backednUrl));
             
             navigate("/");
           }
@@ -360,6 +370,20 @@ const SignUp = () => {
     setError("");
   };
 
+  // Add logout functionality (call this when user logs out):
+  const handleLogout = () => {
+    // Clear token
+    localStorage.removeItem("token");
+    setToken(null);
+    
+    // Clear favourites from Redux
+    
+    dispatch(clearFavourites());
+    
+    // Navigate to login or home
+    navigate("/");
+  };
+
   return (
     <>
       <div className="Mycontainer">
@@ -443,7 +467,7 @@ const SignUp = () => {
                 <h3 className="text-lg font-semibold mb-4">
                   Reset Password - Step {resetStep} of 3
                 </h3>
-                {resetStep ==2 ||resetStep==3 && <p>2 minutes untill the code expires</p>}
+                {(resetStep === 2 || resetStep === 3) && <p>2 minutes until the code expires</p>}
 
                 {/* Step 1: Enter Email */}
                 {resetStep === 1 && (
@@ -605,13 +629,15 @@ const SignUp = () => {
                           className="flex-1 bg-smallHeader text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center justify-center gap-2"
                           disabled={loading}
                         >
-                          {loading ? "Resetting..." : "Reset Password"}
+                          {loading ? "Verifying..." : "Verify Code"}
                           {!loading && <FaArrowRight />}
                         </button>
                       </div>
                     </form>
                   </>
                 )}
+
+              
               </div>
             </div>
           )}
@@ -692,7 +718,7 @@ const SignUp = () => {
               {!isSignUp && (
                 <label 
                   onClick={() => setShowResetPrompt(true)} 
-                  className="block text-blue-800 text-sm font-normal cursor-pointer mt-2 hover:underline"
+                  className="s text-blue-800 text-sm font-normal cursor-pointer mt-2 inline hover:underline"
                 >
                   Reset password?
                 </label>
@@ -726,7 +752,7 @@ const SignUp = () => {
             {isSignUp && (
               <div className="mb-4">
                 <label className="flex items-start">
-                  <input type="checkbox" required className="mr-2" />
+                  <input type="checkbox" required className="mr-2 mt-1" />
                   <span className="text-gray-600 text-sm max-w-72">
                     Are you agree to Clicon{" "}
                     <span

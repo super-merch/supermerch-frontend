@@ -15,8 +15,7 @@ import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { fetchcategoryProduct } from "../../../redux/slices/categorySlice";
 
-// import { selectProducts } from "../../redux/slices/filterSlice";
-// import useFetchLatestProducts from "../../hooks/useFetchLatestDeals";
+
 import { setProducts } from "../../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
 

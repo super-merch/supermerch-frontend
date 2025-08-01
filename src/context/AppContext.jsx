@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { googleLogout } from '@react-oauth/google';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { clearFavourites } from '@/redux/slices/favouriteSlice';
+import { clearCart } from '@/redux/slices/cartSlice';
 
 export const AppContext = createContext();
 
@@ -38,13 +41,16 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
   }
 };
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const handleLogout = () => {
     localStorage.removeItem('token');
+    dispatch(clearFavourites());
     setToken('');
     googleLogout()
     if (window.google && window.google.accounts) {
       window.google.accounts.id.disableAutoSelect();
     }
+    dispatch(clearCart())
     navigate('/signup');
   };
 
@@ -64,6 +70,7 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
   const [userOrder, setUserOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [skeletonLoading, setSkeletonLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(true);
   // const [sliderLoading,setSliderLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard');
   const [newId, setNewId] = useState(null);
@@ -114,7 +121,35 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
       toast.error('An error occurred while fetching the address.');
     }
   };
+  const [productsCategory,setProductsCategory] = useState([])
+  const fetchProductsCategory = async (category, page = 1, sort = '') => {
+  setSkeletonLoading(true);
+  try {
+    const limit = 10;
+    // Fixed: Removed duplicate ? and properly formatted query string
+    const response = await fetch(
+      `${backednUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
+    );
 
+    if (!response.ok) throw new Error('Failed to fetch products');
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!data || !data.data) {
+      throw new Error('Unexpected API response structure');
+    }
+
+    setProductsCategory(data.data);
+    setSkeletonLoading
+    // Uncomment if total_pages is needed
+    // setTotalPages(data.total_pages);
+  } catch (err) {
+    console.error('Error fetching category products:', err);
+    setSkeletonLoading(false);
+    setError(err.message);
+  }
+};
 
   // *************************************************Client paginate api
    
@@ -132,19 +167,52 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
 
       // Validate response structure if needed
       if (!data || !data.data) {
+        setSkeletonLoading(false);
         throw new Error('Unexpected API response structure');
       }
 
       setProducts(data.data);
+      setSkeletonLoading(false);
       // Uncomment if total_pages is needed
       // setTotalPages(data.total_pages);
     } catch (err) {
       setError(err.message);
       setSkeletonLoading(false);
-    } finally {
-      setSkeletonLoading(false);
     }
   };
+  // In your AppContext:
+
+const [searchedProducts, setSearchedProducts] = useState([]);
+  const fetchSearchedProducts = async (search, page = 1, sort = '') => {
+  setSearchLoading(true);
+  try {
+    const limit = 9; // Changed from 100 to 9 to match itemsPerPage
+    const response = await fetch(
+      `${backednUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
+    );
+
+    if (!response.ok) throw new Error('Failed to fetch products');
+
+    const data = await response.json();
+
+    // Validate response structure if needed
+    if (!data || !data.data) {
+      setSearchLoading(false);
+      throw new Error('Unexpected API response structure');
+    }
+
+    setSearchedProducts(data); // Store the full response object, not just data.data
+    setSearchLoading(false);
+    
+    // Return the full response so the component can access total_pages
+    return data;
+  } catch (err) {
+    setError(err.message);
+    setSearchLoading(false);
+    throw err; // Re-throw so the component can handle it
+  }
+};
+
   const [trendingProducts,setTrendingProducts] = useState([])
   const fetchTrendingProducts = async (page = 1, sort = '') => {
     try {
@@ -430,7 +498,7 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
 
   useEffect(() => {
     fetchBlogs();
-    listDiscount();
+    // listDiscount();
   }, []);
 
   useEffect(() => {
@@ -495,6 +563,10 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     fetchTrendingProducts,
     trendingProducts,
     fetchProductDiscount,
+    fetchSearchedProducts,
+    fetchProductsCategory,
+    productsCategory,
+    searchedProducts,
     fetchBestSellerProducts,
     bestSellerProducts,
     backednUrl,
@@ -522,6 +594,7 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     discountPromo,
   globalDiscount,
   getGlobalDiscount,
+  searchLoading,
   listDiscount,
     activeFilterCategory,
     setActiveFilterCategory,

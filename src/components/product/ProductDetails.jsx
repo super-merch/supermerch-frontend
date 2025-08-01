@@ -70,6 +70,10 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [showQuoteForm, setShowQuoteForm] = useState(false);
 
+  // Drag and drop states
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging2, setIsDragging2] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -268,6 +272,51 @@ const ProductDetails = () => {
     }, {});
   }, [product]);
 
+  // Enhanced drag and drop handlers for first upload area
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set to false if we're leaving the drop zone completely
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      const file = files[0];
+      // Check file type
+      const allowedTypes = ['.ai', '.eps', '.svg', '.pdf', '.jpg', '.jpeg', '.png'];
+      const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+      
+      if (allowedTypes.includes(fileExtension)) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setSelectedFile(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        toast.error('Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG');
+      }
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -281,6 +330,48 @@ const ProductDetails = () => {
 
   const handleDivClick = () => {
     document.getElementById("fileUpload").click();
+  };
+
+  // Enhanced drag and drop handlers for second upload area (quote form)
+  const handleDragEnter2 = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging2(true);
+  };
+
+  const handleDragLeave2 = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set to false if we're leaving the drop zone completely
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging2(false);
+    }
+  };
+
+  const handleDragOver2 = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop2 = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging2(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      const file = files[0];
+      // Check file type
+      const allowedTypes = ['.ai', '.eps', '.svg', '.pdf', '.jpg', '.jpeg', '.png'];
+      const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+      
+      if (allowedTypes.includes(fileExtension)) {
+        setSelectedFile2(file);
+        setPreviewImage2(URL.createObjectURL(file));
+      } else {
+        toast.error('Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG');
+      }
+    }
   };
 
   const handleFileChange2 = (e) => {
@@ -332,9 +423,10 @@ const ProductDetails = () => {
     const newFormData = { ...formData, [name]: value };
     setFormData(newFormData);
   };
-
+  const [quoteLoading, setQuoteLoading] = useState(false);
   const onSubmitHandler = async () => {
     try {
+      setQuoteLoading(true);
       const formData1 = new FormData();
 
       formData1.append("name", formData.name);
@@ -356,10 +448,24 @@ const ProductDetails = () => {
       if (data.success) {
         toast.success(data.message);
         console.log(data);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          delivery: "",
+          comment: "",
+          file: "",
+        })
+        setSelectedFile2(null);
+        setQuoteLoading(false);
+        setShowQuoteForm(false); 
       } else {
+        toast.error(data.message);
+        setQuoteLoading(false);
         console.log(data.message);
       }
     } catch (error) {
+      setQuoteLoading(false);
       console.log(error.message);
     }
   };
@@ -732,17 +838,28 @@ const ProductDetails = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Enhanced Drag and Drop Section */}
             <div
-              className="p-6 mb-6 text-center border-2 border-dashed cursor-pointer bg-dots border-smallHeader"
+              className={`px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
+                isDragging
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-smallHeader"
+              }`}
               onClick={handleDivClick}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
             >
               <img
                 src={selectedFile || "/drag.png"}
                 alt="Uploaded File"
                 className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
               />
-              <p className="mt-4 mb-2 text-lg font-medium text-smallHeader">
-                Drag & drop files or Browse
+              <p className="mb-2 text-lg font-medium text-smallHeader">
+                {selectedFile ? "Logo image Uploaded":
+                isDragging ? "Drop files here" : "Drag & drop files or Browse"}
               </p>
               <p className="text-smallHeader max-w-[385px] m-auto text-sm">
                 Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG. Max file
@@ -830,6 +947,124 @@ const ProductDetails = () => {
                 <img src="/buy2.png" alt="" />
                 <button className="text-sm">BUY 1 SAMPLE</button>
               </div>
+              {showQuoteForm && (
+              <div className="bg-perUnit border border-border py-5 mt-0.5">
+                <button className="w-full py-3 text-sm text-white bg-smallHeader">
+                  We'll Email You A Quote
+                </button>
+                <div className="px-6 mt-7">
+                  <input
+                    name="name"
+                    value={formData.name}
+                    type="text"
+                    placeholder="Your name"
+                    className="w-full p-3 rounded shadow outline-none shadow-shadow bg-line"
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="email"
+                    value={formData.email}
+                    type="email"
+                    placeholder="Email"
+                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="phone"
+                    value={formData.phone}
+                    type="phone"
+                    placeholder="Phone"
+                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="delivery"
+                    value={formData.delivery}
+                    type="text"
+                    placeholder="Delivery state"
+                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                    onChange={handleChange}
+                  />
+
+                  <div>
+                    <p className="pt-6 text-xs">Logo Artworks</p>
+                    {/* Enhanced Second Drag and Drop Section */}
+                    <div 
+                      className={`px-5 mt-4 text-center border shadow cursor-pointer shadow-shadow py-7 transition-all duration-200 ${
+                        isDragging2
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-smallHeader bg-line"
+                      }`}
+                      onDragEnter={handleDragEnter2}
+                      onDragLeave={handleDragLeave2}
+                      onDragOver={handleDragOver2}
+                      onDrop={handleDrop2}
+                    >
+                      {selectedFile2 ? (
+                        <img
+                          // value={formData.file}
+                          src={previewImage2}
+                          alt="Uploaded File"
+                          className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
+                        />
+                      ) : (
+                        <>
+                          <img
+                            src="/drag.png"
+                            alt="Drag"
+                            className="flex m-auto text-smallHeader"
+                          />
+                          <p className="pt-4 text-xs">
+                            {isDragging2 ? "Drop files here" : "Drop files here or"}
+                          </p>
+                        </>
+                      )}
+                      <button
+                        onClick={handleDivClick2}
+                        className="w-full py-3 mt-4 text-sm font-bold text-white uppercase rounded bg-smallHeader"
+                      >
+                        select file
+                      </button>
+                      <input
+                        type="file"
+                        id="fileUpload2"
+                        accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
+                        className="hidden"
+                        onChange={handleFileChange2}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="pt-3 text-xs">
+                      Accepted file types: ai, eps, svg, pdf, jpg, jpeg, png,
+                      Max. file size: 16 MB.
+                    </p>
+                    <textarea
+                      onChange={handleChange}
+                      value={formData.comment}
+                      name="comment"
+                      placeholder="comment"
+                      id=""
+                      className="w-full px-4 py-3 mt-4 border shadow outline-none h-36 shadow-shadow bg-line border-smallHeader"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex items-center gap-2 px-3 py-4 mt-3 mb-5 border border-border">
+                    <input type="checkbox" id="not-robot" className="w-4 h-4" />
+                    <label htmlFor="not-robot" className="text-sm">
+                      I'm not a robot
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={onSubmitHandler}
+                    className="w-full py-3 font-medium text-white rounded-md bg-smallHeader"
+                  >
+                    {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
+                  </button>
+                </div>
+              </div>
+            )}
               <div className="mt-6">
                 <p className="text-sm text-black">
                   Est Delivery Date: {deliveryDate}
@@ -838,6 +1073,7 @@ const ProductDetails = () => {
                   $6.34 (Non-Branded sample) + $10.00 delivery
                 </p>
               </div>
+              
               <div className="pb-4 mt-2 mb-4 border-b">
                 <div className="flex items-start gap-2 pt-3 ">
                   <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
@@ -891,117 +1127,13 @@ const ProductDetails = () => {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs">See our 87 reviews on</p>
+                <p className="text-xs">See our 87 reviews on</p>
                 <img src="/star.png" alt="" />
               </div>
             </div>
 
             {/* Show on click */}
-            {showQuoteForm && (
-              <div className="bg-perUnit border border-border py-5 mt-0.5">
-                <button className="w-full py-3 text-sm text-white bg-smallHeader">
-                  We'll Email You A Quote
-                </button>
-                <div className="px-6 mt-7">
-                  <input
-                    name="name"
-                    value={formData.name}
-                    type="text"
-                    placeholder="Your name"
-                    className="w-full p-3 rounded shadow outline-none shadow-shadow bg-line"
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="email"
-                    value={formData.email}
-                    type="email"
-                    placeholder="Email"
-                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="phone"
-                    value={formData.phone}
-                    type="phone"
-                    placeholder="Phone"
-                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="delivery"
-                    value={formData.delivery}
-                    type="text"
-                    placeholder="Delivery state"
-                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
-                    onChange={handleChange}
-                  />
-
-                  <div>
-                    <p className="pt-6 text-xs">Logo Artworks</p>
-                    <div className="px-5 mt-4 text-center border shadow cursor-pointer shadow-shadow bg-line py-7 border-smallHeader">
-                      {selectedFile2 ? (
-                        <img
-                          // value={formData.file}
-                          src={previewImage2}
-                          alt="Uploaded File"
-                          className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-                        />
-                      ) : (
-                        <>
-                          <img
-                            src="/drag.png"
-                            alt="Drag"
-                            className="flex m-auto text-smallHeader"
-                          />
-                          <p className="pt-4 text-xs">Drop files here or</p>
-                        </>
-                      )}
-                      <button
-                        onClick={handleDivClick2}
-                        className="w-full py-3 mt-4 text-sm font-bold text-white uppercase rounded bg-smallHeader"
-                      >
-                        select file
-                      </button>
-                      <input
-                        type="file"
-                        id="fileUpload2"
-                        accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                        className="hidden"
-                        onChange={handleFileChange2}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="pt-3 text-xs">
-                      Accepted file types: ai, eps, svg, pdf, jpg, jpeg, png,
-                      Max. file size: 16 MB.
-                    </p>
-                    <textarea
-                      onChange={handleChange}
-                      value={formData.comment}
-                      name="comment"
-                      placeholder="comment"
-                      id=""
-                      className="w-full px-4 py-3 mt-4 border shadow outline-none h-36 shadow-shadow bg-line border-smallHeader"
-                    ></textarea>
-                  </div>
-
-                  <div className="flex items-center gap-2 px-3 py-4 mt-3 mb-5 border border-border">
-                    <input type="checkbox" id="not-robot" className="w-4 h-4" />
-                    <label htmlFor="not-robot" className="text-sm">
-                      I'm not a robot
-                    </label>
-                  </div>
-
-                  <button
-                    onClick={onSubmitHandler}
-                    className="w-full py-3 font-medium text-white rounded-md bg-smallHeader"
-                  >
-                    GET YOUR QUOTE
-                  </button>
-                </div>
-              </div>
-            )}
+            
 
             {/* Show on click */}
           </div>

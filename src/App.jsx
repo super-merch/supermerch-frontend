@@ -24,6 +24,10 @@ import BestSellers from "./pages/BestSellers";
 import NewArrival from "./pages/NewArrival";
 import SalesPage from "./pages/SalesPage";
 import BestSellerPage from "./pages/BestSellerPage";
+import SearchPage from "./pages/SearchPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -52,6 +56,9 @@ const App = () => {
         {/* Other routes */}
         <Route path='/Promotional' element={<PromotionalPage />} />
         <Route path='/Spromotional' element={<SpromotionalPage />} />
+        <Route path='/success' element={<Success />} />
+        <Route path='/cancel' element={<Cancel />} />
+
         <Route path='/favourites' element={<FavouritePage />} />
         <Route path='/Clothing' element={<ShopPage />} />
         <Route path='/Headwear' element={<ShopPage />} />
@@ -61,8 +68,10 @@ const App = () => {
         <Route path='/Australia' element={<ShopPage />} />
         {/* SHOPPAGE  */}
         <Route path='/category' element={<CategoryPage />} />
+        <Route path='/privacy' element={<PrivacyPolicy />} />
         <Route path='/shop' element={<ShopPage />} />
         <Route path='/trendings' element={<BestSellers />} />
+        <Route path='/search' element={<SearchPage />} />
         <Route path='/new-arrivals' element={<NewArrival />} />
         <Route path='/sales' element={<SalesPage />} />
         <Route path='/bestSellers' element={<BestSellerPage />} />

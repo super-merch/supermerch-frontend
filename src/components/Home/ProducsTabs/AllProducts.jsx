@@ -225,26 +225,25 @@ const AllProducts = ({ activeTab }) => {
                           />
                         </div>
 
-                        <div className="absolute top-[2%] left-[3%] sm:left-[5%]">
+                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
                           {product?.product?.colours?.list.length > 0 &&
-                            product?.product?.colours?.list?.map(
-                              (colorObj, index) => (
-                                <div key={index}>
-                                  {colorObj.colours.map((color, subIndex) => (
-                                    <span
-                                      key={`${index}-${subIndex}`}
-                                      style={{
-                                        backgroundColor:
-                                          colorObj.swatch?.[subIndex] ||
-                                          color.toLowerCase(),
-                                      }}
-                                      className="inline-block w-fit px-1 sm:px-2 rounded-sm text-xs py-1 sm:py-1.5 mb-1 sm:mb-2 border border-slate-900"
-                                    />
-                                  ))}
-                                </div>
-                              )
-                            )}
+                            product?.product?.colours?.list
+                              .slice(0, 15) // Limit to 15 colors
+                              .flatMap((colorObj, index) =>
+                                colorObj.colours.map((color, subIndex) => (
+                                  <div
+                                    key={`${index}-${subIndex}`}
+                                    style={{
+                                      backgroundColor:
+                                        colorObj.swatch?.[subIndex] ||
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                  />
+                                ))
+                              )}
                         </div>
+
 
                         <div className="p-2 sm:p-4">
                           <div className="text-center">
