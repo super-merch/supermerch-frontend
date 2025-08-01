@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { googleLogout } from '@react-oauth/google';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { clearFavourites } from '@/redux/slices/favouriteSlice';
+import { clearFavourites, loadFavouritesFromDB } from '@/redux/slices/favouriteSlice';
 import { clearCart } from '@/redux/slices/cartSlice';
 
 export const AppContext = createContext();
@@ -518,7 +518,9 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
 
   fetchDiscounts();
 }, [products]);
-
+  useEffect(()=>{
+    dispatch(loadFavouritesFromDB(backednUrl))
+  },[])
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts(); // Only fetch if products array is empty
