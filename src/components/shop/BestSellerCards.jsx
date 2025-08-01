@@ -397,9 +397,9 @@ const BestSellerCards = () => {
                             </div>
                           )}
                           {/* Add trending badge */}
-                          <span className="absolute px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded top-2 left-2">
+                          {/* <span className="absolute px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded top-2 left-2">
                             Best Seller
-                          </span>
+                          </span> */}
                           <div className="max-h-[50%] h-full border-b overflow-hidden">
                             <img
                               src={
