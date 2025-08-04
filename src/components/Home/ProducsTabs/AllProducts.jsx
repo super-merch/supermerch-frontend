@@ -30,8 +30,13 @@ const AllProducts = ({ activeTab }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchProducts(1, "", 8);
-  }, []);
+    // Only fetch if activeTab is "All Product" to avoid unnecessary calls
+    if (activeTab === "All Product") {
+      fetchProducts(1, "", 8);
+      console.log("Fetching products for AllProducts component", products);
+    }
+  }, [activeTab]); // Added activeTab as dependency and removed products from dependency
+
   const dispatch = useDispatch();
 
   const handleViewProduct = (productId) => {
@@ -71,6 +76,7 @@ const AllProducts = ({ activeTab }) => {
         <div className="w-10 h-10 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
       </div>
     );
+
   return (
     <>
       {activeTab === "All Product" && (
@@ -359,7 +365,7 @@ const AllProducts = ({ activeTab }) => {
                   <p className="text-gray-700 text-sm leading-relaxed">
                     {selectedProduct.overview.description}
                   </p>
-                )}
+                  )}
               </div>
             </div>
           </div>

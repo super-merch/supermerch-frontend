@@ -34,16 +34,21 @@ const ProductDetails = () => {
     totalDiscount,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchSingleProduct = async () => {
+    setLoading(true);
     try {
       const { data } = await axios.get(
         `${backednUrl}/api/single-product/${id}`
       );
       if (data) {
         setSingle_Product(data.data, "fetchSingleProduct");
+        setLoading(false);
       }
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
@@ -52,12 +57,12 @@ const ProductDetails = () => {
     fetchSingleProduct();
   }, [id]);
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      await fetchProducts();
-    };
-    loadProducts();
-  }, []);
+  // useEffect(() => {
+  //   const loadProducts = async () => {
+  //     await fetchProducts();
+  //   };
+  //   loadProducts();
+  // }, []);
 
   const product = single_product?.product || {};
   const productId = single_product?.meta?.id || "";
@@ -578,7 +583,7 @@ const ProductDetails = () => {
       <div className="Mycontainer ">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-8">
           {/* 1st culmn  */}
-          {skeletonLoading ? (
+          {loading ? (
             Array.from({ length: 1 }).map((_, index) => (
               <div
                 key={index}

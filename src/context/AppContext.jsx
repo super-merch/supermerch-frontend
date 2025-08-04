@@ -153,33 +153,110 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
 
   // *************************************************Client paginate api
    
-  const fetchProducts = async (page = 1, sort = '',limit) => {
-    setSkeletonLoading(true);
-    try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+  const CACHE_KEY = 'products_cache';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-      if (!response.ok) throw new Error('Failed to fetch products');
+const fetchProducts = async (page = 1, sort = '', limit) => {
+  // Check if we have cached data first
+  const cachedData = getCachedProducts(page, sort, limit);
+  if (cachedData) {
+    console.log('Loading products from cache');
+    setProducts(cachedData);
+    setSkeletonLoading(false);
+    return; // Exit early, no API call needed
+  }
 
-      const data = await response.json();
+  // If no cache, proceed with API call
+  console.log('Loading products from API');
+  setSkeletonLoading(true);
+  
+  try {
+    if (!limit) limit = 100; // Default to 100 if limit is not provided
+    const response = await fetch(
+      `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+    );
 
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        setSkeletonLoading(false);
-        throw new Error('Unexpected API response structure');
-      }
+    if (!response.ok) throw new Error('Failed to fetch products');
 
-      setProducts(data.data);
+    const data = await response.json();
+
+    // Validate response structure if needed
+    if (!data || !data.data) {
       setSkeletonLoading(false);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
-    } catch (err) {
-      setError(err.message);
-      setSkeletonLoading(false);
+      throw new Error('Unexpected API response structure');
     }
-  };
+
+    setProducts(data.data);
+    
+    // Cache the fetched data
+    setCachedProducts(data.data, page, sort, limit);
+    
+    setSkeletonLoading(false);
+    // Uncomment if total_pages is needed
+    // setTotalPages(data.total_pages);
+  } catch (err) {
+    setError(err.message);
+    setSkeletonLoading(false);
+  }
+};
+
+// Helper function to get cached products
+const getCachedProducts = (page, sort, limit) => {
+  try {
+    const cacheKey = `${CACHE_KEY}_${page}_${sort}_${limit}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    
+    if (!cached) return null;
+    
+    const { data, timestamp } = JSON.parse(cached);
+    const now = Date.now();
+    
+    // Check if cache is still valid (within cache duration)
+    if (now - timestamp < CACHE_DURATION) {
+      return data;
+    } else {
+      // Cache expired, remove it
+      sessionStorage.removeItem(cacheKey);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error reading from cache:', error);
+    return null;
+  }
+};
+
+// Helper function to set cached products
+const setCachedProducts = (data, page, sort, limit) => {
+  try {
+    const cacheKey = `${CACHE_KEY}_${page}_${sort}_${limit}`;
+    const cacheData = {
+      data: data,
+      timestamp: Date.now()
+    };
+    sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+  } catch (error) {
+    console.error('Error writing to cache:', error);
+  }
+};
+
+// Optional: Function to clear cache manually if needed
+const clearProductsCache = () => {
+  try {
+    // Get all keys from sessionStorage
+    const keys = Object.keys(sessionStorage);
+    
+    // Remove all cache keys that match our pattern
+    keys.forEach(key => {
+      if (key.startsWith(CACHE_KEY)) {
+        sessionStorage.removeItem(key);
+      }
+    });
+    
+    console.log('Products cache cleared');
+  } catch (error) {
+    console.error('Error clearing cache:', error);
+  }
+};
   // In your AppContext:
 
 const [searchedProducts, setSearchedProducts] = useState([]);
