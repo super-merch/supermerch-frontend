@@ -24,6 +24,7 @@ import {
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
+import SideBar2 from "./SideBar2";
 
 const SaleCards = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);

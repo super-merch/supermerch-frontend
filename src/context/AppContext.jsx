@@ -544,18 +544,18 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
   //   }
   // }, []);
 
-  useEffect(() => {
-    if (categoryProducts.length === 0) {
-      fetchCategories(); // Only fetch if products array is empty
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (categoryProducts.length === 0) {
+  //     fetchCategories(); // Only fetch if products array is empty
+  //   }
+  // }, []);
 
 
-  useEffect(() => {
-    if (v1categories.length === 0) {
-      fetchV1Categories(); // Only fetch if products array is empty
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (v1categories.length === 0) {
+  //     fetchV1Categories(); // Only fetch if products array is empty
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (token) {
