@@ -16,6 +16,8 @@ const AppContextProvider = (props) => {
   const [sidebarActiveCategory, setSidebarActiveCategory] = useState(null)
   const [categoryProducts, setCategoryProducts] = useState([]);
 const [globalDiscount, setGlobalDiscount] = useState(null);
+const [productsCache, setProductsCache] = useState(null);
+const [isCacheValid, setIsCacheValid] = useState(false);
 
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
 
@@ -153,33 +155,48 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
 
   // *************************************************Client paginate api
    
-  const fetchProducts = async (page = 1, sort = '',limit) => {
-    setSkeletonLoading(true);
-    try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+  const fetchProducts = async (page = 1, sort = '', limit) => {
+  // Check if cache exists and is valid
+  if (productsCache && isCacheValid) {
+    setProducts(productsCache);
+    return;
+  }
 
-      if (!response.ok) throw new Error('Failed to fetch products');
-
-      const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        setSkeletonLoading(false);
-        throw new Error('Unexpected API response structure');
-      }
-
-      setProducts(data.data);
+  setSkeletonLoading(true);
+  try {
+    if (!limit) limit = 100; // Default to 100 if limit is not provided
+    const response = await fetch(
+      `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+    );
+    
+    if (!response.ok) throw new Error('Failed to fetch products');
+    const data = await response.json();
+    
+    // Validate response structure if needed
+    if (!data || !data.data) {
       setSkeletonLoading(false);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
-    } catch (err) {
-      setError(err.message);
-      setSkeletonLoading(false);
+      throw new Error('Unexpected API response structure');
     }
-  };
+    
+    // Store in both products state and cache
+    setProducts(data.data);
+    setProductsCache(data.data);
+    setIsCacheValid(true);
+    setSkeletonLoading(false);
+    
+    // Uncomment if total_pages is needed
+    // setTotalPages(data.total_pages);
+  } catch (err) {
+    setError(err.message);
+    setSkeletonLoading(false);
+  }
+};
+
+// Add a function to clear cache (optional - can be called when needed)
+const clearProductsCache = () => {
+  setProductsCache(null);
+  setIsCacheValid(false);
+};
   // In your AppContext:
 
 const [searchedProducts, setSearchedProducts] = useState([]);
@@ -562,6 +579,7 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     newId,
     setNewId,
     userData,
+    clearProductsCache,
     fetchTrendingProducts,
     trendingProducts,
     fetchProductDiscount,

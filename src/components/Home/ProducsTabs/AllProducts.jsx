@@ -30,8 +30,12 @@ const AllProducts = ({ activeTab }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchProducts(1, "", 8);
-  }, []);
+    // Only fetch if activeTab is "All Product" to avoid unnecessary calls
+    if (activeTab === "All Product") {
+      fetchProducts(1, "", 8);
+    }
+  }, [activeTab]); // Changed dependency to activeTab instead of empty array
+
   const dispatch = useDispatch();
 
   const handleViewProduct = (productId) => {
