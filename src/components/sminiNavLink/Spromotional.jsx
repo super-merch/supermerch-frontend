@@ -752,7 +752,10 @@ const Spromotional = () => {
                               )}
                             </div>
                           )}
-                          <div className="max-h-[50%] h-full border-b overflow-hidden">
+                          <div 
+                          onClick={() =>
+                                    handleViewProduct(product.meta.id)
+                                  } className="max-h-[50%] h-full border-b overflow-hidden">
                             <img
                               src={
                                 product.overview.hero_image
