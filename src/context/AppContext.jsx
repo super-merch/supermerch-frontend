@@ -231,9 +231,9 @@ const [searchedProducts, setSearchedProducts] = useState([]);
 };
 
   const [trendingProducts,setTrendingProducts] = useState([])
-  const fetchTrendingProducts = async (page = 1, sort = '') => {
+  const fetchTrendingProducts = async (page = 1, sort = '',limit) => {
     try {
-      const limit = 100;
+      if (!limit) limit = 100; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -255,9 +255,9 @@ const [searchedProducts, setSearchedProducts] = useState([]);
     }
   };
   const [arrivalProducts,setArrivalProducts] = useState([])
-  const fetchNewArrivalProducts = async (page = 1, sort = '') => {
+  const fetchNewArrivalProducts = async (page = 1, sort = '',limit) => {
     try {
-      const limit = 100;
+      if (!limit) limit = 100; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -279,9 +279,9 @@ const [searchedProducts, setSearchedProducts] = useState([]);
     }
   };
   const [discountedProducts,setDiscountedProducts] = useState([])
-  const fetchDiscountedProducts = async (page = 1, sort = '') => {
+  const fetchDiscountedProducts = async (page = 1, sort = '',limit) => {
     try {
-      const limit = 100;
+      if (!limit) limit = 100; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -303,9 +303,9 @@ const [searchedProducts, setSearchedProducts] = useState([]);
     }
   };
 const [bestSellerProducts,setBestSellerProducts] = useState([])
-  const fetchBestSellerProducts = async (page = 1, sort = '') => {
+  const fetchBestSellerProducts = async (page = 1, sort = '',limit) => {
     try {
-      const limit = 100;
+      if (!limit) limit = 100; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );

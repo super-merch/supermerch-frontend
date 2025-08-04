@@ -10,11 +10,12 @@ const Sale = () => {
 
   useEffect(() => {
     // fetchProducts();
-    fetchTrendingProducts(); // Fetch trending products
-    fetchNewArrivalProducts();
-    fetchDiscountedProducts(); // Fetch new arrival products
-    fetchBestSellerProducts()
+    fetchTrendingProducts(1,"",3); // Fetch trending products
+    fetchNewArrivalProducts(1,"",3); // Fetch new arrival products
+    fetchDiscountedProducts(1,'',3); // Fetch new arrival products
+    fetchBestSellerProducts(1,"",3); // Fetch best seller products
   }, []);
+  
 
   const categories = [
     { title: 'Trendings' },
