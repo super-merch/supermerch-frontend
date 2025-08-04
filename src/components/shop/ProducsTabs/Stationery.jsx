@@ -13,7 +13,7 @@ import noimage from "/noimage.png";
 
 const Stationery = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const { fetchProducts, products, error, skeletonLoading, marginApi } =
     useContext(AppContext);
@@ -27,30 +27,30 @@ const Stationery = ({ activeTab }) => {
   };
 
   const handleOpenModal = (product) => {
-      setSelectedProduct(product);
-      setIsModalOpen(true);
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = "hidden";
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = "hidden";
+  };
+
+  // Function to close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    // Restore body scroll
+    document.body.style.overflow = "unset";
+  };
+
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isModalOpen) {
+        handleCloseModal();
+      }
     };
-  
-    // Function to close modal
-    const handleCloseModal = () => {
-      setIsModalOpen(false);
-      setSelectedProduct(null);
-      // Restore body scroll
-      document.body.style.overflow = "unset";
-    };
-  
-    // Close modal on escape key
-    useEffect(() => {
-      const handleEscape = (e) => {
-        if (e.key === "Escape" && isModalOpen) {
-          handleCloseModal();
-        }
-      };
-      document.addEventListener("keydown", handleEscape);
-      return () => document.removeEventListener("keydown", handleEscape);
-    }, [isModalOpen]);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isModalOpen]);
 
   if (error)
     return (
@@ -148,7 +148,10 @@ const Stationery = ({ activeTab }) => {
                         onClick={() => handleViewProduct(product.meta.id)}
                         className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
                       >
-                        <div className="max-h-[50%] h-full border-b overflow-hidden">
+                        <div
+                          onClick={() => handleViewProduct(product.meta.id)}
+                          className="max-h-[50%] h-full border-b overflow-hidden"
+                        >
                           <img
                             src={
                               product.overview.hero_image
@@ -197,9 +200,10 @@ const Stationery = ({ activeTab }) => {
                             <p className="p-3 text-2xl rounded-sm bg-icons">
                               <CiHeart />
                             </p>
-                            <div onClick={() =>
-                                  handleViewProduct(product.meta.id)
-                                } className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div
+                              onClick={() => handleViewProduct(product.meta.id)}
+                              className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+                            >
                               <p className="text-xl">
                                 <IoCartOutline />
                               </p>

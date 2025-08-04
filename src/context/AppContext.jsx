@@ -521,11 +521,11 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
   useEffect(()=>{
     dispatch(loadFavouritesFromDB(backednUrl))
   },[])
-  useEffect(() => {
-    if (products.length === 0) {
-      fetchProducts(); // Only fetch if products array is empty
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (products.length === 0) {
+  //     fetchProducts(); // Only fetch if products array is empty
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (categoryProducts.length === 0) {

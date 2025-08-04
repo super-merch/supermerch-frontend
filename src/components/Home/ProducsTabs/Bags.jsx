@@ -12,7 +12,7 @@ import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { useDispatch } from "react-redux";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const Bags = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -37,20 +37,22 @@ const Bags = ({ activeTab }) => {
     setError(null);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/client-products/category?category=bag&page=1&limit=8&filter=true`
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/client-products/category?category=bag&page=1&limit=8&filter=true`
       );
 
-      if (!response.ok) throw new Error('Failed to fetch products');
+      if (!response.ok) throw new Error("Failed to fetch products");
 
       const data = await response.json();
 
       if (!data || !data.data) {
-        throw new Error('Unexpected API response structure');
+        throw new Error("Unexpected API response structure");
       }
 
       setProducts(data.data.slice(0, 8)); // Ensure only 8 products
     } catch (err) {
-      console.error('Error fetching clothing products:', err);
+      console.error("Error fetching clothing products:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -228,7 +230,10 @@ const Bags = ({ activeTab }) => {
                           </div>
                         )}
 
-                        <div className="max-h-[45%] sm:max-h-[50%] h-full border-b overflow-hidden">
+                        <div
+                          onClick={() => handleViewProduct(product.meta.id)}
+                          className="max-h-[45%] sm:max-h-[50%] h-full border-b overflow-hidden"
+                        >
                           <img
                             src={
                               product.overview.hero_image
@@ -301,9 +306,10 @@ const Bags = ({ activeTab }) => {
                             >
                               <CiHeart />
                             </p>
-                            <div onClick={() =>
-                                  handleViewProduct(product.meta.id)
-                                } className="flex items-center justify-center w-full gap-1 px-1 sm:px-2 py-2 sm:py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div
+                              onClick={() => handleViewProduct(product.meta.id)}
+                              className="flex items-center justify-center w-full gap-1 px-1 sm:px-2 py-2 sm:py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+                            >
                               <p className="text-lg sm:text-xl">
                                 <IoCartOutline />
                               </p>

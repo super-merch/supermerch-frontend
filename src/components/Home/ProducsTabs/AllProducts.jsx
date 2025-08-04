@@ -213,7 +213,10 @@ const AllProducts = ({ activeTab }) => {
                           </div>
                         )}
 
-                        <div className="max-h-[45%] sm:max-h-[50%] h-full border-b overflow-hidden">
+                        <div
+                          onClick={() => handleViewProduct(product.meta.id)}
+                          className="max-h-[45%] sm:max-h-[50%] h-full border-b overflow-hidden"
+                        >
                           <img
                             src={
                               product.overview.hero_image
@@ -244,7 +247,6 @@ const AllProducts = ({ activeTab }) => {
                               )}
                         </div>
 
-
                         <div className="p-2 sm:p-4">
                           <div className="text-center">
                             <h2 className="text-sm sm:text-lg font-medium text-brand leading-tight">
@@ -265,7 +267,8 @@ const AllProducts = ({ activeTab }) => {
                                   <span>{minPrice.toFixed(2)}</span>
                                 ) : (
                                   <span>
-                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                    {minPrice.toFixed(2)} - $
+                                    {maxPrice.toFixed(2)}
                                   </span>
                                 )}
                               </h2>
@@ -287,9 +290,10 @@ const AllProducts = ({ activeTab }) => {
                             >
                               <CiHeart />
                             </p>
-                            <div onClick={() =>
-                                  handleViewProduct(product.meta.id)
-                                } className="flex items-center justify-center w-full gap-1 px-1 sm:px-2 py-2 sm:py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div
+                              onClick={() => handleViewProduct(product.meta.id)}
+                              className="flex items-center justify-center w-full gap-1 px-1 sm:px-2 py-2 sm:py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+                            >
                               <p className="text-lg sm:text-xl">
                                 <IoCartOutline />
                               </p>

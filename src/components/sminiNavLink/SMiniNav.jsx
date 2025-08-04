@@ -1542,7 +1542,13 @@ const SMiniNav = () => {
     megaMenu.find((item) => item.id === activeItem)?.subTypes || [];
   const [openPromoId, setOpenPromoId] = useState(null);
   const handleSearch = () => {
+    if (!inputValue.trim()) {
+      toast.error("Please enter a search term");
+      return;
+    }
+    setInputValue(inputValue.trim());
       navigate(`/search?search=${inputValue}`);
+      setInputValue("");
   };
   const [coupenModel, setCoupenModel] = useState(false);
   const [coupen, setCoupen] = useState("");
@@ -1612,6 +1618,11 @@ const SMiniNav = () => {
               type="text"
               placeholder="Search for anything..."
               className="w-full text-black bg-transparent outline-none"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch(); 
+                }
+              }}
             />
             <IoSearchSharp
               onClick={handleSearch}
@@ -2231,6 +2242,11 @@ const SMiniNav = () => {
             type="text"
             placeholder="Search for anything..."
             className="w-full text-black bg-transparent outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
           />
           <IoSearchSharp
             onClick={handleSearch}
