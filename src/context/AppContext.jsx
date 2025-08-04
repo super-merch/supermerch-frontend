@@ -153,10 +153,10 @@ const [globalDiscount, setGlobalDiscount] = useState(null);
 
   // *************************************************Client paginate api
    
-  const fetchProducts = async (page = 1, sort = '') => {
+  const fetchProducts = async (page = 1, sort = '',limit) => {
     setSkeletonLoading(true);
     try {
-      const limit = 100;
+      if (!limit) limit = 100; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );

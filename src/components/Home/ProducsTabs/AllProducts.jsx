@@ -30,7 +30,7 @@ const AllProducts = ({ activeTab }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(1, "", 8);
   }, []);
   const dispatch = useDispatch();
 

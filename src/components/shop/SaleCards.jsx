@@ -178,7 +178,7 @@ const SaleCards = () => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          <Sidebar />
+          <SideBar2 />
         </div>
 
         <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">

@@ -22,6 +22,7 @@ import {
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
+import SideBar2 from "./SideBar2";
 
 // Utility function to calculate visible page buttons (same as Spromotional)
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -50,8 +51,7 @@ const SearchCard = () => {
   const [search, setSearch] = useSearchParams();
   const searchParam = search.get('search');
   
-  // Add states for local filtering (similar to Spromotional)
-  const [priceRangeFilter, setPriceRangeFilter] = useState([0, 1000]);
+  // Only keep local search text state - remove priceRangeFilter as we'll use Redux
   const [searchProductName, setSearchProductName] = useState("");
 
   const dispatch = useDispatch();
@@ -66,7 +66,8 @@ const SearchCard = () => {
     setTotalApiPages,
   } = useContext(AppContext);
 
-  const { searchText, activeFilters, filteredCount } = useSelector(
+  // Get Redux filter state including minPrice and maxPrice
+  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
 
@@ -95,7 +96,6 @@ const SearchCard = () => {
     if (filterType === "price") {
       dispatch(setMinPrice(0));
       dispatch(setMaxPrice(1000));
-      setPriceRangeFilter([0, 1000]);
     }
     dispatch(applyFilters());
   };
@@ -162,10 +162,10 @@ const SearchCard = () => {
     return priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
   };
 
-  // Filter products from API response based on local filters
+  // Filter products from API response based on Redux filters (minPrice, maxPrice)
   const filterSearchProducts = (searchedProducts.data || []).filter((product) => {
     const price = getRealPrice(product);
-    return price >= priceRangeFilter[0] && price <= priceRangeFilter[1];
+    return price >= minPrice && price <= maxPrice;
   });
 
   // Sort products
@@ -195,45 +195,37 @@ const SearchCard = () => {
     );
   });
 
-  // Check if any filters are active
+  // Check if any filters are active (now using Redux state)
   const hasActiveFilters = searchProductName.trim() !== "" || 
-    priceRangeFilter[0] !== 0 || 
-    priceRangeFilter[1] !== 1000;
+    minPrice !== 0 || 
+    maxPrice !== 1000;
 
-  // Calculate pagination based on filtered products when filters are active
-  const totalFilteredPages = hasActiveFilters 
-    ? Math.ceil(finalFilteredProducts.length / itemsPerPage)
-    : totalApiPages;
-
-  // Get current page products when filters are active
+  // Get current page products - filter within current page's products
   const getCurrentPageProducts = () => {
+    // Always start with current page's products from API
+    const currentPageApiProducts = finalFilteredProducts.slice(0, itemsPerPage);
+    
     if (hasActiveFilters) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return finalFilteredProducts.slice(startIndex, endIndex);
+      // Apply additional local filtering to current page's products
+      return currentPageApiProducts;
     } else {
-      // When no filters, show all products from current API page (limited to itemsPerPage)
-      return finalFilteredProducts.slice(0, itemsPerPage);
+      // No additional filtering, return current page products
+      return currentPageApiProducts;
     }
   };
 
+  // Calculate how many products are available on current page after filtering
   const currentPageProducts = getCurrentPageProducts();
+  const currentPageFilteredCount = currentPageProducts.length;
 
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    if (hasActiveFilters) {
-      setCurrentPage(1);
-    }
-  }, [searchProductName, priceRangeFilter[0], priceRangeFilter[1]]);
+  // For pagination, we still use the total API pages since we're filtering per page
+  const totalFilteredPages = totalApiPages;
 
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          <Sidebar 
-            priceRangeFilter={priceRangeFilter}
-            setPriceRangeFilter={setPriceRangeFilter}
-          />
+          <SideBar2 />
         </div>
 
         <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">
@@ -338,9 +330,9 @@ const SearchCard = () => {
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
               <span className="font-semibold text-brand">
-                {hasActiveFilters ? finalFilteredProducts.length : filteredCount}
+                {hasActiveFilters ? currentPageFilteredCount : filteredCount}
               </span>
-              <p className="">{searchParam} Results found</p>
+              <p className="">{searchParam} Results found {hasActiveFilters ? `on page ${currentPage}` : ''}</p>
             </div>
           </div>
 

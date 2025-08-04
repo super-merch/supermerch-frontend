@@ -39,67 +39,8 @@ const PriceFilter = () => {
         Price Range
       </h1>
       <div className="flex flex-col gap-4 pb-6 mt-4 border-b-2">
-        {/* <div className="ml-2 ">
-          <Range
-            step={1}
-            min={0}
-            max={1000}
-            values={priceRange}
-            onChange={handleRangeChange}
-            onFinalChange={handleRangeFinalChange}
-            renderTrack={({ props, children }) => (
-              <div
-                key={children}
-                {...props}
-                style={{
-                  height: "3px",
-                  width: "90%",
-                  background: "#ccc",
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    height: "3px",
-                    background: "navy",
-                    borderRadius: "2px",
-                    left: `${((priceRange[0] - 0) / (1000 - 0)) * 100}%`,
-                    right: `${95 - ((priceRange[1] - 0) / (1000 - 0)) * 100}%`,
-                  }}
-                />
-                {children}
-              </div>
-            )}
-            renderThumb={({ props, isDragged }) => (
-              <div
-                key={isDragged}
-                {...props}
-                style={{
-                  height: "16px",
-                  width: "16px",
-                  backgroundColor: "white",
-                  border: isDragged ? "3px solid navy" : "2px solid navy",
-                  borderRadius: "50%",
-                  boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.5)",
-                  transform: `${
-                    props.style.transform || ""
-                  } translate(120.922px, 6.50174px)`,
-                }}
-              />
-            )}
-          />
-        </div> */}
-        <div className="flex items-center justify-between gap-4 lg:flex-nowrap">
-          <button className="w-full px-3 py-3 text-sm border rounded text-start text-minPrice border-border">
-            Min price
-          </button>
-          <button className="w-full px-3 py-3 text-sm border rounded text-start text-minPrice border-border">
-            Max price
-          </button>
-        </div>
+
+        
         <div className="flex flex-col gap-2">
           {priceRanges.map((range, index) => (
             <div

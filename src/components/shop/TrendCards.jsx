@@ -24,6 +24,7 @@ import {
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
+import SideBar2 from "./SideBar2";
 
 const TrendCards = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -178,7 +179,7 @@ const TrendCards = () => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          <Sidebar />
+          <SideBar2 />
         </div>
 
         <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">

@@ -132,7 +132,6 @@ const Spromotional = () => {
     (state) => state.promotionals.filteredPromotionalProducts
   );
 
-
   const matchedProducts = filteredProducts.filter((product) => {
     const typeId =
       product.product?.categorisation?.promodata_product_type?.type_id;
@@ -189,7 +188,6 @@ const Spromotional = () => {
   const handleViewProduct = (productId) => {
     navigate(`/product/${productId}`, { state: "promotional" });
   };
-
 
   const [searchProductName, setSearchProductName] = useState("");
   const setSearchTextChanger = (e) => setSearchProductName(e.target.value);
@@ -393,35 +391,32 @@ const Spromotional = () => {
   });
 
   // Check if any filters are active
-  const hasActiveFilters = searchProductName.trim() !== "" || 
-    priceRangeFilter[0] !== 0 || 
+  // Check if any filters are active
+  const hasActiveFilters =
+    searchProductName.trim() !== "" ||
+    priceRangeFilter[0] !== 0 ||
     priceRangeFilter[1] !== 1000;
 
-  // Calculate pagination based on filtered products when filters are active
-  const totalFilteredPages = hasActiveFilters 
-    ? Math.ceil(finalFilteredProducts.length / itemsPerPage)
-    : totalApiPages;
-
-  // Get current page products when filters are active
+  // Get current page products - filter within current page's products
   const getCurrentPageProducts = () => {
+    // Always start with current page's products from API
+    const currentPageApiProducts = finalFilteredProducts.slice(0, itemsPerPage);
+
     if (hasActiveFilters) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return finalFilteredProducts.slice(startIndex, endIndex);
+      // Apply additional local filtering to current page's products
+      return currentPageApiProducts;
     } else {
-      // When no filters, show all products from current API page (limited to itemsPerPage)
-      return finalFilteredProducts.slice(0, itemsPerPage);
+      // No additional filtering, return current page products
+      return currentPageApiProducts;
     }
   };
 
+  // Calculate how many products are available on current page after filtering
   const currentPageProducts = getCurrentPageProducts();
+  const currentPageFilteredCount = currentPageProducts.length;
 
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    if (hasActiveFilters) {
-      setCurrentPage(1);
-    }
-  }, [searchProductName, priceRangeFilter[0], priceRangeFilter[1]]);
+  // For pagination, we still use the total API pages since we're filtering per page
+  const totalFilteredPages = totalApiPages;
 
   return (
     <>
@@ -618,8 +613,12 @@ const Spromotional = () => {
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
               {" "}
-              <span className="font-semibold text-brand">{hasActiveFilters ? finalFilteredProducts.length : filteredCount}</span>
-              <p className="">Results found</p>
+              <span className="font-semibold text-brand">
+                {hasActiveFilters ? currentPageFilteredCount : filteredCount}
+              </span>
+              <p className="">
+                Results found {hasActiveFilters ? `on page ${currentPage}` : ""}
+              </p>
             </div>
           </div>
 
@@ -765,23 +764,23 @@ const Spromotional = () => {
                             />
                           </div>
                           <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
-                          {product?.product?.colours?.list.length > 0 &&
-                            product?.product?.colours?.list
-                              .slice(0, 15) // Limit to 15 colors
-                              .flatMap((colorObj, index) =>
-                                colorObj.colours.map((color, subIndex) => (
-                                  <div
-                                    key={`${index}-${subIndex}`}
-                                    style={{
-                                      backgroundColor:
-                                        colorObj.swatch?.[subIndex] ||
-                                        color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-sm border border-slate-900"
-                                  />
-                                ))
-                              )}
-                        </div>
+                            {product?.product?.colours?.list.length > 0 &&
+                              product?.product?.colours?.list
+                                .slice(0, 15) // Limit to 15 colors
+                                .flatMap((colorObj, index) =>
+                                  colorObj.colours.map((color, subIndex) => (
+                                    <div
+                                      key={`${index}-${subIndex}`}
+                                      style={{
+                                        backgroundColor:
+                                          colorObj.swatch?.[subIndex] ||
+                                          color.toLowerCase(),
+                                      }}
+                                      className="w-4 h-4 rounded-sm border border-slate-900"
+                                    />
+                                  ))
+                                )}
+                          </div>
                           <div className="flex flex-col h-full p-3">
                             <div className="flex flex-col justify-center flex-grow text-center ">
                               <h2 className="text-lg font-medium text-brand">
@@ -801,7 +800,8 @@ const Spromotional = () => {
                                   <span>{minPrice.toFixed(2)}</span>
                                 ) : (
                                   <span>
-                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                    {minPrice.toFixed(2)} - $
+                                    {maxPrice.toFixed(2)}
                                   </span>
                                 )}
                               </h2>
@@ -878,7 +878,9 @@ const Spromotional = () => {
 
               <button
                 onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalFilteredPages))
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, totalFilteredPages)
+                  )
                 }
                 disabled={currentPage === totalFilteredPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
