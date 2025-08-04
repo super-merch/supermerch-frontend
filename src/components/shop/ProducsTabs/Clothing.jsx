@@ -219,7 +219,9 @@ const Clothing = ({ activeTab }) => {
                             >
                               <CiHeart />
                             </p>
-                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div onClick={() =>
+                                  handleViewProduct(product.meta.id)
+                                } className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
                               <p className="text-xl">
                                 <IoCartOutline />
                               </p>

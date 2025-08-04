@@ -197,7 +197,9 @@ const Stationery = ({ activeTab }) => {
                             <p className="p-3 text-2xl rounded-sm bg-icons">
                               <CiHeart />
                             </p>
-                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div onClick={() =>
+                                  handleViewProduct(product.meta.id)
+                                } className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
                               <p className="text-xl">
                                 <IoCartOutline />
                               </p>
