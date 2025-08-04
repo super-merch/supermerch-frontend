@@ -381,7 +381,7 @@ const SaleCards = () => {
                       return (
                         <div
                           key={product.id}
-                          onClick={() => handleViewProduct(product.meta.id)}
+                          
                           className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
                         >
                           {/* Show discount badge */}
@@ -401,7 +401,7 @@ const SaleCards = () => {
                           {/* <span className="absolute px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded top-2 left-2">
                             Sale
                           </span> */}
-                          <div className="max-h-[50%] h-full border-b overflow-hidden">
+                          <div onClick={() => handleViewProduct(product.meta.id)} className="max-h-[50%] h-full border-b overflow-hidden">
                             <img
                               src={
                                 product.overview.hero_image
@@ -461,7 +461,7 @@ const SaleCards = () => {
                                 )}
                               </div>
                             </div>
-                            <div className="flex justify-between gap-1 mt-2 mb-1">
+                            <div onClick={() => handleViewProduct(product.meta.id)} className="flex justify-between gap-1 mt-2 mb-1">
                               <p className="p-3 text-2xl rounded-sm bg-icons">
                                 <CiHeart />
                               </p>
