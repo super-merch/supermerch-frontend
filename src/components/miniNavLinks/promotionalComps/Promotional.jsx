@@ -189,15 +189,15 @@ const Promotional = () => {
 
         <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between border border-border2 px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              <input
+            <div className="flex items-center justify-between  px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+              {/* <input
                 type="text"
                 placeholder="Search for anything..."
                 className="w-full border-none outline-none"
                 value={searchText}
                 onChange={setSearchTextChanger}
               />
-              <IoSearchOutline className="text-2xl" />
+              <IoSearchOutline className="text-2xl" /> */}
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>

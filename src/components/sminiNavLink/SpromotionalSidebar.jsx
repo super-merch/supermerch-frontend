@@ -56,7 +56,26 @@ const SpromotionalSidebar = ({
       { label: 'Pen Packaging', path: '/Spromotional' },
       { label: 'More', path: '/Spromotional' },
     ],
-    // Add additional arrays as needed…
+    [
+      { title: 'HEADWEAR', path: '/Spromotional' },
+      { label: 'Caps', path: '/Spromotional' },
+      { label: 'Beanies', path: '/Spromotional' },
+      { label: 'Bucket Hats', path: '/Spromotional' },
+      { label: 'Visors', path: '/Spromotional' },
+      { label: 'Headbands', path: '/Spromotional' },
+      { label: 'Other Headwear', path: '/Spromotional' },
+    ],
+    [
+      { title: 'CLOTHING', path: '/Spromotional' },
+      { label: 'T-Shirts', path: '/Spromotional' },
+      { label: 'Hoodies', path: '/Spromotional' },
+      { label: 'Jackets', path: '/Spromotional' },
+      { label: 'Polo Shirts', path: '/Spromotional' },
+      { label: 'Workwear', path: '/Spromotional' },
+      { label: 'Sportswear', path: '/Spromotional' },
+      { label: 'Other Clothing', path: '/Spromotional' },
+    ],
+    
   ];
 
   const [sideCatClicked, setSideCatClicked] = useState(false);
@@ -163,7 +182,7 @@ const SpromotionalSidebar = ({
                   {category.map((item, index) => (
                     <li
                       key={index}
-                      className='py-1 rounded max-lg:border-b hover:underline'
+                      className='py-1  rounded max-lg:border-b hover:underline'
                     >
                       <p className='text-lg font-semibold text-blue-500 cursor-pointer'>
                         {item?.title}

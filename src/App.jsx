@@ -28,6 +28,7 @@ import SearchPage from "./pages/SearchPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Success from "./pages/Success";
 import Cancel from "./pages/Cancel";
+import AllBlogs from "./pages/AllBlogs";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -81,6 +82,8 @@ const App = () => {
         <Route path='/checkout' element={<CheckoutPage />} />
         <Route path='/about' element={<AboutPage />} />
         <Route path='/blogs/:id' element={<BlogDetails />} />
+        <Route path='/all-blogs' element={<AllBlogs />} />
+
         {token && <Route path='/admin' element={<Sidebar />} />}
         {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}
       </Routes>

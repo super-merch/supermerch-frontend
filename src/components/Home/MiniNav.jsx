@@ -20,7 +20,7 @@ import {
 } from "@/redux/slices/categorySlice";
 import supermerch from "../../assets/supermerch.png";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import { clearCart } from "@/redux/slices/cartSlice";
+import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
 
 const MiniNav = () => {
   const megaMenu = [
@@ -199,8 +199,8 @@ const MiniNav = () => {
     localStorage.removeItem("token");
     setToken("");
     googleLogout();
+    dispatch(clearCurrentUser());
     dispatch(clearFavourites());
-    dispatch(clearCart());
     navigate("/signup");
   };
 

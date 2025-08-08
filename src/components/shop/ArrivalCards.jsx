@@ -13,10 +13,8 @@ import { BsCursor } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
-
 import { setProducts } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
-
 import {
   setSelectedBrands,
   setMinPrice,
@@ -26,41 +24,70 @@ import {
 import { AppContext } from "../../context/AppContext";
 import SideBar2 from "./SideBar2";
 
+// Utility function to calculate visible page buttons
+const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = startPage + maxVisiblePages - 1;
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+  return pages;
+};
+
 const ArrivalCards = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
   const [itemsPerPage] = useState(9);
   const [maxVisiblePages, setMaxVisiblePages] = useState(6);
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  // State for filtered products and pagination
+  const [allFilteredProducts, setAllFilteredProducts] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [filterError, setFilterError] = useState("");
+  const [totalFilteredPages, setTotalFilteredPages] = useState(0);
+
+  // Only keep local search text state
+  const [searchProductName, setSearchProductName] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const {
     fetchNewArrivalProducts,
-    arrivalProducts: contextTrendingProducts,
+    fetchMultipleArrivalPages, // This needs to be added to AppContext
+    arrivalProducts: contextArrivalProducts,
     skeletonLoading,
     marginApi,
     totalDiscount,
+    backendUrl,
   } = useContext(AppContext);
 
-  const { searchText, activeFilters, filteredCount } = useSelector(
-    (state) => state.filters
-  );
-  console.log(filteredCount, "filteredCount");
+  // Get Redux filter state
+  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
+    useSelector((state) => state.filters);
+
+  // Check if price filters are active
+  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
 
   const filteredProducts = useSelector(
     (state) => state.filters.filteredProducts
   );
 
   useEffect(() => {
-    if (contextTrendingProducts) {
-      dispatch(setProducts(contextTrendingProducts));
+    if (contextArrivalProducts) {
+      dispatch(setProducts(contextArrivalProducts));
     }
-  }, [contextTrendingProducts, dispatch]);
+  }, [contextArrivalProducts, dispatch]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -85,8 +112,250 @@ const ArrivalCards = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const getRealPrice = (product) => {
+  const handleClearFilter = (filterType) => {
+    if (filterType === "category") dispatch(setSelectedCategory("all"));
+    if (filterType === "brand") dispatch(setSelectedBrands([]));
+    if (filterType === "price") {
+      dispatch(setMinPrice(0));
+      dispatch(setMaxPrice(1000));
+      // Reset filtered products when clearing price filter
+      setAllFilteredProducts([]);
+      setTotalFilteredPages(0);
+      setFilterError("");
+    }
+    dispatch(applyFilters());
+  };
+
+  // Helper function to get real price
+  const getRealPrice = (product) => {
+    const priceGroups = product.product?.prices?.price_groups || [];
+    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+    const priceBreaks = basePrice.base_price?.price_breaks || [];
+    return priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+  };
+
+  // Function to fetch and filter arrival products with price range
+  const fetchAndFilterArrivalProducts = async (
+    minPrice,
+    maxPrice,
+    sortOption
+  ) => {
+    setIsFiltering(true);
+    setFilterError("");
+
+    try {
+      let maxPages = 1; // Start with fewer pages for faster response
+
+      // Use the fetchMultipleArrivalPages method from AppContext
+      const fetchedProducts = await fetchMultipleArrivalPages(
+        maxPages,
+        100,
+        sortOption
+      );
+      setFetchedPagesCount(maxPages); // Track how many pages we've fetched
+
+      if (fetchedProducts && fetchedProducts.length > 0) {
+        // Filter products by price
+        const filteredProducts = fetchedProducts.filter((product) => {
+          const price = getRealPrice(product);
+          return price >= minPrice && price <= maxPrice && price > 0;
+        });
+
+        if (filteredProducts.length > 0) {
+          // Remove duplicates
+          const uniqueProducts = filteredProducts.filter(
+            (product, index, self) =>
+              index === self.findIndex((p) => p.meta?.id === product.meta?.id)
+          );
+
+          // Apply sorting to filtered products
+          const sortedProducts = [...uniqueProducts].sort((a, b) => {
+            const priceA = getRealPrice(a);
+            const priceB = getRealPrice(b);
+
+            if (sortOption === "lowToHigh") return priceA - priceB;
+            if (sortOption === "highToLow") return priceB - priceA;
+            return 0;
+          });
+
+          setAllFilteredProducts(sortedProducts);
+          setTotalFilteredPages(
+            Math.ceil(sortedProducts.length / itemsPerPage)
+          );
+        } else {
+          setFilterError("No new arrival products found in the specified price range");
+        }
+      } else {
+        setFilterError("No new arrival products found in the specified price range");
+      }
+    } catch (error) {
+      console.error("Error filtering arrival products:", error);
+      setFilterError("Error fetching filtered products. Please try again.");
+    } finally {
+      setIsFiltering(false);
+    }
+  };
+
+  // Function to fetch more products when user is near the end
+  const fetchMoreFilteredProducts = async () => {
+    if (isFiltering) return; // Prevent multiple simultaneous requests
+    
+    setIsFiltering(true);
+    
+    try {
+      // Calculate which pages to fetch next
+      const startPage = fetchedPagesCount + 1;
+      const pagesToFetch = 3;
+      
+      // Fetch more pages starting from where we left off
+      const additionalProducts = await fetchMultipleArrivalPages(
+        pagesToFetch, 
+        100, 
+        sortOption, 
+        startPage
+      );
+      
+      if (additionalProducts && additionalProducts.length > 0) {
+        // Filter new products by price
+        const newFilteredProducts = additionalProducts.filter(product => {
+          const price = getRealPrice(product);
+          const isInPriceRange = price >= minPrice && price <= maxPrice && price > 0;
+          // Also check if we don't already have this product
+          const notDuplicate = !allFilteredProducts.some(existing => existing.meta?.id === product.meta?.id);
+          return isInPriceRange && notDuplicate;
+        });
+        
+        if (newFilteredProducts.length > 0) {
+          // Apply sorting to new products
+          const sortedNewProducts = [...newFilteredProducts].sort((a, b) => {
+            const priceA = getRealPrice(a);
+            const priceB = getRealPrice(b);
+            
+            if (sortOption === "lowToHigh") return priceA - priceB;
+            if (sortOption === "highToLow") return priceB - priceA;
+            return 0;
+          });
+          
+          // Add to existing products
+          const updatedProducts = [...allFilteredProducts, ...sortedNewProducts];
+          setAllFilteredProducts(updatedProducts);
+          setTotalFilteredPages(Math.ceil(updatedProducts.length / itemsPerPage));
+        }
+        
+        // Update the count of fetched pages
+        setFetchedPagesCount(prev => prev + pagesToFetch);
+      }
+    } catch (error) {
+      console.error('Error fetching more arrival products:', error);
+    } finally {
+      setIsFiltering(false);
+    }
+  };
+
+  // Check if user is near the end and needs more products
+  useEffect(() => {
+    if (isPriceFilterActive && allFilteredProducts.length > 0) {
+      const isNearEnd = currentPage >= totalFilteredPages - 1;
+      const hasRoomForMore = allFilteredProducts.length < 200;
+
+      if (isNearEnd && hasRoomForMore) {
+        fetchMoreFilteredProducts();
+      }
+    }
+  }, [currentPage, isPriceFilterActive, totalFilteredPages]);
+
+  useEffect(() => {
+    if (isPriceFilterActive) {
+      fetchAndFilterArrivalProducts(minPrice, maxPrice, sortOption);
+    } else {
+      // Reset filtered products when no price filter is active
+      setAllFilteredProducts([]);
+      setTotalFilteredPages(0);
+      setFilterError("");
+      setFetchedPagesCount(0);
+    }
+  }, [minPrice, maxPrice, sortOption, isPriceFilterActive]);
+
+  // Fetch products when page or sort changes (only when no price filter is active)
+  useEffect(() => {
+    if (!isPriceFilterActive) {
+      fetchNewArrivalProducts(currentPage, sortOption);
+    }
+  }, [currentPage, sortOption, isPriceFilterActive]);
+
+  const handleSortSelection = (option) => {
+    setSortOption(option);
+    setIsDropdownOpen(false);
+    setCurrentPage(1); // Reset to page 1 when sorting changes
+  };
+
+  const handleViewProduct = (productId) => {
+    navigate(`/product/${productId}`, { state: "Home" });
+  };
+
+  const setSearchTextChanger = (e) => {
+    setSearchProductName(e.target.value);
+  };
+
+  const handleOpenModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    document.body.style.overflow = "unset";
+  };
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isModalOpen) {
+        handleCloseModal();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isModalOpen]);
+
+  // Get current page products based on whether price filter is active
+  const getCurrentPageProducts = () => {
+    if (isPriceFilterActive) {
+      // Use filtered products
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return allFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // Use regular arrival products with local search filter
+      const arrivalProducts = filteredProducts || [];
+      return arrivalProducts.filter((product) => {
+        const priceGroups = product.product?.prices?.price_groups || [];
+        const basePrice = priceGroups.find((group) => group?.base_price) || {};
+        const priceBreaks = basePrice.base_price?.price_breaks || [];
+        const realPrice =
+          priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
+            ? priceBreaks[0].price
+            : "0";
+
+        const productName = product.overview.name || "";
+        return (
+          realPrice !== "0" &&
+          productName.toLowerCase().includes(searchProductName.toLowerCase())
+        );
+      });
+    }
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters =
+    searchProductName.trim() !== "" || isPriceFilterActive;
+
+  const currentPageProducts = getCurrentPageProducts();
+
+  // Apply sorting to current products for regular view
+  const sortedProducts = [...currentPageProducts].sort((a, b) => {
+    const getRealPriceWithMargin = (product) => {
       const priceGroups = product.product?.prices?.price_groups || [];
       const basePrice = priceGroups.find((group) => group?.base_price) || {};
       const priceBreaks = basePrice.base_price?.price_breaks || [];
@@ -106,74 +375,39 @@ const ArrivalCards = () => {
       return minPrice;
     };
 
-    const priceA = getRealPrice(a);
-    const priceB = getRealPrice(b);
+    const priceA = getRealPriceWithMargin(a);
+    const priceB = getRealPriceWithMargin(b);
 
     if (sortOption === "lowToHigh") return priceA - priceB;
     if (sortOption === "highToLow") return priceB - priceA;
     return 0;
   });
 
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-  const showPagination = sortedProducts.length > itemsPerPage;
-  const currentItems = sortedProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Determine pagination logic
+  const paginationTotalPages = isPriceFilterActive
+    ? totalFilteredPages
+    : Math.ceil(sortedProducts.length / itemsPerPage);
 
-  const handleClearFilter = (filterType) => {
-    if (filterType === "category") dispatch(setSelectedCategory("all"));
-    if (filterType === "brand") dispatch(setSelectedBrands([]));
-    if (filterType === "price") {
-      dispatch(setMinPrice(0));
-      dispatch(setMaxPrice(1000));
+  const showPagination = paginationTotalPages > 1;
+
+  // For regular view, slice the sorted products for current page
+  const displayProducts = isPriceFilterActive 
+    ? sortedProducts 
+    : sortedProducts.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      );
+
+  // Calculate total count for display
+  const getTotalCount = () => {
+    if (isPriceFilterActive) {
+      return allFilteredProducts.length;
+    } else if (searchProductName.trim() !== "") {
+      return sortedProducts.length;
+    } else {
+      return filteredProducts?.length || 0;
     }
-    dispatch(applyFilters());
   };
-
-  useEffect(() => {
-    fetchNewArrivalProducts(currentPage);
-  }, [currentPage]);
-
-  const handleSortSelection = (option) => {
-    setSortOption(option);
-    setIsDropdownOpen(false);
-  };
-
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
-  };
-
-  const setSearchTextChanger = (e) => {
-    dispatch(setSearchText(e.target.value));
-    dispatch(applyFilters());
-  };
-
-  const handleOpenModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-    // Prevent body scroll when modal is open
-    document.body.style.overflow = "hidden";
-  };
-
-  // Function to close modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-    // Restore body scroll
-    document.body.style.overflow = "unset";
-  };
-
-  // Close modal on escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && isModalOpen) {
-        handleCloseModal();
-      }
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isModalOpen]);
 
   return (
     <>
@@ -182,21 +416,25 @@ const ArrivalCards = () => {
           <SideBar2 />
         </div>
 
-        <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">
+        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between border border-border2 px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              <input
-                type="text"
-                placeholder="Search for new arrival products..."
-                className="w-full border-none outline-none"
-                value={searchText}
-                onChange={setSearchTextChanger}
-              />
-              <IoSearchOutline className="text-2xl" />
+            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+              {!isPriceFilterActive && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Search for new arrival products..."
+                    className="w-full border-none outline-none"
+                    value={searchProductName}
+                    onChange={setSearchTextChanger}
+                  />
+                  <IoSearchOutline className="text-2xl" />
+                </>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
-              <div className="relative " ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef}>
                 <button
                   className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
@@ -263,7 +501,7 @@ const ArrivalCards = () => {
                     x
                   </button>
                 </div>
-              )}
+                )}
               {activeFilters.price &&
                 activeFilters.price.length === 2 &&
                 (activeFilters.price[0] !== 0 ||
@@ -282,25 +520,42 @@ const ArrivalCards = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
-              {" "}
-              <span className="font-semibold text-brand">{filteredCount}</span>
-              <p className="">New Arrivals Results found</p>
+            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
+              <span className="font-semibold text-brand">
+                {!skeletonLoading && !isFiltering && getTotalCount()}
+              </span>
+              <p className="">
+                {skeletonLoading || isFiltering
+                  ? "Loading..."
+                  : `New Arrivals Results found${
+                      isPriceFilterActive
+                        ? ` (Price filtered)`
+                        : hasActiveFilters
+                        ? ` on page ${currentPage}`
+                        : ""
+                    }`}
+              </p>
             </div>
           </div>
 
+          {filterError && (
+            <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
+              <p className="text-red-700">{filterError}</p>
+            </div>
+          )}
+
           <div
             className={`${
-              skeletonLoading
+              skeletonLoading || isFiltering
                 ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
-            {skeletonLoading ? (
+            {skeletonLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
                 <div
                   key={index}
-                  className="relative p-4 border rounded-lg shadow-md border-border2 "
+                  className="relative p-4 border rounded-lg shadow-md border-border2"
                 >
                   <Skeleton height={200} className="rounded-md" />
                   <div className="p-4">
@@ -324,98 +579,89 @@ const ArrivalCards = () => {
                   </div>
                 </div>
               ))
-            ) : (
+            ) : displayProducts.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {currentItems.length !== 0 &&
-                  currentItems
-                    .filter((product) => {
-                      const priceGroups =
-                        product.product?.prices?.price_groups || [];
-                      const basePrice =
-                        priceGroups.find((group) => group?.base_price) || {};
-                      const priceBreaks =
-                        basePrice.base_price?.price_breaks || [];
-                      // Check if there's at least one valid price
-                      return (
-                        priceBreaks.length > 0 &&
-                        priceBreaks[0]?.price !== undefined
-                      );
-                    })
-                    .map((product) => {
-                      const priceGroups =
-                        product.product?.prices?.price_groups || [];
-                      const basePrice =
-                        priceGroups.find((group) => group?.base_price) || {};
-                      const priceBreaks =
-                        basePrice.base_price?.price_breaks || [];
+                {displayProducts
+                  .filter((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+                    return (
+                      priceBreaks.length > 0 &&
+                      priceBreaks[0]?.price !== undefined
+                    );
+                  })
+                  .map((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
 
-                      // Get an array of prices from priceBreaks (these are already discounted)
-                      const prices = priceBreaks
-                        .map((breakItem) => breakItem.price)
-                        .filter((price) => price !== undefined);
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
 
-                      // 1) compute raw min/max
-                      let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-                      let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+                    let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                    let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-                      // 2) pull margin info (guarding against undefined)
-                      const productId = product.meta.id;
-                      const marginEntry = marginApi[productId] || {};
-                      const marginFlat =
-                        typeof marginEntry.marginFlat === "number"
-                          ? marginEntry.marginFlat
-                          : 0;
-                      const baseMarginPrice =
-                        typeof marginEntry.baseMarginPrice === "number"
-                          ? marginEntry.baseMarginPrice
-                          : 0;
+                    const productId = product.meta.id;
+                    const marginEntry = marginApi[productId] || {};
+                    const marginFlat =
+                      typeof marginEntry.marginFlat === "number"
+                        ? marginEntry.marginFlat
+                        : 0;
+                    const baseMarginPrice =
+                      typeof marginEntry.baseMarginPrice === "number"
+                        ? marginEntry.baseMarginPrice
+                        : 0;
 
-                      // 3) apply the flat margin to both ends of the range
-                      minPrice += marginFlat;
-                      maxPrice += marginFlat;
+                    minPrice += marginFlat;
+                    maxPrice += marginFlat;
 
-                      // Get discount percentage from product's discount info
-                      const discountPct = product.discountInfo?.discount || 0;
-                      const isGlobalDiscount = product.discountInfo?.isGlobal || false;
+                    const discountPct = product.discountInfo?.discount || 0;
+                    const isGlobalDiscount =
+                      product.discountInfo?.isGlobal || false;
 
-                      return (
-                        <div
-                          key={product.id}
-                          
-                          className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
-                        >
-                          {/* Show discount badge */}
-                          {discountPct > 0 && (
-                            <div className="absolute top-2 right-2 z-10">
-                              <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
-                                {discountPct}%
+                    return (
+                      <div
+                        key={product.id}
+                        className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
+                      >
+                        {discountPct > 0 && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
+                              {discountPct}%
+                            </span>
+                            {isGlobalDiscount && (
+                              <span className="block px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
+                                Global
                               </span>
-                              {isGlobalDiscount && (
-                                <span className="block px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
-                                  Global
-                                </span>
-                              )}
-                            </div>
-                          )}
-                          {/* Add trending badge */}
-                          {/* <span className="absolute px-2 py-1 text-xs font-bold text-white bg-orange-500 rounded top-2 left-2">
-                            New Arrival
-                          </span> */}
-                          <div onClick={() => handleViewProduct(product.meta.id)} className="max-h-[50%] h-full border-b overflow-hidden">
-                            <img
-                              src={
-                                product.overview.hero_image
-                                  ? product.overview.hero_image
-                                  : noimage
-                              }
-                              alt=""
-                              className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
-                            />
+                            )}
                           </div>
-                          <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
+                        )}
+                        <div
+                          onClick={() => handleViewProduct(product.meta.id)}
+                          className="max-h-[50%] h-full border-b overflow-hidden"
+                        >
+                          <img
+                            src={
+                              product.overview.hero_image
+                                ? product.overview.hero_image
+                                : noimage
+                            }
+                            alt=""
+                            className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
+                          />
+                        </div>
+                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
                           {product?.product?.colours?.list.length > 0 &&
                             product?.product?.colours?.list
-                              .slice(0, 15) // Limit to 15 colors
+                              .slice(0, 15)
                               .flatMap((colorObj, index) =>
                                 colorObj.colours.map((color, subIndex) => (
                                   <div
@@ -430,84 +676,94 @@ const ArrivalCards = () => {
                                 ))
                               )}
                         </div>
-                          <div className="p-3">
-                            <div className="text-center ">
-                              <h2 className="text-lg font-medium text-brand ">
-                                {product.overview.name ||
-                                product.overview.name.length > 22
-                                  ? product.overview.name.slice(0, 22) + "..."
-                                  : "No Name "}
-                              </h2>
-                              <p className="font-normal text-brand">
-                                {" "}
-                                Code: {product.overview.code}
-                              </p>
-                              {/* Updated Price display matching AllProducts logic */}
-                              <div className="pt-2">
-                                <h2 className="text-xl font-semibold text-heading">
-                                  $
-                                  {minPrice === maxPrice ? (
-                                    <span>{minPrice.toFixed(2)}</span>
-                                  ) : (
-                                    <span>
-                                      {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
-                                    </span>
-                                  )}
-                                </h2>
-                                {discountPct > 0 && (
-                                  <p className="text-xs text-green-600 font-medium">
-                                    {discountPct}% discount applied
-                                  </p>
+                        <div className="p-3">
+                          <div
+                            onClick={() => handleViewProduct(product.meta.id)}
+                            className="text-center"
+                          >
+                            <h2 className="text-lg font-medium text-brand">
+                              {product.overview.name &&
+                              product.overview.name.length > 22
+                                ? product.overview.name.slice(0, 22) + "..."
+                                : product.overview.name || "No Name"}
+                            </h2>
+
+                            <div className="pt-2">
+                              <h2 className="text-xl font-semibold text-heading">
+                                From - $
+                                {minPrice === maxPrice ? (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span>{minPrice.toFixed(2)}</span>
                                 )}
-                              </div>
-                            </div>
-                            <div className="flex justify-between gap-1 mt-2 mb-1">
-                              <p className="p-3 text-2xl rounded-sm bg-icons">
-                                <CiHeart />
-                              </p>
-                              <div onClick={() => handleViewProduct(product.meta.id)} className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
-                                <p className="text-xl">
-                                  <IoCartOutline />
+                              </h2>
+                              {discountPct > 0 && (
+                                <p className="text-xs text-green-600 font-medium">
+                                  {discountPct}% discount applied
                                 </p>
-                                <button className="text-sm uppercase">
-                                  Add to cart
-                                </button>
-                              </div>
-                              <p
-                                onClick={() => handleOpenModal(product)}
-                                className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
-                              >
-                                <AiOutlineEye />
-                              </p>
+                              )}
                             </div>
                           </div>
+                          <div className="flex justify-between gap-1 mt-2 mb-1">
+                            <p className="p-3 text-2xl rounded-sm bg-icons">
+                              <CiHeart />
+                            </p>
+                            <div
+                              onClick={() => handleViewProduct(product.meta.id)}
+                              className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+                            >
+                              <p className="text-xl">
+                                <IoCartOutline />
+                              </p>
+                              <button className="text-sm uppercase">
+                                Add to cart
+                              </button>
+                            </div>
+                            <p
+                              onClick={() => handleOpenModal(product)}
+                              className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
+                            >
+                              <AiOutlineEye />
+                            </p>
+                          </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    );
+                  })}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="pt-10 text-xl text-center text-red-500">
+                  No New Arrival Products Found
+                </p>
               </div>
             )}
           </div>
 
           {showPagination && (
-            <div className="flex items-center justify-center mt-16 space-x-2">
+            <div className="flex items-center justify-center mt-16 space-x-2 pagination">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="w-10 h-10 px-2 border-2 rounded-full border-smallHeader hover:bg-gray-200"
+                className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
-                <IoMdArrowBack className="text-xl text-smallHeader" />
+                <IoMdArrowBack className="text-xl" />
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 border rounded-full ${
-                      currentPage === page
-                        ? "bg-smallHeader text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
+
+              {getPaginationButtons(
+                currentPage,
+                paginationTotalPages,
+                maxVisiblePages
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                    currentPage === page
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                >
                     {page}
                   </button>
                 )

@@ -6,21 +6,24 @@ import { IoClose } from "react-icons/io5";
 import { IoArrowBack } from "react-icons/io5";
 import { FaArrowRight } from "react-icons/fa";
 import { toast } from "react-toastify";
-
+import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
 import {
   updateCartItemQuantity,
   removeFromCart,
   updateCartItemImage,
   incrementQuantity,
   decrementQuantity,
+  multipleQuantity,
 } from "../../redux/slices/cartSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 
 const CartComponent = () => {
   const { totalDiscount } = useContext(AppContext);
   const dispatch = useDispatch();
-  const { items } = useSelector((state) => state.cart);
+  const items = useSelector(selectCurrentUserCartItems);
+  const { totalQuantity } = useSelector((state) => state.cart);
+  console.log(items);
   const [value, setValue] = useState("");
 
   // Coupon states
@@ -31,6 +34,36 @@ const CartComponent = () => {
   const [customQuantities, setCustomQuantities] = useState({});
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const [shippingCharges, setShippingCharges] = useState(0);
+  const getShippingCharges = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization headers if needed
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log("Shipping Charges Data:", data);
+      setShippingCharges(data.shipping || 0);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch shipping charges");
+      }
+
+      return { data };
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getShippingCharges();
+  }, []);
 
   useEffect(() => {
     const quantities = {};
@@ -61,7 +94,7 @@ const CartComponent = () => {
 
   // Calculate GST and final total
   const gstAmount = finalDiscountedAmount * 0.1; // 10%
-  const total = finalDiscountedAmount + gstAmount;
+  const total = finalDiscountedAmount + gstAmount + shippingCharges;
 
   const [uploadedImage, setUploadedImage] = useState("/drag.png");
   const fileInputRef = useRef(null);
@@ -159,6 +192,10 @@ const CartComponent = () => {
     setOpenModel(true);
     setId(id);
   };
+  const Navigate = useNavigate();
+  const handleViewProduct = (id) => {
+    Navigate(`/product/${id}`, { state: "Cart" });
+  };
 
   return (
     <div className="flex flex-wrap justify-between gap-4 Mycontainer md:flex-wrap lg:flex-nowrap">
@@ -213,111 +250,132 @@ const CartComponent = () => {
               </tr>
             </thead>
             <tbody className="flex flex-col lg:table-header-group md:table-header-group sm:table-header-group">
-              {items.map((item) => {
-                const subTotal = item.totalPrice || item.price * item.quantity;
+              {items.length > 0 ? (
+                items.map((item) => {
+                  const subTotal =
+                    item.totalPrice || item.price * item.quantity;
 
-                return (
-                  <tr key={item.id}>
-                    <td className="flex items-start p-3 space-x-3">
-                      <button
-                        onClick={() => handleRemovefromCart(item.id)}
-                        className="p-1 text-lg border rounded-full border-category"
-                      >
-                        <IoClose className="text-category" />
-                      </button>
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-12 h-12"
-                      />
-                      <div>
-                        <p className="text-sm font-medium">{item.name}</p>
-                        <p className="text-xs font-normal">
-                          COLOUR: {item.color}
-                        </p>
-                        <p className="text-xs font-normal">
-                          PRINT METHOD: {item.print}
-                        </p>
-                        <p className="text-xs font-normal">
-                          LOGO COLOUR: {item.logoColor}
-                        </p>
-                        <p className="text-xs font-normal">
-                          Est Delivery Date: {item.deliveryDate}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="p-3 text-center">
-                      <div
-                        onClick={() => fileInputRef.current.click()}
-                        className="cursor-pointer"
-                      >
+                  return (
+                    <tr key={item.id}>
+                      <td className="flex items-start p-3 space-x-3">
+                        <button
+                          onClick={() => handleRemovefromCart(item.id)}
+                          className="p-1 text-lg border rounded-full border-category"
+                        >
+                          <IoClose className="text-category" />
+                        </button>
                         <img
-                          key={item.dragdrop || uploadedImage}
-                          src={item.dragdrop || uploadedImage}
-                          alt="Upload"
-                          className="flex w-10 h-10 p-2 m-auto lg:w-16 md:w-16 lg:h-16 md:h-16 bg-drag"
+                          onClick={() => handleViewProduct(item.id)}
+                          src={item.image}
+                          alt={item.name}
+                          className="w-12 h-12 cursor-pointer"
                         />
-                      </div>
-                      <input
-                        type="file"
-                        id="fileUpload"
-                        ref={fileInputRef}
-                        className="hidden"
-                        onChange={(e) => handleFileChange(e, item.id)}
-                        accept="image/*"
-                      />
-                    </td>
-                    <td className="p-3">
-                      <p className="font-semibold text-center">
-                        ${item.price.toFixed(2)}
-                      </p>
-                    </td>
-
-                    <td className="p-3">
-                      <div className="flex w-28 m-auto justify-center gap-3 bg-line border border-border2 items-center py-2.5">
-                        <button
-                          onClick={() =>
-                            dispatch(
-                              incrementQuantity({
-                                id: item.id,
-                              })
-                            )
-                          }
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => handleViewProduct(item.id)}
                         >
-                          <FiPlus />
-                        </button>
+                          <p className="text-sm cursor-pointer font-medium">
+                            {item.name}
+                          </p>
+                          <p className="text-xs cursor-pointer font-normal">
+                            COLOUR: {item.color}
+                          </p>
+                          <p className="text-xs cursor-pointer font-normal">
+                            PRINT METHOD: {item.print}
+                          </p>
+                          <p className="text-xs font-normal cursor-pointer">
+                            LOGO COLOUR: {item.logoColor}
+                          </p>
+                          <p className="text-xs font-normal cursor-pointer">
+                            Est Delivery Date: {item.deliveryDate}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="p-3 text-center">
+                        <div
+                          onClick={() => fileInputRef.current.click()}
+                          className="cursor-pointer"
+                        >
+                          <img
+                            key={item.dragdrop || uploadedImage}
+                            src={item.dragdrop || uploadedImage}
+                            alt="Upload"
+                            className="flex w-10 h-10 p-2 m-auto lg:w-16 md:w-16 lg:h-16 md:h-16 bg-drag"
+                          />
+                        </div>
                         <input
-                          type="number"
-                          disabled
-                          min="1"
-                          value={customQuantities[item.id]}
-                          onChange={(e) => handleQuantityChange(e, item.id)}
-                          className="w-10 text-center outline-none no-arrows"
-                          placeholder="0"
+                          type="file"
+                          id="fileUpload"
+                          ref={fileInputRef}
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, item.id)}
+                          accept="image/*"
                         />
-                        <button
-                          onClick={() =>
-                            dispatch(
-                              decrementQuantity({
-                                id: item.id,
-                              })
-                            )
-                          }
-                        >
-                          <FiMinus />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="p-3 font-semibold text-center">
-                      $
-                      {subTotal.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td className="p-3">
+                        <p className="font-semibold text-center">
+                          ${item.price.toFixed(2)}
+                        </p>
+                      </td>
+
+                      <td className="p-3">
+                        <div className="flex w-28 m-auto justify-center gap-3 bg-line border border-border2 items-center py-2.5">
+                          <button
+                            onClick={() =>
+                              dispatch(
+                                decrementQuantity({
+                                  id: item.id,
+                                })
+                              )
+                            }
+                          >
+                            <FiMinus />
+                          </button>
+                          <input
+                            type="number"
+                            value={customQuantities[item.id]}
+                            onChange={(e) =>
+                              dispatch(
+                                multipleQuantity({
+                                  id: item.id,
+                                  quantity: parseInt(e.target.value, 10),
+                                })
+                              )
+                            }
+                            className="w-10 text-center outline-none no-arrows"
+                            placeholder="0"
+                          />
+                          <button
+                            onClick={() =>
+                              dispatch(
+                                incrementQuantity({
+                                  id: item.id,
+                                })
+                              )
+                            }
+                          >
+                            <FiPlus />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-3 font-semibold text-center">
+                        $
+                        {(subTotal || 0).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <div className=" text-red-500 text-lg">
+                  <p className=" ">
+                    Your Cart is empty Your shopping cart lives to serve. Give
+                    it purpose – fill it with what you are looking for.
+                  </p>
+                </div>
+              )}
             </tbody>
           </table>
         </div>
@@ -341,15 +399,19 @@ const CartComponent = () => {
               <span className="text-sm font-normal text-stock">Sub-total:</span>
               <span className="text-sm font-medium text-brand">
                 $
-                {totalAmount.toLocaleString("en-US", {
+                {(totalAmount || 0).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
               </span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between text-sm">
               <span className="text-sm font-normal text-stock">Shipping:</span>
-              <span className="text-sm font-medium text-brand">Free</span>
+              <span className="text-sm font-medium text-brand">
+                {shippingCharges > 0
+                  ? `$${shippingCharges.toFixed(2)}`
+                  : "Free"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-normal text-stock">
@@ -360,7 +422,7 @@ const CartComponent = () => {
               </span>
             </div>
             {appliedCoupon && (
-              <div className="flex flex-col gap-3" >
+              <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
                   <span className="text-sm font-normal text-stock">
                     Coupon ({appliedCoupon.coupen}):
@@ -382,7 +444,7 @@ const CartComponent = () => {
             <div className="flex justify-between pb-2">
               <span className="text-sm font-normal text-stock">GST(10%):</span>
               <span className="text-sm font-medium text-brand">
-                ${gstAmount.toFixed(2)}
+                ${(gstAmount || 0).toFixed(2)}
               </span>
             </div>
             <hr />
@@ -435,20 +497,21 @@ const CartComponent = () => {
             <span className="font-normal text-brand">Total:</span>
             <span className="font-semibold text-brand">
               $
-              {total.toLocaleString("en-US", {
+              {(total || 0).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
             </span>
           </div>
 
-          {total > 0 ? (
+          {total > shippingCharges ? (
             <Link
               to={"/checkout"}
               state={{
                 cartTotal: total,
                 appliedCoupon: appliedCoupon,
                 couponDiscount: couponDiscount,
+                shippingCharges: shippingCharges,
               }}
               className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-smallHeader"
             >
@@ -458,7 +521,6 @@ const CartComponent = () => {
           ) : (
             <button
               onClick={() => toast.error("Your cart is empty")}
-              disabled
               className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-gray-400 cursor-not-allowed opacity-50"
             >
               PROCEED TO CHECKOUT

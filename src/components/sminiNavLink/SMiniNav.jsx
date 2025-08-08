@@ -13,6 +13,8 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import {
   setSelectedCategory,
   applyFilters,
+  setMinPrice,
+  setMaxPrice,
 } from "../../redux/slices/filterSlice";
 import {
   fetchcategoryProduct,
@@ -40,7 +42,7 @@ import {
 } from "@/components/ui/collapsible";
 import supermerch from "../../assets/supermerch.png";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import { clearCart } from "@/redux/slices/cartSlice";
+import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
 
 const SMiniNav = () => {
   const megaMenu = [
@@ -1124,9 +1126,9 @@ const SMiniNav = () => {
           label: "Top",
           items: [
             { id: "B-18", name: "T Shirts" },
+            { id: "B-02", name: "Aprons" },
             { id: "B-09", name: "Polo Shirts" },
             { id: "B-13", name: "Shirts" },
-            { id: "B-02", name: "Aprons" },
           ],
         },
         {
@@ -1368,8 +1370,8 @@ const SMiniNav = () => {
     localStorage.removeItem("token");
     setToken("");
     googleLogout();
+    dispatch(clearCurrentUser())
     dispatch(clearFavourites());
-    dispatch(clearCart())
     navigate("/signup");
   };
 
@@ -1478,9 +1480,13 @@ const SMiniNav = () => {
     sethoverMegaMenu(false);
     sethoverClothingMenu(false);
     const encodedTitleName = encodeURIComponent(titleName);
+    dispatch(setMinPrice(0));
+        dispatch(setMaxPrice(1000));
+        dispatch(applyFilters());
     navigate(
       `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
     );
+    
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -1494,8 +1500,11 @@ const SMiniNav = () => {
   ) => {
     sethoverMegaMenu(false);
     sethoverClothingMenu(false);
-    const encodedTitleName = encodeURIComponent(titleName); // Encode the title
+    const encodedTitleName = encodeURIComponent(titleName); 
     const encodedLabel = encodeURIComponent(labelName);
+    dispatch(setMinPrice(0));
+        dispatch(setMaxPrice(1000));
+        dispatch(applyFilters());
     navigate(
       `/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&label=${encodedLabel}`
     );
@@ -1519,8 +1528,6 @@ const SMiniNav = () => {
       );
       if (clothingCategory) {
         handleNameCategories(clothingCategory.name, clothingCategory.id);
-      } else {
-        toast.error("Clothing category not found!");
       }
     }
     if (
@@ -1547,6 +1554,9 @@ const SMiniNav = () => {
       return;
     }
     setInputValue(inputValue.trim());
+    dispatch(setMinPrice(0));
+        dispatch(setMaxPrice(1000));
+        dispatch(applyFilters());
       navigate(`/search?search=${inputValue}`);
       setInputValue("");
   };
@@ -1616,7 +1626,7 @@ const SMiniNav = () => {
               value={inputValue}
               onChange={handleChange}
               type="text"
-              placeholder="Search for anything..."
+              placeholder="Search for products..."
               className="w-full text-black bg-transparent outline-none"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -1666,7 +1676,7 @@ const SMiniNav = () => {
                       <Link
                         onClick={() => setIsDropdownOpen(false)}
                         to="/admin"
-                        className="px-4 py-2 text-black cursor-pointer hover:bg-gray-100"
+                        className="px-4 py-2 block text-black cursor-pointer hover:bg-gray-100"
                       >
                         Manage Orders
                       </Link>
@@ -2258,7 +2268,7 @@ const SMiniNav = () => {
       <div className="py-3 mt-1 bg-shipping lg:mt-0 md:mt-0">
         <div className="flex flex-wrap items-center justify-center gap-2 Mycontainer lg:gap-8 md:gap-8">
           <h1 className="text-sm font-medium lg:text-lg md:text-lg text-smallHeader">
-            Get Discount + Free Shipping
+            Get Discount Using Coupon
           </h1>
           <div onClick={()=>{
             setCoupenModel(true)

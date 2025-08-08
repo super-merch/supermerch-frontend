@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IoClose, IoMenu, IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-// import Sidebar from "./Sidebar";
 import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
@@ -33,7 +32,7 @@ import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/Promotional
 import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
 import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
 import { toast } from "react-toastify";
-import { megaMenu } from "@/assets/assets";
+import { megaMenu, megaMenuClothing, headWear } from "@/assets/assets";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 
 // Utility function to calculate visible page buttons
@@ -51,7 +50,26 @@ const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
   return pages;
 };
 
+const getMenuArrayByCategoryName = (categoryName) => {
+  if (!categoryName) return megaMenu;
+
+  // Check if categoryName exists in headWear
+  if (headWear.some((category) => category.name === categoryName)) {
+    return headWear;
+  }
+
+  // Check if categoryName exists in megaMenuClothing
+  if (megaMenuClothing.some((category) => category.name === categoryName)) {
+    return megaMenuClothing;
+  }
+
+  // Default to megaMenu
+  return megaMenu;
+};
+
 const Spromotional = () => {
+
+  const priceCache = useRef(new Map());
   const [itemsPerPage] = useState(9);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,7 +79,12 @@ const Spromotional = () => {
   const dropdownRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [priceRangeFilter, setPriceRangeFilter] = useState([0, 1000]);
+  // Price filtering states - similar to SearchCard
+  const [allFilteredProducts, setAllFilteredProducts] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [filterError, setFilterError] = useState("");
+  const [totalFilteredPages, setTotalFilteredPages] = useState(0);
+  const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
 
   const [clicked, setClicked] = useState(false);
 
@@ -71,19 +94,15 @@ const Spromotional = () => {
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
-    // Prevent body scroll when modal is open
     document.body.style.overflow = "hidden";
   };
 
-  // Function to close modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
-    // Restore body scroll
     document.body.style.overflow = "unset";
   };
 
-  // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && isModalOpen) {
@@ -121,12 +140,15 @@ const Spromotional = () => {
     setSidebarActiveCategory,
     sidebarActiveLabel,
     setSidebarActiveLabel,
+    fetchMultipleParamPages, // We'll need to create this function
   } = useContext(AppContext);
 
-  const { searchText, activeFilters, filteredCount } = useSelector(
+  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
-  // console.log(filteredCount, 'filteredCount');
+
+  // Check if price filters are active
+  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
 
   const filteredProducts = useSelector(
     (state) => state.promotionals.filteredPromotionalProducts
@@ -140,6 +162,156 @@ const Spromotional = () => {
       category.subTypes.some((sub) => sub.id === typeId)
     );
   });
+
+  // Helper function to get real price
+  const getRealPrice = useCallback((product) => {
+  const productId = product.meta?.id;
+  if (priceCache.current.has(productId)) {
+    return priceCache.current.get(productId);
+  }
+  
+  const priceGroups = product.product?.prices?.price_groups || [];
+  const basePrice = priceGroups.find((group) => group?.base_price) || {};
+  const priceBreaks = basePrice.base_price?.price_breaks || [];
+  const price = priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+  
+  // Cache the result
+  priceCache.current.set(productId, price);
+  return price;
+}, []);
+
+  // Function to fetch and filter products with multiple pages
+  const fetchAndFilterProducts = async (categoryId, minPrice, maxPrice, sortOption) => {
+  setIsFiltering(true);
+  setFilterError("");
+
+  try {
+    // Start with more pages initially for better results
+    let maxPages = 3; // Increased from 1
+
+    // Fetch products in parallel batches
+    const fetchedProducts = await fetchMultipleParamPages(
+      categoryId,
+      maxPages,
+      100,
+      sortOption
+    );
+    setFetchedPagesCount(maxPages);
+
+    if (fetchedProducts && fetchedProducts.length > 0) {
+      // Optimize filtering with early exit conditions
+      const filteredProducts = fetchedProducts.filter((product) => {
+        const price = getRealPrice(product);
+        // Early exit if price is 0 or invalid
+        if (price <= 0) return false;
+        return price >= minPrice && price <= maxPrice;
+      });
+
+      if (filteredProducts.length > 0) {
+        // Remove duplicates more efficiently using Map
+        const uniqueProducts = Array.from(
+          new Map(filteredProducts.map(product => [product.meta?.id, product])).values()
+        );
+
+        // Apply sorting only once at the end
+        const sortedProducts = sortOption ? [...uniqueProducts].sort((a, b) => {
+          const priceA = getRealPrice(a);
+          const priceB = getRealPrice(b);
+          return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+        }) : uniqueProducts;
+
+        setAllFilteredProducts(sortedProducts);
+        setTotalFilteredPages(Math.ceil(sortedProducts.length / itemsPerPage));
+      } else {
+        setFilterError("No products found in the specified price range");
+      }
+    } else {
+      setFilterError("No products found in the specified price range");
+    }
+  } catch (error) {
+    console.error("Error filtering products:", error);
+    setFilterError("Error fetching filtered products. Please try again.");
+  } finally {
+    setIsFiltering(false);
+  }
+};
+
+  // Function to fetch more products when user is near the end
+  const fetchMoreFilteredProducts = async () => {
+  if (isFiltering || !selectedParamCategoryId) return;
+  
+  setIsFiltering(true);
+  
+  try {
+    const startPage = fetchedPagesCount + 1;
+    const pagesToFetch = 3; // Increased from 2
+    
+    // Fetch pages in parallel
+    const additionalProducts = await fetchMultipleParamPages(
+      selectedParamCategoryId, 
+      pagesToFetch, 
+      100, 
+      sortOption, 
+      startPage
+    );
+    
+    if (additionalProducts && additionalProducts.length > 0) {
+      // Use Set for faster duplicate checking
+      const existingIds = new Set(allFilteredProducts.map(p => p.meta?.id));
+      
+      const newFilteredProducts = additionalProducts.filter(product => {
+        const price = getRealPrice(product);
+        const isInPriceRange = price >= minPrice && price <= maxPrice && price > 0;
+        const notDuplicate = !existingIds.has(product.meta?.id);
+        return isInPriceRange && notDuplicate;
+      });
+      
+      if (newFilteredProducts.length > 0) {
+        // Sort only new products, then merge
+        const sortedNewProducts = sortOption ? [...newFilteredProducts].sort((a, b) => {
+          const priceA = getRealPrice(a);
+          const priceB = getRealPrice(b);
+          return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+        }) : newFilteredProducts;
+        
+        const updatedProducts = [...allFilteredProducts, ...sortedNewProducts];
+        setAllFilteredProducts(updatedProducts);
+        setTotalFilteredPages(Math.ceil(updatedProducts.length / itemsPerPage));
+      }
+      
+      setFetchedPagesCount(prev => prev + pagesToFetch);
+    }
+  } catch (error) {
+    console.error('Error fetching more products:', error);
+  } finally {
+    setIsFiltering(false);
+  }
+};
+
+  // Check if user is near the end and needs more products
+  useEffect(() => {
+    if (isPriceFilterActive && allFilteredProducts.length > 0) {
+      const isNearEnd = currentPage >= totalFilteredPages - 1;
+      const hasRoomForMore = allFilteredProducts.length < 200;
+
+      if (isNearEnd && hasRoomForMore) {
+        fetchMoreFilteredProducts();
+      }
+    }
+  }, [currentPage, isPriceFilterActive, totalFilteredPages]);
+
+  // Trigger price filtering when filters change
+  useEffect(() => {
+    if (isPriceFilterActive && selectedParamCategoryId) {
+      fetchAndFilterProducts(selectedParamCategoryId, minPrice, maxPrice, sortOption);
+    } else {
+      // Reset filtered products when no price filter is active
+      setAllFilteredProducts([]);
+      setTotalFilteredPages(0);
+      setFilterError("");
+      setFetchedPagesCount(0);
+    }
+  }, [minPrice, maxPrice, selectedParamCategoryId, sortOption]);
 
   useEffect(() => {
     if (contextProducts) {
@@ -176,6 +348,10 @@ const Spromotional = () => {
     if (filterType === "price") {
       dispatch(setMinPrice(0));
       dispatch(setMaxPrice(1000));
+      // Reset filtered products when clearing price filter
+      setAllFilteredProducts([]);
+      setTotalFilteredPages(0);
+      setFilterError("");
     }
     dispatch(applyFilters());
   };
@@ -183,6 +359,7 @@ const Spromotional = () => {
   const handleSortSelection = (option) => {
     setSortOption(option);
     setIsDropdownOpen(false);
+    setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
   const handleViewProduct = (productId) => {
@@ -196,14 +373,16 @@ const Spromotional = () => {
     (state) => state.categoryProduct
   );
 
+  // Fetch products when page or sort changes (only when no price filter is active)
   useEffect(() => {
-    fetchProducts(currentPage, sortOption).then((response) => {
-      // Assuming your API response includes total_pages
-      if (response && response.total_pages) {
-        setTotalApiPages(response.total_pages);
-      }
-    });
-  }, [currentPage, sortOption]);
+    if (selectedParamCategoryId && !isPriceFilterActive) {
+      fetchParamProducts(selectedParamCategoryId, currentPage).then((response) => {
+        if (response && response.total_pages) {
+          setTotalApiPages(response.total_pages);
+        }
+      });
+    }
+  }, [currentPage, sortOption, selectedParamCategoryId, isPriceFilterActive]);
 
   useEffect(() => {
     setFilterLocalProducts(filteredProducts);
@@ -215,7 +394,6 @@ const Spromotional = () => {
     }
   }, [contextProducts, dispatch]);
 
-  // Once both categoryProducts and contextProducts are available, filter them.
   useEffect(() => {
     if (categoryProducts && contextProducts) {
       dispatch(
@@ -227,7 +405,6 @@ const Spromotional = () => {
     }
   }, [categoryProducts, contextProducts, dispatch]);
 
-  // Close dropdown when clicking outside.
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -250,15 +427,14 @@ const Spromotional = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // When a category button is clicked, save the categoryId and reset to page 1.
   const handleSubCategories = (
     subCategory,
     categoryId,
     titleName,
     labelName
   ) => {
-    const encodedTitleName = encodeURIComponent(titleName); // Encode the title
-    const encodedlabelName = encodeURIComponent(labelName); // Encode the title
+    const encodedTitleName = encodeURIComponent(titleName);
+    const encodedlabelName = encodeURIComponent(labelName);
     setSearchParams({
       categoryName: encodedTitleName,
       category: categoryId,
@@ -284,10 +460,9 @@ const Spromotional = () => {
       setSelectedParamCategoryId(urlCategory);
       let foundSubCategory = null;
 
-      for (const category of megaMenu) {
-        // Check all subType groups in the category
+      const allMenus = [...megaMenu, ...megaMenuClothing, ...headWear];
+      for (const category of allMenus) {
         for (const subTypeGroup of category.subTypes) {
-          // Search through items in each group
           const matchingItem = subTypeGroup.items.find(
             (item) => item.id === urlCategory
           );
@@ -306,12 +481,10 @@ const Spromotional = () => {
     }
   }, [searchParams, setSelectedParamCategoryId, v1categories]);
 
-  // Whenever the selected category or page changes, call the API.
   useEffect(() => {
     const fetchData = async () => {
-      if (selectedParamCategoryId) {
+      if (selectedParamCategoryId && !isPriceFilterActive) {
         try {
-          // fetchParamProducts should update the context state (paramProducts)
           await fetchParamProducts(selectedParamCategoryId, currentPage);
         } catch (error) {
           toast.error("Error fetching products for category");
@@ -319,14 +492,13 @@ const Spromotional = () => {
       }
     };
     fetchData();
-  }, [selectedParamCategoryId, currentPage]);
+  }, [selectedParamCategoryId, currentPage, isPriceFilterActive]);
 
-  // Update total API pages based on the API response.
   useEffect(() => {
-    if (paramProducts && paramProducts.total_pages) {
+    if (paramProducts && paramProducts.total_pages && !isPriceFilterActive) {
       setTotalApiPages(paramProducts.total_pages);
     }
-  }, [paramProducts]);
+  }, [paramProducts, isPriceFilterActive]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -347,83 +519,65 @@ const Spromotional = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
+  const currentMenuArray = getMenuArrayByCategoryName(sidebarActiveCategory);
   const filteredCategories = sidebarActiveCategory
-    ? megaMenu.filter((category) => category.name === sidebarActiveCategory)
-    : megaMenu;
+    ? currentMenuArray.filter(
+        (category) => category.name === sidebarActiveCategory
+      )
+    : currentMenuArray;
 
-  const getRealPrice = (product) => {
-    const priceGroups = product.product?.prices?.price_groups || [];
-    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-    const priceBreaks = basePrice.base_price?.price_breaks || [];
-    return priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
-  };
-  const filterParamProducts = (paramProducts.data || []).filter((product) => {
-    const price = getRealPrice(product);
-    return price >= priceRangeFilter[0] && price <= priceRangeFilter[1];
-  });
-
-  const sortedProducts = [...filterParamProducts].sort((a, b) => {
-    const priceA = getRealPrice(a);
-    const priceB = getRealPrice(b);
-
-    if (sortOption === "lowToHigh") return priceA - priceB;
-    if (sortOption === "highToLow") return priceB - priceA;
-    return 0;
-  });
-
-  // After sorting products, add a filter for search text:
-  const finalFilteredProducts = sortedProducts.filter((product) => {
-    // Extract the price as before
-    const priceGroups = product.product?.prices?.price_groups || [];
-    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-    const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const realPrice =
-      priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
-        ? priceBreaks[0].price
-        : "0";
-
-    // Ensure the product has a valid price and that the product name includes the search text
-    const productName = product.overview.name || "";
-    return (
-      realPrice !== "0" &&
-      productName.toLowerCase().includes(searchProductName.toLowerCase())
-    );
-  });
-
-  // Check if any filters are active
-  // Check if any filters are active
-  const hasActiveFilters =
-    searchProductName.trim() !== "" ||
-    priceRangeFilter[0] !== 0 ||
-    priceRangeFilter[1] !== 1000;
-
-  // Get current page products - filter within current page's products
+  // Get current page products based on whether price filter is active
   const getCurrentPageProducts = () => {
-    // Always start with current page's products from API
-    const currentPageApiProducts = finalFilteredProducts.slice(0, itemsPerPage);
-
-    if (hasActiveFilters) {
-      // Apply additional local filtering to current page's products
-      return currentPageApiProducts;
+    if (isPriceFilterActive) {
+      // Use filtered products
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return allFilteredProducts.slice(startIndex, endIndex);
     } else {
-      // No additional filtering, return current page products
-      return currentPageApiProducts;
+      // Use regular API products with local search filter
+      const apiProducts = paramProducts.data || [];
+      return apiProducts.filter((product) => {
+        const priceGroups = product.product?.prices?.price_groups || [];
+        const basePrice = priceGroups.find((group) => group?.base_price) || {};
+        const priceBreaks = basePrice.base_price?.price_breaks || [];
+        const realPrice =
+          priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
+            ? priceBreaks[0].price
+            : "0";
+
+        const productName = product.overview.name || "";
+        return (
+          realPrice !== "0" &&
+          productName.toLowerCase().includes(searchProductName.toLowerCase())
+        );
+      });
     }
   };
 
-  // Calculate how many products are available on current page after filtering
+  // Check if any filters are active
+  const hasActiveFilters = searchProductName.trim() !== "" || isPriceFilterActive;
+
   const currentPageProducts = getCurrentPageProducts();
   const currentPageFilteredCount = currentPageProducts.length;
 
-  // For pagination, we still use the total API pages since we're filtering per page
-  const totalFilteredPages = totalApiPages;
+  // Determine which pagination to use
+  const paginationTotalPages = isPriceFilterActive ? totalFilteredPages : totalApiPages;
+
+  // Calculate total count for display
+  const getTotalCount = () => {
+    if (isPriceFilterActive) {
+      return allFilteredProducts.length;
+    } else if (searchProductName.trim() !== "") {
+      return currentPageFilteredCount;
+    } else {
+      return paramProducts.item_count || 0;
+    }
+  };
 
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[22%]">
-          {/* <SpromotionalSidebar filterLocalProducts={filterLocalProducts} setFilterLocalProducts={setFilterLocalProducts} /> */}
-
           <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
             {isMobile && (
               <button
@@ -438,7 +592,6 @@ const Spromotional = () => {
               </button>
             )}
 
-            {/* Sidebar */}
             <div
               className={`transition-all ${
                 isSidebarOpen
@@ -462,12 +615,15 @@ const Spromotional = () => {
                           )
                           .map((group) => (
                             <li key={group.label}>
-                              <p className="mt-2 text-base font-semibold">
+                              <p className="mt-2 ml-2 text-base font-semibold">
                                 {group.label}
                               </p>
                               <ul>
                                 {group?.items?.map((item) => (
-                                  <li key={item.id} className="hover:underline">
+                                  <li
+                                    key={item.id}
+                                    className="hover:underline ml-4"
+                                  >
                                     <button
                                       onClick={() =>
                                         handleSubCategories(
@@ -495,32 +651,32 @@ const Spromotional = () => {
                   ))}
                 </div>
                 <div className="mt-4">
-                  <PromotionalPriceFilter
-                    priceRangeFilter={priceRangeFilter}
-                    setPriceRangeFilter={setPriceRangeFilter}
-                  />
+                  <PromotionalPriceFilter />
                 </div>
               </div>
             </div>
           </div>
-          {/* ************************************ */}
         </div>
 
-        <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">
+        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between border border-border2 px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              <input
-                type="text"
-                placeholder="Search for anything..."
-                className="w-full border-none outline-none"
-                value={searchProductName}
-                onChange={setSearchTextChanger}
-              />
-              <IoSearchOutline className="text-2xl" />
+            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+              {!isPriceFilterActive && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Search for products..."
+                    className="w-full border-none outline-none"
+                    value={searchProductName}
+                    onChange={setSearchTextChanger}
+                  />
+                  <IoSearchOutline className="text-2xl" />
+                </>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
-              <div className="relative " ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef}>
                 <button
                   className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
@@ -556,9 +712,7 @@ const Spromotional = () => {
                     >
                       Highest to Lowest
                     </button>
-                    <button
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100`}
-                    >
+                    <button className={`w-full text-left px-4 py-3 hover:bg-gray-100`}>
                       Trending
                     </button>
                   </div>
@@ -611,29 +765,42 @@ const Spromotional = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0 ">
-              {" "}
+            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
               <span className="font-semibold text-brand">
-                {hasActiveFilters ? currentPageFilteredCount : filteredCount}
+                {!skeletonLoading && !isFiltering && getTotalCount()}
               </span>
               <p className="">
-                Results found {hasActiveFilters ? `on page ${currentPage}` : ""}
+                {skeletonLoading || isFiltering
+                  ? "Loading..."
+                  : `Results found${
+                      isPriceFilterActive
+                        ? ` (Price filtered)`
+                        : hasActiveFilters
+                        ? ` on page ${currentPage}`
+                        : ""
+                    }`}{isFiltering && "Please wait a while..."}
               </p>
             </div>
           </div>
 
+          {filterError && (
+            <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
+              <p className="text-red-700">{filterError}</p>
+            </div>
+          )}
+
           <div
             className={`${
-              skeletonLoading
+              skeletonLoading || isFiltering
                 ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
-            {skeletonLoading ? (
+            {skeletonLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
                 <div
                   key={index}
-                  className="relative p-4 border rounded-lg shadow-md border-border2 "
+                  className="relative p-4 border rounded-lg shadow-md border-border2"
                 >
                   <Skeleton height={200} className="rounded-md" />
                   <div className="p-4">
@@ -657,201 +824,225 @@ const Spromotional = () => {
                   </div>
                 </div>
               ))
-            ) : paramProducts &&
-              paramProducts.data &&
-              paramProducts.data.length > 0 ? (
+            ) : currentPageProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {currentPageProducts.length > 0 &&
-                  currentPageProducts
-                    .filter((product) => {
-                      const priceGroups =
-                        product.product?.prices?.price_groups || [];
-                      const basePrice =
-                        priceGroups.find((group) => group?.base_price) || {};
-                      const priceBreaks =
-                        basePrice.base_price?.price_breaks || [];
-                      // Check if there's at least one valid price
-                      return (
-                        priceBreaks.length > 0 &&
-                        priceBreaks[0]?.price !== undefined
-                      );
-                    })
-                    .map((product) => {
-                      const priceGroups =
-                        product.product?.prices?.price_groups || [];
-                      const basePrice =
-                        priceGroups.find((group) => group?.base_price) || {};
-                      const priceBreaks =
-                        basePrice.base_price?.price_breaks || [];
+                {currentPageProducts
+                  .filter((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+                    return (
+                      priceBreaks.length > 0 &&
+                      priceBreaks[0]?.price !== undefined
+                    );
+                  })
+                  .map((product) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
 
-                      // Get an array of prices from priceBreaks (these are already discounted)
-                      const prices = priceBreaks
-                        .map((breakItem) => breakItem.price)
-                        .filter((price) => price !== undefined);
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
 
-                      // 1) compute raw min/max
-                      let minPrice =
-                        prices.length > 0 ? Math.min(...prices) : 0;
-                      let maxPrice =
-                        prices.length > 0 ? Math.max(...prices) : 0;
+                    let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                    let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-                      // 2) pull margin info (guarding against undefined)
-                      const productId = product.meta.id;
-                      const marginEntry = marginApi[productId] || {};
-                      const marginFlat =
-                        typeof marginEntry.marginFlat === "number"
-                          ? marginEntry.marginFlat
-                          : 0;
-                      const baseMarginPrice =
-                        typeof marginEntry.baseMarginPrice === "number"
-                          ? marginEntry.baseMarginPrice
-                          : 0;
+                    const productId = product.meta.id;
+                    const marginEntry = marginApi[productId] || {};
+                    const marginFlat =
+                      typeof marginEntry.marginFlat === "number"
+                        ? marginEntry.marginFlat
+                        : 0;
+                    const baseMarginPrice =
+                      typeof marginEntry.baseMarginPrice === "number"
+                        ? marginEntry.baseMarginPrice
+                        : 0;
 
-                      // 3) apply the flat margin to both ends of the range
-                      minPrice += marginFlat;
-                      maxPrice += marginFlat;
+                    minPrice += marginFlat;
+                    maxPrice += marginFlat;
 
-                      // 4) build your display string
-                      let displayPrice;
-                      if (baseMarginPrice > 0) {
-                        // compare baseMarginPrice vs. (adjusted) minPrice
-                        const bm = baseMarginPrice.toFixed(2);
-                        const mp = minPrice.toFixed(2);
+                    const discountPct = product.discountInfo?.discount || 0;
+                    const isGlobalDiscount =
+                      product.discountInfo?.isGlobal || false;
 
-                        displayPrice =
-                          bm === mp
-                            ? bm // single price
-                            : `${bm} - ${mp}`; // range from baseMarginPrice up to minPrice
-                      } else {
-                        // no baseMarginPrice, so just show the adjusted range
-                        displayPrice =
-                          minPrice === maxPrice
-                            ? minPrice.toFixed(2)
-                            : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`;
-                      }
-
-                      // Get discount percentage from product's discount info
-                      const discountPct = product.discountInfo?.discount || 0;
-                      const isGlobalDiscount =
-                        product.discountInfo?.isGlobal || false;
-                      return (
-                        <div
-                          key={product.id}
-                          // onClick={() => handleViewProduct(product.meta.id)}
-                          className="relative w-full border border-border2 h-full flex flex-col cursor-pointer max-h-[350px] group"
-                        >
-                          {discountPct > 0 && (
-                            <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
-                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
-                                {discountPct}%
+                    return (
+                      <div
+                        key={product.id}
+                        className="relative w-full border border-border2 h-full flex flex-col cursor-pointer max-h-[350px] group"
+                      >
+                        {discountPct > 0 && (
+                          <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
+                            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
+                              {discountPct}%
+                            </span>
+                            {isGlobalDiscount && (
+                              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
+                                Global
                               </span>
-                              {isGlobalDiscount && (
-                                <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
-                                  Global
-                                </span>
+                            )}
+                          </div>
+                        )}
+                        <div
+                          onClick={() => handleViewProduct(product.meta.id)}
+                          className="max-h-[50%] h-full border-b overflow-hidden"
+                        >
+                          <img
+                            src={
+                              product.overview.hero_image
+                                ? product.overview.hero_image
+                                : noimage
+                            }
+                            alt=""
+                            className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
+                          {product?.product?.colours?.list.length > 0 &&
+                            product?.product?.colours?.list
+                              .slice(0, 15)
+                              .flatMap((colorObj, index) =>
+                                colorObj.colours.map((color, subIndex) => (
+                                  <div
+                                    key={`${index}-${subIndex}`}
+                                    style={{
+                                      backgroundColor:
+                                        colorObj.swatch?.[subIndex] ||
+                                        color
+                                          .toLowerCase()
+                                          .replace("dark blue", "#1e3a8a")
+                                          .replace("light blue", "#3b82f6")
+                                          .replace("navy blue", "#1e40af")
+                                          .replace("royal blue", "#2563eb")
+                                          .replace("sky blue", "#0ea5e9")
+                                          .replace("gunmetal", "#2a3439")
+                                          .replace("dark grey", "#4b5563")
+                                          .replace("light grey", "#9ca3af")
+                                          .replace("dark gray", "#4b5563")
+                                          .replace("light gray", "#9ca3af")
+                                          .replace("charcoal", "#374151")
+                                          .replace("lime green", "#65a30d")
+                                          .replace("forest green", "#166534")
+                                          .replace("dark green", "#15803d")
+                                          .replace("light green", "#16a34a")
+                                          .replace("bright green", "#22c55e")
+                                          .replace("dark red", "#dc2626")
+                                          .replace("bright red", "#ef4444")
+                                          .replace("wine red", "#991b1b")
+                                          .replace("burgundy", "#7f1d1d")
+                                          .replace("hot pink", "#ec4899")
+                                          .replace("bright pink", "#f472b6")
+                                          .replace("light pink", "#f9a8d4")
+                                          .replace("dark pink", "#be185d")
+                                          .replace("bright orange", "#f97316")
+                                          .replace("dark orange", "#ea580c")
+                                          .replace("bright yellow", "#eab308")
+                                          .replace("golden yellow", "#f59e0b")
+                                          .replace("dark yellow", "#ca8a04")
+                                          .replace("cream", "#fef3c7")
+                                          .replace("beige", "#f5f5dc")
+                                          .replace("tan", "#d2b48c")
+                                          .replace("brown", "#92400e")
+                                          .replace("dark brown", "#78350f")
+                                          .replace("light brown", "#a3a3a3")
+                                          .replace("maroon", "#7f1d1d")
+                                          .replace("teal", "#0d9488")
+                                          .replace("turquoise", "#06b6d4")
+                                          .replace("aqua", "#22d3ee")
+                                          .replace("mint", "#10b981")
+                                          .replace("lavender", "#c084fc")
+                                          .replace("violet", "#8b5cf6")
+                                          .replace("indigo", "#6366f1")
+                                          .replace("slate", "#64748b")
+                                          .replace("stone", "#78716c")
+                                          .replace("zinc", "#71717a")
+                                          .replace("neutral", "#737373")
+                                          .replace("rose", "#f43f5e")
+                                          .replace("emerald", "#10b981")
+                                          .replace("cyan", "#06b6d4")
+                                          .replace("amber", "#f59e0b")
+                                          .replace("lime", "#84cc16")
+                                          .replace("fuchsia", "#d946ef")
+                                          .replace(" ", "") ||
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                  />
+                                ))
                               )}
-                            </div>
-                          )}
-                          <div 
-                          onClick={() =>
-                                    handleViewProduct(product.meta.id)
-                                  } className="max-h-[50%] h-full border-b overflow-hidden">
-                            <img
-                              src={
-                                product.overview.hero_image
-                                  ? product.overview.hero_image
-                                  : noimage
-                              }
-                              alt=""
-                              className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-105"
-                            />
-                          </div>
-                          <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
-                            {product?.product?.colours?.list.length > 0 &&
-                              product?.product?.colours?.list
-                                .slice(0, 15) // Limit to 15 colors
-                                .flatMap((colorObj, index) =>
-                                  colorObj.colours.map((color, subIndex) => (
-                                    <div
-                                      key={`${index}-${subIndex}`}
-                                      style={{
-                                        backgroundColor:
-                                          colorObj.swatch?.[subIndex] ||
-                                          color.toLowerCase(),
-                                      }}
-                                      className="w-4 h-4 rounded-sm border border-slate-900"
-                                    />
-                                  ))
-                                )}
-                          </div>
-                          <div className="flex flex-col h-full p-3">
-                            <div className="flex flex-col justify-center flex-grow text-center ">
-                              <h2 className="text-lg font-medium text-brand">
-                                {product.overview.name &&
-                                product.overview.name.length > 25
-                                  ? product.overview.name.slice(0, 25) + "..."
-                                  : product.overview.name || "No Name"}
-                              </h2>
+                        </div>
+                        <div className="flex flex-col h-full p-3">
+                          <div
+                            onClick={() => handleViewProduct(product.meta.id)}
+                            className="flex flex-col justify-center flex-grow text-center"
+                          >
+                            <h2 className="text-lg font-medium text-brand">
+                              {product.overview.name &&
+                              product.overview.name.length > 25
+                                ? product.overview.name.slice(0, 25) + "..."
+                                : product.overview.name || "No Name"}
+                            </h2>
 
-                              {/* <p className='font-normal text-brand'>
-                              {' '}
-                              Code: {product.overview.code}
-                            </p> */}
-                              <h2 className="pt-2 text-xl font-semibold text-heading">
-                                {/* $<span>{realPrice}</span> */}$
-                                {minPrice === maxPrice ? (
-                                  <span>{minPrice.toFixed(2)}</span>
-                                ) : (
-                                  <span>
-                                    {minPrice.toFixed(2)} - $
-                                    {maxPrice.toFixed(2)}
-                                  </span>
-                                )}
-                              </h2>
-                            </div>
-                            <div className="flex justify-between gap-1 mt-2 mb-1">
-                              <p
-                                onClick={() => {
-                                  dispatch(addToFavourite(product));
-                                  toast.success("product added to favourites");
-                                }}
-                                className="p-3 text-2xl rounded-sm bg-icons"
-                              >
-                                <CiHeart />
+                            <h2 className="pt-2 text-xl font-semibold text-heading">
+                              From - $
+                              {minPrice === maxPrice ? (
+                                <span>{minPrice.toFixed(2)}</span>
+                              ) : (
+                                <span>{minPrice.toFixed(2)}</span>
+                              )}
+                            </h2>
+                          </div>
+                          <div className="flex justify-between gap-1 mt-2 mb-1">
+                            <p
+                              onClick={() => {
+                                dispatch(addToFavourite(product));
+                                toast.success("product added to favourites");
+                              }}
+                              className="p-3 text-2xl rounded-sm bg-icons"
+                            >
+                              <CiHeart />
+                            </p>
+                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                              <p className="text-xl">
+                                <IoCartOutline />
                               </p>
-                              <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
-                                <p className="text-xl">
-                                  <IoCartOutline />
-                                </p>
-                                <button
-                                  onClick={() =>
-                                    handleViewProduct(product.meta.id)
-                                  }
-                                  className="text-sm uppercase"
-                                >
-                                  Add to cart
-                                </button>
-                              </div>
-                              <p
-                                onClick={() => handleOpenModal(product)}
-                                className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
+                              <button
+                                onClick={() =>
+                                  handleViewProduct(product.meta.id)
+                                }
+                                className="text-sm uppercase"
                               >
-                                <AiOutlineEye />
-                              </p>
+                                Add to cart
+                              </button>
                             </div>
+                            <p
+                              onClick={() => handleOpenModal(product)}
+                              className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
+                            >
+                              <AiOutlineEye />
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    );
+                  })}
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <h2>No Products Available for this category</h2>
+                <p className="pt-10 text-xl text-center text-red-500">
+                  No Product Found
+                </p>
               </div>
             )}
           </div>
 
-          {totalFilteredPages > 1 && (
+          {paginationTotalPages > 1 && (
             <div className="flex items-center justify-center mt-16 space-x-2 pagination">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -863,7 +1054,7 @@ const Spromotional = () => {
 
               {getPaginationButtons(
                 currentPage,
-                totalFilteredPages,
+                paginationTotalPages,
                 maxVisiblePages
               ).map((page) => (
                 <button
@@ -882,10 +1073,10 @@ const Spromotional = () => {
               <button
                 onClick={() =>
                   setCurrentPage((prev) =>
-                    Math.min(prev + 1, totalFilteredPages)
+                    Math.min(prev + 1, paginationTotalPages)
                   )
                 }
-                disabled={currentPage === totalFilteredPages}
+                disabled={currentPage === paginationTotalPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
                 <IoMdArrowForward className="text-xl" />
@@ -903,7 +1094,6 @@ const Spromotional = () => {
             className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
             <button
               onClick={handleCloseModal}
               className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
@@ -911,7 +1101,6 @@ const Spromotional = () => {
               <IoClose className="text-2xl text-gray-600" />
             </button>
 
-            {/* Image container */}
             <div className="p-6">
               <img
                 src={selectedProduct.overview.hero_image || noimage}
@@ -919,14 +1108,11 @@ const Spromotional = () => {
                 className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
               />
 
-              {/* Product info */}
               <div className="mt-4 text-center">
                 <h2 className="text-2xl font-bold text-brand mb-2">
                   {selectedProduct.overview.name || "No Name"}
                 </h2>
-                <p className="text-gray-600 mb-2">
-                  Code: {selectedProduct.overview.code}
-                </p>
+                
                 {selectedProduct.overview.description && (
                   <p className="text-gray-700 text-sm leading-relaxed">
                     {selectedProduct.overview.description}

@@ -203,15 +203,15 @@ const Cards = () => {
 
         <div className="lg:w-[75%] w-full  lg:mt-0 md:mt-4 mt-16">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between border border-border2 px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              <input
+            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+              {/* <input
                 type="text"
                 placeholder="Search for anything..."
                 className="w-full border-none outline-none"
                 value={searchText}
                 onChange={setSearchTextChanger}
               />
-              <IoSearchOutline className="text-2xl" />
+              <IoSearchOutline className="text-2xl" /> */}
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
@@ -447,12 +447,12 @@ const Cards = () => {
                             {/* Updated Price display matching AllProducts exactly */}
                             <div className="pt-2">
                               <h2 className="text-xl font-semibold text-heading">
-                                $
+                                From - $
                                 {minPrice === maxPrice ? (
                                   <span>{minPrice.toFixed(2)}</span>
                                 ) : (
                                   <span>
-                                    {minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
+                                    {minPrice.toFixed(2)}
                                   </span>
                                 )}
                               </h2>

@@ -73,17 +73,6 @@ const filterSlice = createSlice({
         return realPrice >= minPrice && realPrice <= maxPrice;
       };
 
-      // console.log("Applying filters with category:", state.selectedCategory);
-      // console.log("Filtered products before:", state.filteredProducts.length);
-      
-
-      // state.filteredProducts = products.filter(
-      //   (product) =>
-      //     isCategoryMatch(product) &&
-      //     isBrandMatch(product) &&
-      //     isSearchMatch(product) &&
-      //     isPriceMatch(product)
-      // );
 
 
       const filtered = products.filter(

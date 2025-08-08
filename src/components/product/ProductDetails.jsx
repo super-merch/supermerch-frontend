@@ -6,7 +6,9 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { IoCartOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
-import { addToCart } from "../../redux/slices/cartSlice";
+import { addToCart, initializeCartFromStorage } from "../../redux/slices/cartSlice";
+import { setCurrentUser, selectCurrentUserCartItems } from "../../redux/slices/cartSlice";
+import { useSelector } from "react-redux";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
@@ -21,8 +23,11 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const ProductDetails = () => {
+  const [userEmail, setUserEmail] = useState(null);
+const currentUserCartItems = useSelector(selectCurrentUserCartItems);
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     backednUrl,
@@ -35,7 +40,33 @@ const ProductDetails = () => {
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+  const fetchUserEmail = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
 
+      const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data.success) {
+        setUserEmail(data.email);
+        // Set current user in Redux cart
+        dispatch(initializeCartFromStorage({ email: data.email }));
+      }
+    } catch (error) {
+      console.error("Error fetching user email:", error.response?.data || error.message);
+    }
+  };
+
+  fetchUserEmail();
+}, [dispatch, backednUrl]);
   const fetchSingleProduct = async () => {
     setLoading(true);
     try {
@@ -67,7 +98,6 @@ const ProductDetails = () => {
   const product = single_product?.product || {};
   const productId = single_product?.meta?.id || "";
 
-  const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFile2, setSelectedFile2] = useState(null);
   const [previewImage2, setPreviewImage2] = useState(null);
@@ -95,7 +125,40 @@ const ProductDetails = () => {
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
 
+
+
   const [freightFee, setFreightFee] = useState(0);
+
+  const getShippingCharges = async()=>{
+      try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add authorization headers if needed
+        },
+      });
+  
+      const data = await response.json();
+      console.log("Shipping Charges Data:", data);
+      setFreightFee(data.shipping || 0);
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch shipping charges');
+      }
+  
+      return { data };
+    } catch (error) {
+      throw error;
+    }
+    }
+    useEffect(() => {
+      getShippingCharges()
+    }, []);
+
+
+
+
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
@@ -142,7 +205,7 @@ const ProductDetails = () => {
       const baseGroup = {
         ...priceGroups[0].base_price,
         type: "base",
-        description: priceGroups[0].base_price.description || "Base Price",
+        description: "Default Print Method (Select)",
       };
 
       const additionGroups = priceGroups.flatMap((group) =>
@@ -433,6 +496,41 @@ const ProductDetails = () => {
     try {
       setQuoteLoading(true);
       const formData1 = new FormData();
+      if(!formData.name || !formData.email || !formData.phone) {
+        toast.error("Please fill in all required fields");
+        setQuoteLoading(false);
+        return;
+      }
+      if(!formData.phone || formData.phone.length < 10) {
+        toast.error("Please enter a valid phone number");
+        setQuoteLoading(false);
+        return;
+      }
+      //phone validation
+      const phonePattern = /^\+?[0-9\s-]{10,15}$/; // Adjust pattern as needed
+      if (!phonePattern.test(formData.phone)) {
+        toast.error("Please enter a valid phone number");
+        setQuoteLoading(false);
+        return;
+      }
+
+      //email validation
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(formData.email)) {
+        toast.error("Please enter a valid email address");
+        setQuoteLoading(false);
+        return;
+      }
+      if (!formData.delivery ) {
+        toast.error("Please select a delivery option");
+        setQuoteLoading(false);
+        return;
+      }
+      if(formData.comment.length < 10) {
+        toast.error("Comment must be at least 10 characters long");
+        setQuoteLoading(false);
+        return;
+      }
 
       formData1.append("name", formData.name);
       formData1.append("email", formData.email);
@@ -513,6 +611,11 @@ const ProductDetails = () => {
 
   const handleAddToCart = (e) => {
     e.preventDefault();
+    if (!userEmail) {
+    toast.error("Please login to add items to cart");
+    navigate("/signup");
+    return;
+  }
 
     dispatch(
       addToCart({
@@ -566,10 +669,12 @@ const ProductDetails = () => {
         deliveryDate,
         priceBreaks: selectedPrintMethod.price_breaks,
         printMethodKey: selectedPrintMethod.key,
+        userEmail: userEmail
       })
     );
     navigate("/cart");
   };
+  const [notRobot, setNotRobot] = useState(false);
 
   if (error)
     return (
@@ -866,6 +971,7 @@ const ProductDetails = () => {
                 {selectedFile ? "Logo image Uploaded":
                 isDragging ? "Drop files here" : "Drag & drop files or Browse"}
               </p>
+              <p className="mb-2 text-xl font-semibold text-smallHeader" >Upload artwork or logo</p>
               <p className="text-smallHeader max-w-[385px] m-auto text-sm">
                 Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG. Max file
                 size: 16 MB
@@ -925,6 +1031,11 @@ const ProductDetails = () => {
               </div>
               <div
                 onClick={() => {
+                  if (!userEmail) {
+    toast.error("Please login to add items to cart");
+    navigate("/signup");
+    return;
+  }
                   dispatch(
                     addToCart({
                       id: productId,
@@ -943,6 +1054,7 @@ const ProductDetails = () => {
                       deliveryDate,
                       priceBreaks: selectedPrintMethod?.price_breaks || [], // Add fallback
                       printMethodKey: selectedPrintMethod?.key || "",
+                      userEmail: userEmail
                     })
                   );
                   navigate("/cart");
@@ -1055,18 +1167,24 @@ const ProductDetails = () => {
                   </div>
 
                   <div className="flex items-center gap-2 px-3 py-4 mt-3 mb-5 border border-border">
-                    <input type="checkbox" id="not-robot" className="w-4 h-4" />
-                    <label htmlFor="not-robot" className="text-sm">
+                    <input type="checkbox" id="not-robot" onClick={() => setNotRobot(!notRobot)} className="w-4 h-4" />
+                    <label htmlFor="not-robot" id="not-robot" onClick={() => setNotRobot(!notRobot)} className="text-sm">
                       I'm not a robot
                     </label>
                   </div>
-
-                  <button
+                  
+                  {notRobot ? <button
                     onClick={onSubmitHandler}
                     className="w-full py-3 font-medium text-white rounded-md bg-smallHeader"
                   >
                     {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
-                  </button>
+                  </button>:
+                  <button
+                    disabled
+                    className="w-full py-3 font-medium text-white rounded-md bg-gray-400 cursor-not-allowed"
+                  >
+                    {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"} 
+                  </button>}
                 </div>
               </div>
             )}

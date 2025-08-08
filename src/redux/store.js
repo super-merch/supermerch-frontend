@@ -18,11 +18,38 @@ const rootReducer = combineReducers({
   favouriteProducts: favouriteReducer,
 });
 
-// 2️⃣ Configure persistence: only whitelist "cart"
+// 2️⃣ Configure persistence: only whitelist "cart" but blacklist currentUserEmail
 const persistConfig = {
   key: "root",
   storage,
   whitelist: ["cart"],
+  // Blacklist the currentUserEmail field from being persisted
+  transforms: [
+    {
+      in: (inboundState, key) => {
+        if (key === 'cart') {
+          // Remove currentUserEmail before saving to storage
+          const { currentUserEmail, ...cartWithoutUser } = inboundState;
+          return {
+            ...cartWithoutUser,
+            totalQuantity: 0, // Reset totals when persisting
+            totalAmount: 0,
+          };
+        }
+        return inboundState;
+      },
+      out: (outboundState, key) => {
+        if (key === 'cart') {
+          // Add currentUserEmail as null when loading from storage
+          return {
+            ...outboundState,
+            currentUserEmail: null,
+          };
+        }
+        return outboundState;
+      },
+    },
+  ],
 };
 
 // 3️⃣ Wrap the root reducer

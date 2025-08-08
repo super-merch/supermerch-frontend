@@ -18,16 +18,21 @@ import pay from "../../assets/pay.png";
 import { Link } from "react-router-dom";
 import PopUps from "./PopUps";
 import supermerch from "../../assets/supermerch.png";
+import { IoMail } from "react-icons/io5";
 
 const Footer = () => {
-  const miniNav = [twitter, facebook, p, reddit, youtube, insta];
+ const miniNav = [ {img:facebook, path:"https://www.facebook.com/share/1DztGRWqfA/"}, {img:insta, path:"https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw"}];
   const paymethod = [visa, paypal, amex, gpay, discover, colors, apple, pay];
   return (
     <div className="bg-smallHeader mt-12">
       <div className=" Mycontainer grid grid-cols-1 lg:grid-cols-5 md:grid-cols-2  pt-7 lg:space-x-10 md:space-x-0 gap-y-8">
         <div className="w-fit text-white">
           {/* <h1 className=" uppercase text-3xl font-bold ">pgshop</h1> */}
-          <img src={supermerch} className='lg:w-36 w-24 object-contain' alt="" />
+          <img
+            src={supermerch}
+            className="lg:w-36 w-24 object-contain"
+            alt=""
+          />
           <div className="mt-3">
             <h2 className="font-bold mb-1">Customer Support</h2>
             {/* <p className=" py-1 text-sm  ">Live Chat</p>
@@ -49,7 +54,7 @@ const Footer = () => {
           </h1>
           <div className="flex flex-col mt-1">
             <Link
-              to={"/"}
+              to={"/all-blogs"}
               className=" py-0.5  text-sm font-normal hover:underline"
             >
               Our blogs
@@ -92,19 +97,13 @@ const Footer = () => {
             <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline  ">
               Refund policy
             </p>
-            <p
-              className="py-0.5 cursor-pointer text-sm font-normal hover:underline"
-            >
+            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               Sample policy
             </p>
-            <p
-              className="py-0.5 cursor-pointer text-sm font-normal hover:underline"
-            >
+            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               Privacy and cookie policy
             </p>
-            <p
-              className="py-0.5 cursor-pointer text-sm font-normal hover:underline"
-            >
+            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               TnC
             </p>
           </div>
@@ -115,9 +114,7 @@ const Footer = () => {
             Offers & Resources
           </h1>
           <div className="flex flex-col mt-1">
-            <Link
-              className=" py-0.5  text-sm font-normal hover:underline"
-            >
+            <Link className=" py-0.5  text-sm font-normal hover:underline">
               Clearance
             </Link>
             <Link
@@ -132,14 +129,11 @@ const Footer = () => {
             >
               Cart
             </Link>
-            <Link
-              className=" py-0.5  text-sm font-normal hover:underline"
-            >
+            <Link className=" py-0.5  text-sm font-normal hover:underline">
               PMS colour chart
             </Link>
           </div>
           <PopUps />
-
         </div>
 
         <div className="w-fit">
@@ -188,14 +182,25 @@ const Footer = () => {
             <p className="font-[400] text-xs text-[#FFFFFF] lg:pt-0 md:pt-0 pt-8">
               Follow us:
             </p>
-            <div className="flex gap-5">
+            <div className="flex items-center mt-2 gap-5">
               {miniNav.map((icon, i) => {
                 return (
-                  <div key={i} className="mt-3">
-                    <img src={icon} alt="" className="w-6" />
+                  <div key={i} onClick={() => window.open(icon.path, "_blank")} className="cursor-pointer ">
+                    <img src={icon.img} alt="" className="w-5" />
                   </div>
                 );
               })}
+              <div
+                className="cursor-pointer "
+                onClick={() =>
+                  window.open(
+                    "https://mail.google.com/mail/?view=cm&to=Info@supermerch.com.au",
+                    "_blank"
+                  )
+                }
+              >
+                <IoMail className="font-[400] text-2xl text-[#FFFFFF]" />
+              </div>
             </div>
           </div>
         </div>
@@ -203,13 +208,11 @@ const Footer = () => {
       {/* POLICY  */}
       <div className="Mycontainer pb-10 text-footer flex lg:flex-nowrap md:flex-nowrap  flex-wrap justify-between gap-6 ">
         <div>
-          <Link
-          to={'/privacy'}
-          >
-          <p className="underline text-sm font-normal ">Privacy Policy</p>
+          <Link to={"/privacy"}>
+            <p className="underline text-sm font-normal ">Privacy Policy</p>
           </Link>
           <p className="pt-2 text-footer  text-[10px] font-medium  hover:text-white ">
-            © Copyright 2025 Super Merch.{" "}All rights reserved | Developed
+            © Copyright 2025 Super Merch. All rights reserved | Developed
             By DEVSRANK
           </p>
         </div>

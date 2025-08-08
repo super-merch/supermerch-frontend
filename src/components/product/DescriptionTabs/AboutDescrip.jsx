@@ -70,7 +70,7 @@ const AboutDescrip = ({ activeTab, single_product }) => {
               nulla pariatur.
             </p> */}
           </div>
-          <div className=''>
+          {/* <div className=''>
             <h1 className='pb-1 text-brand'>Feature</h1>
             {features.map((items, i) => {
               return (
@@ -80,7 +80,7 @@ const AboutDescrip = ({ activeTab, single_product }) => {
                 </div>
               );
             })}
-          </div>
+          </div> */}
           {/* <div className=''>
             <h1 className='pb-1 text-brand'>Shipping Information</h1>
 

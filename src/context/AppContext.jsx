@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { clearFavourites, loadFavouritesFromDB } from '@/redux/slices/favouriteSlice';
 import { clearCart } from '@/redux/slices/cartSlice';
+import { clearCurrentUser } from '@/redux/slices/cartSlice';
 
 export const AppContext = createContext();
 
@@ -47,12 +48,12 @@ const [isCacheValid, setIsCacheValid] = useState(false);
   const handleLogout = () => {
     localStorage.removeItem('token');
     dispatch(clearFavourites());
+     dispatch(clearCurrentUser());
     setToken('');
     googleLogout()
     if (window.google && window.google.accounts) {
       window.google.accounts.id.disableAutoSelect();
     }
-    dispatch(clearCart())
     navigate('/signup');
   };
 
@@ -74,6 +75,7 @@ const [isCacheValid, setIsCacheValid] = useState(false);
   const [skeletonLoading, setSkeletonLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
   // const [sliderLoading,setSliderLoading] = useState(true)
+  const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [newId, setNewId] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -200,6 +202,45 @@ const clearProductsCache = () => {
   // In your AppContext:
 
 const [searchedProducts, setSearchedProducts] = useState([]);
+  // Add this method to your AppContext
+
+const fetchMultipleSearchPages = async (searchTerm, maxPages = 1, limit = 100, sortOption = '', startPage = 1) => {
+  try {
+    const endPage = startPage + maxPages - 1;
+    
+    // Create array of page numbers to fetch
+    const pageNumbers = Array.from(
+      { length: endPage - startPage + 1 }, 
+      (_, i) => startPage + i
+    );
+    
+    // Fetch all pages in parallel
+    const fetchPromises = pageNumbers.map(async (page) => {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products/search?searchTerm=${searchTerm}&page=${page}&limit=${limit}&sort=${sortOption}&filter=true`
+      );
+      
+      if (!response.ok) return { data: [] };
+      return await response.json();
+    });
+    
+    // Wait for all requests to complete
+    const results = await Promise.allSettled(fetchPromises);
+    
+    // Combine all successful results
+    const allProducts = [];
+    results.forEach((result) => {
+      if (result.status === 'fulfilled' && result.value?.data) {
+        allProducts.push(...result.value.data);
+      }
+    });
+    
+    return allProducts;
+  } catch (error) {
+    console.error('Error fetching multiple pages:', error);
+    return [];
+  }
+};
   const fetchSearchedProducts = async (search, page = 1, sort = '') => {
   setSearchLoading(true);
   try {
@@ -231,6 +272,42 @@ const [searchedProducts, setSearchedProducts] = useState([]);
 };
 
   const [trendingProducts,setTrendingProducts] = useState([])
+  
+const fetchMultipleTrendingPages = async (maxPages = 1, limit = 100, sortOption = '', startPage = 1) => {
+  const allProducts = [];
+  let currentPage = startPage;
+  const endPage = startPage + maxPages - 1;
+
+  try {
+    while (currentPage <= endPage) {
+      const response = await fetch(
+        `${backednUrl}/api/client-products-trending?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+      );
+
+      if (!response.ok) break;
+
+      const data = await response.json();
+
+      if (data && data.data && data.data.length > 0) {
+        allProducts.push(...data.data);
+
+        // Check if we've reached the last page
+        if (currentPage >= data.total_pages) break;
+
+        currentPage++;
+      } else {
+        break;
+      }
+    }
+
+    return allProducts;
+  } catch (error) {
+    console.error('Error fetching multiple trending pages:', error);
+    return allProducts; // Return what we have so far
+  }
+};
+
+
   const fetchTrendingProducts = async (page = 1, sort = '',limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
@@ -278,6 +355,72 @@ const [searchedProducts, setSearchedProducts] = useState([]);
       setError(err.message);
     }
   };
+  const fetchMultipleArrivalPages = async (maxPages = 1, limit = 100, sortOption = '', startPage = 1) => {
+  const allProducts = [];
+  let currentPage = startPage;
+  const endPage = startPage + maxPages - 1;
+
+  try {
+    while (currentPage <= endPage) {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products-newArrival?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+      );
+
+      if (!response.ok) break;
+
+      const data = await response.json();
+
+      if (data && data.data && data.data.length > 0) {
+        allProducts.push(...data.data);
+
+        // Check if we've reached the last page
+        if (currentPage >= data.total_pages) break;
+
+        currentPage++;
+      } else {
+        break;
+      }
+    }
+
+    return allProducts;
+  } catch (error) {
+    console.error('Error fetching multiple arrival pages:', error);
+    return allProducts;
+  }
+};
+  const fetchMultipleDiscountedPages = async (maxPages = 1, limit = 100, sortOption = '', startPage = 1) => {
+  const allProducts = [];
+  let currentPage = startPage;
+  const endPage = startPage + maxPages - 1;
+
+  try {
+    while (currentPage <= endPage) {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products-discounted?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+      );
+
+      if (!response.ok) break;
+
+      const data = await response.json();
+
+      if (data && data.data && data.data.length > 0) {
+        allProducts.push(...data.data);
+
+        // Check if we've reached the last page
+        if (currentPage >= data.total_pages) break;
+
+        currentPage++;
+      } else {
+        break;
+      }
+    }
+
+    return allProducts;
+  } catch (error) {
+    console.error('Error fetching multiple arrival pages:', error);
+    return allProducts;
+  }
+};
   const [discountedProducts,setDiscountedProducts] = useState([])
   const fetchDiscountedProducts = async (page = 1, sort = '',limit) => {
     try {
@@ -303,6 +446,38 @@ const [searchedProducts, setSearchedProducts] = useState([]);
     }
   };
 const [bestSellerProducts,setBestSellerProducts] = useState([])
+const fetchMultipleBestSellerPages = async (maxPages = 1, limit = 100, sortOption = '', startPage = 1) => {
+  const allProducts = [];
+  let currentPage = startPage;
+  const endPage = startPage + maxPages - 1;
+
+  try {
+    while (currentPage <= endPage) {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products-bestSellers?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+      );
+
+      if (!response.ok) break;
+
+      const data = await response.json();
+      if (data && data.data && data.data.length > 0) {
+        allProducts.push(...data.data);
+
+        // Check if we've reached the last page
+        if (currentPage >= data.total_pages) break;
+
+        currentPage++;
+      } else {
+        break;
+      }
+    }
+
+    return allProducts;
+  } catch (error) {
+    console.error('Error fetching multiple best seller pages:', error);
+    return allProducts; // Return what we have so far
+  }
+};
   const fetchBestSellerProducts = async (page = 1, sort = '',limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
@@ -333,11 +508,47 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
 
   const [paramProducts, setParamProducts] = useState([])
 
-
+  const fetchMultipleParamPages = async (categoryId, maxPages = 1, limit = 100, sortOption = '', startPage = 1) => {
+  try {
+    const endPage = startPage + maxPages - 1;
+    
+    // Create array of page numbers to fetch
+    const pageNumbers = Array.from(
+      { length: endPage - startPage + 1 }, 
+      (_, i) => startPage + i
+    );
+    
+    // Fetch all pages in parallel
+    const fetchPromises = pageNumbers.map(async (page) => {
+      const response = await fetch(
+        `${backednUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${limit}&page=${page}&sort=${sortOption}`
+      );
+      
+      if (!response.ok) return { data: [] };
+      return await response.json();
+    });
+    
+    // Wait for all requests to complete
+    const results = await Promise.allSettled(fetchPromises);
+    
+    // Combine all successful results
+    const allProducts = [];
+    results.forEach((result) => {
+      if (result.status === 'fulfilled' && result.value?.data) {
+        allProducts.push(...result.value.data);
+      }
+    });
+    
+    return allProducts;
+  } catch (error) {
+    console.error('Error fetching multiple param pages:', error);
+    return [];
+  }
+};
   const fetchParamProducts = async (categoryId, page) => {
     try {
       setSkeletonLoading(true);
-      const itemCount = 17;
+      const itemCount = 9;
       const response = await fetch(
         `${backednUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${itemCount}&page=${page}`
       );
@@ -574,6 +785,7 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     fetchWebUser,
     addressData,
     setAddressData,
+    fetchMultipleParamPages,
     activeTab,
     setActiveTab,
     newId,
@@ -593,6 +805,7 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     totalDiscount,
     setTotalDiscount,
     fetchProducts,
+    fetchMultipleArrivalPages,
     products,
     error,
     skeletonLoading,
@@ -604,10 +817,12 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     categoryProducts,
     fetchDiscountedProducts,
     discountedProducts,
+    fetchMultipleBestSellerPages,
     setCategoryProducts,
     fetchCategories,
     setDiscountPromo,
     fetchNewArrivalProducts,
+    fetchMultipleSearchPages,
     arrivalProducts,
     filterLocalProducts,
     setFilterLocalProducts,
@@ -633,7 +848,8 @@ const [bestSellerProducts,setBestSellerProducts] = useState([])
     setSidebarActiveCategory,
     shopCategory, setShopCategory,
     sidebarActiveLabel, setSidebarActiveLabel,
-
+    fetchMultipleTrendingPages,
+    fetchMultipleDiscountedPages,
    
     marginApi,
     setMarginApi,

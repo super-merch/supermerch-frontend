@@ -9,12 +9,14 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import App from "./App.jsx";
 import { AppContextProvider } from "./context/AppContext";
+import CartInitializer from './pages/cartInitializer.jsx';
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>
       {/* delay rendering until persisted state is restored */}
       <PersistGate loading={null} persistor={persistor}>
+        <CartInitializer>
         <AppContextProvider>
           <GoogleOAuthProvider
             clientId="918141329490-1hgf0gjluv6150suapo736b0tsln63u5.apps.googleusercontent.com"
@@ -27,6 +29,7 @@ createRoot(document.getElementById("root")).render(
             <App />
           </GoogleOAuthProvider>
         </AppContextProvider>
+        </CartInitializer>
       </PersistGate>
     </Provider>
   </BrowserRouter>

@@ -265,7 +265,9 @@ const Clothing = ({ activeTab }) => {
                         </div>
 
                         <div className="p-2 sm:p-4">
-                          <div className="text-center">
+                          <div onClick={() =>
+                                  handleViewProduct(product.meta.id)
+                                }  className="text-center">
                             <h2 className="text-sm sm:text-lg font-medium text-brand leading-tight">
                               {product.overview.name &&
                               product.overview.name.length > 18

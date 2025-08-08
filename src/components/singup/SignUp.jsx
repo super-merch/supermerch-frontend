@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
+import { initializeCartFromStorage, setCurrentUser } from "@/redux/slices/cartSlice";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -100,6 +101,7 @@ const SignUp = () => {
             toast.success("Login successful!");
 
             localStorage.setItem("token", token);
+            dispatch(initializeCartFromStorage({ email: user.email }));
             
             // Load user's favourites from database
             dispatch(loadFavouritesFromDB(backednUrl));
@@ -157,17 +159,18 @@ const SignUp = () => {
       toast.error("Google authentication failed");
     },
   });
-
+ const [googleError, setGoogleError] = useState("");
+ const [loadingGoogle, setLoadingGoogle] = useState(false);
   // Handle Google authentication with password
   const handleGoogleAuth = async (e) => {
     e.preventDefault();
     if (!googlePassword.trim()) {
-      setError("Password is required");
-      setTimeout(() => setError(""), 2000);
+      setGoogleError("Password is required");
+      setTimeout(() => setGoogleError(""), 2000);
       return;
     }
 
-    setLoading(true);
+    setLoadingGoogle(true);
 
     const apiUrl = isSignUp
       ? `${backednUrl}/api/auth/signup`
@@ -187,17 +190,17 @@ const SignUp = () => {
           console.log(user, "Google user login");
 
           if (user.email !== googleData.email) {
-            setError("Email not found.");
+            setGoogleError("Email not found.");
             setTimeout(() => {
-              setError("");
+              setGoogleError("");
             }, 2000);
           } else {
-            setError("");
+            setGoogleError("");
             const { token } = response.data;
             console.log(response.data, "Google login");
             setToken(token);
             console.log(token, "token");
-
+            dispatch(initializeCartFromStorage({ email: user.email }));
             toast.success("Google Login successful!");
 
             localStorage.setItem("token", token);
@@ -215,7 +218,7 @@ const SignUp = () => {
         }
       } else {
         // For Google signup
-        setError("");
+        setGoogleError("");
         toast.success("Google SignUp successful!");
         
         // Reset states and switch to login
@@ -225,26 +228,27 @@ const SignUp = () => {
         setIsSignUp(false);
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Authentication failed");
+      setGoogleError(err?.response?.data?.message || "Authentication failed");
       console.log(err);
       setTimeout(() => {
-        setError("");
+        setGoogleError("");
       }, 2000);
     } finally {
-      setLoading(false);
+      setLoadingGoogle(false);
     }
   };
-
+  const [resetError, setResetError] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
   // Step 1: Send reset code to email
   const handleResetStep1 = async (e) => {
     e.preventDefault();
     if (!resetEmail.trim()) {
-      setError("Email is required");
-      setTimeout(() => setError(""), 2000);
+      setResetError("Email is required");
+      setTimeout(() => setResetError(""), 2000);
       return;
     }
 
-    setLoading(true);
+    setResetLoading(true);
     
     try {
       const response = await axios.post(`${backednUrl}/api/auth/reset`, {
@@ -254,20 +258,20 @@ const SignUp = () => {
       if (response.data.success) {
         toast.success("Reset code sent to your email!");
         setResetStep(2);
-        setError("");
+        setResetError("");
         // For demo purposes - remove in production
         if (response.data.resetCode) {
           console.log("Reset code (demo):", response.data.resetCode);
         }
       } else {
-        setError(response.data.message || "Failed to send reset code");
-        setTimeout(() => setError(""), 3000);
+        setResetError(response.data.message || "Failed to send reset code");
+        setTimeout(() => setResetError(""), 3000);
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to send reset email");
-      setTimeout(() => setError(""), 3000);
+      setResetError(err?.response?.data?.message || "Failed to send reset email");
+      setTimeout(() => setResetError(""), 3000);
     } finally {
-      setLoading(false);
+      setResetLoading(false);
     }
   };
 
@@ -275,12 +279,12 @@ const SignUp = () => {
   const handleResetStep2 = async (e) => {
     e.preventDefault();
     if (!resetCode.trim()) {
-      setError("Reset code is required");
-      setTimeout(() => setError(""), 2000);
+      setResetError("Reset code is required");
+      setTimeout(() => setResetError(""), 2000);
       return;
     }
 
-    setLoading(true);
+    setResetLoading(true);
     
     try {
       const response = await axios.post(`${backednUrl}/api/auth/verify-reset-code`, {
@@ -291,16 +295,16 @@ const SignUp = () => {
       if (response.data.success) {
         toast.success("Code verified successfully!");
         setResetStep(3);
-        setError("");
+        setResetError("");
       } else {
-        setError(response.data.message || "Invalid reset code");
-        setTimeout(() => setError(""), 3000);
+        setResetError(response.data.message || "Invalid reset code");
+        setTimeout(() => setResetError(""), 3000);
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to verify code");
-      setTimeout(() => setError(""), 3000);
+      setResetError(err?.response?.data?.message || "Failed to verify code");
+      setTimeout(() => setResetError(""), 3000);
     } finally {
-      setLoading(false);
+      setResetLoading(false);
     }
   };
 
@@ -309,24 +313,24 @@ const SignUp = () => {
     e.preventDefault();
     
     if (!newPassword.trim() || !confirmNewPassword.trim()) {
-      setError("Both password fields are required");
-      setTimeout(() => setError(""), 2000);
+      setResetError("Both password fields are required");
+      setTimeout(() => setResetError(""), 2000);
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
-      setError("Passwords do not match");
-      setTimeout(() => setError(""), 2000);
+      setResetError("Passwords do not match");
+      setTimeout(() => setResetError(""), 2000);
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters long");
-      setTimeout(() => setError(""), 2000);
+      setResetError("Password must be at least 6 characters long");
+      setTimeout(() => setResetError(""), 2000);
       return;
     }
 
-    setLoading(true);
+    setResetLoading(true);
     
     try {
       const response = await axios.post(`${backednUrl}/api/auth/reset-password`, {
@@ -338,16 +342,16 @@ const SignUp = () => {
       if (response.data.success) {
         toast.success("Password reset successfully!");
         handleResetCancel(); // Close modal and reset states
-        setError("");
+        setResetError("");
       } else {
-        setError(response.data.message || "Failed to reset password");
-        setTimeout(() => setError(""), 3000);
+        setResetError(response.data.message || "Failed to reset password");
+        setTimeout(() => setResetError(""), 3000);
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to reset password");
-      setTimeout(() => setError(""), 3000);
+      setResetError(err?.response?.data?.message || "Failed to reset password");
+      setTimeout(() => setResetError(""), 3000);
     } finally {
-      setLoading(false);
+      setResetLoading(false);
     }
   };
 
@@ -435,24 +439,24 @@ const SignUp = () => {
                     </div>
                   </div>
                   
-                  {error && <p className="text-red-500 mb-4">{error}</p>}
+                  {googleError && <p className="text-red-500 mb-4">{googleError}</p>}
                   
                   <div className="flex gap-3">
                     <button
                       type="button"
                       onClick={handleGoogleCancel}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                      disabled={loading}
+                      disabled={loadingGoogle}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       className="flex-1 bg-smallHeader text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center justify-center gap-2"
-                      disabled={loading}
+                      disabled={loadingGoogle}
                     >
-                      {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
-                      {!loading && <FaArrowRight />}
+                      {loadingGoogle ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
+                      {!loadingGoogle && <FaArrowRight />}
                     </button>
                   </div>
                 </form>
@@ -467,7 +471,7 @@ const SignUp = () => {
                 <h3 className="text-lg font-semibold mb-4">
                   Reset Password - Step {resetStep} of 3
                 </h3>
-                {(resetStep === 2 || resetStep === 3) && <p>2 minutes until the code expires</p>}
+                
 
                 {/* Step 1: Enter Email */}
                 {resetStep === 1 && (
@@ -490,24 +494,24 @@ const SignUp = () => {
                         />
                       </div>
                       
-                      {error && <p className="text-red-500 mb-4">{error}</p>}
+                      {resetError && <p className="text-red-500 mb-4">{resetError}</p>}
                       
                       <div className="flex gap-3">
                         <button
                           type="button"
                           onClick={handleResetCancel}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                          disabled={loading}
+                          disabled={resetLoading}
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
                           className="flex-1 bg-smallHeader text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center justify-center gap-2"
-                          disabled={loading}
+                          disabled={resetLoading}
                         >
-                          {loading ? "Sending..." : "Send Code"}
-                          {!loading && <FaArrowRight />}
+                          {resetLoading ? "Sending..." : "Send Code"}
+                          {!resetLoading && <FaArrowRight />}
                         </button>
                       </div>
                     </form>
@@ -536,24 +540,24 @@ const SignUp = () => {
                         />
                       </div>
                       
-                      {error && <p className="text-red-500 mb-4">{error}</p>}
+                      {resetError && <p className="text-red-500 mb-4">{resetError}</p>}
                       
                       <div className="flex gap-3">
                         <button
                           type="button"
                           onClick={() => setResetStep(1)}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                          disabled={loading}
+                          disabled={resetLoading}
                         >
                           Back
                         </button>
                         <button
                           type="submit"
                           className="flex-1 bg-smallHeader text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center justify-center gap-2"
-                          disabled={loading}
+                          disabled={resetLoading}
                         >
-                          {loading ? "Verifying..." : "Verify Code"}
-                          {!loading && <FaArrowRight />}
+                          {resetLoading ? "Verifying..." : "Verify Code"}
+                          {!resetLoading && <FaArrowRight />}
                         </button>
                       </div>
                     </form>
@@ -613,24 +617,24 @@ const SignUp = () => {
                         </div>
                       </div>
                       
-                      {error && <p className="text-red-500 mb-4">{error}</p>}
+                      {resetError && <p className="text-red-500 mb-4">{resetError}</p>}
                       
                       <div className="flex gap-3">
                         <button
                           type="button"
                           onClick={() => setResetStep(2)}
                           className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                          disabled={loading}
+                          disabled={resetLoading}
                         >
                           Back
                         </button>
                         <button
                           type="submit"
                           className="flex-1 bg-smallHeader text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center justify-center gap-2"
-                          disabled={loading}
+                          disabled={resetLoading}
                         >
-                          {loading ? "Verifying..." : "Verify Code"}
-                          {!loading && <FaArrowRight />}
+                          {resetLoading ? "Verifying..." : "Verify Code"}
+                          {!resetLoading && <FaArrowRight />}
                         </button>
                       </div>
                     </form>
@@ -754,14 +758,14 @@ const SignUp = () => {
                 <label className="flex items-start">
                   <input type="checkbox" required className="mr-2 mt-1" />
                   <span className="text-gray-600 text-sm max-w-72">
-                    Are you agree to Clicon{" "}
+                    Do you agree to Super Merch's{" "}
                     <span
                       onClick={() => navigate("/terms")}
                       className="text-smallHeader cursor-pointer"
                     >
-                      Terms of Condition
+                      Terms & Condition
                     </span>{" "}
-                    and
+                    and{" "}
                     <span
                       onClick={() => navigate("/privacy")}
                       className="text-smallHeader cursor-pointer"
@@ -806,10 +810,7 @@ const SignUp = () => {
                 <p>{isSignUp ? "Sign up" : "Sign in"} with Google</p>
               </button>
               
-              <div className="flex items-center justify-center text-gogle rounded gap-3 border border-border2 py-3 w-full cursor-pointer hover:bg-gray-50">
-                <SiApple />
-                <p>{isSignUp ? "Sign up" : "Sign in"} with Apple</p>
-              </div>
+              
             </div>
           </div>
         </div>
