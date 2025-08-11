@@ -757,7 +757,7 @@ const SignUp = () => {
               <div className="mb-4">
                 <label className="flex items-start">
                   <input type="checkbox" required className="mr-2 mt-1" />
-                  <span className="text-gray-600 text-sm max-w-72">
+                  <span className="text-gray-600 text-sm ">
                     Do you agree to Super Merch's{" "}
                     <span
                       onClick={() => navigate("/terms")}
