@@ -42,22 +42,35 @@ const Blogs = () => {
                             1024: { slidesPerView: 4, spaceBetween: 10 },
                         }}
                     >
-                        {blogs?.map((blog, index) => (
-                            <SwiperSlide key={index}>
-                                <div onClick={() => navigate(`/blogs/${blog?._id}`)} className="group cursor-pointer border border-gray-300 rounded-2xl p-5 transition-all duration-300 hover:border-indigo-600">
-                                    <div className="flex items-center mb-6">
-                                        <img src={blog.image} alt="blog image" className="rounded-lg w-full object-cover" />
-                                    </div>
-                                    <div className="block">
-                                        <h4 className="text-gray-900 font-medium leading-8 mb-3">{blog?.title}</h4>
-                                        <div className="flex items-center justify-end font-medium">
-                                            {/* <h6 className="text-sm text-gray-500">{blog?.author}</h6> */}
-                                            <span className="text-sm text-indigo-600">Published At: {new Date(blog?.createdAt).toLocaleDateString(undefined, options)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </SwiperSlide>
-                        ))}
+                         {blogs?.map((blog, index) => (
+                                                    <SwiperSlide key={blog._id || index}>
+                                                        <div 
+                                                            onClick={() => navigate(`/blogs/${blog?._id}`)} 
+                                                            className="group cursor-pointer border border-gray-300 rounded-2xl p-5 transition-all duration-300 hover:border-indigo-600 hover:shadow-lg"
+                                                        >
+                                                            <div className="flex items-center mb-6">
+                                                                <img 
+                                                                    src={blog.image} 
+                                                                    alt={blog.title || "blog image"} 
+                                                                    className="rounded-lg w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" 
+                                                                />
+                                                            </div>
+                                                            <div className="block">
+                                                                <h4 className="text-gray-900 font-medium leading-8 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-300">
+                                                                    {blog?.title}
+                                                                </h4>
+                                                                <div className="flex items-center justify-between font-medium">
+                                                                    <span className="text-sm text-indigo-600 font-semibold">
+                                                                        Read More →
+                                                                    </span>
+                                                                    <span className="text-sm text-gray-500">
+                                                                        {new Date(blog?.createdAt).toLocaleDateString(undefined, options)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </SwiperSlide>
+                                                ))}
                     </Swiper>
                 </div>
                 <div className="flex justify-center items-center gap-2">
