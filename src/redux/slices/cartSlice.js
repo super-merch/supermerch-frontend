@@ -105,17 +105,17 @@ const initialState = {
 // Helper function to calculate price based on quantity and price breaks
 const getPriceForQuantity = (quantity, priceBreaks) => {
   if (!priceBreaks || priceBreaks.length === 0) return 0;
-  
+
   // Sort price breaks by quantity
   const sortedBreaks = [...priceBreaks].sort((a, b) => a.qty - b.qty);
-  
+
   // Find the appropriate price break for the given quantity
   for (let i = sortedBreaks.length - 1; i >= 0; i--) {
     if (quantity >= sortedBreaks[i].qty) {
       return sortedBreaks[i].price;
     }
   }
-  
+
   // If quantity is less than the smallest break, use the smallest break price
   return sortedBreaks[0]?.price || 0;
 };
@@ -127,7 +127,7 @@ const cartSlice = createSlice({
     setCurrentUser: (state, action) => {
       const { email } = action.payload;
       state.currentUserEmail = email;
-      
+
       // Recalculate totals for current user
       const userItems = state.items.filter(item => item.userEmail === email);
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -135,27 +135,31 @@ const cartSlice = createSlice({
     },
 
     addToCart: (state, action) => {
-      const { 
-        id, 
-        price, 
+      const {
+        id,
+        price,
         basePrices = [], // This should come from ProductDetails
-        totalPrice, 
-        setupFee = 0, 
-        freightFee = 0, 
+        totalPrice,
+        setupFee = 0,
+        freightFee = 0,
         quantity = 1,
         marginFlat = 0,
         discountPct = 0,
-        ...rest 
+        userEmail,
+        ...rest
       } = action.payload;
-      
+
+      // Use guest email if no user email provided
+      const effectiveUserEmail = userEmail || "guest@gmail.com";
+
       if (!state.currentUserEmail) {
-        console.error('No user logged in');
-        return;
+        // If no current user set, set it to the provided email or guest
+        state.currentUserEmail = effectiveUserEmail;
       }
 
-      // Find existing item for current user
-      const existing = state.items.find(item => 
-        item.id === id && item.userEmail === state.currentUserEmail
+      // Find existing item for the specific user email
+      const existing = state.items.find(item =>
+        item.id === id && item.userEmail === effectiveUserEmail
       );
 
       if (existing) {
@@ -170,7 +174,7 @@ const cartSlice = createSlice({
         const unitPrice = getPriceForQuantity(quantity, basePrices);
         const priceWithMargin = unitPrice + marginFlat;
         const finalPrice = priceWithMargin * (1 - discountPct / 100);
-        
+
         state.items.push({
           id,
           price: finalPrice,
@@ -181,23 +185,29 @@ const cartSlice = createSlice({
           setupFee,
           freightFee,
           quantity,
-          userEmail: state.currentUserEmail, // Add user email to item
+          userEmail: effectiveUserEmail, // Use the effective email
           ...rest,
         });
       }
 
-      // Recalculate totals for current user only
-      const userItems = state.items.filter(item => item.userEmail === state.currentUserEmail);
-      state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
-      state.totalAmount = userItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      // Recalculate totals for current user (including guest items if applicable)
+      const currentUserItems = state.currentUserEmail === "guest@gmail.com"
+        ? state.items.filter(item => item.userEmail === "guest@gmail.com")
+        : [
+          ...state.items.filter(item => item.userEmail === "guest@gmail.com"),
+          ...state.items.filter(item => item.userEmail === state.currentUserEmail && item.userEmail !== "guest@gmail.com")
+        ];
+
+      state.totalQuantity = currentUserItems.reduce((sum, item) => sum + item.quantity, 0);
+      state.totalAmount = currentUserItems.reduce((sum, item) => sum + item.totalPrice, 0);
     },
 
     incrementQuantity: (state, action) => {
       const { id } = action.payload;
-      const item = state.items.find(item => 
+      const item = state.items.find(item =>
         item.id === id && item.userEmail === state.currentUserEmail
       );
-      
+
       if (item) {
         item.quantity += 1;
         // Recalculate price based on new quantity
@@ -206,7 +216,7 @@ const cartSlice = createSlice({
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
-      
+
       // Recalculate totals for current user
       const userItems = state.items.filter(item => item.userEmail === state.currentUserEmail);
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -215,10 +225,10 @@ const cartSlice = createSlice({
 
     multipleQuantity: (state, action) => {
       const { id, quantity } = action.payload;
-      const item = state.items.find(item => 
+      const item = state.items.find(item =>
         item.id === id && item.userEmail === state.currentUserEmail
       );
-      
+
       if (item) {
         item.quantity = Math.max(quantity, 1);
         // Recalculate price based on new quantity
@@ -227,7 +237,7 @@ const cartSlice = createSlice({
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
-      
+
       // Recalculate totals for current user
       const userItems = state.items.filter(item => item.userEmail === state.currentUserEmail);
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -236,10 +246,10 @@ const cartSlice = createSlice({
 
     decrementQuantity: (state, action) => {
       const { id } = action.payload;
-      const item = state.items.find(item => 
+      const item = state.items.find(item =>
         item.id === id && item.userEmail === state.currentUserEmail
       );
-      
+
       if (item && item.quantity > 1) {
         item.quantity -= 1;
         // Recalculate price based on new quantity
@@ -248,7 +258,7 @@ const cartSlice = createSlice({
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
-      
+
       // Recalculate totals for current user
       const userItems = state.items.filter(item => item.userEmail === state.currentUserEmail);
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -256,19 +266,35 @@ const cartSlice = createSlice({
     },
 
     removeFromCart: (state, action) => {
-      state.items = state.items.filter(item => 
-        !(item.id === action.payload && item.userEmail === state.currentUserEmail)
+      // Get the current email (could be actual user email or "guest")
+      const currentEmail = state.currentUserEmail || "guest@gmail.com";
+
+      state.items = state.items.filter(item => {
+        // Don't remove this item if it matches the ID and belongs to current context
+        if (item.id === action.payload) {
+          // If user is logged in, remove items that are either theirs or guest items
+          if (state.currentUserEmail) {
+            return !(item.userEmail === state.currentUserEmail || item.userEmail === "guest@gmail.com");
+          } else {
+            // If no user logged in, only remove guest items
+            return !(item.userEmail === "guest@gmail.com");
+          }
+        }
+        return true; // Keep all other items
+      });
+
+      // Recalculate totals for current user OR guest items
+      const userItems = state.items.filter(item =>
+        item.userEmail === currentEmail ||
+        (state.currentUserEmail && item.userEmail === "guest@gmail.com")
       );
-      
-      // Recalculate totals for current user
-      const userItems = state.items.filter(item => item.userEmail === state.currentUserEmail);
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
       state.totalAmount = userItems.reduce((sum, item) => sum + item.totalPrice, 0);
     },
 
     updateCartItemImage: (state, action) => {
       const { id, dragdrop } = action.payload;
-      const item = state.items.find(item => 
+      const item = state.items.find(item =>
         item.id === id && item.userEmail === state.currentUserEmail
       );
       if (item) item.dragdrop = dragdrop;
@@ -276,10 +302,10 @@ const cartSlice = createSlice({
 
     updateCartItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
-      const item = state.items.find(item => 
+      const item = state.items.find(item =>
         item.id === id && item.userEmail === state.currentUserEmail
       );
-      
+
       if (item) {
         item.quantity = Math.max(quantity, 1);
         // Recalculate price based on new quantity
@@ -288,7 +314,7 @@ const cartSlice = createSlice({
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity + (item.setupFee || 0) + (item.freightFee || 0);
       }
-      
+
       // Recalculate totals for current user
       const userItems = state.items.filter(item => item.userEmail === state.currentUserEmail);
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -313,9 +339,9 @@ const cartSlice = createSlice({
     initializeCartFromStorage: (state, action) => {
       const { email } = action.payload;
       state.currentUserEmail = email;
-      
+
       // Recalculate totals for current user
-      const userItems = state.items.filter(item => item.userEmail === email);
+      const userItems = state.items.filter(item => item.userEmail === email || item.userEmail === "guest@gmail.com");
       state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
       state.totalAmount = userItems.reduce((sum, item) => sum + item.totalPrice, 0);
     },
@@ -328,7 +354,17 @@ const cartSlice = createSlice({
 export const selectCurrentUserCartItems = (state) => {
   const currentUserEmail = state.cart.currentUserEmail;
   if (!currentUserEmail) return [];
-  return state.cart.items.filter(item => item.userEmail === currentUserEmail);
+
+  // Always include guest items along with user-specific items
+  const guestItems = state.cart.items.filter(item => item.userEmail === "guest@gmail.com");
+
+  if (currentUserEmail === "guest@gmail.com") {
+    return guestItems;
+  }
+
+  // For logged-in users, show both their items and guest items
+  const userItems = state.cart.items.filter(item => item.userEmail === currentUserEmail);
+  return [...guestItems, ...userItems];
 };
 
 export const {
@@ -344,6 +380,6 @@ export const {
   clearCart,
   multipleQuantity,
   initializeCartFromStorage
-} = cartSlice.actions;  
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

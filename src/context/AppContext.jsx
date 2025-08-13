@@ -96,7 +96,7 @@ const [isCacheValid, setIsCacheValid] = useState(false);
         { headers: { token } }
       );
       if (data.success) {
-        setUserOrder(data.orders);
+        setUserOrder(data.orders.reverse());
       }
     } catch (error) {
       console.log(error);
@@ -566,6 +566,7 @@ const fetchMultipleBestSellerPages = async (maxPages = 1, limit = 100, sortOptio
       setParamProducts(data);
       setTotalApiPages(data.total_pages);
       setSkeletonLoading(false);
+      return data;
     } catch (err) {
       setError(err.message);
       setSkeletonLoading(false);

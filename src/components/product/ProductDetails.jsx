@@ -45,7 +45,9 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.log("No token found");
+        console.log("No token found, using guest email");
+        setUserEmail("guest@gmail.com");
+        dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
         return;
       }
 
@@ -62,6 +64,9 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
       }
     } catch (error) {
       console.error("Error fetching user email:", error.response?.data || error.message);
+      // Fallback to guest email if there's an error
+      setUserEmail("guest@gmail.com");
+      dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
     }
   };
 
@@ -611,11 +616,11 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-    if (!userEmail) {
-    toast.error("Please login to add items to cart");
-    navigate("/signup");
-    return;
-  }
+  //   if (!userEmail) {
+  //   toast.error("Please login to add items to cart");
+  //   navigate("/signup");
+  //   return;
+  // }
 
     dispatch(
       addToCart({
@@ -669,7 +674,7 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
         deliveryDate,
         priceBreaks: selectedPrintMethod.price_breaks,
         printMethodKey: selectedPrintMethod.key,
-        userEmail: userEmail
+        userEmail: userEmail || "guest@gmail.com"
       })
     );
     navigate("/cart");
@@ -1031,11 +1036,11 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
               </div>
               <div
                 onClick={() => {
-                  if (!userEmail) {
-    toast.error("Please login to add items to cart");
-    navigate("/signup");
-    return;
-  }
+  //                 if (!userEmail) {
+  //   toast.error("Please login to add items to cart");
+  //   navigate("/signup");
+  //   return;
+  // }
                   dispatch(
                     addToCart({
                       id: productId,
@@ -1054,7 +1059,7 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                       deliveryDate,
                       priceBreaks: selectedPrintMethod?.price_breaks || [], // Add fallback
                       printMethodKey: selectedPrintMethod?.key || "",
-                      userEmail: userEmail
+                      userEmail: userEmail || "guest@gmail.com",
                     })
                   );
                   navigate("/cart");

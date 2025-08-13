@@ -42,31 +42,32 @@ const PriceFilter = () => {
   ];
 
   const handleApplyCustomRange = () => {
-    if (!localMin || !localMax || isNaN(localMin) || isNaN(localMax)) {
-      toast.error("Please enter valid numbers for Min and Max Price");
-      return;
-    }
-    if (localMin < 0 || localMax < 0) {
-      toast.error("Price cannot be negative");
-      return;
-    }
-    if (localMin >= localMax) {
-      toast.error("Min Price should be less than Max Price");
-      return;
-    }
-    
-    setIsApplying(true);
-    dispatch(setMinPrice(localMin));
-    dispatch(setMaxPrice(localMax));
-    dispatch(applyFilters());
-    setLocalMin("");
-    setLocalMax("");
-    
-    // Reset applying state after a short delay
-    setTimeout(() => setIsApplying(false), 1000);
-    
-
-  };
+  const minValue = Number(localMin);
+  const maxValue = Number(localMax);
+  
+  if (!localMin || !localMax || isNaN(minValue) || isNaN(maxValue)) {
+    toast.error("Please enter valid numbers for Min and Max Price");
+    return;
+  }
+  if (maxValue < 0 || minValue <=-1) { // Only check if max is negative since min can be 0
+    toast.error("Price cannot be negative");
+    return;
+  }
+  if (minValue >= maxValue) {
+    toast.error("Min Price should be less than Max Price");
+    return;
+  }
+  
+  setIsApplying(true);
+  dispatch(setMinPrice(minValue));
+  dispatch(setMaxPrice(maxValue));
+  dispatch(applyFilters());
+  setLocalMin("");
+  setLocalMax("");
+  
+  // Reset applying state after a short delay
+  setTimeout(() => setIsApplying(false), 1000);
+};
 
   const handlePresetRangeClick = (range) => {
     setIsApplying(true);
@@ -105,14 +106,14 @@ const PriceFilter = () => {
           placeholder="From" 
           value={localMin} 
           className="border-[2px] max-w-20 text-center p-1" 
-          onChange={(e) => setLocalMin(Number(e.target.value))} 
+          onChange={(e) => setLocalMin(e.target.value)}
           />
         <input 
           type="text" 
           placeholder="To" 
           value={localMax} 
           className="border-[2px] p-1 max-w-20 text-center" 
-          onChange={(e) => setLocalMax(Number(e.target.value))} 
+          onChange={(e) => setLocalMax(e.target.value)}
           />
           </div>
         <button

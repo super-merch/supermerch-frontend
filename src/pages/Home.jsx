@@ -92,7 +92,30 @@ const Home = () => {
         setLoading(false)
     }
 }
-
+const [coupen, setCoupen] = useState('')
+const [discount, setDiscount] = useState('')
+const [coupenLoading, setCoupenLoading] = useState(false)
+const API_BASE = import.meta.env.VITE_BACKEND_URL
+  const fetchCurrentCoupon = async () => {
+    try {
+      setCoupenLoading(true)
+      const response = await fetch(`${API_BASE}/api/coupen/get`);
+      const data = await response.json();
+      if(response.ok){
+        setCoupen(data[0].coupen);
+        setDiscount(data[0].discount);
+        setCoupenLoading(false)
+      }
+      setCoupenLoading(false)
+      
+    } catch (error) {
+      setCoupenLoading(false)
+      console.error('Error fetching current coupon:', error);
+    }
+  };
+  useEffect(() => {
+    fetchCurrentCoupon()
+  }, [])
 
 
   return (
@@ -137,9 +160,10 @@ const Home = () => {
               </div>
               <h1 className="text-[12px] font-medium to-gray-200">We know you will be happy when you get</h1>
               <p className="text-2xl font-extrabold text-[#5D8EF9]">
-                5% OFF
+                {coupenLoading ? 'Loading...' : discount+"% OFF" || "No Discount Available"}
               </p>
-              <p className="text-[#474747] font-medium p-2 text-sm bg-[#EAEAEA] rounded-md">Use Code: <span className="text-sm font-semibold">40KREVIEWS5PU</span></p>
+              {/* Set coupon here */}
+              <p className="text-[#474747] font-medium p-2 text-sm bg-[#EAEAEA] rounded-md">Use Code: <span className="text-sm font-semibold">{coupenLoading ? 'Loading...' : coupen || "No Coupen Available"}</span></p>
               <button onClick={() => {
                 setDiscountModal(false)
                 setEmailModal(true)

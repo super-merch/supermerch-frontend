@@ -17,6 +17,7 @@ import {
 } from "../../redux/slices/cartSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
+import axios from "axios";
 
 const CartComponent = () => {
   const { totalDiscount } = useContext(AppContext);
@@ -34,6 +35,35 @@ const CartComponent = () => {
   const [customQuantities, setCustomQuantities] = useState({});
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+
+  useEffect(() => {
+    const checkUserAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setCurrentUserEmail("guest@gmail.com");
+        return;
+      }
+
+      try {
+        const { data } = await axios.get(`${API_BASE}/api/auth/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (data.success) {
+          setCurrentUserEmail(data.email);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setCurrentUserEmail("guest@gmail.com");
+      }
+    };
+
+    checkUserAuth();
+  }, []);
+
   const [shippingCharges, setShippingCharges] = useState(0);
   const getShippingCharges = async () => {
     try {
@@ -157,6 +187,11 @@ const CartComponent = () => {
       setIsApplyingCoupon(false);
     }
   };
+  //check if user is logged in
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  })
 
   // Remove coupon function
   const handleRemoveCoupon = () => {
@@ -369,7 +404,7 @@ const CartComponent = () => {
                   );
                 })
               ) : (
-                <div className=" text-red-500 text-lg">
+                <div className=" text-red-500 text-base text-center pt-6 px-5">
                   <p className=" ">
                     Your Cart is empty Your shopping cart lives to serve. Give
                     it purpose – fill it with what you are looking for.
@@ -408,9 +443,9 @@ const CartComponent = () => {
             <div className="flex justify-between text-sm">
               <span className="text-sm font-normal text-stock">Shipping:</span>
               <span className="text-sm font-medium text-brand">
-                {shippingCharges > 0
+                {items.length > 0 ? (shippingCharges > 0
                   ? `$${shippingCharges.toFixed(2)}`
-                  : "Free"}
+                  : "Free"): "$0.00"}
               </span>
             </div>
             <div className="flex justify-between">
@@ -497,14 +532,24 @@ const CartComponent = () => {
             <span className="font-normal text-brand">Total:</span>
             <span className="font-semibold text-brand">
               $
-              {(total || 0).toLocaleString("en-US", {
+              {items.length>0?(total || 0).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-              })}
+              }):"0.00"}
             </span>
           </div>
-
-          {total > shippingCharges ? (
+              {!currentUserEmail || currentUserEmail === "guest@gmail.com" ? (
+                <button
+              onClick={() => {
+                toast.error("Please login to proceed")
+                Navigate("/signup");}}
+              className="flex items-center justify-center w-full gap-2 py-4 mt-8 text-white bg-smallHeader "
+            >
+              PROCEED TO CHECKOUT
+              <FaArrowRight />
+            </button>
+              ):
+          (total > shippingCharges ? (
             <Link
               to={"/checkout"}
               state={{
@@ -526,7 +571,7 @@ const CartComponent = () => {
               PROCEED TO CHECKOUT
               <FaArrowRight />
             </button>
-          )}
+          ))}
         </div>
       </div>
     </div>

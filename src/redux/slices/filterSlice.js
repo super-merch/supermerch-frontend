@@ -13,6 +13,7 @@ const initialState = {
     brands: [],
     price: [],
   },
+  categoryId: null,
 };
 
 const filterSlice = createSlice({
@@ -41,6 +42,9 @@ const filterSlice = createSlice({
     },
     setSelectedBrands: (state, action) => {
       state.selectedBrands = action.payload;
+    },
+    setCategoryId:(state, action) => {
+      state.categoryId = action.payload;
     },
     applyFilters: (state) => {
       const {
@@ -103,6 +107,7 @@ export const {
   setMaxPrice,
   setSelectedBrands,
   applyFilters,
+  setCategoryId
 } = filterSlice.actions;
 
 export const selectActiveFilters = (state) => state.filters.activeFilters;

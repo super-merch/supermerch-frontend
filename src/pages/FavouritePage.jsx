@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { removeFromFavourite } from "../redux/slices/favouriteSlice";
+import { toast } from "react-toastify";
 
 const FavouritePage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -47,6 +48,7 @@ const FavouritePage = () => {
   };
 
   const handleRemoveFavourite = (product) => {
+    toast.error("Product removed from favourites");
     dispatch(removeFromFavourite(product));
   };
 
@@ -73,21 +75,36 @@ const FavouritePage = () => {
                 priceGroups.find((group) => group?.base_price) || {};
               const priceBreaks = basePrice.base_price?.price_breaks || [];
 
-              // Get an array of prices from priceBreaks
+              // Get an array of prices from priceBreaks (original pricing logic)
               const prices = priceBreaks
                 .map((breakItem) => breakItem.price)
                 .filter((price) => price !== undefined);
 
-              // Calculate the minimum and maximum price values
-              const minPrice = prices.length > 0 ? Math.min(...prices) : "0";
-              const maxPrice = prices.length > 0 ? Math.max(...prices) : "0";
+              // Calculate the minimum and maximum price values (keeping original logic)
+              const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+              const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
               return (
                 <div
                   key={product.id}
-                  // onClick={() => handleViewProduct(product.meta.id)}
-                  className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
+                  className="relative border border-border2 cursor-pointer max-h-[280px] sm:max-h-[350px] h-full group"
+                  onClick={() => handleViewProduct(product.meta.id)}
                 >
-                  <div className="max-h-[50%] h-full border-b overflow-hidden">
+                  {/* Favourite button - positioned to avoid conflicts */}
+                  <div className="absolute top-2 right-2 z-20">
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click
+                        handleRemoveFavourite(product);
+                      }}
+                      className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
+                    >
+                      <CiHeart className="text-lg text-red-500 transition-colors" />
+                    </div>
+                  </div>
+
+                  {/* Enlarged image section */}
+                  <div className="max-h-[65%] sm:max-h-[75%] h-full border-b overflow-hidden relative">
                     <img
                       src={
                         product.overview.hero_image
@@ -98,69 +115,111 @@ const FavouritePage = () => {
                       className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                     />
                   </div>
-                  <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
-                          {product?.product?.colours?.list.length > 0 &&
-                            product?.product?.colours?.list
-                              .slice(0, 15) // Limit to 15 colors
-                              .flatMap((colorObj, index) =>
-                                colorObj.colours.map((color, subIndex) => (
-                                  <div
-                                    key={`${index}-${subIndex}`}
-                                    style={{
-                                      backgroundColor:
-                                        colorObj.swatch?.[subIndex] ||
-                                        color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-sm border border-slate-900"
-                                  />
-                                ))
-                              )}
-                        </div>
-                  <div className="p-4">
-                    <div className="text-center">
-                      <h2 className="text-lg font-medium text-brand ">
-                        {product.overview.name ||
-                        product.overview.name.length > 22
-                          ? product.overview.name.slice(0, 22) + "..."
-                          : "No Name "}
-                      </h2>
-                      <p className="font-normal text-brand">
-                        Code: {product.overview.code}
-                      </p>
-                      <h2 className="pt-2 text-xl font-semibold text-heading">
-                        $
-                        {minPrice === maxPrice ? (
-                          <span>{minPrice.toFixed(2)}</span>
-                        ) : (
-                          <span>
-                            {minPrice.toFixed(2)}. - ${maxPrice.toFixed(2)}
-                          </span>
+
+                  {/* Color swatches */}
+                  <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%] z-10">
+                    {product?.product?.colours?.list.length > 0 &&
+                      product?.product?.colours?.list
+                        .slice(0, 15)
+                        .flatMap((colorObj, index) =>
+                          colorObj.colours.map((color, subIndex) => (
+                            <div
+                              key={`${index}-${subIndex}`}
+                              style={{
+                                backgroundColor:
+                                  colorObj.swatch?.[subIndex] ||
+                                  color
+                                    .toLowerCase()
+                                    .replace("dark blue", "#1e3a8a")
+                                    .replace("light blue", "#3b82f6")
+                                    .replace("navy blue", "#1e40af")
+                                    .replace("royal blue", "#2563eb")
+                                    .replace("sky blue", "#0ea5e9")
+                                    .replace("gunmetal", "#2a3439")
+                                    .replace("dark grey", "#4b5563")
+                                    .replace("light grey", "#9ca3af")
+                                    .replace("dark gray", "#4b5563")
+                                    .replace("light gray", "#9ca3af")
+                                    .replace("charcoal", "#374151")
+                                    .replace("lime green", "#65a30d")
+                                    .replace("forest green", "#166534")
+                                    .replace("dark green", "#15803d")
+                                    .replace("light green", "#16a34a")
+                                    .replace("bright green", "#22c55e")
+                                    .replace("dark red", "#dc2626")
+                                    .replace("bright red", "#ef4444")
+                                    .replace("wine red", "#991b1b")
+                                    .replace("burgundy", "#7f1d1d")
+                                    .replace("hot pink", "#ec4899")
+                                    .replace("bright pink", "#f472b6")
+                                    .replace("light pink", "#f9a8d4")
+                                    .replace("dark pink", "#be185d")
+                                    .replace("bright orange", "#f97316")
+                                    .replace("dark orange", "#ea580c")
+                                    .replace("bright yellow", "#eab308")
+                                    .replace("golden yellow", "#f59e0b")
+                                    .replace("dark yellow", "#ca8a04")
+                                    .replace("cream", "#fef3c7")
+                                    .replace("beige", "#f5f5dc")
+                                    .replace("tan", "#d2b48c")
+                                    .replace("brown", "#92400e")
+                                    .replace("dark brown", "#78350f")
+                                    .replace("light brown", "#a3a3a3")
+                                    .replace("maroon", "#7f1d1d")
+                                    .replace("teal", "#0d9488")
+                                    .replace("turquoise", "#06b6d4")
+                                    .replace("aqua", "#22d3ee")
+                                    .replace("mint", "#10b981")
+                                    .replace("lavender", "#c084fc")
+                                    .replace("violet", "#8b5cf6")
+                                    .replace("indigo", "#6366f1")
+                                    .replace("slate", "#64748b")
+                                    .replace("stone", "#78716c")
+                                    .replace("zinc", "#71717a")
+                                    .replace("neutral", "#737373")
+                                    .replace("rose", "#f43f5e")
+                                    .replace("emerald", "#10b981")
+                                    .replace("cyan", "#06b6d4")
+                                    .replace("amber", "#f59e0b")
+                                    .replace("lime", "#84cc16")
+                                    .replace("fuchsia", "#d946ef")
+                                    .replace(" ", "") || // remove remaining spaces
+                                  color.toLowerCase(),
+                              }}
+                              className="w-4 h-4 rounded-sm border border-slate-900"
+                            />
+                          ))
                         )}
+                  </div>
+
+                  {/* Reduced content area */}
+                  <div className="p-2">
+                    <div className="text-center">
+                      <h2 className="text-sm sm:text-lg font-semibold text-brand leading-tight">
+                        {product.overview.name &&
+                        product.overview.name.length > 20
+                          ? product.overview.name.slice(0, 20) + "..."
+                          : product.overview.name || "No Name"}
                       </h2>
-                    </div>
-                    <div className="flex justify-between gap-1 mt-2 mb-1">
-                      <p onClick={() => handleRemoveFavourite(product)} className="p-3 text-2xl rounded-sm bg-icons">
-                        <CiHeart className="text-red-500" />
+
+                      {/* Minimum quantity */}
+                      <p className="text-xs text-gray-500">
+                        {product.product?.prices?.price_groups[0]
+                          ?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                        minimum quantity
                       </p>
-                      <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
-                        <p
-                          className="text-xl"
-                        >
-                          <IoCartOutline />
-                        </p>
-                        <button
-                          onClick={() => handleViewProduct(product.meta.id)}
-                          className="text-sm uppercase"
-                        >
-                          Add to cart
-                        </button>
+
+                      {/* Price display - using original pricing without margin additions */}
+                      <div className="">
+                        <h2 className="text-base sm:text-lg font-bold text-heading">
+                          From $
+                          {minPrice === maxPrice ? (
+                            <span>{minPrice.toFixed(2)}</span>
+                          ) : (
+                            <span>{minPrice.toFixed(2)}</span>
+                          )}
+                        </h2>
                       </div>
-                      <p
-                        onClick={() => handleOpenModal(product)}
-                        className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
-                      >
-                        <AiOutlineEye />
-                      </p>
                     </div>
                   </div>
                 </div>

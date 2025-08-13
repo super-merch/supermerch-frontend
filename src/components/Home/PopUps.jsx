@@ -287,7 +287,9 @@ const PopUp = () => {
                     {mainCategories.map((category) => (
                       <button
                         key={category.id}
-                        onClick={() => handleMainCategorySelect(category)}
+                        onClick={() => {handleMainCategorySelect(category)
+                          handleNext()
+                        }}
                         className="px-4 sm:px-10 py-2 border group border-[#1b6ce0] rounded-md mt-2 font-semibold"
                       >
                         <p className={`${selectedMainCategory?.id === category.id
@@ -330,7 +332,10 @@ const PopUp = () => {
                     {priceRanges.map((range) => (
                       <button
                         key={range.label}
-                        onClick={() => handlePriceSelect(range)}
+                        onClick={() => {handlePriceSelect(range)
+                          handleNext()
+                        }
+                        }
                         className="px-3 sm:px-10 py-2 border group border-[#1b6ce0] rounded-md mt-2 font-semibold"
                       >
                         <p className={`${selectedPrice === range

@@ -57,7 +57,7 @@ const AboutDescrip = ({ activeTab, single_product }) => {
       {activeTab === 'About' && (
         <div className='Mycontainer  gap-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[46%_25%_25%]  lg:pb-24 md:pb-24 pb-8'>
           <div className=''>
-            <h1 className="font-semibold">Description</h1>
+            <h1 className="font-semibold text-base">Description</h1>
             <p className='text-sm text-gray-900 leading-6 pt-3 max-w-[540px] '>
               {single_product?.product?.description || "No Description For This Product"}
             </p>

@@ -135,124 +135,136 @@ const TrendCards = () => {
   };
 
   // Function to fetch and filter trending products with price range
-  
-const fetchAndFilterTrendingProducts = async (
-  minPrice,
-  maxPrice,
-  sortOption
-) => {
-  setIsFiltering(true);
-  setFilterError("");
 
-  try {
-    let maxPages = 1; // Start with fewer pages for faster response
+  const fetchAndFilterTrendingProducts = async (
+    minPrice,
+    maxPrice,
+    sortOption
+  ) => {
+    setIsFiltering(true);
+    setFilterError("");
 
-    // Use the fetchMultipleTrendingPages method from AppContext
-    const fetchedProducts = await fetchMultipleTrendingPages(
-      maxPages,
-      100,
-      sortOption
-    );
-    setFetchedPagesCount(maxPages); // Track how many pages we've fetched
+    try {
+      let maxPages = 1; // Start with fewer pages for faster response
 
-    if (fetchedProducts && fetchedProducts.length > 0) {
-      // Filter products by price
-      const filteredProducts = fetchedProducts.filter((product) => {
-        const price = getRealPrice(product);
-        return price >= minPrice && price <= maxPrice && price > 0;
-      });
+      // Use the fetchMultipleTrendingPages method from AppContext
+      const fetchedProducts = await fetchMultipleTrendingPages(
+        maxPages,
+        100,
+        sortOption
+      );
+      setFetchedPagesCount(maxPages); // Track how many pages we've fetched
 
-      if (filteredProducts.length > 0) {
-        // Remove duplicates
-        const uniqueProducts = filteredProducts.filter(
-          (product, index, self) =>
-            index === self.findIndex((p) => p.meta?.id === product.meta?.id)
-        );
-
-        // Apply sorting to filtered products
-        const sortedProducts = [...uniqueProducts].sort((a, b) => {
-          const priceA = getRealPrice(a);
-          const priceB = getRealPrice(b);
-
-          if (sortOption === "lowToHigh") return priceA - priceB;
-          if (sortOption === "highToLow") return priceB - priceA;
-          return 0;
+      if (fetchedProducts && fetchedProducts.length > 0) {
+        // Filter products by price
+        const filteredProducts = fetchedProducts.filter((product) => {
+          const price = getRealPrice(product);
+          return price >= minPrice && price <= maxPrice && price > 0;
         });
 
-        setAllFilteredProducts(sortedProducts);
-        setTotalFilteredPages(
-          Math.ceil(sortedProducts.length / itemsPerPage)
-        );
+        if (filteredProducts.length > 0) {
+          // Remove duplicates
+          const uniqueProducts = filteredProducts.filter(
+            (product, index, self) =>
+              index === self.findIndex((p) => p.meta?.id === product.meta?.id)
+          );
+
+          // Apply sorting to filtered products
+          const sortedProducts = [...uniqueProducts].sort((a, b) => {
+            const priceA = getRealPrice(a);
+            const priceB = getRealPrice(b);
+
+            if (sortOption === "lowToHigh") return priceA - priceB;
+            if (sortOption === "highToLow") return priceB - priceA;
+            return 0;
+          });
+
+          setAllFilteredProducts(sortedProducts);
+          setTotalFilteredPages(
+            Math.ceil(sortedProducts.length / itemsPerPage)
+          );
+        } else {
+          setFilterError(
+            "No trending products found in the specified price range"
+          );
+        }
       } else {
-        setFilterError("No trending products found in the specified price range");
+        setFilterError(
+          "No trending products found in the specified price range"
+        );
       }
-    } else {
-      setFilterError("No trending products found in the specified price range");
+    } catch (error) {
+      console.error("Error filtering trending products:", error);
+      setFilterError("Error fetching filtered products. Please try again.");
+    } finally {
+      setIsFiltering(false);
     }
-  } catch (error) {
-    console.error("Error filtering trending products:", error);
-    setFilterError("Error fetching filtered products. Please try again.");
-  } finally {
-    setIsFiltering(false);
-  }
-};
+  };
 
   // Function to fetch more products when user is near the end
-  
-const fetchMoreFilteredProducts = async () => {
-  if (isFiltering) return; // Prevent multiple simultaneous requests
-  
-  setIsFiltering(true);
-  
-  try {
-    // Calculate which pages to fetch next
-    const startPage = fetchedPagesCount + 1;
-    const pagesToFetch = 3;
-    
-    // Fetch more pages starting from where we left off
-    const additionalProducts = await fetchMultipleTrendingPages(
-      pagesToFetch, 
-      100, 
-      sortOption, 
-      startPage
-    );
-    
-    if (additionalProducts && additionalProducts.length > 0) {
-      // Filter new products by price
-      const newFilteredProducts = additionalProducts.filter(product => {
-        const price = getRealPrice(product);
-        const isInPriceRange = price >= minPrice && price <= maxPrice && price > 0;
-        // Also check if we don't already have this product
-        const notDuplicate = !allFilteredProducts.some(existing => existing.meta?.id === product.meta?.id);
-        return isInPriceRange && notDuplicate;
-      });
-      
-      if (newFilteredProducts.length > 0) {
-        // Apply sorting to new products
-        const sortedNewProducts = [...newFilteredProducts].sort((a, b) => {
-          const priceA = getRealPrice(a);
-          const priceB = getRealPrice(b);
-          
-          if (sortOption === "lowToHigh") return priceA - priceB;
-          if (sortOption === "highToLow") return priceB - priceA;
-          return 0;
+
+  const fetchMoreFilteredProducts = async () => {
+    if (isFiltering) return; // Prevent multiple simultaneous requests
+
+    setIsFiltering(true);
+
+    try {
+      // Calculate which pages to fetch next
+      const startPage = fetchedPagesCount + 1;
+      const pagesToFetch = 3;
+
+      // Fetch more pages starting from where we left off
+      const additionalProducts = await fetchMultipleTrendingPages(
+        pagesToFetch,
+        100,
+        sortOption,
+        startPage
+      );
+
+      if (additionalProducts && additionalProducts.length > 0) {
+        // Filter new products by price
+        const newFilteredProducts = additionalProducts.filter((product) => {
+          const price = getRealPrice(product);
+          const isInPriceRange =
+            price >= minPrice && price <= maxPrice && price > 0;
+          // Also check if we don't already have this product
+          const notDuplicate = !allFilteredProducts.some(
+            (existing) => existing.meta?.id === product.meta?.id
+          );
+          return isInPriceRange && notDuplicate;
         });
-        
-        // Add to existing products
-        const updatedProducts = [...allFilteredProducts, ...sortedNewProducts];
-        setAllFilteredProducts(updatedProducts);
-        setTotalFilteredPages(Math.ceil(updatedProducts.length / itemsPerPage));
+
+        if (newFilteredProducts.length > 0) {
+          // Apply sorting to new products
+          const sortedNewProducts = [...newFilteredProducts].sort((a, b) => {
+            const priceA = getRealPrice(a);
+            const priceB = getRealPrice(b);
+
+            if (sortOption === "lowToHigh") return priceA - priceB;
+            if (sortOption === "highToLow") return priceB - priceA;
+            return 0;
+          });
+
+          // Add to existing products
+          const updatedProducts = [
+            ...allFilteredProducts,
+            ...sortedNewProducts,
+          ];
+          setAllFilteredProducts(updatedProducts);
+          setTotalFilteredPages(
+            Math.ceil(updatedProducts.length / itemsPerPage)
+          );
+        }
+
+        // Update the count of fetched pages
+        setFetchedPagesCount((prev) => prev + pagesToFetch);
       }
-      
-      // Update the count of fetched pages
-      setFetchedPagesCount(prev => prev + pagesToFetch);
+    } catch (error) {
+      console.error("Error fetching more trending products:", error);
+    } finally {
+      setIsFiltering(false);
     }
-  } catch (error) {
-    console.error('Error fetching more trending products:', error);
-  } finally {
-    setIsFiltering(false);
-  }
-};
+  };
 
   // Check if user is near the end and needs more products
   useEffect(() => {
@@ -361,19 +373,20 @@ const fetchMoreFilteredProducts = async () => {
       const priceGroups = product.product?.prices?.price_groups || [];
       const basePrice = priceGroups.find((group) => group?.base_price) || {};
       const priceBreaks = basePrice.base_price?.price_breaks || [];
-      
+
       const prices = priceBreaks
         .map((breakItem) => breakItem.price)
         .filter((price) => price !== undefined);
-      
+
       let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-      
+
       // Apply margin
       const productId = product.meta.id;
       const marginEntry = marginApi[productId] || {};
-      const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
+      const marginFlat =
+        typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
       minPrice += marginFlat;
-      
+
       return minPrice;
     };
 
@@ -393,8 +406,8 @@ const fetchMoreFilteredProducts = async () => {
   const showPagination = paginationTotalPages > 1;
 
   // For regular view, slice the sorted products for current page
-  const displayProducts = isPriceFilterActive 
-    ? sortedProducts 
+  const displayProducts = isPriceFilterActive
+    ? sortedProducts
     : sortedProducts.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -604,13 +617,16 @@ const fetchMoreFilteredProducts = async () => {
                     const priceBreaks =
                       basePrice.base_price?.price_breaks || [];
 
+                    // Get an array of prices from priceBreaks (these are already discounted)
                     const prices = priceBreaks
                       .map((breakItem) => breakItem.price)
                       .filter((price) => price !== undefined);
 
+                    // 1) compute raw min/max
                     let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
                     let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
+                    // 2) pull margin info (guarding against undefined)
                     const productId = product.meta.id;
                     const marginEntry = marginApi[productId] || {};
                     const marginFlat =
@@ -622,34 +638,51 @@ const fetchMoreFilteredProducts = async () => {
                         ? marginEntry.baseMarginPrice
                         : 0;
 
+                    // 3) apply the flat margin to both ends of the range
                     minPrice += marginFlat;
                     maxPrice += marginFlat;
 
+                    // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
                     const isGlobalDiscount =
                       product.discountInfo?.isGlobal || false;
 
                     return (
                       <div
-                        key={product.id}
-                        className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
+                        key={productId}
+                        className="relative border border-border2 cursor-pointer max-h-[280px] sm:max-h-[350px] h-full group"
+                        onClick={() => handleViewProduct(product.meta.id)}
                       >
+                        {/* Show discount badge */}
                         {discountPct > 0 && (
-                          <div className="absolute top-2 right-2 z-10">
-                            <span className="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded">
+                          <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
+                            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
                               {discountPct}%
                             </span>
                             {isGlobalDiscount && (
-                              <span className="block px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded mt-1">
-                                Global
+                              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                                Sale
                               </span>
                             )}
                           </div>
                         )}
-                        <div
-                          onClick={() => handleViewProduct(product.meta.id)}
-                          className="max-h-[50%] h-full border-b overflow-hidden"
-                        >
+
+                        {/* Favourite button - moved to top-right of image */}
+                        <div className="absolute top-2 right-2 z-20">
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click
+                              dispatch(addToFavourite(product));
+                              toast.success("Product added to favourites");
+                            }}
+                            className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
+                          >
+                            <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                          </div>
+                        </div>
+
+                        {/* Enlarged image section */}
+                        <div className="max-h-[65%] sm:max-h-[75%] h-full border-b overflow-hidden relative">
                           <img
                             src={
                               product.overview.hero_image
@@ -660,7 +693,9 @@ const fetchMoreFilteredProducts = async () => {
                             className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                           />
                         </div>
-                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
+
+                        {/* Color swatches */}
+                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%] z-10">
                           {product?.product?.colours?.list.length > 0 &&
                             product?.product?.colours?.list
                               .slice(0, 15)
@@ -671,6 +706,62 @@ const fetchMoreFilteredProducts = async () => {
                                     style={{
                                       backgroundColor:
                                         colorObj.swatch?.[subIndex] ||
+                                        color
+                                          .toLowerCase()
+                                          .replace("dark blue", "#1e3a8a")
+                                          .replace("light blue", "#3b82f6")
+                                          .replace("navy blue", "#1e40af")
+                                          .replace("royal blue", "#2563eb")
+                                          .replace("sky blue", "#0ea5e9")
+                                          .replace("gunmetal", "#2a3439")
+                                          .replace("dark grey", "#4b5563")
+                                          .replace("light grey", "#9ca3af")
+                                          .replace("dark gray", "#4b5563")
+                                          .replace("light gray", "#9ca3af")
+                                          .replace("charcoal", "#374151")
+                                          .replace("lime green", "#65a30d")
+                                          .replace("forest green", "#166534")
+                                          .replace("dark green", "#15803d")
+                                          .replace("light green", "#16a34a")
+                                          .replace("bright green", "#22c55e")
+                                          .replace("dark red", "#dc2626")
+                                          .replace("bright red", "#ef4444")
+                                          .replace("wine red", "#991b1b")
+                                          .replace("burgundy", "#7f1d1d")
+                                          .replace("hot pink", "#ec4899")
+                                          .replace("bright pink", "#f472b6")
+                                          .replace("light pink", "#f9a8d4")
+                                          .replace("dark pink", "#be185d")
+                                          .replace("bright orange", "#f97316")
+                                          .replace("dark orange", "#ea580c")
+                                          .replace("bright yellow", "#eab308")
+                                          .replace("golden yellow", "#f59e0b")
+                                          .replace("dark yellow", "#ca8a04")
+                                          .replace("cream", "#fef3c7")
+                                          .replace("beige", "#f5f5dc")
+                                          .replace("tan", "#d2b48c")
+                                          .replace("brown", "#92400e")
+                                          .replace("dark brown", "#78350f")
+                                          .replace("light brown", "#a3a3a3")
+                                          .replace("maroon", "#7f1d1d")
+                                          .replace("teal", "#0d9488")
+                                          .replace("turquoise", "#06b6d4")
+                                          .replace("aqua", "#22d3ee")
+                                          .replace("mint", "#10b981")
+                                          .replace("lavender", "#c084fc")
+                                          .replace("violet", "#8b5cf6")
+                                          .replace("indigo", "#6366f1")
+                                          .replace("slate", "#64748b")
+                                          .replace("stone", "#78716c")
+                                          .replace("zinc", "#71717a")
+                                          .replace("neutral", "#737373")
+                                          .replace("rose", "#f43f5e")
+                                          .replace("emerald", "#10b981")
+                                          .replace("cyan", "#06b6d4")
+                                          .replace("amber", "#f59e0b")
+                                          .replace("lime", "#84cc16")
+                                          .replace("fuchsia", "#d946ef")
+                                          .replace(" ", "") || // remove remaining spaces
                                         color.toLowerCase(),
                                     }}
                                     className="w-4 h-4 rounded-sm border border-slate-900"
@@ -678,55 +769,36 @@ const fetchMoreFilteredProducts = async () => {
                                 ))
                               )}
                         </div>
-                        <div className="p-3">
-                          <div
-                            onClick={() => handleViewProduct(product.meta.id)}
-                            className="text-center"
-                          >
-                            <h2 className="text-lg font-medium text-brand">
+
+                        {/* Reduced content area */}
+                        <div className="p-2 ">
+                          <div className="text-center">
+                            <h2 className="text-sm sm:text-lg font-semibold text-brand leading-tight ">
                               {product.overview.name &&
-                              product.overview.name.length > 22
-                                ? product.overview.name.slice(0, 22) + "..."
+                              product.overview.name.length > 20
+                                ? product.overview.name.slice(0, 20) + "..."
                                 : product.overview.name || "No Name"}
                             </h2>
 
-                            <div className="pt-2">
-                              <h2 className="text-xl font-semibold text-heading">
-                                From - $
+                            {/* Minimum quantity */}
+                            <p className="text-xs text-gray-500 ">
+                              {product.product?.prices?.price_groups[0]
+                                ?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                              minimum quantity
+                            </p>
+
+                            {/* Updated Price display with better font */}
+                            <div className="">
+                              <h2 className="text-base sm:text-lg font-bold text-heading ">
+                                From $
                                 {minPrice === maxPrice ? (
                                   <span>{minPrice.toFixed(2)}</span>
                                 ) : (
                                   <span>{minPrice.toFixed(2)}</span>
                                 )}
                               </h2>
-                              {discountPct > 0 && (
-                                <p className="text-xs text-green-600 font-medium">
-                                  {discountPct}% discount applied
-                                </p>
-                              )}
+                              
                             </div>
-                          </div>
-                          <div className="flex justify-between gap-1 mt-2 mb-1">
-                            <p className="p-3 text-2xl rounded-sm bg-icons">
-                              <CiHeart />
-                            </p>
-                            <div
-                              onClick={() => handleViewProduct(product.meta.id)}
-                              className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
-                            >
-                              <p className="text-xl">
-                                <IoCartOutline />
-                              </p>
-                              <button className="text-sm uppercase">
-                                Add to cart
-                              </button>
-                            </div>
-                            <p
-                              onClick={() => handleOpenModal(product)}
-                              className="p-2 sm:p-3 flex items-center text-lg sm:text-2xl rounded-sm bg-icons cursor-pointer hover:bg-opacity-80 transition-colors"
-                            >
-                              <AiOutlineEye />
-                            </p>
                           </div>
                         </div>
                       </div>
