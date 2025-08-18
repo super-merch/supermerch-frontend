@@ -140,7 +140,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
       <Blogs />
       
 
-      {discountModal &&
+      {/* {discountModal && */}
         <motion.div
           className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4">
           <motion.div
@@ -148,17 +148,17 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
             transition={{ duration: 0.3 }}
             whileInView={{ opacity: 1, z: 0 }}
             viewport={{ once: true }}
-            className='flex w-[100%] md:max-w-[35%] sm:grid sm:grid-cols-[1fr_2fr] sm:w-full text-gray-800 justify-center bg-white rounded-[15px] relative'>
-            <div className="min-h-full w-full">
+            className='flex w-[90%] md:max-w-[30%]  sm:w-full text-gray-800 justify-center bg-white rounded-[15px] relative'>
+            {/* <div className="min-h-full w-full">
               <img src="https://img66.anypromo.com/frontimg/2022/Popup/exit-intent-lft-1.svg"
                 className="h-full rounded-tl-2xl rounded-bl-2xl w-full object-cover" alt="" />
-            </div>
+            </div> */}
             {/* <div className="bg-[url(https://img66.anypromo.com/frontimg/2022/Popup/exit-intent-lft-1.svg)] bg-cover bg-no-repeat" /> */}
                 <p className="absolute max-sm:top-[0] right-[20px] top-4 text-lg font-semibold cursor-pointer" onClick={() => setDiscountModal(false)}>x</p>
             <div className="p-5 flex justify-center flex-col text-center space-y-3">
               <div className="relative">
               </div>
-              <h1 className="text-[12px] font-medium to-gray-200">We know you will be happy when you get</h1>
+              <h1 className="text-[18px] font-medium to-gray-200">We know you will be happy when you get</h1>
               <p className="text-2xl font-extrabold text-[#5D8EF9]">
                 {coupenLoading ? 'Loading...' : discount+"% OFF" || "No Discount Available"}
               </p>
@@ -172,7 +172,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
             </div>
           </motion.div>
         </motion.div>
-      }
+      {/* } */}
       {emailModal && (
         <motion.div
           className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4"

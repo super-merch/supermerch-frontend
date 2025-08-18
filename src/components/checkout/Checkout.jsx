@@ -154,6 +154,11 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
     setLoading(true);
+    if(items.length === 0){
+      toast.error("Cart is empty");
+      setLoading(false);
+      return
+    }
     const checkoutData = {
       user: {
         firstName: data.billing.firstName || addressData.firstName,
@@ -831,11 +836,13 @@ const Checkout = () => {
                 })}
               </span>
             </div>
+            {items.length===0&&<div className="text-red-600" >Your cart is empty</div>}
             <button
               type="submit"
+              disabled={loading||items.length === 0}
               className={`w-full py-3 mt-4 font-medium text-white ${
                 loading && "bg-opacity-25"
-              } bg-smallHeader`}
+              } bg-smallHeader ${items.length === 0 && "bg-opacity-30 cursor-not-allowed"} `}
             >
               {loading
                 ? "Please Wait...."

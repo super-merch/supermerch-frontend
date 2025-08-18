@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
-import { CiHeart } from "react-icons/ci";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";;
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -11,7 +12,7 @@ import { useContext } from "react";
 import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const Clothing = ({ activeTab }) => {
@@ -58,6 +59,13 @@ const Clothing = ({ activeTab }) => {
       setLoading(false);
     }
   };
+  const { favouriteItems } = useSelector((state) => state.favouriteProducts);
+
+const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
+    
+      favouriteItems.map((item) => {
+        favSet.add(item.meta.id)
+      })
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -220,8 +228,10 @@ const Clothing = ({ activeTab }) => {
                     return (
                       <div
                         key={productId}
-                        className="relative border border-border2 cursor-pointer max-h-[280px] sm:max-h-[350px] h-full group"
+                        className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                         onClick={() => handleViewProduct(product.meta.id)}
+                        onMouseEnter={()=>setCardHover(product.meta.id)}
+                        onMouseLeave={()=>setCardHover(null)}
                       >
                         {/* Show discount badge */}
                         {discountPct > 0 && (
@@ -247,12 +257,12 @@ const Clothing = ({ activeTab }) => {
                             }}
                             className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                           >
-                            <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                            {favSet.has(product.meta.id) ? <IoIosHeart className="text-lg text-red-500" /> : <CiHeart  className="text-lg text-gray-700 hover:text-red-500 transition-colors" />}
                           </div>
                         </div>
 
                         {/* Enlarged image section */}
-                        <div className="max-h-[65%] sm:max-h-[75%] h-full border-b overflow-hidden relative">
+                        <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
                           <img
                             src={
                               product.overview.hero_image
@@ -264,11 +274,13 @@ const Clothing = ({ activeTab }) => {
                           />
                         </div>
 
-                        {/* Color swatches */}
-                        <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%] z-10">
-                          {product?.product?.colours?.list.length > 0 &&
+                     
+                        {/* Reduced content area */}
+                        <div className="p-2 ">
+                          <div className=" flex justify-center mb-2 gap-1  z-10">
+                          {product?.product?.colours?.list.length > 1 &&
                             product?.product?.colours?.list
-                              .slice(0, 15)
+                              .slice(0, 12)
                               .flatMap((colorObj, index) =>
                                 colorObj.colours.map((color, subIndex) => (
                                   <div
@@ -334,33 +346,30 @@ const Clothing = ({ activeTab }) => {
                                           .replace(" ", "") || // remove remaining spaces
                                         color.toLowerCase(),
                                     }}
-                                    className="w-4 h-4 rounded-sm border border-slate-900"
+                                    className="w-4 h-4 rounded-full border border-slate-900"
                                   />
                                 ))
                               )}
                         </div>
-
-                        {/* Reduced content area */}
-                        <div className="p-2 ">
                           <div className="text-center">
-                            <h2 className="text-sm sm:text-lg font-semibold text-brand leading-tight ">
+                            <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[17px] `}>
                               {product.overview.name &&
-                              product.overview.name.length > 20
+                              product.overview.name.length > 20 && cardHover!==product.meta.id
                                 ? product.overview.name.slice(0, 20) + "..."
                                 : product.overview.name || "No Name"}
                             </h2>
 
                             {/* Minimum quantity */}
-                            <p className="text-xs text-gray-500 ">
-                              {product.product?.prices?.price_groups[0]
+                            <p className="text-xs text-gray-500 pt-1">
+                              Min Qty: {product.product?.prices?.price_groups[0]
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
-                              minimum quantity
+                              
                             </p>
 
                             {/* Updated Price display with better font */}
                             <div className="">
                               <h2 className="text-base sm:text-lg font-bold text-heading ">
-                                From $
+                                Starting From $
                                 {minPrice === maxPrice ? (
                                   <span>{minPrice.toFixed(2)}</span>
                                 ) : (

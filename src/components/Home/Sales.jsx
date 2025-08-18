@@ -59,7 +59,7 @@ const Sale = () => {
       {/* Show skeleton if loading */}
       {skeletonLoading
         ? categories.map((_, index) => (
-          <div key={index} className='w-full mb-8'>
+          <div key={index} className={`w-full mb-8 `}>
             <div className='w-32 h-6 mb-4 bg-gray-200 rounded animate-pulse'></div>
             <div className='space-y-4'>
               {[...Array(3)].map((_, i) => (
@@ -78,17 +78,17 @@ const Sale = () => {
           </div>
         ))
         : categories.map((category, categoryIndex) => (
-          <div key={categoryIndex} className='w-full mb-8'>
+          <div key={categoryIndex} className={`w-full mb-8 ${categoryIndex % 2===0 ? "bg-gray-200": "bg-gray-100"} rounded-md p-2 `}>
             {/* Section Header */}
             <div className='flex items-center justify-between mb-4'>
               <h3 className='text-base font-semibold'>{category.title}</h3>
-              <button onClick={() => category.title === 'Trendings' ? navigate('/trendings') : category.title === 'New Arrivals' ? navigate('/new-arrivals') : category.title === 'Sale' ? navigate('/sales') : navigate('/bestSellers')} className='text-sm font-semibold border-b-2 text-smallHeader border-smallHeader'>
+              {chunkedProducts[categoryIndex].length>0 && <button onClick={() => category.title === 'Trendings' ? navigate('/trendings') : category.title === 'New Arrivals' ? navigate('/new-arrivals') : category.title === 'Sale' ? navigate('/sales') : navigate('/bestSellers')} className='text-sm font-semibold border-b-2 text-smallHeader border-smallHeader'>
                 VIEW ALL
-              </button>
+              </button>}
             </div>
             {/* Products List */}
             <div>
-              {(chunkedProducts[categoryIndex] || [])
+              {chunkedProducts[categoryIndex].length>0 ? ((chunkedProducts[categoryIndex] || [])
                 .filter((product) => {
                   const priceGroups = product.product?.prices?.price_groups || [];
                   const basePrice = priceGroups.find((group) => group?.base_price) || {};
@@ -128,7 +128,11 @@ const Sale = () => {
                       </div>
                     </div>
                   );
-                })}
+                })):
+                <div className='flex items-center mt-10 justify-center'>
+                  <p className='text-lg '>No products found</p>
+                </div>
+              }
 
             </div>
           </div>

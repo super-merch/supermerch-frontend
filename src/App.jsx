@@ -29,6 +29,14 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Success from "./pages/Success";
 import Cancel from "./pages/Cancel";
 import AllBlogs from "./pages/AllBlogs";
+import FAQs from "./pages/FAQs";
+import ArtWorkPolicy from "./pages/ArtWorkPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
+import ClearancePage from "./pages/CLearance";
+import PMSColorChart from "./pages/PMS";
+import HelpCenter from "./pages/HelpCenter";
+import MailOffer from "./pages/MailOffer";
+import TrackOrder from "./pages/TrackOrder";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -83,6 +91,14 @@ const App = () => {
         <Route path='/about' element={<AboutPage />} />
         <Route path='/blogs/:id' element={<BlogDetails />} />
         <Route path='/all-blogs' element={<AllBlogs />} />
+        <Route path='/faqs' element={<FAQs />} />
+        <Route path='/artwork-policy' element={<ArtWorkPolicy />} />
+        <Route path='/refund-policy' element={<RefundPolicy />} />
+        <Route path='/clearance' element={<ClearancePage />} />
+        <Route path='/pms' element={<PMSColorChart />} />
+        <Route path='/help-center' element={<HelpCenter />} />
+        <Route path='/mail-offer' element={<MailOffer />} />
+        <Route path='/track-order' element={<TrackOrder />} />
 
         {token && <Route path='/admin' element={<Sidebar />} />}
         {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}

@@ -217,10 +217,12 @@ const PrivacyPolicy = () => {
             </p>
             <div className="bg-gray-50 p-6 rounded-lg">
               <p className="text-gray-700 mb-2"><strong>Super Merch Privacy Team</strong></p>
-              <p className="text-gray-700 mb-2">Email: privacy@supermerch.com</p>
-              <p className="text-gray-700 mb-2">Phone: +1 (555) 123-4567</p>
-              <p className="text-gray-700 mb-2">Address: 123 Commerce Street, Business District, City, State 12345</p>
-              <p className="text-gray-700">Response Time: We will respond to your inquiry within 48 hours</p>
+              <p className="text-gray-700 cursor-pointer  mb-2" onClick={() => window.open("https://mail.google.com/mail/?view=cm&to=Info@supermerch.com.au", "_blank")} >Email: Info@supermerch.com.au </p>
+              <p className="text-gray-700 cursor-pointer  mb-2" onClick={() => window.open("https://www.facebook.com/share/1DztGRWqfA/", "_blank")}>Facebook: www.facebook.com/share/1DztGRWqfA/  </p>
+              <p className="text-gray-700 cursor-pointer mb-2" onClick={() => window.open("https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw", "_blank")} >Instagram:www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw</p>
+              {/* response time  info */}
+              <p className="text-gray-700">Response: Within 48 hours</p>
+
             </div>
           </section>
         </div>

@@ -66,7 +66,7 @@ const Footer = () => {
               About us
             </Link>
             <Link
-              to={"/"}
+              to={"/faqs"}
               className=" py-0.5  text-sm font-normal hover:underline"
             >
               FAQ
@@ -77,12 +77,12 @@ const Footer = () => {
             >
               Contact Us
             </Link>
-            <Link
+            {/* <Link
               to={"/about"}
               className=" py-0.5  text-sm font-normal hover:underline"
             >
               Our responsibility
-            </Link>
+            </Link> */}
           </div>
         </div>
 
@@ -91,21 +91,21 @@ const Footer = () => {
             Policies{" "}
           </h1>
           <div className="flex flex-col mt-1">
-            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline   ">
+            <Link to={'/artwork-policy'} className="py-0.5 cursor-pointer text-sm font-normal hover:underline   ">
               Artwork policy
-            </p>
-            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline  ">
+            </Link>
+            <Link to={'/refund-policy'} className="py-0.5 cursor-pointer text-sm font-normal hover:underline  ">
               Refund policy
-            </p>
-            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
+            </Link>
+            {/* <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               Sample policy
-            </p>
+            </p> */}
             <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               Privacy and cookie policy
             </p>
-            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
+            {/* <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               TnC
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -114,7 +114,7 @@ const Footer = () => {
             Offers & Resources
           </h1>
           <div className="flex flex-col mt-1">
-            <Link className=" py-0.5  text-sm font-normal hover:underline">
+            <Link to={'/clearance'} className=" py-0.5  text-sm font-normal hover:underline">
               Clearance
             </Link>
             <Link
@@ -129,7 +129,7 @@ const Footer = () => {
             >
               Cart
             </Link>
-            <Link className=" py-0.5  text-sm font-normal hover:underline">
+            <Link to={'/pms'} className=" py-0.5  text-sm font-normal hover:underline">
               PMS colour chart
             </Link>
           </div>
@@ -142,21 +142,21 @@ const Footer = () => {
           </h1>
           <div className="flex gap-3 mt-1 flex-wrap">
             <div className=" text-line">
-              <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline ">
+              <Link to={"/help-center"} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline ">
                 Help Center
-              </p>
-              <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
+              </Link>
+              <Link to={"/track-order"} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
                 Track My Order / Reorder
-              </p>
-              <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
+              </Link>
+              <Link to={"/checkout"} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
                 Pay My Invoice
-              </p>
-              <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
+              </Link>
+              <Link to={"/mail-offer"} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
                 Redeem Mail Offer
-              </p>
-              <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
+              </Link>
+              {/* <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
                 Sitemap
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

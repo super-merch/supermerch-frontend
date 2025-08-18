@@ -6,8 +6,14 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { IoCartOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
-import { addToCart, initializeCartFromStorage } from "../../redux/slices/cartSlice";
-import { setCurrentUser, selectCurrentUserCartItems } from "../../redux/slices/cartSlice";
+import {
+  addToCart,
+  initializeCartFromStorage,
+} from "../../redux/slices/cartSlice";
+import {
+  setCurrentUser,
+  selectCurrentUserCartItems,
+} from "../../redux/slices/cartSlice";
 import { useSelector } from "react-redux";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -24,7 +30,7 @@ import axios from "axios";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
-const currentUserCartItems = useSelector(selectCurrentUserCartItems);
+  const currentUserCartItems = useSelector(selectCurrentUserCartItems);
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -41,37 +47,40 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-  const fetchUserEmail = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.log("No token found, using guest email");
+    const fetchUserEmail = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.log("No token found, using guest email");
+          setUserEmail("guest@gmail.com");
+          dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
+          return;
+        }
+
+        const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (data.success) {
+          setUserEmail(data.email);
+          // Set current user in Redux cart
+          dispatch(initializeCartFromStorage({ email: data.email }));
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching user email:",
+          error.response?.data || error.message
+        );
+        // Fallback to guest email if there's an error
         setUserEmail("guest@gmail.com");
         dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
-        return;
       }
+    };
 
-      const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (data.success) {
-        setUserEmail(data.email);
-        // Set current user in Redux cart
-        dispatch(initializeCartFromStorage({ email: data.email }));
-      }
-    } catch (error) {
-      console.error("Error fetching user email:", error.response?.data || error.message);
-      // Fallback to guest email if there's an error
-      setUserEmail("guest@gmail.com");
-      dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
-    }
-  };
-
-  fetchUserEmail();
-}, [dispatch, backednUrl]);
+    fetchUserEmail();
+  }, [dispatch, backednUrl]);
   const fetchSingleProduct = async () => {
     setLoading(true);
     try {
@@ -130,40 +139,37 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
 
-
-
   const [freightFee, setFreightFee] = useState(0);
 
-  const getShippingCharges = async()=>{
-      try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization headers if needed
-        },
-      });
-  
+  const getShippingCharges = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization headers if needed
+          },
+        }
+      );
+
       const data = await response.json();
       console.log("Shipping Charges Data:", data);
       setFreightFee(data.shipping || 0);
-  
+
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch shipping charges');
+        throw new Error(data.message || "Failed to fetch shipping charges");
       }
-  
+
       return { data };
     } catch (error) {
       throw error;
     }
-    }
-    useEffect(() => {
-      getShippingCharges()
-    }, []);
-
-
-
-
+  };
+  useEffect(() => {
+    getShippingCharges();
+  }, []);
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
@@ -301,8 +307,7 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
     const discountedPerUnit = rawPerUnit * (1 - discountPct / 100);
 
     // Calculate total: (discounted per-unit × qty) + setup + freight
-    const total =
-      discountedPerUnit * currentQuantity ;
+    const total = discountedPerUnit * currentQuantity;
 
     setCurrentPrice(total);
   }, [
@@ -375,9 +380,17 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
     if (files && files[0]) {
       const file = files[0];
       // Check file type
-      const allowedTypes = ['.ai', '.eps', '.svg', '.pdf', '.jpg', '.jpeg', '.png'];
-      const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-      
+      const allowedTypes = [
+        ".ai",
+        ".eps",
+        ".svg",
+        ".pdf",
+        ".jpg",
+        ".jpeg",
+        ".png",
+      ];
+      const fileExtension = "." + file.name.split(".").pop().toLowerCase();
+
       if (allowedTypes.includes(fileExtension)) {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -385,7 +398,9 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
         };
         reader.readAsDataURL(file);
       } else {
-        toast.error('Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG');
+        toast.error(
+          "Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG"
+        );
       }
     }
   };
@@ -435,14 +450,24 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
     if (files && files[0]) {
       const file = files[0];
       // Check file type
-      const allowedTypes = ['.ai', '.eps', '.svg', '.pdf', '.jpg', '.jpeg', '.png'];
-      const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-      
+      const allowedTypes = [
+        ".ai",
+        ".eps",
+        ".svg",
+        ".pdf",
+        ".jpg",
+        ".jpeg",
+        ".png",
+      ];
+      const fileExtension = "." + file.name.split(".").pop().toLowerCase();
+
       if (allowedTypes.includes(fileExtension)) {
         setSelectedFile2(file);
         setPreviewImage2(URL.createObjectURL(file));
       } else {
-        toast.error('Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG');
+        toast.error(
+          "Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG"
+        );
       }
     }
   };
@@ -501,12 +526,12 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
     try {
       setQuoteLoading(true);
       const formData1 = new FormData();
-      if(!formData.name || !formData.email || !formData.phone) {
+      if (!formData.name || !formData.email || !formData.phone) {
         toast.error("Please fill in all required fields");
         setQuoteLoading(false);
         return;
       }
-      if(!formData.phone || formData.phone.length < 10) {
+      if (!formData.phone || formData.phone.length < 10) {
         toast.error("Please enter a valid phone number");
         setQuoteLoading(false);
         return;
@@ -526,12 +551,12 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
         setQuoteLoading(false);
         return;
       }
-      if (!formData.delivery ) {
+      if (!formData.delivery) {
         toast.error("Please select a delivery option");
         setQuoteLoading(false);
         return;
       }
-      if(formData.comment.length < 10) {
+      if (formData.comment.length < 10) {
         toast.error("Comment must be at least 10 characters long");
         setQuoteLoading(false);
         return;
@@ -563,10 +588,10 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
           delivery: "",
           comment: "",
           file: "",
-        })
+        });
         setSelectedFile2(null);
         setQuoteLoading(false);
-        setShowQuoteForm(false); 
+        setShowQuoteForm(false);
       } else {
         toast.error(data.message);
         setQuoteLoading(false);
@@ -616,17 +641,18 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-  //   if (!userEmail) {
-  //   toast.error("Please login to add items to cart");
-  //   navigate("/signup");
-  //   return;
-  // }
+    //   if (!userEmail) {
+    //   toast.error("Please login to add items to cart");
+    //   navigate("/signup");
+    //   return;
+    // }
 
     dispatch(
       addToCart({
         id: productId,
         name: product.name,
-        basePrices: priceGroups.find(g => g.base_price)?.base_price?.price_breaks || [],
+        basePrices:
+          priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
         image: product.images?.[0] || "",
         price: (() => {
           // Get the base product price for current quantity
@@ -674,7 +700,7 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
         deliveryDate,
         priceBreaks: selectedPrintMethod.price_breaks,
         printMethodKey: selectedPrintMethod.key,
-        userEmail: userEmail || "guest@gmail.com"
+        userEmail: userEmail || "guest@gmail.com",
       })
     );
     navigate("/cart");
@@ -779,7 +805,7 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
               </p>
             </div>
             <div className="flex items-center justify-between pb-2 border-b-2">
-              <p className="text-black">{product?.code}</p>
+              {/* <p className="text-black">{product?.code}</p> */}
               <p className="font-bold text-smallHeader">
                 <span className="font-normal text-stock"> Availability:</span>{" "}
                 In Stock
@@ -787,7 +813,7 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
             </div>
 
             {/* Color Selection */}
-            <div className="mb-2">
+            {single_product?.product?.colours?.list.length > 0 &&<div className="mb-2">
               <p className="mt-2 font-medium">Color:</p>
               <div className="flex flex-wrap gap-2 mt-2">
                 {single_product?.product?.colours?.list.length > 0 ? (
@@ -817,11 +843,11 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                   <p>No colors available for this product</p>
                 )}
               </div>
-            </div>
+            </div>}
 
             {/* Dropdowns */}
             <div className="">
-              <label htmlFor="print-method" className="block mb-2 font-medium">
+              <label htmlFor="print-method" className="block my-2  font-medium">
                 Print Method:
               </label>
               <select
@@ -834,7 +860,10 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                   setSelectedPrintMethod(selected);
                   // Reset quantity to first price break of new selection
                   if (selected?.price_breaks?.length > 0) {
-                    console.log("Selected price breaks:", selected.price_breaks[0].qty);
+                    console.log(
+                      "Selected price breaks:",
+                      selected.price_breaks[0].qty
+                    );
                     setCurrentQuantity(selected.price_breaks[0].qty);
                   }
                 }}
@@ -953,13 +982,11 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                 </div>
               </div>
             </div>
-            
+
             {/* Enhanced Drag and Drop Section */}
             <div
               className={`px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
-                isDragging
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-smallHeader"
+                isDragging ? "border-blue-500 bg-blue-50" : "border-smallHeader"
               }`}
               onClick={handleDivClick}
               onDragEnter={handleDragEnter}
@@ -972,12 +999,17 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                 alt="Uploaded File"
                 className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
               />
-              <p className="mb-2 text-lg font-medium text-smallHeader">
-                {selectedFile ? "Logo image Uploaded":
-                isDragging ? "Drop files here" : "Drag & drop files or Browse"}
+              <p className=" text-lg font-medium text-smallHeader">
+                {selectedFile
+                  ? "Logo image Uploaded"
+                  : isDragging
+                  ? "Drop files here"
+                  : "Click or Drag your Artwork/Logo to upload"}
               </p>
-              <p className="mb-2 text-xl font-semibold text-smallHeader" >Upload artwork or logo</p>
-              <p className="text-smallHeader max-w-[385px] m-auto text-sm">
+              {/* <p className="mb-1 text-xl font-semibold text-smallHeader">
+                Upload artwork or logo
+              </p> */}
+              <p className="text-smallHeader  m-auto text-sm">
                 Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG. Max file
                 size: 16 MB
               </p>
@@ -1036,19 +1068,26 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
               </div>
               <div
                 onClick={() => {
-  //                 if (!userEmail) {
-  //   toast.error("Please login to add items to cart");
-  //   navigate("/signup");
-  //   return;
-  // }
+                  //                 if (!userEmail) {
+                  //   toast.error("Please login to add items to cart");
+                  //   navigate("/signup");
+                  //   return;
+                  // }
+                  // inside ProductDetails - BUY 1 SAMPLE handler
                   dispatch(
                     addToCart({
                       id: productId,
                       name: product.name,
                       image: product.images?.[0] || "",
+                      // add basePrices so reducer can compute correct unit price
+                      basePrices:
+                        priceGroups.find((g) => g.base_price)?.base_price
+                          ?.price_breaks || [],
+                      // price optional — reducer currently ignores passed-in price for computation
                       price: perUnitWithMargin,
                       marginFlat: marginEntry.marginFlat,
                       discountPct,
+                      totalPrice: perUnitWithMargin * 1, // optional: a helpful hint, reducer recalculates
                       code: product.code,
                       color: selectedColor,
                       quantity: 1, // Force quantity to 1 for sample
@@ -1057,11 +1096,13 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                       setupFee: selectedPrintMethod?.setup || 0,
                       dragdrop: selectedFile,
                       deliveryDate,
-                      priceBreaks: selectedPrintMethod?.price_breaks || [], // Add fallback
+                      priceBreaks: selectedPrintMethod?.price_breaks || [],
                       printMethodKey: selectedPrintMethod?.key || "",
+                      freightFee: freightFee,
                       userEmail: userEmail || "guest@gmail.com",
                     })
                   );
+
                   navigate("/cart");
                 }}
                 className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-buy"
@@ -1070,138 +1111,153 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                 <button className="text-sm">BUY 1 SAMPLE</button>
               </div>
               {showQuoteForm && (
-              <div className="bg-perUnit border border-border py-5 mt-0.5">
-                <button className="w-full py-3 text-sm text-white bg-smallHeader">
-                  We'll Email You A Quote
-                </button>
-                <div className="px-6 mt-7">
-                  <input
-                    name="name"
-                    value={formData.name}
-                    type="text"
-                    placeholder="Your name"
-                    className="w-full p-3 rounded shadow outline-none shadow-shadow bg-line"
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="email"
-                    value={formData.email}
-                    type="email"
-                    placeholder="Email"
-                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="phone"
-                    value={formData.phone}
-                    type="phone"
-                    placeholder="Phone"
-                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="delivery"
-                    value={formData.delivery}
-                    type="text"
-                    placeholder="Delivery state"
-                    className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
-                    onChange={handleChange}
-                  />
-
-                  <div>
-                    <p className="pt-6 text-xs">Logo Artworks</p>
-                    {/* Enhanced Second Drag and Drop Section */}
-                    <div 
-                      className={`px-5 mt-4 text-center border shadow cursor-pointer shadow-shadow py-7 transition-all duration-200 ${
-                        isDragging2
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-smallHeader bg-line"
-                      }`}
-                      onDragEnter={handleDragEnter2}
-                      onDragLeave={handleDragLeave2}
-                      onDragOver={handleDragOver2}
-                      onDrop={handleDrop2}
-                    >
-                      {selectedFile2 ? (
-                        <img
-                          // value={formData.file}
-                          src={previewImage2}
-                          alt="Uploaded File"
-                          className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-                        />
-                      ) : (
-                        <>
-                          <img
-                            src="/drag.png"
-                            alt="Drag"
-                            className="flex m-auto text-smallHeader"
-                          />
-                          <p className="pt-4 text-xs">
-                            {isDragging2 ? "Drop files here" : "Drop files here or"}
-                          </p>
-                        </>
-                      )}
-                      <button
-                        onClick={handleDivClick2}
-                        className="w-full py-3 mt-4 text-sm font-bold text-white uppercase rounded bg-smallHeader"
-                      >
-                        select file
-                      </button>
-                      <input
-                        type="file"
-                        id="fileUpload2"
-                        accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                        className="hidden"
-                        onChange={handleFileChange2}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="pt-3 text-xs">
-                      Accepted file types: ai, eps, svg, pdf, jpg, jpeg, png,
-                      Max. file size: 16 MB.
-                    </p>
-                    <textarea
+                <div className="bg-perUnit border border-border py-5 mt-0.5">
+                  <button className="w-full py-3 text-sm text-white bg-smallHeader">
+                    We'll Email You A Quote
+                  </button>
+                  <div className="px-6 mt-7">
+                    <input
+                      name="name"
+                      value={formData.name}
+                      type="text"
+                      placeholder="Your name"
+                      className="w-full p-3 rounded shadow outline-none shadow-shadow bg-line"
                       onChange={handleChange}
-                      value={formData.comment}
-                      name="comment"
-                      placeholder="comment"
-                      id=""
-                      className="w-full px-4 py-3 mt-4 border shadow outline-none h-36 shadow-shadow bg-line border-smallHeader"
-                    ></textarea>
-                  </div>
+                    />
+                    <input
+                      name="email"
+                      value={formData.email}
+                      type="email"
+                      placeholder="Email"
+                      className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                      onChange={handleChange}
+                    />
+                    <input
+                      name="phone"
+                      value={formData.phone}
+                      type="phone"
+                      placeholder="Phone"
+                      className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                      onChange={handleChange}
+                    />
+                    <input
+                      name="delivery"
+                      value={formData.delivery}
+                      type="text"
+                      placeholder="Delivery state"
+                      className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                      onChange={handleChange}
+                    />
 
-                  <div className="flex items-center gap-2 px-3 py-4 mt-3 mb-5 border border-border">
-                    <input type="checkbox" id="not-robot" onClick={() => setNotRobot(!notRobot)} className="w-4 h-4" />
-                    <label htmlFor="not-robot" id="not-robot" onClick={() => setNotRobot(!notRobot)} className="text-sm">
-                      I'm not a robot
-                    </label>
+                    <div>
+                      <p className="pt-6 text-xs">Logo Artworks</p>
+                      {/* Enhanced Second Drag and Drop Section */}
+                      <div
+                        className={`px-5 mt-4 text-center border shadow cursor-pointer shadow-shadow py-7 transition-all duration-200 ${
+                          isDragging2
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-smallHeader bg-line"
+                        }`}
+                        onDragEnter={handleDragEnter2}
+                        onDragLeave={handleDragLeave2}
+                        onDragOver={handleDragOver2}
+                        onDrop={handleDrop2}
+                      >
+                        {selectedFile2 ? (
+                          <img
+                            // value={formData.file}
+                            src={previewImage2}
+                            alt="Uploaded File"
+                            className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
+                          />
+                        ) : (
+                          <>
+                            <img
+                              src="/drag.png"
+                              alt="Drag"
+                              className="flex m-auto text-smallHeader"
+                            />
+                            <p className="pt-4 text-xs">
+                              {isDragging2
+                                ? "Drop files here"
+                                : "Drop files here or"}
+                            </p>
+                          </>
+                        )}
+                        <button
+                          onClick={handleDivClick2}
+                          className="w-full py-3 mt-4 text-sm font-bold text-white uppercase rounded bg-smallHeader"
+                        >
+                          select file
+                        </button>
+                        <input
+                          type="file"
+                          id="fileUpload2"
+                          accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
+                          className="hidden"
+                          onChange={handleFileChange2}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="pt-3 text-xs">
+                        Accepted file types: ai, eps, svg, pdf, jpg, jpeg, png,
+                        Max. file size: 16 MB.
+                      </p>
+                      <textarea
+                        onChange={handleChange}
+                        value={formData.comment}
+                        name="comment"
+                        placeholder="comment"
+                        id=""
+                        className="w-full px-4 py-3 mt-4 border shadow outline-none h-36 shadow-shadow bg-line border-smallHeader"
+                      ></textarea>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-4 mt-3 mb-5 border border-border">
+                      <input
+                        type="checkbox"
+                        id="not-robot"
+                        onClick={() => setNotRobot(!notRobot)}
+                        className="w-4 h-4"
+                      />
+                      <label
+                        htmlFor="not-robot"
+                        id="not-robot"
+                        onClick={() => setNotRobot(!notRobot)}
+                        className="text-sm"
+                      >
+                        I'm not a robot
+                      </label>
+                    </div>
+
+                    {notRobot ? (
+                      <button
+                        onClick={onSubmitHandler}
+                        className="w-full py-3 font-medium text-white rounded-md bg-smallHeader"
+                      >
+                        {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-3 font-medium text-white rounded-md bg-gray-400 cursor-not-allowed"
+                      >
+                        {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
+                      </button>
+                    )}
                   </div>
-                  
-                  {notRobot ? <button
-                    onClick={onSubmitHandler}
-                    className="w-full py-3 font-medium text-white rounded-md bg-smallHeader"
-                  >
-                    {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
-                  </button>:
-                  <button
-                    disabled
-                    className="w-full py-3 font-medium text-white rounded-md bg-gray-400 cursor-not-allowed"
-                  >
-                    {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"} 
-                  </button>}
                 </div>
-              </div>
-            )}
+              )}
               <div className="mt-6">
                 <p className="text-sm text-black">
                   Est Delivery Date: {deliveryDate}
                 </p>
                 <p className="pt-2 text-xs text-black ">
-                  $6.34 (Non-Branded sample) + $10.00 delivery
+                  ${discountedUnitPrice.toFixed(2)} (Non-Branded sample) + ${freightFee} delivery
                 </p>
               </div>
-              
+
               <div className="pb-4 mt-2 mb-4 border-b">
                 <div className="flex items-start gap-2 pt-3 ">
                   <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
@@ -1250,18 +1306,17 @@ const currentUserCartItems = useSelector(selectCurrentUserCartItems);
                     <FaCheck />
                   </p>
                   <p className="text-sm">
-                    'Freight Charge: ${freightFee.toFixed(2)}
+                    Freight Charge: ${freightFee.toFixed(2)}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              {/* <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs">See our 87 reviews on</p>
                 <img src="/star.png" alt="" />
-              </div>
+              </div> */}
             </div>
 
             {/* Show on click */}
-            
 
             {/* Show on click */}
           </div>

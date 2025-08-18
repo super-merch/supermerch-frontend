@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
-import { CiHeart } from "react-icons/ci";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";;
 import { BiUser } from "react-icons/bi";
 import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";

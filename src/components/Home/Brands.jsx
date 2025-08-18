@@ -30,8 +30,8 @@ const Brands = () => {
 
   return (
     <>
-      <div className="Mycontainer relative lg:pt-24 md:pt-24 sm:pt-10 pt-4">
-        <div>
+      <div className="Mycontainer relative lg:pt-32  md:pt-24 sm:pt-10 pt-4">
+        <div >
           <h1 className="text-brand text-center text-3xl pb-6 font-bold">
             Australia's most loved brands
           </h1>

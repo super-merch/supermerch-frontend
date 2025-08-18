@@ -10,7 +10,8 @@ import { IoIosArrowUp } from "react-icons/io";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
-import { CiHeart } from "react-icons/ci";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";;
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { fetchcategoryProduct } from "../../../redux/slices/categorySlice";
@@ -380,8 +381,8 @@ const Promotional = () => {
                               Code: {product.overview.code}
                             </p>
                             <h2 className="pt-2 text-xl font-semibold text-heading">
-                              From $:<span>{realPrice}</span>
-                              to ${product.endPrice}
+                              Starting From $:<span>{realPrice}</span>
+                              
                             </h2>
                             <p className="pt-2 text-base font-normal text-brand">
                               {product.stock}

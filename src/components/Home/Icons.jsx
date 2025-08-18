@@ -2,7 +2,8 @@
 
 import { BsCursor } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
-import { CiHeart } from "react-icons/ci";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";;
 import { IoCartOutline } from "react-icons/io5";
 import { AiOutlineEye } from "react-icons/ai";
 import { FaArrowRight } from "react-icons/fa6";

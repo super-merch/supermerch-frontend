@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
-import { CiHeart } from "react-icons/ci";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";;
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -180,7 +181,7 @@ const Headwear = ({ activeTab }) => {
                           />
                         </div>
                         <div className="absolute w-18 grid grid-cols-2 gap-1 top-[2%] left-[5%]">
-                          {product?.product?.colours?.list.length > 0 &&
+                          {product?.product?.colours?.list.length > 1 &&
                             product?.product?.colours?.list
                               .slice(0, 15) // Limit to 15 colors
                               .flatMap((colorObj, index) =>

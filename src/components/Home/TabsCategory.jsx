@@ -5,7 +5,23 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Assume megaMenu is imported or defined somewhere in your code
 // import megaMenu from './megaMenuData';
-import collection2 from "../../assets/collection2.png";
+import collection2 from "../../assets/pen.jpg";
+import highlight from "../../assets/highlighter.jpg";
+import pencils from "../../assets/pencil.jpg";
+import misc from "../../assets/images.jpeg";
+import keyring from "../../assets/keyring.jpg";
+import tote from "../../assets/tote.jpg";
+import glass from "../../assets/glass.jpg";
+import bottle from "../../assets/bollte.jpg";
+import bag from "../../assets/bag.jpg";
+import business from "../../assets/business.jpg";
+import outdoor from "../../assets/outdoor.jpg";
+import laynard from "../../assets/laynard.jpg";
+import thumbler from "../../assets/thumbler.jpg";
+import wrist from "../../assets/wrist.jpg";
+import trophy from "../../assets/trophy.jpg";
+import mug from "../../assets/mug.jpg";
+
 
 const TabsCategory = () => {
   const navigate = useNavigate();
@@ -62,11 +78,11 @@ const TabsCategory = () => {
             {/* Subcategories for the active main category */}
             <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 text-center lg:gap-6 md:gap-6 gap-3">
               {activeCategory &&
-                activeCategory.subTypes.map((subCategory) => (
+                activeCategory.subTypes.slice(0,4).map((subCategory) => (
                   <div key={subCategory.label}
                     onClick={() => handleSubCategoryClick(subCategory)}
                     className="bg-white lg:p-5 md:p-5 p-2 cursor-pointer">
-                    <img src={collection2} alt="" className="w-full" />
+                    <img src={subCategory.label === "Pens" && collection2 || subCategory.label === "Highlighter" && highlight || subCategory.label === "Pencils" && pencils || subCategory.label === "Misc" && activeCategory.name == "Writing" && misc || subCategory.label === "Misc" && activeCategory.name == "Bags" && bag || subCategory.label == "Tote Bag" && tote || subCategory.label == "Business Bag" && business || subCategory.label == "Outdoor Bag" && outdoor || subCategory.label == "Bottles" && bottle || subCategory.label == "Thumblers" && thumbler || subCategory.label == "Glasses" && glass || subCategory.label == "Mugs" && mug || subCategory.label == "WristBands" && wrist || subCategory.label == "Lanyards, Bagdes and Pins" && laynard || subCategory.label == "Awards & Trophies" && trophy || subCategory.label == "Keyrings" && keyring} alt="" className="w-full h-72" />
                     <h3
                       className="text-brand lg:pt-3 md:pt-3 sm:pt-3 pt-1 lg:text-lg md:text-lg sm:text-lg text-xs font-medium"
                     >

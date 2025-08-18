@@ -21,7 +21,9 @@ const Specification = ({ single_product, activeTab }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {visibleDetails.map((detail, index) => {
             const key = detail?.id ?? detail?.name ?? index;
-
+            if(detail.name == "included packaging" || detail.name == "product dimensions") {
+              return
+            }
             // Normalize content (arrays/objects -> string)
             let content = detail?.detail ?? detail?.value ?? "";
             if (Array.isArray(content)) content = content.join(", ");
