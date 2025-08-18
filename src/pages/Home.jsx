@@ -140,7 +140,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
       <Blogs />
       
 
-      {/* {discountModal && */}
+      {discountModal &&
         <motion.div
           className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4">
           <motion.div
@@ -172,7 +172,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
             </div>
           </motion.div>
         </motion.div>
-      {/* } */}
+       } 
       {emailModal && (
         <motion.div
           className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4"
