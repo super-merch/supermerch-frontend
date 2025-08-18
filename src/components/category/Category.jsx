@@ -94,7 +94,7 @@ const Category = () => {
         <span>{subCategoryLabel}</span>
       </div>
 
-      <h1 className="pt-6 text-5xl font-semibold text-brand">
+      <h1 className="pt-6 text-3xl font-semibold text-brand">
         {mainCategoryName} - {subCategoryLabel}
       </h1>
 

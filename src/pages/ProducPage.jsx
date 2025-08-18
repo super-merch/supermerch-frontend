@@ -18,7 +18,7 @@ const ProducPage = () => {
       <ProductDetails  />
       {/* <DescripTabs/> */}
       <div className="">
-        <TabsButtons />
+        <TabsButtons changeBg={true} />
       </div>
     </div>
   );

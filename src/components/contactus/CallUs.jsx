@@ -68,11 +68,10 @@ export default function CallUs() {
       }),
     })
     const data = await response.json()
-    if(response.ok){
-      toast.success(data.message)
-    }else{
+    if(!response.ok){
       toast.error(data.message)
     }
+    toast.success(data.message||"Message Sent Successfully")
     setFormData(
       {
         fullname: "",

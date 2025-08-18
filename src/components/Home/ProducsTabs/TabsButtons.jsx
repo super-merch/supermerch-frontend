@@ -8,12 +8,13 @@ import Bags from "./Bags";
 import Stationery from "./Stationery";
 // import Promotional from './Promotional';
 
-const TabsButtons = () => {
+const TabsButtons = ({changeBg=false}) => {
   const [activeTab, setActiveTab] = useState("All Product");
+  
   return (
-    <div>
+    <div className={`${changeBg&&"bg-gray-100  py-5"}`} >
       <div className="">
-        <div className="flex flex-wrap items-center justify-between gap-6 pb-8 Mycontainer ">
+        <div className="flex flex-wrap  items-center justify-between gap-6 pb-8 Mycontainer ">
           <div>
             <h1 className="text-2xl font-semibold text-brand">
               SHOP OUR BEST SELLERS

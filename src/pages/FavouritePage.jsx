@@ -131,7 +131,7 @@ const FavouritePage = () => {
 
                     {/* Reduced content area */}
                     <div className="p-2">
-                      <div className=" flex justify-center mb-2 gap-1  z-10">
+                      <div className=" flex justify-center mb-1 gap-1  z-10">
                           {product?.product?.colours?.list.length > 1 &&
                             product?.product?.colours?.list
                               .slice(0, 12)
@@ -212,13 +212,13 @@ const FavouritePage = () => {
                             product.overview.name.length > 20
                               ? "sm:text-[18px]"
                               : "sm:text-lg"
-                          } font-semibold text-brand sm:leading-[17px] `}
+                          } font-semibold text-brand sm:leading-[18px] `}
                         >
                           {product.overview.name &&
-                          product.overview.name.length > 20 &&
-                          cardHover !== product.meta.id
-                            ? product.overview.name.slice(0, 20) + "..."
-                            : product.overview.name || "No Name"}
+                          // product.overview.name.length > 20 &&
+                          // cardHover !== product.meta.id
+                          //   ? product.overview.name.slice(0, 20) + "..."
+                             product.overview.name || "No Name"}
                         </h2>
 
                         {/* Minimum quantity */}

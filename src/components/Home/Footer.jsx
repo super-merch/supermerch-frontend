@@ -15,14 +15,34 @@ import discover from "../../assets/discover.png";
 import colors from "../../assets/colors.png";
 import apple from "../../assets/apple.png";
 import pay from "../../assets/pay.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PopUps from "./PopUps";
 import supermerch from "../../assets/supermerch.png";
 import { IoMail } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 const Footer = () => {
  const miniNav = [ {img:facebook, path:"https://www.facebook.com/share/1DztGRWqfA/"}, {img:insta, path:"https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw"}];
   const paymethod = [visa, paypal, amex, gpay, discover, colors, apple, pay];
+  const navigate = useNavigate()
+  const goToCheckout = ()=>{
+    //check tokens first
+    if(!localStorage.getItem("token")){
+      toast.error("Please login first")
+      navigate("/signup")
+      return
+    }
+    navigate("/checkout")
+  }
+  const goToTrack = ()=>{
+    //check tokens first
+    if(!localStorage.getItem("token")){
+      toast.error("Please login first")
+      navigate("/signup")
+      return
+    }
+    navigate("/track-order")
+  }
   return (
     <div className="bg-smallHeader mt-12">
       <div className=" Mycontainer grid grid-cols-1 lg:grid-cols-5 md:grid-cols-2  pt-7 lg:space-x-10 md:space-x-0 gap-y-8">
@@ -145,12 +165,12 @@ const Footer = () => {
               <Link to={"/help-center"} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline ">
                 Help Center
               </Link>
-              <Link to={"/track-order"} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
+              <p onClick={goToTrack} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
                 Track My Order / Reorder
-              </Link>
-              <Link to={"/checkout"} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
+              </p>
+              <p onClick={goToCheckout} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
                 Pay My Invoice
-              </Link>
+              </p>
               <Link to={"/mail-offer"} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
                 Redeem Mail Offer
               </Link>

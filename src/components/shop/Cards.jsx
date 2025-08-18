@@ -1117,7 +1117,7 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                       
 
                       <div className="p-2">
-                        <div className=" flex justify-center mb-2 gap-1  z-10">
+                        <div className=" flex justify-center mb-1 gap-1  z-10">
                           {product?.product?.colours?.list.length > 1 &&
                             product?.product?.colours?.list
                               .slice(0, 12)
@@ -1192,11 +1192,11 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                               )}
                         </div>
                         <div className="text-center">
-                          <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[17px] `}>
+                          <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[18px] `}>
                             {product.overview.name &&
-                            product.overview.name.length > 20 && cardHover!==product.meta.id
-                              ? product.overview.name.slice(0, 20) + "..."
-                              : product.overview.name || "No Name"}
+                            // product.overview.name.length > 20 && cardHover!==product.meta.id
+                            //   ? product.overview.name.slice(0, 20) + "..."
+                               product.overview.name || "No Name"}
                           </h2>
 
                           <p className="text-xs text-gray-500 pt-1">

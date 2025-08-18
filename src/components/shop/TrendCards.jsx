@@ -11,7 +11,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { setProducts } from "../../redux/slices/filterSlice";
@@ -364,11 +364,12 @@ const TrendCards = () => {
   };
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
-    
-      favouriteItems.map((item) => {
-        favSet.add(item.meta.id)
-      })
+  const [cardHover, setCardHover] = useState(null);
+  const favSet = new Set();
+
+  favouriteItems.map((item) => {
+    favSet.add(item.meta.id);
+  });
 
   // Check if any filters are active
   const hasActiveFilters =
@@ -661,8 +662,8 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                         onClick={() => handleViewProduct(product.meta.id)}
-                        onMouseEnter={()=>setCardHover(product.meta.id)}
-                        onMouseLeave={()=>setCardHover(null)}
+                        onMouseEnter={() => setCardHover(product.meta.id)}
+                        onMouseLeave={() => setCardHover(null)}
                       >
                         {/* Show discount badge */}
                         {discountPct > 0 && (
@@ -688,7 +689,11 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                             }}
                             className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                           >
-                            {favSet.has(product.meta.id) ? <IoIosHeart className="text-lg text-red-500" /> : <CiHeart  className="text-lg text-gray-700 hover:text-red-500 transition-colors" />}
+                            {favSet.has(product.meta.id) ? (
+                              <IoIosHeart className="text-lg text-red-500" />
+                            ) : (
+                              <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                            )}
                           </div>
                         </div>
 
@@ -706,95 +711,103 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                         </div>
 
                         {/* Color swatches */}
-                        
 
                         {/* Reduced content area */}
-                        <div className="p-2 ">
-                          <div className=" flex justify-center mb-2 gap-1  z-10">
-                          {product?.product?.colours?.list.length > 1 &&
-                            product?.product?.colours?.list
-                              .slice(0, 12)
-                              .flatMap((colorObj, index) =>
-                                colorObj.colours.map((color, subIndex) => (
-                                  <div
-                                    key={`${index}-${subIndex}`}
-                                    style={{
-                                      backgroundColor:
-                                        colorObj.swatch?.[subIndex] ||
-                                        color
-                                          .toLowerCase()
-                                          .replace("dark blue", "#1e3a8a")
-                                          .replace("light blue", "#3b82f6")
-                                          .replace("navy blue", "#1e40af")
-                                          .replace("royal blue", "#2563eb")
-                                          .replace("sky blue", "#0ea5e9")
-                                          .replace("gunmetal", "#2a3439")
-                                          .replace("dark grey", "#4b5563")
-                                          .replace("light grey", "#9ca3af")
-                                          .replace("dark gray", "#4b5563")
-                                          .replace("light gray", "#9ca3af")
-                                          .replace("charcoal", "#374151")
-                                          .replace("lime green", "#65a30d")
-                                          .replace("forest green", "#166534")
-                                          .replace("dark green", "#15803d")
-                                          .replace("light green", "#16a34a")
-                                          .replace("bright green", "#22c55e")
-                                          .replace("dark red", "#dc2626")
-                                          .replace("bright red", "#ef4444")
-                                          .replace("wine red", "#991b1b")
-                                          .replace("burgundy", "#7f1d1d")
-                                          .replace("hot pink", "#ec4899")
-                                          .replace("bright pink", "#f472b6")
-                                          .replace("light pink", "#f9a8d4")
-                                          .replace("dark pink", "#be185d")
-                                          .replace("bright orange", "#f97316")
-                                          .replace("dark orange", "#ea580c")
-                                          .replace("bright yellow", "#eab308")
-                                          .replace("golden yellow", "#f59e0b")
-                                          .replace("dark yellow", "#ca8a04")
-                                          .replace("cream", "#fef3c7")
-                                          .replace("beige", "#f5f5dc")
-                                          .replace("tan", "#d2b48c")
-                                          .replace("brown", "#92400e")
-                                          .replace("dark brown", "#78350f")
-                                          .replace("light brown", "#a3a3a3")
-                                          .replace("maroon", "#7f1d1d")
-                                          .replace("teal", "#0d9488")
-                                          .replace("turquoise", "#06b6d4")
-                                          .replace("aqua", "#22d3ee")
-                                          .replace("mint", "#10b981")
-                                          .replace("lavender", "#c084fc")
-                                          .replace("violet", "#8b5cf6")
-                                          .replace("indigo", "#6366f1")
-                                          .replace("slate", "#64748b")
-                                          .replace("stone", "#78716c")
-                                          .replace("zinc", "#71717a")
-                                          .replace("neutral", "#737373")
-                                          .replace("rose", "#f43f5e")
-                                          .replace("emerald", "#10b981")
-                                          .replace("cyan", "#06b6d4")
-                                          .replace("amber", "#f59e0b")
-                                          .replace("lime", "#84cc16")
-                                          .replace("fuchsia", "#d946ef")
-                                          .replace(" ", "") || // remove remaining spaces
-                                        color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-full border border-slate-900"
-                                  />
-                                ))
-                              )}
-                        </div>
+                        <div className="p-2  ">
+                          <div className=" flex justify-center mb-1 gap-1  z-10">
+                            {product?.product?.colours?.list.length > 1 &&
+                              product?.product?.colours?.list
+                                .slice(0, 12)
+                                .flatMap((colorObj, index) =>
+                                  colorObj.colours.map((color, subIndex) => (
+                                    <div
+                                      key={`${index}-${subIndex}`}
+                                      style={{
+                                        backgroundColor:
+                                          colorObj.swatch?.[subIndex] ||
+                                          color
+                                            .toLowerCase()
+                                            .replace("dark blue", "#1e3a8a")
+                                            .replace("light blue", "#3b82f6")
+                                            .replace("navy blue", "#1e40af")
+                                            .replace("royal blue", "#2563eb")
+                                            .replace("sky blue", "#0ea5e9")
+                                            .replace("gunmetal", "#2a3439")
+                                            .replace("dark grey", "#4b5563")
+                                            .replace("light grey", "#9ca3af")
+                                            .replace("dark gray", "#4b5563")
+                                            .replace("light gray", "#9ca3af")
+                                            .replace("charcoal", "#374151")
+                                            .replace("lime green", "#65a30d")
+                                            .replace("forest green", "#166534")
+                                            .replace("dark green", "#15803d")
+                                            .replace("light green", "#16a34a")
+                                            .replace("bright green", "#22c55e")
+                                            .replace("dark red", "#dc2626")
+                                            .replace("bright red", "#ef4444")
+                                            .replace("wine red", "#991b1b")
+                                            .replace("burgundy", "#7f1d1d")
+                                            .replace("hot pink", "#ec4899")
+                                            .replace("bright pink", "#f472b6")
+                                            .replace("light pink", "#f9a8d4")
+                                            .replace("dark pink", "#be185d")
+                                            .replace("bright orange", "#f97316")
+                                            .replace("dark orange", "#ea580c")
+                                            .replace("bright yellow", "#eab308")
+                                            .replace("golden yellow", "#f59e0b")
+                                            .replace("dark yellow", "#ca8a04")
+                                            .replace("cream", "#fef3c7")
+                                            .replace("beige", "#f5f5dc")
+                                            .replace("tan", "#d2b48c")
+                                            .replace("brown", "#92400e")
+                                            .replace("dark brown", "#78350f")
+                                            .replace("light brown", "#a3a3a3")
+                                            .replace("maroon", "#7f1d1d")
+                                            .replace("teal", "#0d9488")
+                                            .replace("turquoise", "#06b6d4")
+                                            .replace("aqua", "#22d3ee")
+                                            .replace("mint", "#10b981")
+                                            .replace("lavender", "#c084fc")
+                                            .replace("violet", "#8b5cf6")
+                                            .replace("indigo", "#6366f1")
+                                            .replace("slate", "#64748b")
+                                            .replace("stone", "#78716c")
+                                            .replace("zinc", "#71717a")
+                                            .replace("neutral", "#737373")
+                                            .replace("rose", "#f43f5e")
+                                            .replace("emerald", "#10b981")
+                                            .replace("cyan", "#06b6d4")
+                                            .replace("amber", "#f59e0b")
+                                            .replace("lime", "#84cc16")
+                                            .replace("fuchsia", "#d946ef")
+                                            .replace(" ", "") || // remove remaining spaces
+                                          color.toLowerCase(),
+                                      }}
+                                      className="w-4 h-4 rounded-full border border-slate-900"
+                                    />
+                                  ))
+                                )}
+                          </div>
                           <div className="text-center">
-                            <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[17px] `}>
-                              {product.overview.name &&
-                              product.overview.name.length > 20 && cardHover!==product.meta.id
-                                ? product.overview.name.slice(0, 20) + "..."
-                                : product.overview.name || "No Name"}
+                            <h2
+                              className={`text-sm transition-all duration-300 ${
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
+                              } font-semibold text-brand sm:leading-[18px] `}
+                            >
+                              {(product.overview.name &&
+                                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                //   ? product.overview.name.slice(0, 20) + "..."
+                                product.overview.name) ||
+                                "No Name"}
                             </h2>
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1">
-                              Min Qty: {product.product?.prices?.price_groups[0]
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
 
@@ -808,7 +821,6 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                                   <span>{minPrice.toFixed(2)}</span>
                                 )}
                               </h2>
-                              
                             </div>
                           </div>
                         </div>
