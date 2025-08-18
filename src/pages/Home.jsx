@@ -160,7 +160,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
               </div>
               <h1 className="text-[18px] font-medium to-gray-200">We know you will be happy when you get</h1>
               <p className="text-2xl font-extrabold text-[#5D8EF9]">
-                {coupenLoading ? 'Loading...' : discount+"% OFF" || "No Discount Available"}
+                {coupenLoading ? 'Loading...' : discount ? discount+"% OFF" : "No Discount Available"}
               </p>
               {/* Set coupon here */}
               <p className="text-[#474747] font-medium p-2 text-sm bg-[#EAEAEA] rounded-md">Use Code: <span className="text-sm font-semibold">{coupenLoading ? 'Loading...' : coupen || "No Coupen Available"}</span></p>
