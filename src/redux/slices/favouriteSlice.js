@@ -96,6 +96,7 @@ export const addToFavourite = (product ) => async (dispatch, getState) => {
     const token = localStorage.getItem("token");
     
     if (!token) {
+      dispatch(addToFavouriteLocal(product));
       console.error('User not authenticated');
       return;
     }
