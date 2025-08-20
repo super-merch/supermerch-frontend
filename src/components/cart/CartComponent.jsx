@@ -538,7 +538,7 @@ const CartComponent = () => {
               }):"0.00"}
             </span>
           </div>
-              {!currentUserEmail || currentUserEmail === "guest@gmail.com" ? (
+              {/* {!currentUserEmail || currentUserEmail === "guest@gmail.com" ? (
                 <button
               onClick={() => {
                 toast.error("Please login to proceed")
@@ -548,8 +548,8 @@ const CartComponent = () => {
               PROCEED TO CHECKOUT
               <FaArrowRight />
             </button>
-              ):
-          (total > shippingCharges ? (
+              ): */}
+          {(total > shippingCharges ? (
             <Link
               to={"/checkout"}
               state={{

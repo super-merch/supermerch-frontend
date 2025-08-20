@@ -48,17 +48,7 @@ const Specification = ({ single_product, activeTab }) => {
         </div>
       )}
 
-      {/* Show/hide button for "additional info" */}
-      {details.some((d) => isAdditional(d)) && (
-        <div className="flex items-center gap-2 mt-4">
-          <button
-            onClick={() => setShowAdditional((s) => !s)}
-            className="text-sm text-blue-700 underline"
-          >
-            {showAdditional ? "Hide Additional Info" : "Show Additional Info"}
-          </button>
-        </div>
-      )}
+     
     </div>
   );
 };

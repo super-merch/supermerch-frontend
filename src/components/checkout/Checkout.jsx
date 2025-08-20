@@ -8,7 +8,10 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
 import CreditCard from "../creditcard/CreditCard";
-import { clearCart, selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
+import {
+  clearCart,
+  selectCurrentUserCartItems,
+} from "@/redux/slices/cartSlice";
 import { loadStripe } from "@stripe/stripe-js";
 import { products } from "../shop/ProductData";
 
@@ -75,10 +78,11 @@ const Checkout = () => {
       const checkoutData = JSON.parse(storedCheckoutData);
 
       // Place the order
+      const headers = token ? { headers: { token } } : {};
       const response = await axios.post(
         `${backednUrl}/api/checkout/checkout`,
         checkoutData,
-        { headers: { token } }
+        headers
       );
 
       // Clear the stored data
@@ -154,10 +158,10 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
     setLoading(true);
-    if(items.length === 0){
+    if (items.length === 0) {
       toast.error("Cart is empty");
       setLoading(false);
-      return
+      return;
     }
     const checkoutData = {
       user: {
@@ -246,9 +250,9 @@ const Checkout = () => {
     }
 
     if (!token) {
-      setLoading(false);
-      navigate("/signup");
-      return toast.error("Please Login to continue");
+      toast.info(
+        "Proceeding as guest. Create an account later to view order history."
+      );
     }
 
     try {
@@ -836,13 +840,17 @@ const Checkout = () => {
                 })}
               </span>
             </div>
-            {items.length===0&&<div className="text-red-600" >Your cart is empty</div>}
+            {items.length === 0 && (
+              <div className="text-red-600">Your cart is empty</div>
+            )}
             <button
               type="submit"
-              disabled={loading||items.length === 0}
+              disabled={loading || items.length === 0}
               className={`w-full py-3 mt-4 font-medium text-white ${
                 loading && "bg-opacity-25"
-              } bg-smallHeader ${items.length === 0 && "bg-opacity-30 cursor-not-allowed"} `}
+              } bg-smallHeader ${
+                items.length === 0 && "bg-opacity-30 cursor-not-allowed"
+              } `}
             >
               {loading
                 ? "Please Wait...."

@@ -17,17 +17,7 @@ const Download = ({ single_product, activeTab }) => {
              "Standard production time applies"
     },
 
-    {
-      name: "Artwork Approval",
-      detail: single_product?.product?.details?.find(d => 
-        d.name.toLowerCase().includes('additional info')
-      )?.detail.split('\n')[0] || "Required before production"
-    },
-
-    {
-      name: "Supplier",
-      detail: `Supplier: ${single_product?.supplier?.supplier || "N/A"}`
-    }
+    
   ];
 
   return (
