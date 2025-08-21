@@ -164,6 +164,8 @@ const Checkout = () => {
       return;
     }
     const checkoutData = {
+      //orderId in format of "SM-(DATE)-(Random 5 digits)"
+      orderId: `SM-${new Date().toISOString().slice(2, 10).replace(/-/g, "").slice(2)}-${Math.floor(Math.random() * 100000)}`,
       user: {
         firstName: data.billing.firstName || addressData.firstName,
         lastName: data.billing.lastName || addressData.lastName,
@@ -213,7 +215,8 @@ const Checkout = () => {
           }
         : null,
       gst: gstAmount,
-      total, // This now includes coupon discount
+      total,
+      paymentStatus: "Paid",
     };
 
     if (

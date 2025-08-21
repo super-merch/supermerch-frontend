@@ -813,37 +813,39 @@ const ProductDetails = () => {
             </div>
 
             {/* Color Selection */}
-            {single_product?.product?.colours?.list.length > 0 &&<div className="mb-2">
-              <p className="mt-2 font-medium">Color:</p>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {single_product?.product?.colours?.list.length > 0 ? (
-                  single_product?.product?.colours?.list?.map(
-                    (colorObj, index) => (
-                      <div key={index}>
-                        {colorObj.colours.map((color, subIndex) => {
-                          return (
-                            <div
-                              key={`${index}-${subIndex}`}
-                              className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer border ${
-                                selectedColor === color
-                                  ? "border-[3px] border-blue-500"
-                                  : "border-slate-900"
-                              }`}
-                              // onClick={() => setSelectedColor(color)}
-                              onClick={() => handleColorClick(color)}
-                            >
-                              {color}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )
-                  )
-                ) : (
-                  <p>No colors available for this product</p>
-                )}
+            {single_product?.product?.colours?.list.length > 0 && (
+              <div className="mb-2">
+                <p className="mt-2 font-medium">Color:</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {(() => {
+                    // Extract all colors and remove duplicates
+                    const allColors = single_product?.product?.colours?.list
+                      .flatMap((colorObj) => colorObj.colours)
+                      .filter(
+                        (color, index, array) => array.indexOf(color) === index
+                      );
+
+                    return allColors.length > 0 ? (
+                      allColors.map((color, index) => (
+                        <div
+                          key={index}
+                          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer border ${
+                            selectedColor === color
+                              ? "border-[3px] border-blue-500"
+                              : "border-slate-900"
+                          }`}
+                          onClick={() => handleColorClick(color)}
+                        >
+                          {color}
+                        </div>
+                      ))
+                    ) : (
+                      <p>No colors available for this product</p>
+                    );
+                  })()}
+                </div>
               </div>
-            </div>}
+            )}
 
             {/* Dropdowns */}
             <div className="">
@@ -1254,7 +1256,8 @@ const ProductDetails = () => {
                   Est Delivery Date: {deliveryDate}
                 </p>
                 <p className="pt-2 text-xs text-black ">
-                  ${discountedUnitPrice.toFixed(2)} (Non-Branded sample) + ${freightFee} delivery
+                  ${discountedUnitPrice.toFixed(2)} (Non-Branded sample) + $
+                  {freightFee} delivery
                 </p>
               </div>
 

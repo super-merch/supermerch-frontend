@@ -308,6 +308,7 @@ const fetchMultipleTrendingPages = async (maxPages = 1, limit = 100, sortOption 
 };
 
 
+
   const fetchTrendingProducts = async (page = 1, sort = '',limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided

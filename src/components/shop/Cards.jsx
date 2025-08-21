@@ -16,7 +16,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
@@ -81,7 +81,6 @@ const Cards = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [totalApiPages, setTotalApiPages] = useState(0);
-  
 
   // New state to track fetched pages for category products
   const [categoryPageCache, setCategoryPageCache] = useState({});
@@ -696,11 +695,12 @@ const Cards = () => {
   };
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
-    
-      favouriteItems.map((item) => {
-        favSet.add(item.meta.id)
-      })
+  const [cardHover, setCardHover] = useState(null);
+  const favSet = new Set();
+
+  favouriteItems.map((item) => {
+    favSet.add(item.meta.id);
+  });
 
   // Calculate total pages based on current products and mode
   const getTotalPages = () => {
@@ -940,10 +940,9 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
               {categoryName && (
                 <div className="filter-item">
                   <span className="text-md font-semibold">{categoryName}</span>
-
                 </div>
               )}
-              
+
               {activeFilters.brands && activeFilters.brands.length > 0 && (
                 <div className="filter-item">
                   <span className="text-sm">
@@ -1071,8 +1070,8 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                       key={productId}
                       className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                       onClick={() => handleViewProduct(product.meta.id)}
-                      onMouseEnter={()=>setCardHover(product.meta.id)}
-                        onMouseLeave={()=>setCardHover(null)}
+                      onMouseEnter={() => setCardHover(product.meta.id)}
+                      onMouseLeave={() => setCardHover(null)}
                     >
                       {discountPct > 0 && (
                         <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
@@ -1097,7 +1096,11 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                           }}
                           className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                         >
-                          {favSet.has(product.meta.id) ? <IoIosHeart className="text-lg text-red-500" /> : <CiHeart  className="text-lg text-gray-700 hover:text-red-500 transition-colors" />}
+                          {favSet.has(product.meta.id) ? (
+                            <IoIosHeart className="text-lg text-red-500" />
+                          ) : (
+                            <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                          )}
                         </div>
                       </div>
 
@@ -1113,101 +1116,127 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                         />
                       </div>
 
-                      
-                      
-
                       <div className="p-2">
                         <div className=" flex justify-center mb-1 gap-1  z-10">
                           {product?.product?.colours?.list.length > 1 &&
-                            product?.product?.colours?.list
-                              .slice(0, 12)
-                              .flatMap((colorObj, index) =>
-                                colorObj.colours.map((color, subIndex) => (
+                            (() => {
+                              // Extract unique colors and filter out colors with spaces/multiple words
+                              const uniqueColors = [
+                                ...new Set(
+                                  product?.product?.colours?.list
+                                    .flatMap((colorObj) => colorObj.colours)
+                                    .filter((color) => !color.includes(" ")) // Remove colors with spaces
+                                ),
+                              ];
+
+                              return uniqueColors
+                                .slice(0, 12)
+                                .map((color, index) => (
                                   <div
-                                    key={`${index}-${subIndex}`}
+                                    key={index}
                                     style={{
                                       backgroundColor:
-                                        colorObj.swatch?.[subIndex] ||
                                         color
                                           .toLowerCase()
-                                          .replace("dark blue", "#1e3a8a")
-                                          .replace("light blue", "#3b82f6")
-                                          .replace("navy blue", "#1e40af")
-                                          .replace("royal blue", "#2563eb")
-                                          .replace("sky blue", "#0ea5e9")
-                                          .replace("gunmetal", "#2a3439")
-                                          .replace("dark grey", "#4b5563")
-                                          .replace("light grey", "#9ca3af")
-                                          .replace("dark gray", "#4b5563")
-                                          .replace("light gray", "#9ca3af")
+                                          // Blues
+
+                                          .replace("navy", "#1e40af")
+
+                                          // Greys/Neutrals
+
+                                          .replace("grey", "#6b7280")
+                                          .replace("gray", "#6b7280")
                                           .replace("charcoal", "#374151")
-                                          .replace("lime green", "#65a30d")
-                                          .replace("forest green", "#166534")
-                                          .replace("dark green", "#15803d")
-                                          .replace("light green", "#16a34a")
-                                          .replace("bright green", "#22c55e")
-                                          .replace("dark red", "#dc2626")
-                                          .replace("bright red", "#ef4444")
-                                          .replace("wine red", "#991b1b")
-                                          .replace("burgundy", "#7f1d1d")
-                                          .replace("hot pink", "#ec4899")
-                                          .replace("bright pink", "#f472b6")
-                                          .replace("light pink", "#f9a8d4")
-                                          .replace("dark pink", "#be185d")
-                                          .replace("bright orange", "#f97316")
-                                          .replace("dark orange", "#ea580c")
-                                          .replace("bright yellow", "#eab308")
-                                          .replace("golden yellow", "#f59e0b")
-                                          .replace("dark yellow", "#ca8a04")
-                                          .replace("cream", "#fef3c7")
-                                          .replace("beige", "#f5f5dc")
-                                          .replace("tan", "#d2b48c")
-                                          .replace("brown", "#92400e")
-                                          .replace("dark brown", "#78350f")
-                                          .replace("light brown", "#a3a3a3")
-                                          .replace("maroon", "#7f1d1d")
-                                          .replace("teal", "#0d9488")
-                                          .replace("turquoise", "#06b6d4")
-                                          .replace("aqua", "#22d3ee")
-                                          .replace("mint", "#10b981")
-                                          .replace("lavender", "#c084fc")
-                                          .replace("violet", "#8b5cf6")
-                                          .replace("indigo", "#6366f1")
+                                          .replace("carbon", "#1f2937")
+                                          .replace("gunmetal", "#2a3439")
                                           .replace("slate", "#64748b")
                                           .replace("stone", "#78716c")
                                           .replace("zinc", "#71717a")
                                           .replace("neutral", "#737373")
-                                          .replace("rose", "#f43f5e")
+                                          .replace("taupe", "#b8860b")
+
+                                          // Greens
+
+                                          .replace("mint", "#10b981")
+                                          .replace("sage", "#9ca3af")
+                                          .replace("kiwi", "#8fbc8f")
+                                          .replace("khaki", "#bdb76b")
+                                          .replace("teal", "#0d9488")
                                           .replace("emerald", "#10b981")
-                                          .replace("cyan", "#06b6d4")
-                                          .replace("amber", "#f59e0b")
-                                          .replace("lime", "#84cc16")
+
+                                          // Reds/Pinks
+
+                                          .replace("burgundy", "#7f1d1d")
+                                          .replace("red", "#ef4444")
+                                          .replace("pink", "#ec4899")
+                                          .replace("coral", "#ff7f7f")
+                                          .replace("berry", "#8b0000")
+                                          .replace("maroon", "#7f1d1d")
+                                          .replace("rose", "#f43f5e")
                                           .replace("fuchsia", "#d946ef")
+
+                                          // Oranges/Yellows
+                                          .replace("orange", "#f97316")
+                                          .replace("yellow", "#eab308")
+                                          .replace("mustard", "#ffdb58")
+                                          .replace("rust", "#b7410e")
+                                          .replace("amber", "#f59e0b")
+
+                                          // Purples
+                                          .replace("lavender", "#c084fc")
+                                          .replace("violet", "#8b5cf6")
+                                          .replace("indigo", "#6366f1")
+                                          .replace("purple", "#a855f7")
+                                          .replace("mauve", "#dda0dd")
+
+                                          // Browns/Beiges
+                                          .replace("cream", "#fef3c7")
+                                          .replace("beige", "#f5f5dc")
+                                          .replace("ecru", "#c2b280")
+                                          .replace("tan", "#d2b48c")
+                                          .replace("brown", "#92400e")
+
+                                          // Other colors
+                                          .replace("turquoise", "#06b6d4")
+                                          .replace("aqua", "#22d3ee")
+                                          .replace("cyan", "#06b6d4")
+                                          .replace("lime", "#84cc16")
+                                          .replace("white", "#ffffff")
+                                          .replace("black", "#000000")
+
                                           .replace(" ", "") || // remove remaining spaces
                                         color.toLowerCase(),
                                     }}
                                     className="w-4 h-4 rounded-full border border-slate-900"
                                   />
-                                ))
-                              )}
+                                ));
+                            })()}
                         </div>
                         <div className="text-center">
-                          <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[18px] `}>
-                            {product.overview.name &&
-                            // product.overview.name.length > 20 && cardHover!==product.meta.id
-                            //   ? product.overview.name.slice(0, 20) + "..."
-                               product.overview.name || "No Name"}
+                          <h2
+                            className={`text-sm transition-all duration-300 ${
+                              cardHover === product.meta.id &&
+                              product.overview.name.length > 20
+                                ? "sm:text-[18px]"
+                                : "sm:text-lg"
+                            } font-semibold text-brand sm:leading-[18px] `}
+                          >
+                            {(product.overview.name &&
+                              // product.overview.name.length > 20 && cardHover!==product.meta.id
+                              //   ? product.overview.name.slice(0, 20) + "..."
+                              product.overview.name) ||
+                              "No Name"}
                           </h2>
 
                           <p className="text-xs text-gray-500 pt-1">
-                            Min Qty: {product.product?.prices?.price_groups[0]
+                            Min Qty:{" "}
+                            {product.product?.prices?.price_groups[0]
                               ?.base_price?.price_breaks[0]?.qty || 1}{" "}
-                            
                           </p>
 
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
-                              Starting From $
+                              From $
                               {minPrice === maxPrice ? (
                                 <span>{minPrice.toFixed(2)}</span>
                               ) : (
@@ -1235,86 +1264,84 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
             )}
           </div>
 
-          {(totalPages > 1 || (currentPageProducts.length <= itemsPerPage && hasMoreProducts)) && (
-  <div className="flex items-center justify-center mt-16 space-x-2 pagination">
-    <button
-      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-      disabled={currentPage === 1}
-      className="flex items-center justify-center w-10 h-10 border rounded-full"
-    >
-      <IoMdArrowBack className="text-xl" />
-    </button>
+          {(totalPages > 1 ||
+            (currentPageProducts.length <= itemsPerPage &&
+              hasMoreProducts)) && (
+            <div className="flex items-center justify-center mt-16 space-x-2 pagination">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center justify-center w-10 h-10 border rounded-full"
+              >
+                <IoMdArrowBack className="text-xl" />
+              </button>
 
-    {/* Always show current page */}
-    <button
-      onClick={() => setCurrentPage(1)}
-      className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-        currentPage === 1
-          ? "bg-blue-600 text-white"
-          : "hover:bg-gray-200"
-      }`}
-    >
-      1
-    </button>
+              {/* Always show current page */}
+              <button
+                onClick={() => setCurrentPage(1)}
+                className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                  currentPage === 1
+                    ? "bg-blue-600 text-white"
+                    : "hover:bg-gray-200"
+                }`}
+              >
+                1
+              </button>
 
-    {/* Show page 2 button when there's only one page but might be more products */}
-    {totalPages === 1 && hasMoreProducts && (
-      <button
-        onClick={() => {
-          setCurrentPage(2);
-          if (isPriceFilterActive) {
-            fetchMoreFilteredProducts();
-          } else if (!selectedCategory) {
-            fetchMoreProducts();
-          }
-        }}
-        className="w-10 h-10 border rounded-full flex items-center justify-center hover:bg-gray-200"
-      >
-        2
-      </button>
-    )}
+              {/* Show page 2 button when there's only one page but might be more products */}
+              {totalPages === 1 && hasMoreProducts && (
+                <button
+                  onClick={() => {
+                    setCurrentPage(2);
+                    if (isPriceFilterActive) {
+                      fetchMoreFilteredProducts();
+                    } else if (!selectedCategory) {
+                      fetchMoreProducts();
+                    }
+                  }}
+                  className="w-10 h-10 border rounded-full flex items-center justify-center hover:bg-gray-200"
+                >
+                  2
+                </button>
+              )}
 
-    {/* Show normal pagination when there are multiple pages */}
-    {totalPages > 1 &&
-      getPaginationButtons(
-        currentPage,
-        totalPages,
-        maxVisiblePages
-      )
-      .filter(page => page > 1) // Skip page 1 since we always show it
-      .map((page) => (
-        <button
-          key={page}
-          onClick={() => setCurrentPage(page)}
-          className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-            currentPage === page
-              ? "bg-blue-600 text-white"
-              : "hover:bg-gray-200"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
+              {/* Show normal pagination when there are multiple pages */}
+              {totalPages > 1 &&
+                getPaginationButtons(currentPage, totalPages, maxVisiblePages)
+                  .filter((page) => page > 1) // Skip page 1 since we always show it
+                  .map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-gray-200"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
 
-    <button
-      onClick={() => {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-        // Fetch more products if we're at the end
-        if (currentPage === totalPages && hasMoreProducts) {
-          if (isPriceFilterActive) {
-            fetchMoreFilteredProducts();
-          } else if (!selectedCategory) {
-            fetchMoreProducts();
-          }
-        }
-      }}
-      disabled={currentPage === totalPages && !hasMoreProducts}
-      className="flex items-center justify-center w-10 h-10 border rounded-full"
-    >
-      <IoMdArrowForward className="text-xl" />
-    </button>
-  </div>
-)}
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  // Fetch more products if we're at the end
+                  if (currentPage === totalPages && hasMoreProducts) {
+                    if (isPriceFilterActive) {
+                      fetchMoreFilteredProducts();
+                    } else if (!selectedCategory) {
+                      fetchMoreProducts();
+                    }
+                  }
+                }}
+                disabled={currentPage === totalPages && !hasMoreProducts}
+                className="flex items-center justify-center w-10 h-10 border rounded-full"
+              >
+                <IoMdArrowForward className="text-xl" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -381,7 +381,7 @@ const Promotional = () => {
                               Code: {product.overview.code}
                             </p>
                             <h2 className="pt-2 text-xl font-semibold text-heading">
-                              Starting From $:<span>{realPrice}</span>
+                              From $:<span>{realPrice}</span>
                               
                             </h2>
                             <p className="pt-2 text-base font-normal text-brand">
