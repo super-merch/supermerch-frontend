@@ -33,7 +33,7 @@ const AllProducts = ({ activeTab }) => {
   useEffect(() => {
     // Only fetch if activeTab is "All Product" to avoid unnecessary calls
     if (activeTab === "All Product") {
-      fetchProducts(1, "", 15);
+      fetchProducts(1, "", 42);
     }
   }, [activeTab]); // Changed dependency to activeTab instead of empty array
 
@@ -66,6 +66,10 @@ const AllProducts = ({ activeTab }) => {
     // Restore body scroll
     document.body.style.overflow = "unset";
   };
+  const visibleProductList = products.filter((product) => {
+  const disc = product?.meta?.discontinued;
+  return !(disc === true || disc === "true");
+});
 
   // Close modal on escape key
   useEffect(() => {
