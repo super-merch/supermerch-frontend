@@ -37,6 +37,8 @@ import PMSColorChart from "./pages/PMS";
 import HelpCenter from "./pages/HelpCenter";
 import MailOffer from "./pages/MailOffer";
 import TrackOrder from "./pages/TrackOrder";
+import Australia from "./pages/Australia";
+import HourProduction24 from "./pages/HourProduction24";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -80,6 +82,8 @@ const App = () => {
         <Route path='/privacy' element={<PrivacyPolicy />} />
         <Route path='/shop' element={<ShopPage />} />
         <Route path='/trendings' element={<BestSellers />} />
+        <Route path='/australia-made' element={<Australia />} />
+        <Route path='/hour-production' element={<HourProduction24 />} />
         <Route path='/search' element={<SearchPage />} />
         <Route path='/new-arrivals' element={<NewArrival />} />
         <Route path='/sales' element={<SalesPage />} />

@@ -1,0 +1,19 @@
+import TabsButtons from "@/components/Home/ProducsTabs/TabsButtons";
+import AusProducts from "@/components/shop/AusProducts";
+import HourProduction24Products from "@/components/shop/HourProduction24Products";
+import Navigate from "@/components/shop/Navigate";
+import { AppContext } from "@/context/AppContext";
+import React, { useContext, useEffect } from "react";
+
+export default function HourProduction24() {
+  
+  return (
+    <div>
+      <Navigate />
+      <HourProduction24Products />
+      <div className="mt-10">
+        <TabsButtons />
+      </div>
+    </div>
+  );
+}

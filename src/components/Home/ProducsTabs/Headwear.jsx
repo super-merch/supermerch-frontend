@@ -4,7 +4,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -27,11 +27,69 @@ const Headwear = ({ activeTab }) => {
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
-  
-    favouriteItems.map((item) => {
-      favSet.add(item.meta.id)
-    })
+  const [cardHover, setCardHover] = useState(null);
+  const favSet = new Set();
+
+  favouriteItems.map((item) => {
+    favSet.add(item.meta.id);
+  });
+
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
   // Fetch products when tab opens
   useEffect(() => {
     if (activeTab === "Headwear") {
@@ -229,8 +287,8 @@ const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                         onClick={() => handleViewProduct(product.meta.id)}
-                        onMouseEnter={()=>setCardHover(product.meta.id)}
-                        onMouseLeave={()=>setCardHover(null)}
+                        onMouseEnter={() => setCardHover(product.meta.id)}
+                        onMouseLeave={() => setCardHover(null)}
                       >
                         {/* Show discount badge */}
                         {discountPct > 0 && (
@@ -245,6 +303,68 @@ const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
                             )}
                           </div>
                         )}
+                        <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
+                          {(productionIds.has(product.meta.id) ||
+                            productionIds.has(String(product.meta.id))) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
+                              {/* small clock SVG (no extra imports) */}
+                              <svg
+                                className="w-3 h-3 flex-shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M12 7v5l3 1"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <circle
+                                  cx="12"
+                                  cy="12"
+                                  r="8"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              <span>24Hr Production</span>
+                            </span>
+                          )}
+
+                          {(australiaIds.has(product.meta.id) ||
+                            australiaIds.has(String(product.meta.id))) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
+                              {/* simple flag/triangle SVG */}
+                              <svg
+                                className="w-3 h-3 flex-shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M3 6h10l-2 3 2 3H3V6z"
+                                  fill="currentColor"
+                                />
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="1"
+                                  height="16"
+                                  rx="0.5"
+                                  fill="currentColor"
+                                  opacity="0.9"
+                                />
+                              </svg>
+                              <span>Australia Made</span>
+                            </span>
+                          )}
+                        </div>
 
                         {/* Favourite button - moved to top-right of image */}
                         <div className="absolute top-2 right-2 z-20">
@@ -256,7 +376,11 @@ const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
                             }}
                             className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                           >
-                            {favSet.has(product.meta.id) ? <IoIosHeart className="text-lg text-red-500" /> : <CiHeart  className="text-lg text-gray-700 hover:text-red-500 transition-colors" />}
+                            {favSet.has(product.meta.id) ? (
+                              <IoIosHeart className="text-lg text-red-500" />
+                            ) : (
+                              <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                            )}
                           </div>
                         </div>
 
@@ -274,7 +398,6 @@ const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
                         </div>
 
                         {/* Color swatches */}
-                        
 
                         {/* Reduced content area */}
                         <div className="p-2 ">
@@ -374,16 +497,25 @@ const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
                               })()}
                           </div>
                           <div className="text-center">
-                            <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[18px] `}>
-                              {product.overview.name &&
-                              // product.overview.name.length > 20 && cardHover!==product.meta.id
-                              //   ? product.overview.name.slice(0, 20) + "..."
-                                 product.overview.name || "No Name"}
+                            <h2
+                              className={`text-sm transition-all duration-300 ${
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
+                              } font-semibold text-brand sm:leading-[18px] `}
+                            >
+                              {(product.overview.name &&
+                                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                //   ? product.overview.name.slice(0, 20) + "..."
+                                product.overview.name) ||
+                                "No Name"}
                             </h2>
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1">
-                              Min Qty: {product.product?.prices?.price_groups[0]
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
 
@@ -397,7 +529,6 @@ const [cardHover, setCardHover] = useState(null);    const favSet = new Set()
                                   <span>{minPrice.toFixed(2)}</span>
                                 )}
                               </h2>
-                              
                             </div>
                           </div>
                         </div>

@@ -29,6 +29,62 @@ const AllProducts = ({ activeTab }) => {
   // State for modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   useEffect(() => {
     // Only fetch if activeTab is "All Product" to avoid unnecessary calls
@@ -67,9 +123,9 @@ const AllProducts = ({ activeTab }) => {
     document.body.style.overflow = "unset";
   };
   const visibleProductList = products.filter((product) => {
-  const disc = product?.meta?.discontinued;
-  return !(disc === true || disc === "true");
-});
+    const disc = product?.meta?.discontinued;
+    return !(disc === true || disc === "true");
+  });
 
   // Close modal on escape key
   useEffect(() => {
@@ -233,6 +289,69 @@ const AllProducts = ({ activeTab }) => {
                           </div>
                         )}
 
+                        <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
+                          {(productionIds.has(product.meta.id) ||
+                            productionIds.has(String(product.meta.id))) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
+                              {/* small clock SVG (no extra imports) */}
+                              <svg
+                                className="w-3 h-3 flex-shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M12 7v5l3 1"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <circle
+                                  cx="12"
+                                  cy="12"
+                                  r="8"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              <span>24Hr Production</span>
+                            </span>
+                          )}
+
+                          {(australiaIds.has(product.meta.id) ||
+                            australiaIds.has(String(product.meta.id))) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
+                              {/* simple flag/triangle SVG */}
+                              <svg
+                                className="w-3 h-3 flex-shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M3 6h10l-2 3 2 3H3V6z"
+                                  fill="currentColor"
+                                />
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="1"
+                                  height="16"
+                                  rx="0.5"
+                                  fill="currentColor"
+                                  opacity="0.9"
+                                />
+                              </svg>
+                              <span>Australia Made</span>
+                            </span>
+                          )}
+                        </div>
+
                         {/* Favourite button - moved to top-right of image */}
                         <div className="absolute top-2 right-2 z-20">
                           <div
@@ -243,7 +362,7 @@ const AllProducts = ({ activeTab }) => {
                             }}
                             className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                           >
-                            {favSet.has(product.meta.id) ? (
+                            {favSet.has(productId) ? (
                               <IoIosHeart className="text-lg text-red-500" />
                             ) : (
                               <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />

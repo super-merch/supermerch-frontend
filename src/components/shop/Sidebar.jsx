@@ -12,7 +12,7 @@ import BrandCheckboxes from "./BrandFilter";
 import PopularTags from "./PopularTags";
 import { AppContext } from "../../context/AppContext";
 
-const Sidebar = () => {
+const Sidebar = (props) => {
   const dispatch = useDispatch();
   const { selectedCategory } = useSelector((state) => state.filters);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -35,6 +35,7 @@ const Sidebar = () => {
       setCategoriesData([]); // fallback
     }
   };
+  const filter = props.filter ? props.filter : false;
 
   useEffect(() => {
     fetchCategories();
@@ -93,7 +94,7 @@ const Sidebar = () => {
         }   `}
       >
         <div className="h-full overflow-y-auto pr-3 ">
-          <div className="border-b-2 pb-6">
+          {!filter && <div className="border-b-2 pb-6">
             <h1 className="font-medium text-base mb-1 uppercase text-brand">
               Categories
             </h1>
@@ -151,7 +152,7 @@ const Sidebar = () => {
                 </button>
               </div>
             )}
-          </div>
+          </div>}
 
           <div className="mt-4">
             <PriceFilter />

@@ -215,8 +215,8 @@ const ProductDetails = () => {
     if (priceGroups.length > 0) {
       const baseGroup = {
         ...priceGroups[0].base_price,
-        type: "base",
-        description: "Default Print Method (Select)",
+        // type: "base",
+        // description: "Default Print Method (Select)",
       };
 
       const additionGroups = priceGroups.flatMap((group) =>
@@ -561,12 +561,19 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         return;
       }
+      console.log("product:",single_product)
 
       formData1.append("name", formData.name);
       formData1.append("email", formData.email);
       formData1.append("phone", formData.phone);
       formData1.append("delivery", formData.delivery);
       formData1.append("comment", formData.comment);
+      formData1.append("product", single_product?.product?.name);
+      formData1.append("productId", single_product?.meta?.id);
+      formData1.append("price", Number(single_product?.product?.prices?.price_groups[0]?.base_price.price_breaks[0]?.price));
+      formData1.append("quantity", Number(single_product?.product?.prices?.price_groups[0]?.base_price.price_breaks[0]?.qty));
+      formData1.append("description", single_product?.product?.description);
+
       if (selectedFile2) {
         formData1.append("file", selectedFile2);
       }
@@ -798,13 +805,13 @@ const ProductDetails = () => {
             >
               {product?.name ? product?.name : "Loading ..."}
             </h2>
-            <div className="flex flex-wrap items-center ">
+            {/* <div className="flex flex-wrap items-center ">
               <span className="text-2xl text-smallHeader">★★★★★</span>
               <p className="ml-2 text-gray-600">
                 4.7 Star Rating (1767 User Feedback)
               </p>
-            </div>
-            <div className="flex items-center justify-between pb-2 border-b-2">
+            </div> */}
+            <div className="flex items-center justify-between py-2 border-b-2">
               {/* <p className="text-black">{product?.code}</p> */}
               <p className="font-bold text-smallHeader">
                 <span className="font-normal text-stock"> Availability:</span>{" "}

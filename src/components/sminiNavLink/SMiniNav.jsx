@@ -1083,6 +1083,13 @@ const SMiniNav = () => {
           label: "Footwears",
           items: [{ id: "B-04", name: "Footwear" }],
         },
+        {
+          label: "Accessories",
+          items: [{ id: "B-01", name: "Accessories" },
+            { id: "B-05", name: "Gloves" },
+            { id: "B-12", name: "Scarves" },
+          ],
+        },
       ],
     },
     {
@@ -1117,6 +1124,13 @@ const SMiniNav = () => {
           label: "Footwears",
           items: [{ id: "B-04", name: "Safety Footwear" }],
         },
+        {
+          label: "Accessories",
+          items: [{ id: "B-01", name: "Accessories" },
+            { id: "B-05", name: "Gloves" },
+            { id: "B-20", name: "Misc Clothing" },
+          ],
+        },
       ],
     },
     {
@@ -1147,6 +1161,11 @@ const SMiniNav = () => {
         {
           label: "Footwears",
           items: [], // Empty as no specific items for this category
+        },
+        {
+          label: "Accessories",
+          items: [{ id: "B-12", name: "Scarves" },
+          ],
         },
       ],
     },
@@ -1180,6 +1199,14 @@ const SMiniNav = () => {
           label: "Footwears",
           items: [{ id: "B-04", name: "Athletic Footwear" }],
         },
+        {
+          label: "Accessories",
+          items: [
+            { id: "B-05", name: "Gloves" },
+            { id: "B-12", name: "Scarves" },
+
+          ],
+        },
       ],
     },
     {
@@ -1205,6 +1232,10 @@ const SMiniNav = () => {
         {
           label: "Footwears",
           items: [{ id: "B-04", name: "Safety Footwear" }],
+        },
+        {
+          label: "Accessories",
+          items: [{ id: "B-12", name: "Scarves" }],
         },
       ],
     },
@@ -1532,14 +1563,15 @@ const SMiniNav = () => {
       }
     }
     if (
-      link.name === "Return Gifts" ||
-      link.name === "24 Hour production" ||
-      link.name === "australia Made"
+      link.name === "Return Gifts"
     ) {
       navigate("/shop");
     }else if( link.name === "Sale" ){
       navigate("/sales");
-
+    }else if(link.name === "australia Made"){
+      navigate("/australia-made");
+    }else if(link.name === "24 Hour production"){
+      navigate("/hour-production");
     }
   };
   const [activeItem, setActiveItem] = useState(megaMenu[0].id);

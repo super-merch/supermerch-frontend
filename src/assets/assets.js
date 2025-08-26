@@ -1053,6 +1053,13 @@ export const megaMenuClothing= [
           "label": "Footwears",
           "items": [{ "id": "B-04", "name": "Footwear" }],
         },
+        {
+          "label": "Accessories",
+          "items": [{ "id": "B-01", "name": "Accessories" },
+            { "id": "B-05", "name": "Gloves" },
+            { "id": "B-12", "name": "Scarves" },
+          ],
+        },
       ],
     },
     {
@@ -1087,6 +1094,13 @@ export const megaMenuClothing= [
           "label": "Footwears",
           "items": [{ "id": "B-04", "name": "Safety Footwear" }],
         },
+        {
+          "label": "Accessories",
+          "items": [{ "id": "B-01", "name": "Accessories" },
+            { "id": "B-05", "name": "Gloves" },
+            { "id": "B-20", "name": "Misc Clothing" },
+          ],
+        },
       ],
     },
     {
@@ -1117,6 +1131,11 @@ export const megaMenuClothing= [
         {
           "label": "Footwears",
           "items": [], // Empty as no specific items for this category
+        },
+        {
+          "label": "Accessories",
+          "items": [{ "id": "B-12", "name": "Scarves" },
+          ],
         },
       ],
     },
@@ -1150,6 +1169,14 @@ export const megaMenuClothing= [
           "label": "Footwears",
           "items": [{ "id": "B-04", "name": "Athletic Footwear" }],
         },
+        {
+          "label": "Accessories",
+          "items": [
+            { "id": "B-05", "name": "Gloves" },
+            { "id": "B-12", "name": "Scarves" },
+
+          ],
+        },
       ],
     },
     {
@@ -1175,6 +1202,10 @@ export const megaMenuClothing= [
         {
           "label": "Footwears",
           "items": [{ "id": "B-04", "name": "Safety Footwear" }],
+        },
+        {
+          "label": "Accessories",
+          "items": [{ "id": "B-12", "name": "Scarves" }],
         },
       ],
     },
