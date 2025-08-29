@@ -13,6 +13,7 @@ import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 const Clothing = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);

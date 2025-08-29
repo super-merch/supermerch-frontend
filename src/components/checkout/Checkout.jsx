@@ -14,6 +14,7 @@ import {
 } from "@/redux/slices/cartSlice";
 import { loadStripe } from "@stripe/stripe-js";
 import { products } from "../shop/ProductData";
+import AddressAutocomplete from "./AddessAutocomplete";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -153,7 +154,7 @@ const Checkout = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total (same as cart)
-  const gstAmount = finalDiscountedAmount * 0.1; // 10%
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
@@ -165,7 +166,11 @@ const Checkout = () => {
     }
     const checkoutData = {
       //orderId in format of "SM-(DATE)-(Random 5 digits)"
-      orderId: `SM-${new Date().toISOString().slice(2, 10).replace(/-/g, "").slice(2)}-${Math.floor(Math.random() * 100000)}`,
+      orderId: `SM-${new Date()
+        .toISOString()
+        .slice(2, 10)
+        .replace(/-/g, "")
+        .slice(2)}-${Math.floor(Math.random() * 100000)}`,
       user: {
         firstName: data.billing.firstName || addressData.firstName,
         lastName: data.billing.lastName || addressData.lastName,
@@ -397,15 +402,43 @@ const Checkout = () => {
               </div>
               <div className="mt-4">
                 <p>
-                  Adress <span className="text-red-600 ">*</span>
+                  Address <span className="text-red-600 ">*</span>
                 </p>
+
+                {/* Autocomplete component (Nominatim) */}
+                <AddressAutocomplete
+                  placeholder="Start typing address..."
+                  defaultValue={getValues("billing.address")}
+                  countryCode="au"
+                  onSelect={(place) => {
+                    // place is a Nominatim result with .display_name, .lat, .lon and .address object
+                    setValue("billing.address", place.display_name || "");
+                    // populate structured fields if available
+                    const addr = place.address || {};
+                    // Nominatim keys: house_number, road, suburb, city, town, village, state, postcode, country
+                    setValue(
+                      "billing.city",
+                      addr.city ||
+                        addr.town ||
+                        addr.village ||
+                        addr.hamlet ||
+                        ""
+                    );
+                    setValue("billing.region", addr.state || "");
+                    setValue("billing.zip", addr.postcode || "");
+                    setValue("billing.country", addr.country || "Australia");
+                    // optionally keep lat/lng (not currently in form) — you could store to localStorage or hidden fields
+                  }}
+                />
+
+                {/* keep a hidden input registered so react-hook-form validation works */}
                 <input
-                  type="text"
-                  placeholder="Address"
+                  type="hidden"
                   {...register("billing.address", { required: true })}
-                  className="w-full p-2 mt-2 border"
+                  value={getValues("billing.address")}
                 />
               </div>
+
               <div className="grid grid-cols-1 gap-4 mt-4 lg:grid-cols-4 md::grid-cols-4 sm:grid-cols-3">
                 <div className="flex flex-col">
                   <label htmlFor="country" className="mb-1 text-sm">
@@ -578,15 +611,37 @@ const Checkout = () => {
               </div>
               <div className="mt-4">
                 <p>
-                  Adress <span className="text-red-600 ">*</span>
+                  Address <span className="text-red-600 ">*</span>
                 </p>
+
+                <AddressAutocomplete
+                  placeholder="Start typing address..."
+                  defaultValue={getValues("shipping.address")}
+                  countryCode="au"
+                  onSelect={(place) => {
+                    setValue("shipping.address", place.display_name || "");
+                    const addr = place.address || {};
+                    setValue(
+                      "shipping.city",
+                      addr.city ||
+                        addr.town ||
+                        addr.village ||
+                        addr.hamlet ||
+                        ""
+                    );
+                    setValue("shipping.region", addr.state || "");
+                    setValue("shipping.zip", addr.postcode || "");
+                    setValue("shipping.country", addr.country || "Australia");
+                  }}
+                />
+
                 <input
-                  type="text"
-                  placeholder="Address"
+                  type="hidden"
                   {...register("shipping.address", { required: true })}
-                  className="w-full p-2 mt-2 border"
+                  value={getValues("shipping.address")}
                 />
               </div>
+
               <div className="grid grid-cols-1 gap-4 mt-4 lg:grid-cols-4 md::grid-cols-4 sm:grid-cols-3">
                 <div className="flex flex-col">
                   <label htmlFor="country" className="mb-1 text-sm">

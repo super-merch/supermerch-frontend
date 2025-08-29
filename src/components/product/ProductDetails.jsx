@@ -215,7 +215,7 @@ const ProductDetails = () => {
     if (priceGroups.length > 0) {
       const baseGroup = {
         ...priceGroups[0].base_price,
-        // type: "base",
+        type: "base",
         // description: "Default Print Method (Select)",
       };
 
@@ -586,7 +586,7 @@ const ProductDetails = () => {
         }
       );
       if (data.success) {
-        toast.success(data.message);
+        toast.success("Quote sent successfully");
         console.log(data);
         setFormData({
           name: "",
@@ -600,7 +600,7 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         setShowQuoteForm(false);
       } else {
-        toast.error(data.message);
+        toast.error(data.message||"Something went wrong");
         setQuoteLoading(false);
         console.log(data.message);
       }

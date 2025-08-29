@@ -76,10 +76,10 @@ const Bags = ({ activeTab }) => {
         console.error("Error fetching Australia products:", error);
       }
     };
-    useEffect(() => {
-      getAll24HourProduction();
-      getAllAustralia();
-    }, []);
+    // useEffect(() => {
+    //   getAll24HourProduction();
+    //   getAllAustralia();
+    // }, []);
 
   const dispatch = useDispatch();
 
@@ -87,6 +87,8 @@ const Bags = ({ activeTab }) => {
   useEffect(() => {
     if (activeTab === "Bags") {
       fetchClothingProducts();
+      getAll24HourProduction();
+    getAllAustralia();
     }
   }, [activeTab]);
 

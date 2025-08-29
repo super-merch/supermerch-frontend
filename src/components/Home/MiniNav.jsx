@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { BiUser } from "react-icons/bi";
 import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,6 +22,7 @@ import {
 import supermerch from "../../assets/supermerch.png";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
+import { toast } from "react-toastify";
 
 const MiniNav = () => {
   const megaMenu = [
@@ -327,19 +328,18 @@ const MiniNav = () => {
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const fetchCurrentCoupon = async () => {
     try {
-      setCoupenLoading(true)
+      setCoupenLoading(true);
       const response = await fetch(`${API_BASE}/api/coupen/get`);
       const data = await response.json();
-      if(response.ok){
+      if (response.ok) {
         setCoupen(data[0].coupen);
         setDiscount(data[0].discount);
-        setCoupenLoading(false)
+        setCoupenLoading(false);
       }
-      setCoupenLoading(false)
-      
+      setCoupenLoading(false);
     } catch (error) {
-      setCoupenLoading(false)
-      console.error('Error fetching current coupon:', error);
+      setCoupenLoading(false);
+      console.error("Error fetching current coupon:", error);
     }
   };
 
@@ -391,16 +391,14 @@ const MiniNav = () => {
           </div>
         )}
         <div className="flex items-center justify-between gap-6 pt-2 text-white Mycontainer">
-          <Link to={"/"}>
-            {/* <h1 className='relative z-30 ml-8 text-lg font-bold uppercase lg:text-4xl md:text-4xl sm:text-2xl text-smallHeader'>
-              pgshop
-            </h1> */}
+          <Link to={"/"} className="relative z-10">
             <img
               src={supermerch}
-              className="lg:w-36 w-24 ml-8 object-contain"
+              className="object-contain w-24  lg:w-36"
               alt=""
             />
           </Link>
+
           <div className="lg:flex md:flex hidden gap-2 border border-black   items-center bg-white lg:w-[55%] md:w-[55%] w-full h-[48px] px-4">
             <input
               value={inputValue}
@@ -496,8 +494,8 @@ const MiniNav = () => {
             )}
           </div>
 
-          <nav className="py-3 text-white lg:px-4">
-            <div className="flex items-center justify-between">
+          <nav className="py-3 z-20 text-white lg:px-4">
+            <div className="flex   items-center justify-between">
               <button
                 onClick={toggleNavbar}
                 className="text-black focus:outline-none lg:hidden"
@@ -657,7 +655,7 @@ const MiniNav = () => {
           <div
             onClick={() => {
               setCoupenModel(true);
-              fetchCurrentCoupon()
+              fetchCurrentCoupon();
             }}
             className="flex items-center gap-2 px-4 py-1 border-2 border-smallHeader"
           >

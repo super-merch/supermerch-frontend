@@ -45,7 +45,6 @@ const AllProducts = ({ activeTab }) => {
         const data = await response.json();
         const productIds = data.map((item) => Number(item.id));
         setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
       } else {
         console.error(
           "Failed to fetch 24 Hour Production products:",
@@ -73,7 +72,6 @@ const AllProducts = ({ activeTab }) => {
         // Ensure consistent data types (convert to strings)
         const productIds = data.map((item) => Number(item.id));
         setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
       } else {
         console.error("Failed to fetch Australia products:", response.status);
       }
@@ -81,15 +79,18 @@ const AllProducts = ({ activeTab }) => {
       console.error("Error fetching Australia products:", error);
     }
   };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
+  // useEffect(() => {
+
+  //   getAll24HourProduction();
+  //   getAllAustralia();
+  // }, []);
 
   useEffect(() => {
     // Only fetch if activeTab is "All Product" to avoid unnecessary calls
     if (activeTab === "All Product") {
       fetchProducts(1, "", 42);
+      getAll24HourProduction();
+      getAllAustralia();
     }
   }, [activeTab]); // Changed dependency to activeTab instead of empty array
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { BiUser } from "react-icons/bi";
 import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
@@ -1085,8 +1085,8 @@ const SMiniNav = () => {
         },
         {
           label: "Accessories",
-          items: [{ id: "B-01", name: "Accessories" },
-            { id: "B-05", name: "Gloves" },
+          items: [
+            { id: "B-01", name: "Accessories" },
             { id: "B-12", name: "Scarves" },
           ],
         },
@@ -1126,8 +1126,8 @@ const SMiniNav = () => {
         },
         {
           label: "Accessories",
-          items: [{ id: "B-01", name: "Accessories" },
-            { id: "B-05", name: "Gloves" },
+          items: [
+            { id: "B-01", name: "Accessories" },
             { id: "B-20", name: "Misc Clothing" },
           ],
         },
@@ -1164,8 +1164,7 @@ const SMiniNav = () => {
         },
         {
           label: "Accessories",
-          items: [{ id: "B-12", name: "Scarves" },
-          ],
+          items: [{ id: "B-12", name: "Scarves" }],
         },
       ],
     },
@@ -1202,9 +1201,7 @@ const SMiniNav = () => {
         {
           label: "Accessories",
           items: [
-            { id: "B-05", name: "Gloves" },
             { id: "B-12", name: "Scarves" },
-
           ],
         },
       ],
@@ -1402,7 +1399,7 @@ const SMiniNav = () => {
     localStorage.removeItem("token");
     setToken("");
     googleLogout();
-    dispatch(clearCurrentUser())
+    dispatch(clearCurrentUser());
     dispatch(clearFavourites());
     navigate("/signup");
   };
@@ -1513,12 +1510,12 @@ const SMiniNav = () => {
     sethoverClothingMenu(false);
     const encodedTitleName = encodeURIComponent(titleName);
     dispatch(setMinPrice(0));
-        dispatch(setMaxPrice(1000));
-        dispatch(applyFilters());
+    dispatch(setMaxPrice(1000));
+    dispatch(applyFilters());
     navigate(
       `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
     );
-    
+
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -1532,11 +1529,11 @@ const SMiniNav = () => {
   ) => {
     sethoverMegaMenu(false);
     sethoverClothingMenu(false);
-    const encodedTitleName = encodeURIComponent(titleName); 
+    const encodedTitleName = encodeURIComponent(titleName);
     const encodedLabel = encodeURIComponent(labelName);
     dispatch(setMinPrice(0));
-        dispatch(setMaxPrice(1000));
-        dispatch(applyFilters());
+    dispatch(setMaxPrice(1000));
+    dispatch(applyFilters());
     navigate(
       `/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&label=${encodedLabel}`
     );
@@ -1562,15 +1559,13 @@ const SMiniNav = () => {
         handleNameCategories(clothingCategory.name, clothingCategory.id);
       }
     }
-    if (
-      link.name === "Return Gifts"
-    ) {
+    if (link.name === "Return Gifts") {
       navigate("/shop");
-    }else if( link.name === "Sale" ){
+    } else if (link.name === "Sale") {
       navigate("/sales");
-    }else if(link.name === "australia Made"){
+    } else if (link.name === "australia Made") {
       navigate("/australia-made");
-    }else if(link.name === "24 Hour production"){
+    } else if (link.name === "24 Hour production") {
       navigate("/hour-production");
     }
   };
@@ -1586,71 +1581,103 @@ const SMiniNav = () => {
       toast.error("Please enter a search term");
       return;
     }
+    navigate(`/search?search=${inputValue}`);
     setInputValue(inputValue.trim());
     dispatch(setMinPrice(0));
-        dispatch(setMaxPrice(1000));
-        dispatch(applyFilters());
-      navigate(`/search?search=${inputValue}`);
-      setInputValue("");
+    dispatch(setMaxPrice(1000));
+    dispatch(applyFilters());
   };
   const [coupenModel, setCoupenModel] = useState(false);
-  const [coupen, setCoupen] = useState("");
-  const [discount,setDiscount] = useState("");
+const [coupons, setCoupons] = useState([]);
+const [copiedCoupon, setCopiedCoupon] = useState("");
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-  const [coupenLoading,setCoupenLoading] = useState(false)
-  const fetchCurrentCoupon = async () => {
-    try {
-      setCoupenLoading(true)
-      const response = await fetch(`${API_BASE}/api/coupen/get`);
-      const data = await response.json();
-      if(response.ok){
-        setCoupen(data[0].coupen);
-        setDiscount(data[0].discount);
-        setCoupenLoading(false)
-      }
-      setCoupenLoading(false)
-      
-    } catch (error) {
-      setCoupenLoading(false)
-      console.error('Error fetching current coupon:', error);
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const [coupenLoading, setCoupenLoading] = useState(false);
+
+const fetchCurrentCoupon = async () => {
+  try {
+    setCoupenLoading(true);
+    const response = await fetch(`${API_BASE}/api/coupen/get`);
+    const data = await response.json();
+    if (response.ok && data.length > 0) {
+      setCoupons(data);
+      setCoupenLoading(false);
+    } else {
+      setCoupons([]);
+      setCoupenLoading(false);
     }
-  };
+  } catch (error) {
+    setCoupenLoading(false);
+    setCoupons([]);
+    console.error("Error fetching current coupon:", error);
+  }
+};
   return (
     <>
       <div className="bg-line">
         {coupenModel && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">
-                🎁 Get Your Coupon!
-              </h2>
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
+      <h2 className="text-xl font-semibold text-gray-800">
+        🎁 Exclusive Offers!
+      </h2>
+      
+      {coupenLoading ? (
+        <div className="space-y-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      ) : coupons.length > 0 ? (
+        <div className="space-y-3">
+          {coupons.map((coupon, index) => (
+            <div 
+              key={coupon._id} 
+              className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
+            >
               <p className="text-lg font-bold text-blue-600">
-                {coupenLoading ? "Loading..." : coupen ? coupen :"No Coupen available"}
+                {coupon.coupen}
               </p>
-              <p className="text-sm text-gray-600">
-                Add this coupon at checkout to enjoy{" "}
-                 <strong>{coupenLoading ? "Loading..." : discount ? discount +"%": "No Discount"}</strong>.
-                {coupen &&<p className="text-blue-600 block cursor-pointer" onClick={() =>{
-                  navigator.clipboard.writeText(coupen)
-                  toast.success("Copied to clipboard")
-                }} >Copy Coupen</p>}
+              <p className="text-sm text-gray-600 mb-2">
+                Get <strong>{coupon.discount}% OFF</strong> on your order
               </p>
-              <button
-                onClick={() => setCoupenModel(false)}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
+              <p
+                className="text-blue-600 text-sm cursor-pointer hover:underline"
+                onClick={() => {
+                  navigator.clipboard.writeText(coupon.coupen);
+                  toast.success(`${coupon.coupen} copied!`);
+                }}
               >
-                Got It
-              </button>
+                📋 Copy Coupon
+              </p>
             </div>
-          </div>
-        )}
+          ))}
+          
+          <p className="text-xs text-gray-500 mt-3">
+            Use any code at checkout • Valid on all products
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-lg text-gray-600">No Coupons Available</p>
+          <p className="text-sm text-gray-500">Check back soon for deals!</p>
+        </div>
+      )}
+      
+      <button
+        onClick={() => setCoupenModel(false)}
+        className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
+      >
+        Got It
+      </button>
+    </div>
+  </div>
+)}
 
         <div className="flex items-center justify-between gap-6 pt-2 text-white Mycontainer">
-          <Link to={"/"}>
+          <Link to={"/"} className="relative z-10">
             <img
               src={supermerch}
-              className="object-contain w-24 ml-8 lg:w-36"
+              className="object-contain w-24 pl-8 lg:w-36"
               alt=""
             />
           </Link>
@@ -1663,7 +1690,7 @@ const SMiniNav = () => {
               className="w-full text-black bg-transparent outline-none"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  handleSearch(); 
+                  handleSearch();
                 }
               }}
             />
@@ -1677,10 +1704,10 @@ const SMiniNav = () => {
               {totalQuantity > 0 && (
                 <span
                   className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${
-                    totalQuantity > 999 ? "text-[10px]" : "text-[11px]"
+                    totalQuantity > 999 ? "text-[9px]" : "text-[11px]"
                   } rounded-full w-6 h-6 flex items-center justify-center`}
                 >
-                  {totalQuantity > 999 ? "+999" : totalQuantity}
+                  {totalQuantity}
                 </span>
               )}
               <IoCartOutline className="text-3xl text-customBlue" />
@@ -1758,9 +1785,9 @@ const SMiniNav = () => {
               </div>
             )}
           </div>
-          <nav className="py-3 text-white lg:px-4">
+          <nav className="py-3 z-20 text-white lg:px-4">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <div className="flex items-center justify-between">
+              <div className="flex  items-center justify-between">
                 <SheetTrigger>
                   <div
                     onClick={toggleNavbar}
@@ -2303,10 +2330,13 @@ const SMiniNav = () => {
           <h1 className="text-sm font-medium lg:text-lg md:text-lg text-smallHeader">
             Get Discount Using Coupon
           </h1>
-          <div onClick={()=>{
-            setCoupenModel(true)
-            fetchCurrentCoupon()
-            }} className="flex items-center gap-2 px-4 py-1 border-2 border-smallHeader">
+          <div
+            onClick={() => {
+              setCoupenModel(true);
+              fetchCurrentCoupon();
+            }}
+            className="flex items-center gap-2 px-4 py-1 border-2 border-smallHeader"
+          >
             <IoPricetagSharp className="text-sm font-bold lg:text-lg md:text-lg text-smallHeader" />
             <button className="text-sm font-bold uppercase lg:text-lg md:text-lg text-smallHeader">
               Get Code

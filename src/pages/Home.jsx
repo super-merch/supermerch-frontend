@@ -92,30 +92,49 @@ const Home = () => {
         setLoading(false)
     }
 }
-const [coupen, setCoupen] = useState('')
-const [discount, setDiscount] = useState('')
+const [coupons, setCoupons] = useState([])
+const [selectedCoupon, setSelectedCoupon] = useState(null)
 const [coupenLoading, setCoupenLoading] = useState(false)
 const API_BASE = import.meta.env.VITE_BACKEND_URL
-  const fetchCurrentCoupon = async () => {
-    try {
-      setCoupenLoading(true)
-      const response = await fetch(`${API_BASE}/api/coupen/get`);
-      const data = await response.json();
-      if(response.ok){
-        setCoupen(data[0].coupen);
-        setDiscount(data[0].discount);
-        setCoupenLoading(false)
-      }
-      setCoupenLoading(false)
+
+const fetchCurrentCoupon = async () => {
+  try {
+    setCoupenLoading(true)
+    const response = await fetch(`${API_BASE}/api/coupen/get`);
+    const data = await response.json();
+    if(response.ok && data.length > 0){
+      setCoupons(data);
       
-    } catch (error) {
+      // Strategy 1: Show the coupon with highest discount
+      const bestCoupon = data.reduce((best, current) => 
+        current.discount > best.discount ? current : best
+      );
+      
+      // Strategy 2: Show a random coupon
+      // const randomCoupon = data[Math.floor(Math.random() * data.length)];
+      
+      // Strategy 3: Show the first coupon
+      // const firstCoupon = data[0];
+      
+      setSelectedCoupon(bestCoupon);
       setCoupenLoading(false)
-      console.error('Error fetching current coupon:', error);
+    } else {
+      setCoupons([]);
+      setSelectedCoupon(null);
+      setCoupenLoading(false)
     }
-  };
-  useEffect(() => {
-    fetchCurrentCoupon()
-  }, [])
+    
+  } catch (error) {
+    setCoupenLoading(false)
+    setCoupons([]);
+    setSelectedCoupon(null);
+    console.error('Error fetching current coupon:', error);
+  }
+};
+
+useEffect(() => {
+  fetchCurrentCoupon()
+}, [])
 
 
   return (
@@ -141,38 +160,52 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL
       
 
       {discountModal &&
-        <motion.div
-          className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4">
-          <motion.div
-            initial={{ opacity: 0.2, z: 50 }}
-            transition={{ duration: 0.3 }}
-            whileInView={{ opacity: 1, z: 0 }}
-            viewport={{ once: true }}
-            className='flex w-[90%] md:max-w-[30%]  sm:w-full text-gray-800 justify-center bg-white rounded-[15px] relative'>
-            {/* <div className="min-h-full w-full">
-              <img src="https://img66.anypromo.com/frontimg/2022/Popup/exit-intent-lft-1.svg"
-                className="h-full rounded-tl-2xl rounded-bl-2xl w-full object-cover" alt="" />
-            </div> */}
-            {/* <div className="bg-[url(https://img66.anypromo.com/frontimg/2022/Popup/exit-intent-lft-1.svg)] bg-cover bg-no-repeat" /> */}
-                <p className="absolute max-sm:top-[0] right-[20px] top-4 text-lg font-semibold cursor-pointer" onClick={() => setDiscountModal(false)}>x</p>
-            <div className="p-5 flex justify-center flex-col text-center space-y-3">
-              <div className="relative">
-              </div>
-              <h1 className="text-[18px] font-medium to-gray-200">We know you will be happy when you get</h1>
-              <p className="text-2xl font-extrabold text-[#5D8EF9]">
-                {coupenLoading ? 'Loading...' : discount ? discount+"% OFF" : "No Discount Available"}
+  <motion.div
+    className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4">
+    <motion.div
+      initial={{ opacity: 0.2, z: 50 }}
+      transition={{ duration: 0.3 }}
+      whileInView={{ opacity: 1, z: 0 }}
+      viewport={{ once: true }}
+      className='flex w-[90%] md:max-w-[30%] sm:w-full text-gray-800 justify-center bg-white rounded-[15px] relative'>
+      <p className="absolute max-sm:top-[0] right-[20px] top-4 text-lg font-semibold cursor-pointer" onClick={() => setDiscountModal(false)}>x</p>
+      <div className="p-5 flex justify-center flex-col text-center space-y-3">
+        <div className="relative">
+        </div>
+        <h1 className="text-[18px] font-medium to-gray-200">We know you will be happy when you get</h1>
+        <p className="text-2xl font-extrabold text-[#5D8EF9]">
+          {coupenLoading ? 'Loading...' : selectedCoupon ? selectedCoupon.discount + "% OFF" : "No Discount Available"}
+        </p>
+        
+        {/* Show selected coupon or available coupons info */}
+        {selectedCoupon && !coupenLoading ? (
+          <div className="space-y-2">
+            <p className="text-[#474747] font-medium p-2 text-sm bg-[#EAEAEA] rounded-md">
+              Use Code: <span className="text-sm font-semibold">{selectedCoupon.coupen}</span>
+            </p>
+            
+            {/* Show additional coupons available */}
+            {coupons.length > 1 && (
+              <p className="text-xs text-gray-500">
+                +{coupons.length - 1} more coupon{coupons.length - 1 > 1 ? 's' : ''} available at checkout
               </p>
-              {/* Set coupon here */}
-              <p className="text-[#474747] font-medium p-2 text-sm bg-[#EAEAEA] rounded-md">Use Code: <span className="text-sm font-semibold">{coupenLoading ? 'Loading...' : coupen || "No Coupen Available"}</span></p>
-              <button onClick={() => {
-                setDiscountModal(false)
-                setEmailModal(true)
-              }} className='w-full bg-smallHeader px-2 py-1 mt-2 rounded-md font-semibold text-sm text-white'>Subscribe</button>
-              <p className="text-sm font-medium text-gray-500">Exclusions may apply.</p>
-            </div>
-          </motion.div>
-        </motion.div>
-       } 
+            )}
+          </div>
+        ) : (
+          <p className="text-[#474747] font-medium p-2 text-sm bg-[#EAEAEA] rounded-md">
+            {coupenLoading ? 'Loading...' : "No Coupon Available"}
+          </p>
+        )}
+        
+        <button onClick={() => {
+          setDiscountModal(false)
+          setEmailModal(true)
+        }} className='w-full bg-smallHeader px-2 py-1 mt-2 rounded-md font-semibold text-sm text-white'>Subscribe</button>
+        <p className="text-sm font-medium text-gray-500">Exclusions may apply.</p>
+      </div>
+    </motion.div>
+  </motion.div>
+}
       {emailModal && (
         <motion.div
           className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4"

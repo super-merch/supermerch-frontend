@@ -36,6 +36,8 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
   useEffect(() => {
     if (activeTab === "Stationery") {
       fetchClothingProducts();
+      getAll24HourProduction();
+    getAllAustralia();
     }
   }, [activeTab]);
   const [productionIds, setProductionIds] = useState(new Set());
@@ -90,10 +92,10 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
           console.error("Error fetching Australia products:", error);
         }
       };
-      useEffect(() => {
-        getAll24HourProduction();
-        getAllAustralia();
-      }, []);
+      // useEffect(() => {
+      //   getAll24HourProduction();
+      //   getAllAustralia();
+      // }, []);
 
   const fetchClothingProducts = async () => {
     setLoading(true);

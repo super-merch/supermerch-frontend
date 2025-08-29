@@ -123,7 +123,7 @@ const CartComponent = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
-  const gstAmount = finalDiscountedAmount * 0.1; // 10%
+  const gstAmount = (finalDiscountedAmount + shippingCharges ) * 0.1; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges;
 
   const [uploadedImage, setUploadedImage] = useState("/drag.png");

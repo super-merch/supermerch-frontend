@@ -24,10 +24,11 @@ const AboutSliders = () => {
     },
     {
       id: 3,
-      name: "Pens",
-      image: "/pens.jpg",
-      url:'Spromotional?categoryName=Writing&category=N-07&label=Pens'
+      name: "Corporate Wear",
+      image: "/corpShirt.jpg",
+      url:'Spromotional?categoryName=Corporate%20Wear&category=B-13&label=Top'
     },
+    
     {
       id: 4,
       name: "Headwear",
@@ -43,14 +44,14 @@ const AboutSliders = () => {
     {
       id: 6,
       name: "Bags",
-      image: "bags.jfif",
+      image: "/bags.jfif",
       url:'Spromotional?categoryName=Bags&category=A'
     },
     {
       id: 7,
-      name: "Shirts",
-      image: "/shirts.jfif",
-      url:'Spromotional?categoryName=Corporate%20Wear&category=B-13&label=Top'
+      name: "Pens",
+      image: "/pens.jpg",
+      url:'Spromotional?categoryName=Writing&category=N-07&label=Pens'
     },
     {
       id: 8,
@@ -73,7 +74,7 @@ const AboutSliders = () => {
     {
       id: 11,
       name: "Food",
-      image: "/food.jfif",
+      image: "/choco.jpg",
       url:'Spromotional?categoryName=Food&category=E'
     },
     {
@@ -131,12 +132,12 @@ const AboutSliders = () => {
                   <div className='absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300'></div>
                 </div>
                 <div className='p-3 bg-white'>
-                  <h3 className='text-sm font-semibold md:text-lg text-gray-800 group-hover:text-blue-600 transition-colors duration-300'>
+                  <h3 className='text-lg font-semibold md:text-xl text-gray-800 group-hover:text-blue-600 transition-colors duration-300'>
                     {category.name}
                   </h3>
-                  <p className='text-xs md:text-sm text-gray-500 mt-1'>
+                  {/* <p className='text-xs md:text-sm text-gray-500 mt-1'>
                     Explore {category.name.toLowerCase()}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>

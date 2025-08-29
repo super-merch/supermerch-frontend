@@ -85,61 +85,61 @@ const SearchCard = () => {
     backendUrl,
   } = useContext(AppContext);
   const [productionIds, setProductionIds] = useState(new Set());
-    const getAll24HourProduction = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          const productIds = data.map((item) => Number(item.id));
-          setProductionIds(new Set(productIds));
-          console.log("Fetched 24 Hour Production products:", productionIds);
-        } else {
-          console.error(
-            "Failed to fetch 24 Hour Production products:",
-            response.status
-          );
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        console.error("Error fetching 24 Hour Production products:", error);
-      }
-    };
-    const [australiaIds, setAustraliaIds] = useState(new Set());
-    const getAllAustralia = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
         );
-        if (response.ok) {
-          const data = await response.json();
-          // Ensure consistent data types (convert to strings)
-          const productIds = data.map((item) => Number(item.id));
-          setAustraliaIds(new Set(productIds));
-          console.log("Fetched Australia products:", data);
-        } else {
-          console.error("Failed to fetch Australia products:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching Australia products:", error);
       }
-    };
-    useEffect(() => {
-      getAll24HourProduction();
-      getAllAustralia();
-    }, []);
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  // useEffect(() => {
+  //   getAll24HourProduction();
+  //   getAllAustralia();
+  // }, []);
 
   // Get Redux filter state
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
@@ -367,6 +367,8 @@ const SearchCard = () => {
 
   // Fetch products when page or sort changes (only when no price filter is active)
   useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
     if (searchParam && !isPriceFilterActive) {
       fetchSearchedProducts(searchParam, currentPage, sortOption).then(
         (response) => {
@@ -480,7 +482,8 @@ const SearchCard = () => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          <SideBar2 />
+          {currentPageProducts.length > 0 && <SideBar2 />}
+          {(searchLoading || isFiltering) && <SideBar2 />}
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
@@ -501,17 +504,23 @@ const SearchCard = () => {
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
+
               <div className="relative" ref={dropdownRef}>
                 <button
-                  className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
+                  className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2 rounded"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  aria-haspopup="true"
+                  aria-expanded={isDropdownOpen}
                 >
-                  {sortOption === "lowToHigh"
+                  {/* Show Relevency as default/when selected, otherwise show the chosen price sort */}
+                  {sortOption === "relevency" || !sortOption
+                    ? "Relevency"
+                    : sortOption === "lowToHigh"
                     ? "Lowest to Highest"
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
-                    : "Lowest to Highest"}
-                  <span className="">
+                    : "Relevency"}
+                  <span>
                     {isDropdownOpen ? (
                       <IoIosArrowUp className="text-black" />
                     ) : (
@@ -519,18 +528,27 @@ const SearchCard = () => {
                     )}
                   </span>
                 </button>
+
+                {/* Dropdown only contains price sorts (no relevency option here) */}
                 {isDropdownOpen && (
-                  <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
+                  <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2 rounded">
                     <button
-                      onClick={() => handleSortSelection("lowToHigh")}
+                      onClick={() => {
+                        handleSortSelection("lowToHigh");
+                        setIsDropdownOpen(false);
+                      }}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                         sortOption === "lowToHigh" ? "bg-gray-100" : ""
                       }`}
                     >
                       Lowest to Highest
                     </button>
+
                     <button
-                      onClick={() => handleSortSelection("highToLow")}
+                      onClick={() => {
+                        handleSortSelection("highToLow");
+                        setIsDropdownOpen(false);
+                      }}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                         sortOption === "highToLow" ? "bg-gray-100" : ""
                       }`}
@@ -607,11 +625,11 @@ const SearchCard = () => {
             </div>
           </div>
 
-          {filterError && (
+          {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
               <p className="text-red-700">{filterError}</p>
             </div>
-          )}
+          )} */}
 
           <div
             className={`${
@@ -723,67 +741,67 @@ const SearchCard = () => {
                           </div>
                         )}
                         <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                        {(productionIds.has(product.meta.id) ||
-                          productionIds.has(String(product.meta.id))) && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                            {/* small clock SVG (no extra imports) */}
-                            <svg
-                              className="w-3 h-3 flex-shrink-0"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden
-                            >
-                              <path
-                                d="M12 7v5l3 1"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <circle
-                                cx="12"
-                                cy="12"
-                                r="8"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            <span>24Hr Production</span>
-                          </span>
-                        )}
+                          {(productionIds.has(product.meta.id) ||
+                            productionIds.has(String(product.meta.id))) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
+                              {/* small clock SVG (no extra imports) */}
+                              <svg
+                                className="w-3 h-3 flex-shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M12 7v5l3 1"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <circle
+                                  cx="12"
+                                  cy="12"
+                                  r="8"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              <span>24Hr Production</span>
+                            </span>
+                          )}
 
-                        {(australiaIds.has(product.meta.id) ||
-                          australiaIds.has(String(product.meta.id))) && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                            {/* simple flag/triangle SVG */}
-                            <svg
-                              className="w-3 h-3 flex-shrink-0"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden
-                            >
-                              <path
-                                d="M3 6h10l-2 3 2 3H3V6z"
-                                fill="currentColor"
-                              />
-                              <rect
-                                x="3"
-                                y="4"
-                                width="1"
-                                height="16"
-                                rx="0.5"
-                                fill="currentColor"
-                                opacity="0.9"
-                              />
-                            </svg>
-                            <span>Australia Made</span>
-                          </span>
-                        )}
-                      </div>
+                          {(australiaIds.has(product.meta.id) ||
+                            australiaIds.has(String(product.meta.id))) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
+                              {/* simple flag/triangle SVG */}
+                              <svg
+                                className="w-3 h-3 flex-shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M3 6h10l-2 3 2 3H3V6z"
+                                  fill="currentColor"
+                                />
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="1"
+                                  height="16"
+                                  rx="0.5"
+                                  fill="currentColor"
+                                  opacity="0.9"
+                                />
+                              </svg>
+                              <span>Australia Made</span>
+                            </span>
+                          )}
+                        </div>
 
                         {/* Favourite button - moved to top-right of image */}
                         <div className="absolute top-2 right-2 z-20">
@@ -945,46 +963,111 @@ const SearchCard = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="pt-10 text-xl text-center text-red-900">
-                  Please search for other products or adjust your filters.
+                  No products found. Explore our categories or refine your
+                  search to discover more options
                 </p>
               </div>
             )}
           </div>
 
-          {(paginationTotalPages > 1 || hasMoreProducts) && (
-            <div className="flex items-center justify-center mt-16 space-x-2 pagination">
-              {/* Previous Button */}
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center w-10 h-10 border rounded-full"
-              >
-                <IoMdArrowBack className="text-xl" />
-              </button>
+          {(paginationTotalPages > 1 || hasMoreProducts) &&
+            currentPageProducts.length > 0 && (
+              <div className="flex items-center justify-center mt-16 space-x-2 pagination">
+                {/* Previous Button */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="flex items-center justify-center w-10 h-10 border rounded-full"
+                >
+                  <IoMdArrowBack className="text-xl" />
+                </button>
 
-              {/* Always show Page 1 */}
-              <button
-                onClick={() => setCurrentPage(1)}
-                className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                  currentPage === 1
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-              >
-                1
-              </button>
+                {/* Always show Page 1 */}
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                    currentPage === 1
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                >
+                  1
+                </button>
 
-              {/* Show Page 2 when there might be more products */}
-              {paginationTotalPages === 1 && hasMoreProducts && (
+                {/* Show Page 2 when there might be more products */}
+                {paginationTotalPages === 1 && hasMoreProducts && (
+                  <button
+                    onClick={() => {
+                      setCurrentPage(2);
+                      if (isPriceFilterActive) {
+                        fetchMoreFilteredProducts();
+                      } else {
+                        // For regular search results
+                        fetchSearchedProducts(searchParam, 2, sortOption).then(
+                          (response) => {
+                            if (
+                              response &&
+                              response.data &&
+                              response.data.length === 0
+                            ) {
+                              setHasMoreProducts(false);
+                            }
+                          }
+                        );
+                      }
+                    }}
+                    className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                      currentPage === 2
+                        ? "bg-blue-600 text-white"
+                        : "hover:bg-gray-200"
+                    }`}
+                  >
+                    2
+                  </button>
+                )}
+
+                {/* Show remaining pages (if any) */}
+                {paginationTotalPages > 1 &&
+                  getPaginationButtons(
+                    currentPage,
+                    paginationTotalPages,
+                    maxVisiblePages
+                  )
+                    .filter((page) => page > 1) // Skip page 1 since we always show it
+                    .map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-gray-200"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                {/* Next Button */}
                 <button
                   onClick={() => {
-                    setCurrentPage(2);
-                    if (isPriceFilterActive) {
-                      fetchMoreFilteredProducts();
-                    } else {
-                      // For regular search results
-                      fetchSearchedProducts(searchParam, 2, sortOption).then(
-                        (response) => {
+                    const nextPage = Math.min(
+                      currentPage + 1,
+                      paginationTotalPages
+                    );
+                    setCurrentPage(nextPage);
+                    if (nextPage === paginationTotalPages && hasMoreProducts) {
+                      if (isPriceFilterActive) {
+                        fetchMoreFilteredProducts();
+                      } else {
+                        // For regular search results
+                        fetchSearchedProducts(
+                          searchParam,
+                          nextPage + 1,
+                          sortOption
+                        ).then((response) => {
                           if (
                             response &&
                             response.data &&
@@ -992,80 +1075,19 @@ const SearchCard = () => {
                           ) {
                             setHasMoreProducts(false);
                           }
-                        }
-                      );
+                        });
+                      }
                     }
                   }}
-                  className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                    currentPage === 2
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  2
-                </button>
-              )}
-
-              {/* Show remaining pages (if any) */}
-              {paginationTotalPages > 1 &&
-                getPaginationButtons(
-                  currentPage,
-                  paginationTotalPages,
-                  maxVisiblePages
-                )
-                  .filter((page) => page > 1) // Skip page 1 since we always show it
-                  .map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                        currentPage === page
-                          ? "bg-blue-600 text-white"
-                          : "hover:bg-gray-200"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-
-              {/* Next Button */}
-              <button
-                onClick={() => {
-                  const nextPage = Math.min(
-                    currentPage + 1,
-                    paginationTotalPages
-                  );
-                  setCurrentPage(nextPage);
-                  if (nextPage === paginationTotalPages && hasMoreProducts) {
-                    if (isPriceFilterActive) {
-                      fetchMoreFilteredProducts();
-                    } else {
-                      // For regular search results
-                      fetchSearchedProducts(
-                        searchParam,
-                        nextPage + 1,
-                        sortOption
-                      ).then((response) => {
-                        if (
-                          response &&
-                          response.data &&
-                          response.data.length === 0
-                        ) {
-                          setHasMoreProducts(false);
-                        }
-                      });
-                    }
+                  disabled={
+                    currentPage === paginationTotalPages && !hasMoreProducts
                   }
-                }}
-                disabled={
-                  currentPage === paginationTotalPages && !hasMoreProducts
-                }
-                className="flex items-center justify-center w-10 h-10 border rounded-full"
-              >
-                <IoMdArrowForward className="text-xl" />
-              </button>
-            </div>
-          )}
+                  className="flex items-center justify-center w-10 h-10 border rounded-full"
+                >
+                  <IoMdArrowForward className="text-xl" />
+                </button>
+              </div>
+            )}
         </div>
       </div>
       {isModalOpen && selectedProduct && (

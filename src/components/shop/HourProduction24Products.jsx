@@ -61,6 +61,63 @@ const HourProduction24Products = () => {
   const [totalFilteredPages, setTotalFilteredPages] = useState(0);
   const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
 
+  const [productionIds, setProductionIds] = useState(new Set());
+    const getAll24HourProduction = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const productIds = data.map((item) => Number(item.id));
+          setProductionIds(new Set(productIds));
+          console.log("Fetched 24 Hour Production products:", productionIds);
+        } else {
+          console.error(
+            "Failed to fetch 24 Hour Production products:",
+            response.status
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching 24 Hour Production products:", error);
+      }
+    };
+    const [australiaIds, setAustraliaIds] = useState(new Set());
+    const getAllAustralia = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          // Ensure consistent data types (convert to strings)
+          const productIds = data.map((item) => Number(item.id));
+          setAustraliaIds(new Set(productIds));
+          console.log("Fetched Australia products:", data);
+        } else {
+          console.error("Failed to fetch Australia products:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching Australia products:", error);
+      }
+    };
+    useEffect(() => {
+      getAll24HourProduction();
+      getAllAustralia();
+    }, []);
+
   // State for managing products and pagination
   const [allProducts, setAllProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -546,11 +603,7 @@ const HourProduction24Products = () => {
                       onMouseLeave={() => setCardHover(null)}
                     >
                       {/* Australia Made Badge */}
-                      <div className="absolute top-1 sm:top-2 left-1 sm:left-2 z-20">
-                        <span className="px-1.5 py-0.5 sm:py-1 text-xs font-semibold text-white bg-green-600 rounded">
-                          🇦🇺 24Hr Production
-                        </span>
-                      </div>
+                      
 
                       {discountPct > 0 && (
                         <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
@@ -564,6 +617,68 @@ const HourProduction24Products = () => {
                           )}
                         </div>
                       )}
+                      <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
+                        {(productionIds.has(product.meta.id) ||
+                          productionIds.has(String(product.meta.id))) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
+                            {/* small clock SVG (no extra imports) */}
+                            <svg
+                              className="w-3 h-3 flex-shrink-0"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden
+                            >
+                              <path
+                                d="M12 7v5l3 1"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="8"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            <span>24Hr Production</span>
+                          </span>
+                        )}
+
+                        {(australiaIds.has(product.meta.id) ||
+                          australiaIds.has(String(product.meta.id))) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
+                            {/* simple flag/triangle SVG */}
+                            <svg
+                              className="w-3 h-3 flex-shrink-0"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden
+                            >
+                              <path
+                                d="M3 6h10l-2 3 2 3H3V6z"
+                                fill="currentColor"
+                              />
+                              <rect
+                                x="3"
+                                y="4"
+                                width="1"
+                                height="16"
+                                rx="0.5"
+                                fill="currentColor"
+                                opacity="0.9"
+                              />
+                            </svg>
+                            <span>Australia Made</span>
+                          </span>
+                        )}
+                      </div>
 
                       <div className="absolute top-2 right-2 z-20">
                         <div

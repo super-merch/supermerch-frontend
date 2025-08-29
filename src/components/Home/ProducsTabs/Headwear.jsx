@@ -86,14 +86,16 @@ const Headwear = ({ activeTab }) => {
       console.error("Error fetching Australia products:", error);
     }
   };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
+  // useEffect(() => {
+  //   getAll24HourProduction();
+  //   getAllAustralia();
+  // }, []);
   // Fetch products when tab opens
   useEffect(() => {
     if (activeTab === "Headwear") {
       fetchClothingProducts();
+      getAll24HourProduction();
+    getAllAustralia();
     }
   }, [activeTab]);
 

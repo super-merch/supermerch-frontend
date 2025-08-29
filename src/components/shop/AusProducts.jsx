@@ -124,7 +124,7 @@ const AustraliaProducts = () => {
 
     try {
       const data = await fetchAustraliaProducts(page, itemsPerPage, sortOption);
-      
+
       const validProducts = data.data.filter((product) => {
         const priceGroups = product.product?.prices?.price_groups || [];
         const basePrice = priceGroups.find((group) => group?.base_price) || {};
@@ -148,7 +148,11 @@ const AustraliaProducts = () => {
   };
 
   // Function to fetch and filter ALL Australia products with price range
-  const fetchAndFilterAllAustraliaProducts = async (minPrice, maxPrice, sortOption) => {
+  const fetchAndFilterAllAustraliaProducts = async (
+    minPrice,
+    maxPrice,
+    sortOption
+  ) => {
     setIsFiltering(true);
     setFilterError("");
 
@@ -157,13 +161,15 @@ const AustraliaProducts = () => {
       const data = await fetchAllAustraliaProducts(sortOption);
 
       if (data && data.length > 0) {
-        const validProducts = data.filter((item) => {
-          if (!item.product || item.error) return false;
-          const product = item.product;
-          const price = getRealPrice(product);
-          if (price <= 0) return false;
-          return price >= minPrice && price <= maxPrice;
-        }).map(item => item.product);
+        const validProducts = data
+          .filter((item) => {
+            if (!item.product || item.error) return false;
+            const product = item.product;
+            const price = getRealPrice(product);
+            if (price <= 0) return false;
+            return price >= minPrice && price <= maxPrice;
+          })
+          .map((item) => item.product);
 
         if (validProducts.length > 0) {
           const uniqueProducts = Array.from(
@@ -187,9 +193,7 @@ const AustraliaProducts = () => {
             Math.ceil(sortedProducts.length / itemsPerPage)
           );
         } else {
-          setFilterError(
-            "No products found in the specified price range."
-          );
+          setFilterError("No products found in the specified price range.");
         }
       } else {
         setFilterError("No products found in the specified price range");
@@ -201,6 +205,62 @@ const AustraliaProducts = () => {
       setIsFiltering(false);
     }
   };
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   // Handle price filter changes
   useEffect(() => {
@@ -294,7 +354,6 @@ const AustraliaProducts = () => {
 
   // Handle page changes
   useEffect(() => {
-    
     if (currentPage > 0 && !isPriceFilterActive) {
       fetchAustraliaProductsPaginated(currentPage, sortOption);
     }
@@ -381,11 +440,10 @@ const AustraliaProducts = () => {
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         {/* Price Filter Sidebar */}
         <div className="lg:w-[25%]">
-                  <Sidebar filter={true} />
-                </div>
+          <Sidebar filter={true} />
+        </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
-
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
             <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {/* Placeholder for search if needed later */}
@@ -453,7 +511,10 @@ const AustraliaProducts = () => {
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
               <span className="font-semibold text-brand">
-                {!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}
+                {!isLoading &&
+                  !skeletonLoading &&
+                  !isFiltering &&
+                  getTotalCount()}
               </span>
               <p className="">
                 {isLoading || isFiltering
@@ -479,7 +540,7 @@ const AustraliaProducts = () => {
                 : ""
             }`}
           >
-            {(showSkeleton || isLoading || isFiltering)  ? (
+            {showSkeleton || isLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
                 <div
                   key={index}
@@ -546,11 +607,6 @@ const AustraliaProducts = () => {
                       onMouseLeave={() => setCardHover(null)}
                     >
                       {/* Australia Made Badge */}
-                      <div className="absolute top-1 sm:top-2 left-1 z-20">
-                        <span className="px-1.5 py-0.5 sm:py-1 text-xs font-semibold text-white bg-green-600 rounded">
-                          🇦🇺 Australia Made
-                        </span>
-                      </div>
 
                       {discountPct > 0 && (
                         <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
@@ -564,6 +620,68 @@ const AustraliaProducts = () => {
                           )}
                         </div>
                       )}
+                      <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
+                        {(productionIds.has(product.meta.id) ||
+                          productionIds.has(String(product.meta.id))) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
+                            {/* small clock SVG (no extra imports) */}
+                            <svg
+                              className="w-3 h-3 flex-shrink-0"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden
+                            >
+                              <path
+                                d="M12 7v5l3 1"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="8"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            <span>24Hr Production</span>
+                          </span>
+                        )}
+
+                        {(australiaIds.has(product.meta.id) ||
+                          australiaIds.has(String(product.meta.id))) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
+                            {/* simple flag/triangle SVG */}
+                            <svg
+                              className="w-3 h-3 flex-shrink-0"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden
+                            >
+                              <path
+                                d="M3 6h10l-2 3 2 3H3V6z"
+                                fill="currentColor"
+                              />
+                              <rect
+                                x="3"
+                                y="4"
+                                width="1"
+                                height="16"
+                                rx="0.5"
+                                fill="currentColor"
+                                opacity="0.9"
+                              />
+                            </svg>
+                            <span>Australia Made</span>
+                          </span>
+                        )}
+                      </div>
 
                       <div className="absolute top-2 right-2 z-20">
                         <div
@@ -628,7 +746,8 @@ const AustraliaProducts = () => {
                                           .replace("black", "#000000")
                                           .replace("white", "#ffffff")
                                           .replace("brown", "#92400e")
-                                          .replace(" ", "") || color.toLowerCase(),
+                                          .replace(" ", "") ||
+                                        color.toLowerCase(),
                                     }}
                                     className="w-4 h-4 rounded-full border border-slate-900"
                                   />
@@ -693,7 +812,11 @@ const AustraliaProducts = () => {
                 <IoMdArrowBack className="text-xl" />
               </button>
 
-              {getPaginationButtons(currentPage, totalPages, maxVisiblePages).map((page) => (
+              {getPaginationButtons(
+                currentPage,
+                totalPages,
+                maxVisiblePages
+              ).map((page) => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}

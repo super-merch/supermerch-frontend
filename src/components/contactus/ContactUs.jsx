@@ -28,7 +28,7 @@ const ContactUs = () => {
             <p>Home</p>
             <MdKeyboardArrowRight className="text-xl" />
           </Link>
-         
+
           <p>Contact Us</p>
         </div>
       </div>
@@ -42,12 +42,27 @@ const ContactUs = () => {
           {serviceCards.map((card, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 p-6 border-4 border-smallHeader rounded-sm hover:shadow-xl transition-shadow cursor-pointer"
+              tabIndex={0}
+              role="button"
+              className="flex items-start gap-4 p-5 bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-smallHeader/30 cursor-pointer"
+              aria-label={`service-${index}`}
             >
-              <div className="text-2xl text-smallHeader ">{card.icon}</div>
-              <span className="font-medium text-base text-brand">
-                {card.title}
-              </span>
+              {/* icon in a soft circular background — keeps it subtle */}
+              <div className="flex-none w-12 h-12 rounded-full bg-smallHeader/10 flex items-center justify-center text-2xl text-smallHeader">
+                {card.icon}
+              </div>
+
+              {/* title + optional description */}
+              <div className="flex-1">
+                <span className="block text-base font-semibold text-gray-800">
+                  {card.title}
+                </span>
+                {card.description && (
+                  <p className="mt-1 text-sm text-gray-500">
+                    {card.description}
+                  </p>
+                )}
+              </div>
             </div>
           ))}
         </div>

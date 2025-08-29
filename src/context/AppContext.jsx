@@ -597,7 +597,6 @@ const AppContextProvider = (props) => {
         throw new Error("Unexpected API response structure");
       }
 
-      // Always get exactly 9 products (or less if not enough exist)
       setParamProducts(data);
       setTotalApiPages(data.total_pages);
       setSkeletonLoading(false);

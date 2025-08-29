@@ -254,15 +254,18 @@ const Cards = () => {
             Math.ceil(sortedProducts.length / itemsPerPage)
           );
         } else {
+          setAllFilteredProducts([]);
           setFilterError(
             "No products found in the specified price range. Showing previous results"
           );
         }
       } else {
+        setAllFilteredProducts([]);
         setFilterError("No products found in the specified price range");
       }
     } catch (error) {
       console.error("Error filtering all products:", error);
+      setAllFilteredProducts([])
       setFilterError("Error fetching filtered products. Please try again.");
     } finally {
       setIsFiltering(false);
@@ -321,14 +324,17 @@ const Cards = () => {
             Math.ceil(sortedProducts.length / itemsPerPage)
           );
         } else {
+          setAllFilteredProducts([]);
           setFilterError(
             "No products found in the specified price range. Showing previous results"
           );
         }
       } else {
+        setAllFilteredProducts([]);
         setFilterError("No products found in the specified price range");
       }
     } catch (error) {
+      setAllFilteredProducts([])
       console.error("Error filtering category products:", error);
       setFilterError("Error fetching filtered products. Please try again.");
     } finally {
@@ -1049,11 +1055,11 @@ const Cards = () => {
             </div>
           </div>
 
-          {filterError && (
+          {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
               <p className="text-red-700">{filterError}</p>
             </div>
-          )}
+          )} */}
 
           <div
             className={`${
@@ -1377,7 +1383,7 @@ const Cards = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="pt-10 text-xl text-center text-red-500">
-                  No Product Found
+                  No products found. Explore our categories or refine your search to discover more options
                 </p>
               </div>
             )}
@@ -1385,7 +1391,7 @@ const Cards = () => {
 
           {(totalPages > 1 ||
             (currentPageProducts.length <= itemsPerPage &&
-              hasMoreProducts)) && (
+              hasMoreProducts)) && currentPageProducts.length > 0 && (
             <div className="flex items-center justify-center mt-16 space-x-2 pagination">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

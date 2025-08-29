@@ -25,6 +25,7 @@ import {
 import { AppContext } from "../../context/AppContext";
 import SideBar2 from "./SideBar2";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { toast } from "react-toastify";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {

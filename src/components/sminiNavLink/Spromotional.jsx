@@ -913,11 +913,11 @@ const Spromotional = () => {
             </div>
           </div>
 
-          {filterError && (
+          {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
               <p className="text-red-700">{filterError}</p>
             </div>
-          )}
+          )} */}
 
           <div
             className={`${
@@ -1263,7 +1263,7 @@ const Spromotional = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="pt-10 text-xl text-center text-red-900">
-                  Please search for other products or adjust your filters.
+                  No products found. Explore our categories or refine your search to discover more options
                 </p>
               </div>
             )}

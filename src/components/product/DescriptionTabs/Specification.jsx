@@ -19,7 +19,7 @@ const Specification = ({ single_product, activeTab }) => {
         <p className="text-sm text-gray-500">No specifications available.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {visibleDetails.map((detail, index) => {
+          {visibleDetails.slice(0,5).map((detail, index) => {
             const key = detail?.id ?? detail?.name ?? index;
             if(detail.name == "included packaging" || detail.name == "product dimensions") {
               return
@@ -39,7 +39,7 @@ const Specification = ({ single_product, activeTab }) => {
                 <h3 className="text-base font-semibold text-gray-800 capitalize md:mb-1">
                   {detail?.name ?? `Detail ${index + 1}`}
                 </h3>
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                <p className="text-sm text-gray-700 leading-relaxed capitalize whitespace-pre-line">
                   {content || "—"}
                 </p>
               </div>
