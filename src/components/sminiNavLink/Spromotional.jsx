@@ -39,7 +39,8 @@ import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/Promotional
 import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
 import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
 import { toast } from "react-toastify";
-import { megaMenu, megaMenuClothing, headWear } from "@/assets/assets";
+import { megaMenu, headWear } from "@/assets/assets";
+import { megaMenuClothing } from "@/assets/asset";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 
 // Utility function to calculate visible page buttons
@@ -673,7 +674,7 @@ const Spromotional = () => {
 
         const productName = product.overview.name || "";
         return (
-          realPrice !== "0" &&
+          // realPrice !== "0" &&
           productName.toLowerCase().includes(searchProductName.toLowerCase())
         );
       });
@@ -704,6 +705,32 @@ const Spromotional = () => {
       return paramProducts.item_count || 0;
     }
   };
+  // console.log(filteredCategories)
+  const clothing = [
+    { id: "B-01", name: "Accessories" },
+    { id: "B-02", name: "Aprons" },
+    { id: "B-03", name: "Dresses" },
+    { id: "B-04", name: "Footwear" },
+    { id: "B-05", name: "Gloves" },
+    { id: "B-06", name: "Hoodies" },
+    { id: "B-07", name: "Jackets" },
+    { id: "B-08", name: "Pants" },
+    { id: "B-09", name: "Polo Shirts" },
+    { id: "B-10", name: "Pullovers" },
+    { id: "B-11", name: "Roughalls & Overalls" },
+    { id: "B-12", name: "Scarves" },
+    { id: "B-13", name: "Shirts" },
+    { id: "B-14", name: "Shorts" },
+    { id: "B-15", name: "Singlets" },
+    { id: "B-16", name: "Skirts" },
+    { id: "B-18", name: "T Shirts" },
+    { id: "B-19", name: "Vests" },
+
+    { id: "B-20", name: "Misc Clothing" },
+
+
+    
+  ];
 
   return (
     <>
@@ -731,55 +758,83 @@ const Spromotional = () => {
               }`}
             >
               <div className="h-full pr-3 overflow-y-auto">
+                {!filteredCategories.length > 0 && <p className="text-lg font-semibold text-blue-500">
+                            Clothing
+                          </p>}
                 <div className="pb-6 border-b-2">
-                  {filteredCategories.map((category) => (
-                    <div key={category.id}>
-                      <p className="text-lg font-semibold text-blue-500">
-                        {category.name}
-                      </p>
-                      <ul>
-                        {category.subTypes
-                          .filter(
-                            (group) =>
-                              !sidebarActiveLabel ||
-                              group.label === sidebarActiveLabel
-                          )
-                          .map((group) => (
-                            <li key={group.label}>
-                              <p className="mt-2 ml-2 text-base font-semibold">
+                  {filteredCategories.length > 0
+                    ? filteredCategories.map((category) => (
+                        <div key={category.id}>
+                          <p className="text-lg font-semibold text-blue-500">
+                            {category.name}
+                          </p>
+                          <ul>
+                            {category.subTypes
+                              .filter(
+                                (group) =>
+                                  !sidebarActiveLabel ||
+                                  group.label === sidebarActiveLabel
+                              )
+                              .map((group) => (
+                                <li key={group.label}>
+                                  {/* <p className="mt-2 ml-2 text-base font-semibold">
                                 {group.label}
-                              </p>
-                              <ul>
-                                {group?.items?.map((item) => (
-                                  <li
-                                    key={item.id}
-                                    className="hover:underline ml-4"
-                                  >
-                                    <button
-                                      onClick={() =>
-                                        handleSubCategories(
-                                          item.name,
-                                          item.id,
-                                          category.name,
-                                          group.label
-                                        )
-                                      }
-                                      className={`font-medium text-[13px] block ${
-                                        activeFilterCategory === item.name
-                                          ? "text-blue-500"
-                                          : ""
-                                      }`}
-                                    >
-                                      {item.name}
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  ))}
+                              </p> */}
+                                  <ul>
+                                    {group?.items?.map((item) => (
+                                      <li
+                                        key={item.id}
+                                        className="hover:underline ml-4"
+                                      >
+                                        <button
+                                          onClick={() =>
+                                            handleSubCategories(
+                                              item.name,
+                                              item.id,
+                                              category.name,
+                                              group.label
+                                            )
+                                          }
+                                          className={`font-medium text-[13px] block ${
+                                            activeFilterCategory === item.name
+                                              ? "text-blue-500"
+                                              : ""
+                                          }`}
+                                        >
+                                          {item.name}
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      ))
+                    : clothing.map((category) => (
+                        <div key={category.id}>
+                          
+                          <ul>
+                            <button
+                              onClick={() =>
+                                handleSubCategories(
+                                  category.name,
+                                  category.id,
+                                  "Clothing",
+                                  category.name
+                                )
+                              }
+                              className={`font-medium text-[13px] block ${
+                                activeFilterCategory === category.name
+                                  ? "text-blue-500"
+                                  : ""
+                              }`}
+                            >
+                              {category.name}
+                            </button>
+                          </ul>
+                        </div>
+                      ))}
                 </div>
                 <div className="mt-4">
                   <PromotionalPriceFilter />
@@ -957,18 +1012,18 @@ const Spromotional = () => {
             ) : currentPageProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentPageProducts
-                  .filter((product) => {
-                    const priceGroups =
-                      product.product?.prices?.price_groups || [];
-                    const basePrice =
-                      priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks =
-                      basePrice.base_price?.price_breaks || [];
-                    return (
-                      priceBreaks.length > 0 &&
-                      priceBreaks[0]?.price !== undefined
-                    );
-                  })
+                  // .filter((product) => {
+                  //   const priceGroups =
+                  //     product.product?.prices?.price_groups || [];
+                  //   const basePrice =
+                  //     priceGroups.find((group) => group?.base_price) || {};
+                  //   const priceBreaks =
+                  //     basePrice.base_price?.price_breaks || [];
+                  //   return (
+                  //     priceBreaks.length > 0 &&
+                  //     priceBreaks[0]?.price !== undefined
+                  //   );
+                  // })
                   .map((product) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
@@ -978,9 +1033,10 @@ const Spromotional = () => {
                       basePrice.base_price?.price_breaks || [];
 
                     // Get an array of prices from priceBreaks (these are already discounted)
-                    const prices = priceBreaks
-                      .map((breakItem) => breakItem.price)
-                      .filter((price) => price !== undefined);
+                    const prices = priceBreaks.map(
+                      (breakItem) => breakItem.price
+                    );
+                    // .filter((price) => price !== undefined);
 
                     // 1) compute raw min/max
                     let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
@@ -1263,7 +1319,8 @@ const Spromotional = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="pt-10 text-xl text-center text-red-900">
-                  No products found. Explore our categories or refine your search to discover more options
+                  No products found. Explore our categories or refine your
+                  search to discover more options
                 </p>
               </div>
             )}

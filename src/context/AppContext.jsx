@@ -643,6 +643,7 @@ const AppContextProvider = (props) => {
       }
 
       setV1categories(data.data);
+      return data.data
     } catch (err) {
       console.log("Error fetching products:", err);
       setError(err.message);
@@ -1018,6 +1019,7 @@ const AppContextProvider = (props) => {
     skeletonLoading,
     setProducts,
     handleLogout,
+    fetchV1Categories,
     blogs,
     setBlogs,
     options,

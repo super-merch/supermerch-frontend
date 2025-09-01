@@ -1186,10 +1186,10 @@ const SpromotionalNavigate = () => {
         >
           {categoryName}
         </span>
-        {CategoryLabel && <>
+        {/* {CategoryLabel && <>
           <MdKeyboardArrowRight className="text-xl" />
           <span>{CategoryLabel}</span>
-        </>}
+        </>} */}
         {subCategoryName && (
           <>
             <MdKeyboardArrowRight className="text-xl" />

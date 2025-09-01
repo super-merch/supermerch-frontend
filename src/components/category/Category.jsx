@@ -88,7 +88,7 @@ const Category = () => {
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2 mt-4 text-lg text-smallHeader">
         <Link to="/">Home</Link>
-        <span>{`>`}</span>
+         <span>{`>`}</span>
         <span>{mainCategoryName}</span>
         <span>{`>`}</span>
         <span>{subCategoryLabel}</span>

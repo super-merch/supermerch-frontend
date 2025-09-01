@@ -140,6 +140,7 @@ const cartSlice = createSlice({
         price,
         basePrices = [], // This should come from ProductDetails
         totalPrice,
+        size = "",
         setupFee = 0,
         freightFee = 0,
         quantity = 1,
@@ -185,7 +186,8 @@ const cartSlice = createSlice({
           setupFee,
           freightFee,
           quantity,
-          userEmail: effectiveUserEmail, // Use the effective email
+          userEmail: effectiveUserEmail,
+          size, // Use the effective email
           ...rest,
         });
       }

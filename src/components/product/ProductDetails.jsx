@@ -46,6 +46,7 @@ const ProductDetails = () => {
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchUserEmail = async () => {
       try {
@@ -81,6 +82,8 @@ const ProductDetails = () => {
 
     fetchUserEmail();
   }, [dispatch, backednUrl]);
+  const [sizes, setSizes] = useState([]);
+  const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
   const fetchSingleProduct = async () => {
     setLoading(true);
     try {
@@ -91,6 +94,52 @@ const ProductDetails = () => {
         setSingle_Product(data.data, "fetchSingleProduct");
         setLoading(false);
       }
+      
+      // First, try to find sizes in details array
+      const details = data.data?.product.details.filter((item) => {
+        return (
+          item.name.toLowerCase() === "sizing" ||
+          item.name.toLowerCase() === "sizes" ||
+          item.name.toLowerCase() === "size"
+        );
+      });
+      
+      let extractedSizes = [];
+      
+      if (details && details.length > 0) {
+        // If sizes found in details array, use them
+        extractedSizes = details[0].detail.split(",").map(size => size.trim());
+      } else {
+        // If no sizes in details, check description for sizes
+        const description = data.data?.product.description || "";
+        const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
+        
+        if (sizesMatch) {
+          const sizesString = sizesMatch[1].trim();
+          // Handle different formats like "XS - 2XL" or "72, 77, 82, ..."
+          if (sizesString.includes(" - ")) {
+            // Handle range format like "XS - 2XL"
+            const [start, end] = sizesString.split(" - ");
+            const sizeOrder = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
+            const startIndex = sizeOrder.indexOf(start.trim());
+            const endIndex = sizeOrder.indexOf(end.trim());
+            
+            if (startIndex !== -1 && endIndex !== -1) {
+              extractedSizes = sizeOrder.slice(startIndex, endIndex + 1);
+            } else {
+              // If not standard size format, just use as is
+              extractedSizes = [sizesString];
+            }
+          } else {
+            // Handle comma-separated format
+            extractedSizes = sizesString.split(",").map(size => size.trim());
+          }
+        }
+      }
+      
+      setSizes(extractedSizes);
+      setSelectedSize(extractedSizes[0] || extractedSizes[1]);
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -252,6 +301,7 @@ const ProductDetails = () => {
       if (hasColors) {
         const firstColor = product.colours.list[0].colours[0];
         setSelectedColor(firstColor);
+        console.log("Colors:",product.colours.list);
         setActiveImage(
           colorImages[firstColor] || product.images?.[0] || noimage
         );
@@ -561,7 +611,7 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         return;
       }
-      console.log("product:",single_product)
+      console.log("product:", single_product);
 
       formData1.append("name", formData.name);
       formData1.append("email", formData.email);
@@ -570,8 +620,20 @@ const ProductDetails = () => {
       formData1.append("comment", formData.comment);
       formData1.append("product", single_product?.product?.name);
       formData1.append("productId", single_product?.meta?.id);
-      formData1.append("price", Number(single_product?.product?.prices?.price_groups[0]?.base_price.price_breaks[0]?.price));
-      formData1.append("quantity", Number(single_product?.product?.prices?.price_groups[0]?.base_price.price_breaks[0]?.qty));
+      formData1.append(
+        "price",
+        Number(
+          single_product?.product?.prices?.price_groups[0]?.base_price
+            .price_breaks[0]?.price
+        )
+      );
+      formData1.append(
+        "quantity",
+        Number(
+          single_product?.product?.prices?.price_groups[0]?.base_price
+            .price_breaks[0]?.qty
+        )
+      );
       formData1.append("description", single_product?.product?.description);
 
       if (selectedFile2) {
@@ -600,7 +662,7 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         setShowQuoteForm(false);
       } else {
-        toast.error(data.message||"Something went wrong");
+        toast.error(data.message || "Something went wrong");
         setQuoteLoading(false);
         console.log(data.message);
       }
@@ -696,6 +758,7 @@ const ProductDetails = () => {
         marginFlat: marginEntry.marginFlat,
         totalPrice: currentPrice,
         discountPct,
+        size: selectedSize,
         code: product.code,
         color: selectedColor,
         quantity: currentQuantity, // Use the actual quantity
@@ -855,36 +918,77 @@ const ProductDetails = () => {
             )}
 
             {/* Dropdowns */}
-            <div className="">
-              <label htmlFor="print-method" className="block my-2  font-medium">
-                Print Method:
-              </label>
-              <select
-                id="print-method"
-                value={selectedPrintMethod?.key}
-                onChange={(e) => {
-                  const selected = availablePriceGroups.find(
-                    (method) => method.key === e.target.value
-                  );
-                  setSelectedPrintMethod(selected);
-                  // Reset quantity to first price break of new selection
-                  if (selected?.price_breaks?.length > 0) {
-                    console.log(
-                      "Selected price breaks:",
-                      selected.price_breaks[0].qty
+
+            {availablePriceGroups.length > 0 && (
+              <div className="">
+                <label
+                  htmlFor="print-method"
+                  className="block my-2  font-medium"
+                >
+                  Print Method:
+                </label>
+                <select
+                  id="print-method"
+                  value={selectedPrintMethod?.key}
+                  onChange={(e) => {
+                    const selected = availablePriceGroups.find(
+                      (method) => method.key === e.target.value
                     );
-                    setCurrentQuantity(selected.price_breaks[0].qty);
-                  }
-                }}
-                className="w-full px-2 py-4 border rounded-md outline-none"
-              >
-                {availablePriceGroups.map((method, index) => (
-                  <option key={method.key} value={method.key}>
-                    {method.description}
-                  </option>
-                ))}
-              </select>
-            </div>
+                    setSelectedPrintMethod(selected);
+                    // Reset quantity to first price break of new selection
+                    if (selected?.price_breaks?.length > 0) {
+                      console.log(
+                        "Selected price breaks:",
+                        selected.price_breaks[0].qty
+                      );
+                      setCurrentQuantity(selected.price_breaks[0].qty);
+                    }
+                  }}
+                  className="w-full px-2 py-4 border rounded-md outline-none"
+                >
+                  {availablePriceGroups.map((method, index) => (
+                    <option key={method.key} value={method.key}>
+                      {method.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {sizes.length > 1 && (
+              <div className="">
+                <label
+                  htmlFor="print-method"
+                  className="block my-2  font-medium"
+                >
+                  Print Method:
+                </label>
+                <select
+                  id="print-method"
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  className="w-full px-2 py-4 border rounded-md outline-none"
+                >
+                  {sizes
+                    .filter((item) => item !== "") // Remove empty strings first
+                    .map((item) => {
+                      // Extract only the part before \n if it exists
+                      const sizePart = item.includes("\n")
+                        ? item.split("\n")[0]
+                        : item;
+                      return sizePart;
+                    })
+                    .filter((size) => {
+                      // Now filter for valid sizes (S, M, L, XL, 2XL, 3XL, etc.)
+                      return /^[0-9]*[A-Za-z]+$/.test(size);
+                    })
+                    .map((size, index) => (
+                      <option key={index} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
 
             <div className="mb-4 ">
               <label
@@ -1102,6 +1206,7 @@ const ProductDetails = () => {
                       quantity: 1, // Force quantity to 1 for sample
                       print: selectedPrintMethod?.description || "",
                       logoColor: logoColor,
+                      size: selectedSize,
                       setupFee: selectedPrintMethod?.setup || 0,
                       dragdrop: selectedFile,
                       deliveryDate,
@@ -1284,6 +1389,15 @@ const ProductDetails = () => {
                   <p className="text-sm">
                     Print Method:{" "}
                     {selectedPrintMethod?.description || "Not selected"}
+                  </p>
+                </div>
+                <div className="flex items-start gap-2 pt-3 ">
+                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <FaCheck />
+                  </p>
+                  <p className="text-sm">
+                    Selected SIze:{" "}&nbsp;
+                    {selectedSize || "Not selected"}
                   </p>
                 </div>
                 <div className="flex items-start gap-2 pt-3 ">

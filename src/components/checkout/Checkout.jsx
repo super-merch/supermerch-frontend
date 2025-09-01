@@ -20,6 +20,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
+  console.log(items, "items");
 
   const { token, addressData, backednUrl, totalDiscount } =
     useContext(AppContext);
@@ -208,6 +209,7 @@ const Checkout = () => {
         logoColor: item.logoColor,
         logo: item.dragdrop,
         id: item.id,
+        size: item.size,
       })),
       shipping: shippingCharges,
       discount: totalDiscountPercent,
@@ -803,6 +805,9 @@ const Checkout = () => {
                         </p>
                         <p className="text-sm font-medium">
                           Print: {item.print || "No print method selected"}
+                        </p>
+                        <p className="text-sm font-medium">
+                          Size: {item.size || "No size"}
                         </p>
                         <p className="text-sm font-medium">
                           Logo Color: {item.logoColor || "No color selected"}
