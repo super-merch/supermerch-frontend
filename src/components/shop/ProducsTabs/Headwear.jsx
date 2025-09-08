@@ -34,8 +34,8 @@ const Headwear = ({ activeTab }) => {
     fetchProducts();
   }, []);
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state:productId  });
   };
 
   const handleOpenModal = (product) => {
@@ -168,7 +168,7 @@ const Headwear = ({ activeTab }) => {
                           </span>
                         )}
                         <div
-                          onClick={() => handleViewProduct(product.meta.id)}
+                          onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                           className="max-h-[50%] h-full border-b overflow-hidden"
                         >
                           <img
@@ -225,7 +225,7 @@ const Headwear = ({ activeTab }) => {
                               <CiHeart />
                             </p>
                             <div
-                              onClick={() => handleViewProduct(product.meta.id)}
+                              onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                               className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
                             >
                               <p className="text-xl">

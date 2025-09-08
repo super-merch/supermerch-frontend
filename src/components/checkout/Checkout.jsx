@@ -22,7 +22,7 @@ const Checkout = () => {
   const items = useSelector(selectCurrentUserCartItems);
   console.log(items, "items");
 
-  const { token, addressData, backednUrl, totalDiscount } =
+  const { token, addressData, backednUrl,shippingAddressData, totalDiscount } =
     useContext(AppContext);
 
   const [checkoutTab, setCheckoutTab] = useState("billing");
@@ -117,17 +117,18 @@ const Checkout = () => {
         phone: addressData?.phone || "",
       },
       shipping: {
-        firstName: "",
-        lastName: "",
-        companyName: "",
-        address: "",
-        country: "",
-        region: "",
-        city: "",
-        zip: "",
-        email: "",
-        phone: "",
-      },
+      // Update these to use shippingAddressData
+      firstName: shippingAddressData?.firstName || "",
+      lastName: shippingAddressData?.lastName || "",
+      companyName: shippingAddressData?.companyName || "",
+      address: shippingAddressData?.addressLine || "",
+      country: shippingAddressData?.country || "",
+      region: shippingAddressData?.state || "",
+      city: shippingAddressData?.city || "",
+      zip: shippingAddressData?.postalCode || "",
+      email: shippingAddressData?.email || "",
+      phone: shippingAddressData?.phone || "",
+    },
       paymentMethod: "card",
     },
   });
@@ -165,6 +166,17 @@ const Checkout = () => {
       setLoading(false);
       return;
     }
+    const resolvedEmail =
+  (data?.billing?.email && data.billing.email.trim()) ||
+  (data?.shipping?.email && data.shipping.email.trim()) ||
+  addressData?.email ||
+  "";
+
+const resolvedPhone =
+  (data?.billing?.phone && data.billing.phone.trim()) ||
+  (data?.shipping?.phone && data.shipping.phone.trim()) ||
+  addressData?.phone ||
+  "";
     const checkoutData = {
       //orderId in format of "SM-(DATE)-(Random 5 digits)"
       orderId: `SM-${new Date()
@@ -175,8 +187,8 @@ const Checkout = () => {
       user: {
         firstName: data.billing.firstName || addressData.firstName,
         lastName: data.billing.lastName || addressData.lastName,
-        email: data.billing.email || addressData.email,
-        phone: data.billing.phone || addressData.phone,
+        email: resolvedEmail || addressData.email,
+        phone: resolvedPhone || addressData.phone,
       },
       billingAddress: {
         country: data.billing.country || addressData.country,
@@ -247,9 +259,9 @@ const Checkout = () => {
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
-      !data.billing.zip ||
-      !data.billing.email ||
-      !data.billing.phone
+      !data.billing.zip
+      // !data.billing.email ||
+      // !data.billing.phone
     ) {
       setLoading(false);
       return toast.error("Please fill all the fields in billing address");
@@ -325,9 +337,9 @@ const Checkout = () => {
       billing.country &&
       billing.region &&
       billing.city &&
-      billing.zip &&
-      billing.email &&
-      billing.phone
+      billing.zip 
+      // billing.email &&
+      // billing.phone
     );
   };
 
@@ -526,7 +538,7 @@ const Checkout = () => {
                   />
                 </div>
               </div>
-              <div className="grid gap-4 mt-4 lg:grid-cols-2 md:grid-cols-2">
+              {/* <div className="grid gap-4 mt-4 lg:grid-cols-2 md:grid-cols-2">
                 <div>
                   <p>
                     Email <span className="text-red-600 ">*</span>
@@ -549,7 +561,7 @@ const Checkout = () => {
                     className="w-full p-2 mt-1 border"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
 

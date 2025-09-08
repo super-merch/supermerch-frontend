@@ -32,8 +32,8 @@ const AllProducts = ({ activeTab }) => {
   }, []);
   const dispatch = useDispatch();
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state:productId  });
   };
 
   const handleOpenModal = (product) => {
@@ -166,7 +166,7 @@ const AllProducts = ({ activeTab }) => {
                           </span>
                         )}
                         <div
-                          onClick={() => handleViewProduct(product.meta.id)}
+                          onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                           className="max-h-[50%] h-full border-b overflow-hidden"
                         >
                           <img

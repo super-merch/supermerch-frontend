@@ -11,7 +11,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { setProducts } from "../../redux/slices/filterSlice";
@@ -86,61 +86,61 @@ const BestSellerCards = () => {
     (state) => state.filters.filteredProducts
   );
   const [productionIds, setProductionIds] = useState(new Set());
-    const getAll24HourProduction = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          const productIds = data.map((item) => Number(item.id));
-          setProductionIds(new Set(productIds));
-          console.log("Fetched 24 Hour Production products:", productionIds);
-        } else {
-          console.error(
-            "Failed to fetch 24 Hour Production products:",
-            response.status
-          );
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        console.error("Error fetching 24 Hour Production products:", error);
-      }
-    };
-    const [australiaIds, setAustraliaIds] = useState(new Set());
-    const getAllAustralia = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
         );
-        if (response.ok) {
-          const data = await response.json();
-          // Ensure consistent data types (convert to strings)
-          const productIds = data.map((item) => Number(item.id));
-          setAustraliaIds(new Set(productIds));
-          console.log("Fetched Australia products:", data);
-        } else {
-          console.error("Failed to fetch Australia products:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching Australia products:", error);
       }
-    };
-    useEffect(() => {
-      getAll24HourProduction();
-      getAllAustralia();
-    }, []);
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   useEffect(() => {
     if (contextBestSellerProducts) {
@@ -360,8 +360,8 @@ const BestSellerCards = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId, name) => {
+    navigate(`/product/${name}`, { state: productId });
   };
 
   const setSearchTextChanger = (e) => {
@@ -375,11 +375,12 @@ const BestSellerCards = () => {
   };
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
-    
-      favouriteItems.map((item) => {
-        favSet.add(item.meta.id)
-      })
+  const [cardHover, setCardHover] = useState(null);
+  const favSet = new Set();
+
+  favouriteItems.map((item) => {
+    favSet.add(item.meta.id);
+  });
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -495,9 +496,9 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
           <SideBar2 />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
+        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+            {/* <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {!isPriceFilterActive && (
                 <>
                   <input
@@ -510,20 +511,25 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                   <IoSearchOutline className="text-2xl" />
                 </>
               )}
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
                 <button
-                  className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
+                  className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2 rounded"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  aria-haspopup="true"
+                  aria-expanded={isDropdownOpen}
                 >
-                  {sortOption === "lowToHigh"
+                  {/* Show Relevency as default/when selected, otherwise show the chosen price sort */}
+                  {sortOption === "relevency" || !sortOption
+                    ? "Relevency"
+                    : sortOption === "lowToHigh"
                     ? "Lowest to Highest"
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
-                    : "Lowest to Highest"}
-                  <span className="">
+                    : "Relevency"}
+                  <span>
                     {isDropdownOpen ? (
                       <IoIosArrowUp className="text-black" />
                     ) : (
@@ -531,23 +537,43 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                     )}
                   </span>
                 </button>
+
+                {/* Dropdown only contains price sorts (no relevency option here) */}
                 {isDropdownOpen && (
-                  <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
+                  <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2 rounded">
                     <button
-                      onClick={() => handleSortSelection("lowToHigh")}
+                      onClick={() => {
+                        handleSortSelection("lowToHigh");
+                        setIsDropdownOpen(false);
+                      }}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                         sortOption === "lowToHigh" ? "bg-gray-100" : ""
                       }`}
                     >
                       Lowest to Highest
                     </button>
+
                     <button
-                      onClick={() => handleSortSelection("highToLow")}
+                      onClick={() => {
+                        handleSortSelection("highToLow");
+                        setIsDropdownOpen(false);
+                      }}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                         sortOption === "highToLow" ? "bg-gray-100" : ""
                       }`}
                     >
                       Highest to Lowest
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleSortSelection("relevancy");
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
+                    >
+                      Relevancy
                     </button>
                   </div>
                 )}
@@ -626,7 +652,7 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
           <div
             className={`${
               skeletonLoading || isFiltering
-                ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
+                ? "grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
@@ -659,7 +685,7 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                 </div>
               ))
             ) : displayProducts.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
+              <div className="grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {displayProducts
                   .filter((product) => {
                     const priceGroups =
@@ -715,9 +741,14 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id)}
-                        onMouseEnter={()=>setCardHover(product.meta.id)}
-                        onMouseLeave={()=>setCardHover(null)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
+                        onMouseEnter={() => setCardHover(product.meta.id)}
+                        onMouseLeave={() => setCardHover(null)}
                       >
                         {/* Show discount badge */}
                         {discountPct > 0 && (
@@ -805,7 +836,11 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                             }}
                             className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                           >
-                            {favSet.has(product.meta.id) ? <IoIosHeart className="text-lg text-red-500" /> : <CiHeart  className="text-lg text-gray-700 hover:text-red-500 transition-colors" />}
+                            {favSet.has(product.meta.id) ? (
+                              <IoIosHeart className="text-lg text-red-500" />
+                            ) : (
+                              <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                            )}
                           </div>
                         </div>
 
@@ -823,7 +858,6 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                         </div>
 
                         {/* Color swatches */}
-                       
 
                         {/* Reduced content area */}
                         <div className="p-2 ">
@@ -923,16 +957,25 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                               })()}
                           </div>
                           <div className="text-center">
-                            <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[18px] `}>
-                              {product.overview.name &&
-                              // product.overview.name.length > 20 && cardHover!==product.meta.id
-                              //   ? product.overview.name.slice(0, 20) + "..."
-                                 product.overview.name || "No Name"}
+                            <h2
+                              className={`text-sm transition-all duration-300 ${
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
+                              } font-semibold text-brand sm:leading-[18px] `}
+                            >
+                              {(product.overview.name &&
+                                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                //   ? product.overview.name.slice(0, 20) + "..."
+                                product.overview.name) ||
+                                "No Name"}
                             </h2>
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1">
-                              Min Qty: {product.product?.prices?.price_groups[0]
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
 
@@ -946,7 +989,6 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                                   <span>{minPrice.toFixed(2)}</span>
                                 )}
                               </h2>
-                              
                             </div>
                           </div>
                         </div>

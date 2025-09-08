@@ -107,8 +107,8 @@ const FavouritePage = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state:productId  });
   };
 
   const handleRemoveFavourite = (product) => {
@@ -159,7 +159,7 @@ const FavouritePage = () => {
                   <div
                     key={product.id}
                     className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                    onClick={() => handleViewProduct(product.meta.id)}
+                    onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                     onMouseEnter={() => setCardHover(product.meta.id)}
                     onMouseLeave={() => setCardHover(null)}
                   >

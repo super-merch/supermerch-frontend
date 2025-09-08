@@ -45,7 +45,7 @@ const Footer = () => {
   }
   return (
     <div className="bg-smallHeader mt-12">
-      <div className=" Mycontainer grid grid-cols-1 lg:grid-cols-5 md:grid-cols-2  pt-7 lg:space-x-10 md:space-x-0 gap-y-8">
+      <div className=" Mycontainer grid grid-cols-2 lg:grid-cols-5 md:grid-cols-2  pt-7 lg:space-x-10 md:space-x-0 gap-y-8">
         <div className="w-fit text-white">
           {/* <h1 className=" uppercase text-3xl font-bold ">pgshop</h1> */}
           <img
@@ -53,47 +53,47 @@ const Footer = () => {
             className="lg:w-36 w-24 object-contain"
             alt=""
           />
-          <div className="mt-3">
-            <h2 className="font-bold mb-1">Customer Support</h2>
+          <div className="mt-3 max-sm:text-sm">
+            <h2 className="font-bold  mb-1">Customer Support</h2>
             {/* <p className=" py-1 text-sm  ">Live Chat</p>
             <p className=" py-1 text-sm hover:text-white ">Email Us</p> */}
-            <p className="text-sm py-0.5 text-white cursor-pointer font-normal hover:underline ">
+            <p className="text-sm max-sm:text-xs py-0.5 text-white cursor-pointer font-normal hover:underline ">
               Call Us +61 466 468 528
             </p>
-            <p className="text-sm py-0.5 text-white cursor-pointer font-normal hover:underline ">
+            <p className="text-sm max-sm:text-xs py-0.5 text-white cursor-pointer font-normal hover:underline ">
               Mon-Fri: 7am-6pm CST
             </p>
-            <p className="text-sm py-0.5 text-white cursor-pointer font-normal hover:underline ">
+            <p className="text-sm max-sm:text-xs py-0.5 text-white cursor-pointer font-normal hover:underline ">
               Sat: 8am–5pm CST
             </p>
           </div>
         </div>
         <div className="w-fit  text-white">
-          <h1 className="text-white capitalize text-base font-bold">
+          <h1 className="text-white max-sm:text-sm capitalize text-base font-bold">
             Get to Know Us{" "}
           </h1>
-          <div className="flex flex-col mt-1">
+          <div className="flex  flex-col mt-1">
             <Link
               to={"/all-blogs"}
-              className=" py-0.5  text-sm font-normal hover:underline"
+              className=" py-0.5 max-sm:text-xs text-sm font-normal hover:underline"
             >
               Our blogs
             </Link>
             <Link
               to={"/about"}
-              className=" py-0.5  text-sm font-normal hover:underline"
+              className=" py-0.5 max-sm:text-xs text-sm font-normal hover:underline"
             >
               About us
             </Link>
             <Link
               to={"/faqs"}
-              className=" py-0.5  text-sm font-normal hover:underline"
+              className=" py-0.5 max-sm:text-xs text-sm font-normal hover:underline"
             >
               FAQ
             </Link>
             <Link
               to={"/contact"}
-              className=" py-0.5  text-sm font-normal hover:underline"
+              className=" py-0.5 max-sm:text-xs  text-sm font-normal hover:underline"
             >
               Contact Us
             </Link>
@@ -107,20 +107,20 @@ const Footer = () => {
         </div>
 
         <div className="w-fit  text-white">
-          <h1 className="text-white capitalize text-base font-bold">
+          <h1 className="text-white capitalize max-sm:text-ss text-base font-bold">
             Policies{" "}
           </h1>
           <div className="flex flex-col mt-1">
-            <Link to={'/artwork-policy'} className="py-0.5 cursor-pointer text-sm font-normal hover:underline   ">
+            <Link to={'/artwork-policy'} className="py-0.5 max-sm:text-xs cursor-pointer text-sm font-normal hover:underline   ">
               Artwork policy
             </Link>
-            <Link to={'/refund-policy'} className="py-0.5 cursor-pointer text-sm font-normal hover:underline  ">
+            <Link to={'/refund-policy'} className="py-0.5 cursor-pointer max-sm:text-xs text-sm font-normal hover:underline  ">
               Refund policy
             </Link>
             {/* <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
               Sample policy
             </p> */}
-            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
+            <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline max-sm:text-xs">
               Privacy and cookie policy
             </p>
             {/* <p className="py-0.5 cursor-pointer text-sm font-normal hover:underline">
@@ -130,26 +130,26 @@ const Footer = () => {
         </div>
 
         <div className="w-fit flex flex-col text-white">
-          <h1 className="text-white capitalize text-base font-bold">
+          <h1 className="text-white max-sm:text-sm capitalize text-base font-bold">
             Offers & Resources
           </h1>
           <div className="flex flex-col mt-1">
-            <Link to={'/clearance'} className=" py-0.5  text-sm font-normal hover:underline">
+            <Link to={'/clearance'} className=" py-0.5 max-sm:text-xs  text-sm font-normal hover:underline">
               Clearance
             </Link>
             <Link
               to={"/shop"}
-              className="py-0.5   text-sm font-normal  hover:underline "
+              className="py-0.5   text-sm font-normal  hover:underline max-sm:text-xs"
             >
               Category details
             </Link>
             <Link
               to={"/cart"}
-              className="py-0.5   text-sm font-normal hover:underline"
+              className="py-0.5   text-sm font-normal hover:underline max-sm:text-xs"
             >
               Cart
             </Link>
-            <Link to={'/pms'} className=" py-0.5  text-sm font-normal hover:underline">
+            <Link to={'/pms'} className=" py-0.5  text-sm font-normal hover:underline max-sm:text-xs">
               PMS colour chart
             </Link>
           </div>
@@ -157,21 +157,21 @@ const Footer = () => {
         </div>
 
         <div className="w-fit">
-          <h1 className="text-white capitalize text-base font-bold ">
+          <h1 className="text-white capitalize text-base font-bold max-sm:text-sm">
             How Can We Help?{" "}
           </h1>
-          <div className="flex gap-3 mt-1 flex-wrap">
+          <div className="flex gap-3 mt-1 flex-wrap ">
             <div className=" text-line">
-              <Link to={"/help-center"} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline ">
+              <Link to={"/help-center"} className=" py-0.5 max-sm:text-xs text-sm font-normal  cursor-pointer hover:underline ">
                 Help Center
               </Link>
-              <p onClick={goToTrack} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
+              <p onClick={goToTrack} className=" py-0.5 text-sm block max-sm:text-xs font-normal  cursor-pointer hover:underline">
                 Track My Order / Reorder
               </p>
-              <p onClick={goToCheckout} className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">
+              <p onClick={goToCheckout} className=" py-0.5 text-sm font-normal max-sm:text-xs  cursor-pointer hover:underline">
                 Pay My Invoice
               </p>
-              <Link to={"/mail-offer"} className=" py-0.5 text-sm block font-normal  cursor-pointer hover:underline">
+              <Link to={"/mail-offer"} className=" py-0.5 text-sm block font-normal max-sm:text-xs cursor-pointer hover:underline">
                 Redeem Mail Offer
               </Link>
               {/* <p className=" py-0.5 text-sm font-normal  cursor-pointer hover:underline">

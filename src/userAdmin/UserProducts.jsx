@@ -310,6 +310,7 @@ const UserProducts = () => {
   //   // }
   // };
   
+  
   if (loading) {
     return (
       <div className='flex items-center justify-center'>
@@ -348,7 +349,7 @@ const UserProducts = () => {
         <p className='flex flex-wrap items-center gap-2 font-medium text-gray-800'>
           Order{' '}
           <span className='px-2 font-semibold text-black bg-yellow'>
-            #{checkoutData._id}
+            {checkoutData.orderId}
           </span>{' '}
           was placed on{' '}
           <span className='px-2 font-semibold text-black bg-yellow'>
@@ -385,6 +386,9 @@ const UserProducts = () => {
                     <span className='text-blue-500'>{product?.name}</span>{' '}
                     <span className='font-medium text-gray-800'>
                       x {product?.quantity}
+                    </span>
+                    <span className='' >
+                      <img src={product.image} className='w-20' alt="" />
                     </span>
                   </td>
                   <td className='py-2 text-right border-gray-300'>

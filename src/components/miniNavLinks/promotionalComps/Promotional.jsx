@@ -298,7 +298,7 @@ const Promotional = () => {
           <div
             className={`${
               skeletonLoading
-                ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
+                ? "grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
@@ -331,7 +331,7 @@ const Promotional = () => {
                 </div>
               ))
             ) : (
-              <div className="grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
+              <div className="grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentItems.length !== 0 &&
                   currentItems.map((product) => {
                     const priceGroups =
@@ -348,7 +348,7 @@ const Promotional = () => {
                     return (
                       <div
                         key={product.id}
-                        onClick={() => handleViewProduct(product.meta.id)}
+                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                         className="relative "
                       >
                         <img

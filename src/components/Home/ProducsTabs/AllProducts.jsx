@@ -96,8 +96,8 @@ const AllProducts = ({ activeTab }) => {
 
   const dispatch = useDispatch();
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state:productId  });
   };
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
@@ -149,7 +149,7 @@ const AllProducts = ({ activeTab }) => {
     <>
       {activeTab === "All Product" && (
         <div className="pb-10 Mycontainer">
-          <div className="grid gap-3 sm:gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid gap-5 max-default:grid-cols-1 lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
             {skeletonLoading
               ? Array.from({ length: 8 }).map((_, index) => (
                   <div
@@ -272,7 +272,7 @@ const AllProducts = ({ activeTab }) => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id)}
+                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >

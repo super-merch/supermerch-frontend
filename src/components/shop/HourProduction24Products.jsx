@@ -394,8 +394,8 @@ const HourProduction24Products = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "AustraliaProducts" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state: productId});
   };
 
   const handleOpenModal = (product) => {
@@ -458,7 +458,7 @@ const HourProduction24Products = () => {
                     ? "Lowest to Highest"
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
-                    : "Lowest to Highest"}
+                    : "Relevancy"}
                   <span className="">
                     {isDropdownOpen ? (
                       <IoIosArrowUp className="text-black" />
@@ -484,6 +484,14 @@ const HourProduction24Products = () => {
                       }`}
                     >
                       Highest to Lowest
+                    </button>
+                    <button
+                      onClick={() => handleSortSelection("relevancy")}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
+                    >
+                      Relevancy
                     </button>
                   </div>
                 )}
@@ -598,7 +606,7 @@ const HourProduction24Products = () => {
                     <div
                       key={productId}
                       className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                      onClick={() => handleViewProduct(product.meta.id)}
+                      onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >

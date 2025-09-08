@@ -52,8 +52,8 @@ const Sale = () => {
   });
 
   // Handle product click
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state:productId  });
   };
 
   return (
@@ -143,7 +143,7 @@ const Sale = () => {
                         return (
                           <div
                             key={index}
-                            onClick={() => handleViewProduct(product.meta.id)}
+                            onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                             className="flex items-center gap-3 p-4 mb-4 transition duration-300 transform border rounded-md cursor-pointer group hover:scale-105"
                           >
                             <img

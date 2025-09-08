@@ -77,7 +77,7 @@ const LatestDeals = () => {
             return (
               <div
                 key={ind}
-                onClick={() => handleViewProduct(product.meta.id)}
+                onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                 className="relative border border-border2 cursor-pointer"
               >
                 <img

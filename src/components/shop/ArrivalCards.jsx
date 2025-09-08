@@ -497,9 +497,9 @@ const ArrivalCards = () => {
           <SideBar2 />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
+        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+            {/* <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {!isPriceFilterActive && (
                 <>
                   <input
@@ -512,7 +512,7 @@ const ArrivalCards = () => {
                   <IoSearchOutline className="text-2xl" />
                 </>
               )}
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
@@ -524,7 +524,7 @@ const ArrivalCards = () => {
                     ? "Lowest to Highest"
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
-                    : "Lowest to Highest"}
+                    : "Relevancy"}
                   <span className="">
                     {isDropdownOpen ? (
                       <IoIosArrowUp className="text-black" />
@@ -550,6 +550,14 @@ const ArrivalCards = () => {
                       }`}
                     >
                       Highest to Lowest
+                    </button>
+                    <button
+                      onClick={() => handleSortSelection("relevancy")}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
+                    >
+                      Relevancy
                     </button>
                   </div>
                 )}

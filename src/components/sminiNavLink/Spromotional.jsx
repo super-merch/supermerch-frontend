@@ -487,8 +487,8 @@ const Spromotional = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "promotional" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state: productId });
   };
 
   const [searchProductName, setSearchProductName] = useState("");
@@ -654,32 +654,35 @@ const Spromotional = () => {
     : currentMenuArray;
 
   // Get current page products based on whether price filter is active
-  const getCurrentPageProducts = () => {
-    if (isPriceFilterActive) {
-      // Use filtered products
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return allFilteredProducts.slice(startIndex, endIndex);
-    } else {
-      // Use regular API products with local search filter
-      const apiProducts = paramProducts.data || [];
-      return apiProducts.filter((product) => {
-        const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice = priceGroups.find((group) => group?.base_price) || {};
-        const priceBreaks = basePrice.base_price?.price_breaks || [];
-        const realPrice =
-          priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
-            ? priceBreaks[0].price
-            : "0";
+  // Get current page products based on whether price filter is active
+const getCurrentPageProducts = () => {
+  if (isPriceFilterActive) {
+    // Use filtered products (existing logic)
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return allFilteredProducts.slice(startIndex, endIndex);
+  } else {
+    // Use regular API products with local search filter
+    const apiProducts = paramProducts?.data || [];
 
-        const productName = product.overview.name || "";
-        return (
-          // realPrice !== "0" &&
-          productName.toLowerCase().includes(searchProductName.toLowerCase())
-        );
-      });
-    }
-  };
+    // Apply client-side sorting if requested
+    const sortedProducts =
+      sortOption === "lowToHigh" || sortOption === "highToLow"
+        ? [...apiProducts].sort((a, b) => {
+            const priceA = getRealPrice(a) || 0;
+            const priceB = getRealPrice(b) || 0;
+            return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+          })
+        : apiProducts;
+
+    // Then apply local name filter
+    return sortedProducts.filter((product) => {
+      const productName = (product.overview?.name || "").toLowerCase();
+      return productName.includes(searchProductName.toLowerCase());
+    });
+  }
+};
+
   //get categoryName from searchParams
   const categoryName = searchParams.get("categoryName");
 
@@ -844,7 +847,7 @@ const Spromotional = () => {
           </div>
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
+        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
             <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {/* {!isPriceFilterActive && (
@@ -871,7 +874,7 @@ const Spromotional = () => {
                     ? "Lowest to Highest"
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
-                    : "Lowest to Highest"}
+                    : "Relevency"}
                   <span className="">
                     {isDropdownOpen ? (
                       <IoIosArrowUp className="text-black" />
@@ -897,6 +900,14 @@ const Spromotional = () => {
                       }`}
                     >
                       Highest to Lowest
+                    </button>
+                    <button
+                      onClick={() => handleSortSelection("relevency")}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
+                    >
+                      Relenency
                     </button>
                   </div>
                 )}
@@ -977,7 +988,7 @@ const Spromotional = () => {
           <div
             className={`${
               skeletonLoading || isFiltering
-                ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
+                ? "grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
@@ -1067,7 +1078,7 @@ const Spromotional = () => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id)}
+                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >

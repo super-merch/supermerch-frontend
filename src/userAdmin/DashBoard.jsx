@@ -58,7 +58,7 @@ const DashBoard = () => {
         )}
 
         {/* Dashboard Stats Cards */}
-        {!loading && userOrder && userOrder.length > 0 && (
+        {!loading && userOrder  && (
           <div className="w-full  mt-10 pb-8">
             {/* Stats Cards Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-6 mb-8">

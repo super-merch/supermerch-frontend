@@ -44,6 +44,7 @@ import {
 import supermerch from "../../assets/supermerch.png";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
+import { set } from "react-hook-form";
 
 const SMiniNav = () => {
   // Dynamic categories from v1categories
@@ -111,7 +112,7 @@ const SMiniNav = () => {
 
   const dispatch = useDispatch();
   const [navbarLogout, setNavbarLogout] = useState(false);
-  const totalQuantity = useSelector((state) => state.cart.totalQuantity);
+  const totalQuantity = useSelector((state) => state.cart.items.length);
   const { favouriteQuantity } = useSelector((state) => state.favouriteProducts);
   const [isOpen, setIsOpen] = useState(false);
   const [dropDown, setDropDown] = useState(false);
@@ -403,9 +404,8 @@ const SMiniNav = () => {
             <Link to={"/cart"}>
               {totalQuantity > 0 && (
                 <span
-                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${
-                    totalQuantity > 999 ? "text-[9px]" : "text-[11px]"
-                  } rounded-full w-6 h-6 flex items-center justify-center`}
+                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500  text-[13px]
+                   rounded-full w-5 h-5 flex items-center justify-center`}
                 >
                   {totalQuantity}
                 </span>
@@ -488,12 +488,26 @@ const SMiniNav = () => {
               <SheetContent className="overflow-y-auto" side={"left"}>
                 <SheetHeader>
                   <SheetTitle className="mb-3 text-2xl text-smallHeader">
-                    PGSHOP
+                    SuperMerch
                   </SheetTitle>
                 </SheetHeader>
                 <div className="space-y-2">
                   {route.map((link, index) => (
-                    <li key={index} className="list-none cursor-pointer">
+                    <li key={index} onClick={()=>{
+                      if(link.name =="Sale"){
+                        navigate("/sales")
+                        setIsSheetOpen(false)
+                      }else if(link.name =="24 Hour production"){
+                        navigate("/hour-production")
+                        setIsSheetOpen(false)
+                      }else if(link.name =="Return Gifts"){
+                        navigate("/shop")
+                        setIsSheetOpen(false)
+                      }else if(link.name == "Australia Made"){
+                        navigate("/australia-made")
+                        setIsSheetOpen(false)
+                      }
+                    }} className="list-none cursor-pointer">
                       <Collapsible>
                         <CollapsibleTrigger className="flex items-center capitalize cursor-pointer">
                           {link.name}
@@ -593,6 +607,7 @@ const SMiniNav = () => {
                             )}
                           </CollapsibleContent>
                         )}
+                        
                       </Collapsible>
                     </li>
                   ))}

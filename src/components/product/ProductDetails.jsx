@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -31,7 +31,12 @@ import axios from "axios";
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
   const currentUserCartItems = useSelector(selectCurrentUserCartItems);
-  const { id } = useParams();
+  //get id from navigate's state
+
+  // const { id } = useParams();
+    const { state: id } = useLocation();
+    console.log(id)
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -875,7 +880,7 @@ const ProductDetails = () => {
               </p>
             </div> */}
             <div className="flex items-center justify-between py-2 border-b-2">
-              {/* <p className="text-black">{product?.code}</p> */}
+              {!loading &&<p className="text-black">SM-{single_product?.supplier.supplier_id}-{single_product?.meta.id}</p>}
               <p className="font-bold text-smallHeader">
                 <span className="font-normal text-stock"> Availability:</span>{" "}
                 In Stock

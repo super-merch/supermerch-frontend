@@ -115,6 +115,7 @@ const SignUp = () => {
         setFormData({ name: "", email: "", password: "", confirmPassword: "" });
         setIsSignUp(false);
         toast.success("SignUp successful!");
+        localStorage.setItem("isNewUser", "true");
       }
     } catch (err) {
       setError(err?.response?.data?.message);
@@ -653,7 +654,12 @@ const SignUp = () => {
                   ? "bg-smallHeader text-white"
                   : "bg-line text-gray-700"
               }`}
-              onClick={() => setIsSignUp(false)}
+              onClick={() => {
+                setIsSignUp(false)
+                setShowPassword(false)
+                setShowConfirmPassword(false)
+              }
+            }
             >
               Sign In
             </button>
@@ -663,7 +669,11 @@ const SignUp = () => {
                   ? "bg-smallHeader text-white"
                   : "bg-gray-200 text-gray-700"
               }`}
-              onClick={() => setIsSignUp(true)}
+              onClick={() => {setIsSignUp(true)
+                setShowPassword(false)
+                setShowConfirmPassword(false)
+              }
+              }
             >
               Sign Up
             </button>
@@ -781,6 +791,9 @@ const SignUp = () => {
               type="submit"
               className="w-full bg-smallHeader flex items-center justify-center gap-2 text-white py-3 rounded hover:bg-indigo-700 focus:outline-none"
               disabled={loading}
+              onClick={()=>{setShowPassword(false)
+              setShowConfirmPassword(false)
+          }}
             >
               {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
               {!loading && <FaArrowRight />}

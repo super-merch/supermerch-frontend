@@ -59,7 +59,18 @@ const AppContextProvider = (props) => {
     }
     navigate("/signup");
   };
-
+  const [shippingAddressData, setShippingAddressData] = useState({
+  firstName: "",
+  lastName: "",
+  companyName: "",
+  addressLine: "",
+  city: "",
+  postalCode: "",
+  state: "",
+  country: "",
+  email: "",
+  phone: "",
+}); 
   const [addressData, setAddressData] = useState({
     firstName: "",
     lastName: "",
@@ -117,13 +128,17 @@ const AppContextProvider = (props) => {
         if (data.user.defaultAddress) {
           setAddressData(data.user.defaultAddress);
         }
+        if (data.user.defaultShippingAddress) {
+        setShippingAddressData(data.user.defaultShippingAddress);
+      }
         if (data.success) {
           setUserData(data.user);
         }
       }
     } catch (error) {
-      // console.error('Error fetching user data:', error);
+      console.error('Error fetching user data:', error);
       toast.error("An error occurred while fetching the address.");
+      handleLogout()
     }
   };
   const [productsCategory, setProductsCategory] = useState([]);
@@ -1036,6 +1051,8 @@ const AppContextProvider = (props) => {
     arrivalProducts,
     filterLocalProducts,
     setFilterLocalProducts,
+    shippingAddressData,
+  setShippingAddressData,
     discountPromo,
     globalDiscount,
     getGlobalDiscount,

@@ -361,8 +361,8 @@ const SaleCards = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
+  const handleViewProduct = (productId,name) => {
+    navigate(`/product/${name}`, { state:productId  });
   };
 
   const setSearchTextChanger = (e) => {
@@ -497,9 +497,9 @@ const SaleCards = () => {
           <SideBar2 />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
+        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+            {/* <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {!isPriceFilterActive && (
                 <>
                   <input
@@ -512,7 +512,7 @@ const SaleCards = () => {
                   <IoSearchOutline className="text-2xl" />
                 </>
               )}
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
@@ -524,7 +524,7 @@ const SaleCards = () => {
                     ? "Lowest to Highest"
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
-                    : "Lowest to Highest"}
+                    : "Relevancy"}
                   <span className="">
                     {isDropdownOpen ? (
                       <IoIosArrowUp className="text-black" />
@@ -550,6 +550,14 @@ const SaleCards = () => {
                       }`}
                     >
                       Highest to Lowest
+                    </button>
+                    <button
+                      onClick={() => handleSortSelection("relevancy")}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
+                    >
+                      Relevancy
                     </button>
                   </div>
                 )}
@@ -628,7 +636,7 @@ const SaleCards = () => {
           <div
             className={`${
               skeletonLoading || isFiltering
-                ? "grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
+                ? "grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1"
                 : ""
             }`}
           >
@@ -661,7 +669,7 @@ const SaleCards = () => {
                 </div>
               ))
             ) : displayProducts.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
+              <div className="grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {displayProducts
                   .filter((product) => {
                     const priceGroups =
@@ -717,7 +725,7 @@ const SaleCards = () => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id)}
+                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >

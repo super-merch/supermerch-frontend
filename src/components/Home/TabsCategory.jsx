@@ -62,12 +62,12 @@ const TabsCategory = () => {
           </h1>
           {/* <div className="TabsCategory"> */}
             {/* Main Category Tabs */}
-            <div className="lg:mt-4 md:mt-4 mt-0  flex justify-between lg:grid md:grid sm:grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center lg:gap-6 md:gap-6 sm:gap-4 gap-1 border-b-4 border-borderb">
+            <div className="lg:mt-4 md:mt-4 mt-0  flex justify-between lg:grid md:grid sm:grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center lg:gap-6 md:gap-6 sm:gap-4 gap-1 border-b-4  border-borderb">
               {megaMenu.slice(0, 4).map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryClick(category.id)}
-                  className={`py-4 text-start focus:outline-none text-sm lg:text-xl md:text-xl font-bold ${category.id === activeTab ? 'border-b-4 border-primary text-primary' : 'text-gray-600'
+                  className={`py-4 max-sm:pb-1 text-start focus:outline-none text-xs sm:text-sm lg:text-xl md:text-xl font-bold ${category.id === activeTab ? 'border-b-4 max-sm:border-b-[3px] border-primary text-primary' : 'text-gray-600'
                     }`}
                 >
                   {category.name}
@@ -82,7 +82,7 @@ const TabsCategory = () => {
                   <div key={subCategory.label}
                     onClick={() => handleSubCategoryClick(subCategory)}
                     className="bg-white lg:p-5 md:p-5 p-2 cursor-pointer">
-                    <img src={subCategory.label === "Pens" && collection2 || subCategory.label === "Highlighter" && highlight || subCategory.label === "Pencils" && pencils || subCategory.label === "Misc" && activeCategory.name == "Writing" && misc || subCategory.label === "Misc" && activeCategory.name == "Bags" && bag || subCategory.label == "Tote Bag" && tote || subCategory.label == "Business Bag" && business || subCategory.label == "Outdoor Bag" && outdoor || subCategory.label == "Bottles" && bottle || subCategory.label == "Thumblers" && thumbler || subCategory.label == "Glasses" && glass || subCategory.label == "Mugs" && mug || subCategory.label == "WristBands" && wrist || subCategory.label == "Lanyards, Bagdes and Pins" && laynard || subCategory.label == "Awards & Trophies" && trophy || subCategory.label == "Keyrings" && keyring} alt="" className="w-full h-72" />
+                    <img src={subCategory.label === "Pens" && collection2 || subCategory.label === "Highlighter" && highlight || subCategory.label === "Pencils" && pencils || subCategory.label === "Misc" && misc || activeCategory.name == "Writing" && misc || subCategory.label === "Misc" && activeCategory.name == "Bags" && bag || subCategory.label == "Tote Bag" && tote || subCategory.label == "Business Bag" && business || subCategory.label == "Outdoor Bag" && outdoor || subCategory.label == "Bottles" && bottle || subCategory.label == "Thumblers" && thumbler || subCategory.label == "Glasses" && glass || subCategory.label == "Mugs" && mug || subCategory.label == "WristBands" && wrist || subCategory.label == "Lanyards, Bagdes and Pins" && laynard || subCategory.label == "Awards & Trophies" && trophy || subCategory.label == "Keyrings" && keyring} alt="" className="w-full h-40 md:h-72" />
                     <h3
                       className="text-brand lg:pt-3 md:pt-3 sm:pt-3 pt-1 lg:text-lg md:text-lg sm:text-lg text-xs font-medium"
                     >

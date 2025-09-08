@@ -3,7 +3,7 @@
 export const megaMenu = [
     {
         "id": "N",
-        "name": "Writing",
+        "name": "Pens & Pencils",
         "subTypes": [
             {
                 // "id": "N-07",
@@ -33,7 +33,7 @@ export const megaMenu = [
                 "items": [
                     {
                         "id": "N-06",
-                        "name": "Grey-Lead Pencils"
+                        "name": "Lead Pencils"
                     },
                     {
                         "id": "N-01",
@@ -48,10 +48,6 @@ export const megaMenu = [
                     {
                         "id": "N-05",
                         "name": "Highlighters"
-                    },
-                    {
-                        "id": "N-09",
-                        "name": "Markers"
                     },
                 ],
             },
@@ -71,12 +67,16 @@ export const megaMenu = [
                         "name": "Pen Packaging"
                     },
                     {
-                        "id": "3",
-                        "name": "Pencils Cases"
+                        "id": "N-02",
+                        "name": "Eco Pens"
                     },
                     {
-                        "id": "4",
-                        "name": "Rulers"
+                        "id": "N-04",
+                        "name": "Fountain Pens"
+                    },
+                    {
+                        "id": "N-13",
+                        "name": "Misc Pens"
                     },
                 ],
             },
@@ -121,16 +121,16 @@ export const megaMenu = [
                         "name": "Travel Bum Bags"
                     },
                     {
-                        "id": "6",
-                        "name": "Camping Dry Bags"
-                    },
-                    {
                         "id": "A-04",
                         "name": "Drawstring Backpacks"
                     },
                     {
                         "id": "A-01",
                         "name": "Backpacks"
+                    },
+                    {
+                        "id": "A-17",
+                        "name": "Misc Bags"
                     },
                 ],
             },
@@ -151,7 +151,11 @@ export const megaMenu = [
                     },
                     {
                         "id": "A-02",
-                        "name": "Wheeled Bags"
+                        "name": "Bum Bags"
+                    },
+                    {
+                        "id": "A-16",
+                        "name": "Wine Carriers"
                     },
                 ],
             },
@@ -186,29 +190,18 @@ export const megaMenu = [
                         "id": "C-04",
                         "name": "Drink Bottles"
                     },
-                    {
-                        "id": "7",
-                        "name": "Thermoses"
-                    },
-                    {
-                        "id": "8",
-                        "name": "Bottled Water"
-                    },
+
                 ],
             },
             {
                 "label": "Mugs",
                 "items": [
                     {
-                        "id": "C-09",
-                        "name": "Coffee Mugs"
-                    },
-                    {
                         "id": "C-08",
                         "name": "Beer Mugs"
                     },
                     {
-                        "id": "9",
+                        "id": "C-09",
                         "name": "Reusable Coffee Cups"
                     },
                     {
@@ -225,17 +218,10 @@ export const megaMenu = [
                         "name": "Beer Glasses"
                     },
                     {
-                        "id": "10",
-                        "name": "Cocktail Glasses"
-                    },
-                    {
                         "id": "C-13",
-                        "name": "Shot Glasses"
-                    },
-                    {
-                        "id": "11",
                         "name": "Wine Glasses"
                     },
+
                 ],
             },
             {
@@ -247,7 +233,11 @@ export const megaMenu = [
                     },
                     {
                         "id": "C-10",
-                        "name": "Protein Shakers"
+                        "name": "Sports Shakers"
+                    },
+                    {
+                        "id": "C-07",
+                        "name": "Glassware"
                     },
                     {
                         "id": "C-02",
@@ -264,24 +254,13 @@ export const megaMenu = [
                     },
                     {
                         "id": "C-06",
-                        "name": "Coasters"
+                        "name": "Flasks"
                     },
                     {
                         "id": "C-11",
-                        "name": "Bottle Openers"
-                    },
-                    {
-                        "id": "12",
                         "name": "Stubby Holders"
                     },
-                    {
-                        "id": "13",
-                        "name": "Drinking Straws"
-                    },
-                    {
-                        "id": "14",
-                        "name": "Flasks"
-                    },
+
                 ],
             },
 
@@ -313,20 +292,17 @@ export const megaMenu = [
                     },
                     {
                         "id": "D-02",
-                        "name": "Lapel Pins"
-                    },
-                    {
-                        "id": "15",
-                        "name": "Badge Reels"
-                    },
-                    {
-                        "id": "16",
-                        "name": "Button Badge"
-                    },
-                    {
-                        "id": "17",
                         "name": "Badge Holders"
                     },
+                    {
+                        "id": "D-05",
+                        "name": "Fridge Magnets"
+                    },
+                    {
+                        "id": "D-06",
+                        "name": "Gift Sets"
+                    },
+
                 ],
             },
             {
@@ -334,27 +310,28 @@ export const megaMenu = [
                 "items": [
                     {
                         "id": "D-10",
-                        "name": "Event Wristbands"
+                        "name": " Wristbands"
                     },
-                    {
-                        "id": "18",
-                        "name": "Silicon Wristbands"
-                    },
+
                 ],
             },
-            {
-                "label": "Keyrings",
-                "items": [
-                    {
-                        "id": "K-05",
-                        "name": "Bottle Opener Keyrings"
-                    },
-                    {
-                        "id": "k-05",
-                        "name": "Keyrings"
-                    },
-                ],
-            },
+            // {
+            //     "label": "Keyrings",
+            //     "items": [
+            //         {
+            //             "id": "K-05",
+            //             "name": "Bottle Opener Keyrings"
+            //         },
+            //         {
+            //             "id": "K-05",
+            //             "name": "Keyrings"
+            //         },
+            //         {
+            //             "id": "K-10",
+            //             "name": "Misc Tools"
+            //         },
+            //     ],
+            // },
             {
                 "label": "Misc",
                 "items": [
@@ -364,7 +341,7 @@ export const megaMenu = [
                     },
                     {
                         "id": "D-12",
-                        "name": "Balloons"
+                        "name": "Misc Events"
                     },
                     {
                         "id": "D-03",
@@ -373,10 +350,6 @@ export const megaMenu = [
                     {
                         "id": "D-11",
                         "name": "Marquees"
-                    },
-                    {
-                        "id": "21",
-                        "name": "Signs"
                     },
                     {
                         "id": "D-09",
@@ -388,14 +361,134 @@ export const megaMenu = [
     },
     {
         "id": "J",
-        "name": "Home & Office",
+        "name": "Home & Living",
         "subTypes": [
             {
                 "label": "Candles",
                 "items": [
                     {
-                        "id": "22",
-                        "name": "Candles"
+                        "id": "J-01",
+                        "name": "Admats"
+                    },
+                    {
+                        "id": "J-02",
+                        "name": "Bottle Coolers"
+                    },
+                    {
+                        "id": "J-03",
+                        "name": "Cheese Boards"
+                    },
+                    {
+                        "id": "J-04",
+                        "name": "Clocks & Timers"
+                    },
+                    {
+                        "id": "J-05",
+                        "name": "Coasters"
+                    },
+                    {
+                        "id": "J-06",
+                        "name": "Coin Banks"
+                    },
+                    {
+                        "id": "J-07",
+                        "name": "Corkscrews"
+                    },
+                    {
+                        "id": "J-08",
+                        "name": "Kitchenware"
+                    },
+                    {
+                        "id": "J-09",
+                        "name": "Misc Homeware"
+                    },
+                    {
+                        "id": "J-10",
+                        "name": "Napkins"
+                    },
+                    {
+                        "id": "J-11",
+                        "name": "Pet Accessories"
+                    },
+                    {
+                        "id": "J-12",
+                        "name": "Picture Frames"
+                    },
+                    {
+                        "id": "J-13",
+                        "name": "Watches"
+                    },
+                    {
+                        "id": "J-14",
+                        "name": "Wine Accessories"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "K",
+        "name": "Keyrings & Tools",
+        "subTypes": [
+            {
+                "label": "Keyrings",
+                "items": [
+
+
+                    {
+                        "id": "K-01",
+                        "name": "Auto Accessories"
+                    },
+                    {
+                        "id": "K-02",
+                        "name": "Binoculars"
+                    },
+                    {
+                        "id": "K-03",
+                        "name": "Bottle Openers"
+                    },
+                    {
+                        "id": "K-04",
+                        "name": "General Tools"
+                    },
+                    {
+                        "id": "K-05",
+                        "name": "Keyrings"
+                    },
+                    {
+                        "id": "K-06",
+                        "name": "Multi Tools"
+                    },
+                    {
+                        "id": "K-07",
+                        "name": "Tape Measures"
+                    },
+                    {
+                        "id": "K-08",
+                        "name": "Tool Sets"
+                    },
+                    {
+                        "id": "K-09",
+                        "name": "Torches"
+                    },
+                    {
+                        "id": "K-10",
+                        "name": "Misc Tools"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "H",
+        "name": "Health & Personal",
+        "subTypes": [
+            {
+                "label": "Candles",
+                "items": [
+                    {
+                        "id": "H-02",
+                        "name": "Brushes"
                     }
                 ]
             },
@@ -403,24 +496,24 @@ export const megaMenu = [
                 "label": "Kitchen",
                 "items": [
                     {
-                        "id": "23",
-                        "name": "Cheese Boards & Knives"
+                        "id": "H-03",
+                        "name": "Eye Masks"
                     },
                     {
                         "id": "H-19",
                         "name": "Towels"
                     },
                     {
-                        "id": "24",
-                        "name": "Tea Towels"
+                        "id": "H-04",
+                        "name": "Face Masks"
                     },
                     {
-                        "id": "25",
-                        "name": "Chopping Boards"
+                        "id": "H-05",
+                        "name": "Fans"
                     },
                     {
-                        "id": "26",
-                        "name": "Cutlery Sets"
+                        "id": "H-06",
+                        "name": "First Aid Kits"
                     },
                 ]
             },
@@ -432,20 +525,20 @@ export const megaMenu = [
                         "name": "Blankets"
                     },
                     {
-                        "id": "27",
-                        "name": "Bar Mats"
+                        "id": "H-07",
+                        "name": "Hand Sanitizer"
                     },
                     {
-                        "id": "28",
-                        "name": "Floor Mats"
+                        "id": "H-08",
+                        "name": "Head Massagers"
                     },
                     {
-                        "id": "Q-09",
-                        "name": "Mouse Mats"
+                        "id": "H-09",
+                        "name": "Heat Packs"
                     },
                     {
-                        "id": "29",
-                        "name": "Counter Mats"
+                        "id": "H-10",
+                        "name": "Lip Balms"
                     },
                 ]
             },
@@ -453,24 +546,24 @@ export const megaMenu = [
                 "label": "Decorative",
                 "items": [
                     {
-                        "id": "30",
-                        "name": "Money Boxes"
+                        "id": "H-11",
+                        "name": "Manicure Accessories"
                     },
                     {
-                        "id": "31",
-                        "name": "Photo Frames"
+                        "id": "H-12",
+                        "name": "Manicure Sets"
                     },
                     {
-                        "id": "J-12",
-                        "name": "Picture Frames"
+                        "id": "H-13",
+                        "name": "Mirrors"
                     },
                     {
-                        "id": "J-13",
-                        "name": "Watches"
+                        "id": "H-14",
+                        "name": "Misc Health"
                     },
                     {
-                        "id": "32",
-                        "name": "Magnetic Photo Frames"
+                        "id": "H-15",
+                        "name": "Pillows"
                     },
                 ]
             },
@@ -478,25 +571,26 @@ export const megaMenu = [
                 "label": "Misc",
                 "items": [
                     {
-                        "id": "33",
-                        "name": "Tea & Coffee Accessories"
+                        "id": "H-16",
+                        "name": "Safety Whistles"
                     },
                     {
-                        "id": "J-11",
-                        "name": "Pet Accessories"
+                        "id": "H-17",
+                        "name": "Sun Screens"
                     },
                     {
-                        "id": "M-02",
-                        "name": "Calculators"
+                        "id": "H-18",
+                        "name": "Towel Wipes"
                     },
                 ]
             },
 
         ]
     },
+
     {
         "id": "P",
-        "name": "PRINTING and Magnets",
+        "name": "Office Stationery",
         "subTypes": [
             {
                 "label": "Diaries",
@@ -514,8 +608,8 @@ export const megaMenu = [
                         "name": "Notebooks"
                     },
                     {
-                        "id": "34",
-                        "name": "Letter Openers"
+                        "id": "M-02",
+                        "name": "Calculators"
                     },
                 ]
             },
@@ -523,20 +617,20 @@ export const megaMenu = [
                 "label": "Cards and Calender",
                 "items": [
                     {
-                        "id": "P-02",
-                        "name": "Business Cards"
+                        "id": "M-03",
+                        "name": "Clips"
                     },
                     {
-                        "id": "35",
-                        "name": "Magnet Calendars"
+                        "id": "M-05",
+                        "name": "Desk Accessories"
                     },
                     {
-                        "id": "36",
-                        "name": "Wall Calendars"
+                        "id": "M-06",
+                        "name": "Desk Caddies"
                     },
                     {
-                        "id": "37",
-                        "name": "Desk Calendars"
+                        "id": "M-08",
+                        "name": "Erasers"
                     },
                 ]
             },
@@ -544,16 +638,16 @@ export const megaMenu = [
                 "label": "Stickers",
                 "items": [
                     {
-                        "id": "38",
-                        "name": "Sticky Notes & Flags"
+                        "id": "M-16",
+                        "name": "Sticky Notes"
                     },
                     {
-                        "id": "P-04",
-                        "name": "Combo Pads"
+                        "id": "M-11",
+                        "name": "Pencil Cases"
                     },
                     {
-                        "id": "P-05",
-                        "name": "Pads & Planners"
+                        "id": "M-12",
+                        "name": "Pencil Sharpeners"
                     },
                     {
                         "id": "M-15",
@@ -569,8 +663,8 @@ export const megaMenu = [
                 "label": "Gift Sets",
                 "items": [
                     {
-                        "id": "D-06",
-                        "name": "Gift Sets"
+                        "id": "M-13",
+                        "name": "Portfolios"
                     },
                 ]
             },
@@ -578,130 +672,113 @@ export const megaMenu = [
                 "label": "Magnetic",
                 "items": [
                     {
-                        "id": "D-05",
-                        "name": "Magnets"
+                        "id": "M-14",
+                        "name": "Rulers"
                     },
                     {
-                        "id": "39",
-                        "name": "Magnetic To-Do Lists"
+                        "id": "M-17",
+                        "name": "Misc Office"
                     },
                 ]
             },
-            {
-                "label": "More",
-                "items": [
-                    {
-                        "id": "P-08",
-                        "name": "Misc"
-                    },
-                    {
-                        "id": "M-01",
-                        "name": "Business Card Holders"
-                    },
-                    {
-                        "id": "40",
-                        "name": "Packaging"
-                    },
-                    {
-                        "id": "P-06",
-                        "name": "Ribbons"
-                    },
-                ]
-            },
+           
 
 
         ]
     },
     {
         "id": "Q",
-        "name": "Tech",
+        "name": "USB & Tech",
         "subTypes": [
             {
-                "label": "Flashdrives",
+                "label": "Accessory",
                 "items": [
-                    {
-                        "id": "41",
-                        "name": "Flashdrives"
-                    },
-                    {
-                        "id": "Q-19",
-                        "name": "USB Hubs"
-                    },
-                ]
-            },
-            {
-                "label": "Mobile",
-                "items": [
-                    {
-                        "id": "Q-20",
-                        "name": "Wireless Chargers"
-                    },
-                    {
-                        "id": "Q-14",
-                        "name": "Powerbanks"
-                    },
-                    {
-                        "id": "Q-12",
-                        "name": "Phone Wallets"
-                    },
-                    {
-                        "id": "42",
-                        "name": "USB Car Chargers"
-                    },
-                    {
-                        "id": "Q-02",
-                        "name": "Cable Tidies"
-                    },
-                    {
-                        "id": "43",
-                        "name": "Car Phone Holders"
-                    },
-                    {
-                        "id": "Q-05",
-                        "name": "Charging Cables"
-                    },
-                    {
-                        "id": "Q-11",
-                        "name": "Phone Stands"
-                    },
-                ]
-            },
-            {
-                "label": "Speakers and Headphones",
-                "items": [
-                    {
-                        "id": "Q-01",
-                        "name": "Speakers"
-                    },
-                    {
-                        "id": "Q-07",
-                        "name": "Earbuds"
-                    },
-                    {
-                        "id": "Q-08",
-                        "name": "Headphones"
-                    },
-                ]
-            },
-            {
-                "label": "MISC",
-                "items": [
-                    {
-                        "id": "Q-06",
-                        "name": "Cleaning Cloths"
-                    },
-                    {
-                        "id": "Q-15",
-                        "name": "Tablet Covers"
-                    },
-                    {
-                        "id": "Q-17",
-                        "name": "Travel Adapters"
-                    },
-                ]
-            },
-
-
+                {
+                    "id": "Q-01",
+                    "name": "Bluetooth Speakers"
+                },
+                {
+                    "id": "Q-02",
+                    "name": "Cable Tidies"
+                },
+                {
+                    "id": "Q-03",
+                    "name": "Car Chargers"
+                },
+                {
+                    "id": "Q-04",
+                    "name": "Car Phone Mounts"
+                },
+                {
+                    "id": "Q-05",
+                    "name": "Charging Cables"
+                },
+                {
+                    "id": "Q-06",
+                    "name": "Cleaning Cloths"
+                },
+                {
+                    "id": "Q-07",
+                    "name": "Earbuds"
+                },
+                {
+                    "id": "Q-08",
+                    "name": "Headphones"
+                },
+                {
+                    "id": "Q-09",
+                    "name": "Mouse Mats"
+                },
+                {
+                    "id": "Q-10",
+                    "name": "Phone Accessories"
+                },
+                {
+                    "id": "Q-11",
+                    "name": "Phone Stands"
+                },
+                {
+                    "id": "Q-12",
+                    "name": "Phone Wallets"
+                },
+                {
+                    "id": "Q-13",
+                    "name": "Pouches"
+                },
+                {
+                    "id": "Q-14",
+                    "name": "Powerbanks"
+                },
+                {
+                    "id": "Q-15",
+                    "name": "Tablet Covers"
+                },
+                {
+                    "id": "Q-16",
+                    "name": "Tech Accessories"
+                },
+                {
+                    "id": "Q-17",
+                    "name": "Travel Adapters"
+                },
+                {
+                    "id": "Q-18",
+                    "name": "USB Drives"
+                },
+                {
+                    "id": "Q-19",
+                    "name": "USB Hubs"
+                },
+                {
+                    "id": "Q-20",
+                    "name": "Wireless Chargers"
+                },
+                {
+                    "id": "Q-21",
+                    "name": "Misc Tech"
+                }
+            ]
+            }
         ]
     },
     {
@@ -716,41 +793,41 @@ export const megaMenu = [
                         "name": "Umbrellas"
                     },
                     {
-                        "id": "44",
-                        "name": "Beach Umbrellas"
+                        "id": "L-16",
+                        "name": "Tables"
                     },
                     {
-                        "id": "45",
-                        "name": "Golf Umbrellas"
+                        "id": "L-02",
+                        "name": "Chairs"
                     },
                 ]
             },
             {
-                "label": "Towels",
+                "label": "Towel",
                 "items": [
                     {
-                        "id": "H-19",
-                        "name": "Gym Towels"
+                        "id": "L-03",
+                        "name": "Fitness Bands"
                     },
                     {
-                        "id": "H-18",
-                        "name": "Bath Towels"
+                        "id": "L-04",
+                        "name": "Golf Accessories"
                     },
                     {
-                        "id": "H-18",
-                        "name": "Hand Towels"
+                        "id": "L-05",
+                        "name": "Golf Balls"
                     },
                     {
-                        "id": "H-17",
-                        "name": "Cooling Towels"
+                        "id": "L-06",
+                        "name": "Jump Ropes"
                     },
                     {
-                        "id": "50",
-                        "name": "Ice Buckets"
+                        "id": "L-07",
+                        "name": "Pedometers"
                     },
                     {
-                        "id": "H-18",
-                        "name": "Golf Towels"
+                        "id": "L-10",
+                        "name": "Seedsticks"
                     },
                 ]
             },
@@ -758,24 +835,24 @@ export const megaMenu = [
                 "label": "Picnic",
                 "items": [
                     {
-                        "id": "H-17",
-                        "name": "Sunscreens"
+                        "id": "L-11",
+                        "name": "Sports Balls"
                     },
                     {
-                        "id": "H-01",
-                        "name": "Blankets"
+                        "id": "L-12",
+                        "name": "Sports Gears"
                     },
                     {
                         "id": "L-08",
                         "name": "Picnic Rugs"
                     },
                     {
-                        "id": "L-01",
-                        "name": "BBQ Sets"
+                        "id": "L-15",
+                        "name": "Sweat Bands"
                     },
                     {
-                        "id": "L-09",
-                        "name": "Picnic Sets"
+                        "id": "L-19",
+                        "name": "Misc Outdoors"
                     },
                 ]
             },
@@ -783,17 +860,10 @@ export const megaMenu = [
                 "label": "Medical",
                 "items": [
                     {
-                        "id": "H-07",
-                        "name": "Hand Sanitisers"
+                        "id": "L-18",
+                        "name": "Camp & Hike"
                     },
-                    {
-                        "id": "H-04",
-                        "name": "Face Masks"
-                    },
-                    {
-                        "id": "H-06",
-                        "name": "First Aid Kits"
-                    },
+
                 ]
             },
             {
@@ -801,7 +871,7 @@ export const megaMenu = [
                 "items": [
                     {
                         "id": "L-13",
-                        "name": "Sunglasses & Accessories"
+                        "name": "Sunglasses"
                     },
                     {
                         "id": "L-14",
@@ -809,48 +879,70 @@ export const megaMenu = [
                     },
                 ]
             },
-            {
-                "label": "Tools",
-                "items": [
-                    {
-                        "id": "K-08",
-                        "name": "Tool Sets"
-                    },
-                    {
-                        "id": "52",
-                        "name": "Carabiners"
-                    },
-                    {
-                        "id": "K-09",
-                        "name": "Torches"
-                    },
-                    {
-                        "id": "K-07",
-                        "name": "Tape Measures"
-                    },
-                ]
-            },
-
         ]
     },
     {
+            "id": "O",
+            "name": "Print",
+            "subTypes": [
+                {
+                    "label": "Diar",
+                    "items": [
+                        
+                {
+                    "id": "P-01",
+                    "name": "Ad Labels"
+                },
+                {
+                    "id": "P-02",
+                    "name": "Business Cards"
+                },
+                {
+                    "id": "P-03",
+                    "name": "Calendars"
+                },
+                {
+                    "id": "P-04",
+                    "name": "Combo Pads"
+                },
+                {
+                    "id": "P-05",
+                    "name": "Pads & Planners"
+                },
+                {
+                    "id": "P-06",
+                    "name": "Ribbons"
+                },
+                {
+                    "id": "P-07",
+                    "name": "Stuk Notes"
+                },
+                {
+                    "id": "P-08",
+                    "name": "Misc Print"
+                }
+                    ]
+                }
+            ]
+        },
+    {
         "id": "E",
-        "name": "Food",
+        "name": "Food & Drink",
         "subTypes": [
             {
                 "label": "Beans",
                 "items": [
                     {
-                        "id": "53",
-                        "name": "Jelly Beans"
+                        "id": "E-01",
+                        "name": "Bottled Water"
                     },
                     {
-                        "id": "54",
-                        "name": "Choc Beans"
+                        "id": "E-03",
+                        "name": "Health Snacks"
                     },
                     {
-                        "id": "55",
-                        "name": "Jelly Babies"
+                        "id": "E-04",
+                        "name": "Lollies"
                     },
                 ]
             },
@@ -858,8 +950,8 @@ export const megaMenu = [
                 "label": "Lollies",
                 "items": [
                     {
-                        "id": "56",
-                        "name": "Mixed Lollies"
+                        "id": "E-07",
+                        "name": "Cookies"
                     },
                     {
                         "id": "E-05",
@@ -870,137 +962,90 @@ export const megaMenu = [
                         "name": "Mints"
                     },
                     {
-                        "id": "57",
-                        "name": "Gummi Lollies"
+                        "id": "E-08",
+                        "name": "Misc Food"
                     },
-                    {
-                        "id": "58",
-                        "name": "Lozenges"
-                    },
+
                 ]
             },
             {
                 "label": "Choclates",
                 "items": [
-                    {
-                        "id": "59",
-                        "name": "Nuts & Savoury"
-                    },
+
                     {
                         "id": "E-02",
                         "name": "Chocolates"
                     },
-                    {
-                        "id": "60",
-                        "name": "Chewy Fruits"
-                    },
-                    {
-                        "id": "61",
-                        "name": "Biscuits & Cookies"
-                    },
-                    {
-                        "id": "62",
-                        "name": "Snakes"
-                    },
+
                 ]
             },
-            {
-                "label": "Popcorn",
-                "items": [
-                    {
-                        "id": "63",
-                        "name": "Popcorn"
-                    },
-                ]
-            },
+
 
         ]
     },
     {
         "id": "F",
-        "name": "Games",
+        "name": "Fun & Games",
         "subTypes": [
             {
                 "label": "Balls",
                 "items": [
                     {
-                        "id": "64",
-                        "name": "Stress Balls"
+                        "id": "F-04",
+                        "name": "Soft Toys"
                     },
                     {
-                        "id": "65",
-                        "name": "Stress Fruit & Vegetables"
+                        "id": "F-05",
+                        "name": "Stress Shapes"
                     },
                     {
-                        "id": "66",
-                        "name": "Stress Keyrings"
+                        "id": "F-06",
+                        "name": "Toys"
                     },
                     {
-                        "id": "67",
-                        "name": "Stress Transport"
+                        "id": "F-07",
+                        "name": "Misc Games"
                     },
-                    {
-                        "id": "68",
-                        "name": "Stress Animals"
-                    },
-                    {
-                        "id": "69",
-                        "name": "More Stress Shapes"
-                    },
+
                 ]
             },
-            {
-                "label": "GOLF",
-                "items": [
-                    {
-                        "id": "70",
-                        "name": "Golf Ball Markers"
-                    },
-                    {
-                        "id": "L-05",
-                        "name": "Golf Balls"
-                    },
-                    {
-                        "id": "71",
-                        "name": "Golf Tees"
-                    },
-                    {
-                        "id": "72",
-                        "name": "Misc Golf"
-                    },
-                ]
-            },
-            {
-                "label": "Outdoor toys",
-                "items": [
-                    {
-                        "id": "73",
-                        "name": "Frisbees & Throwing Toys"
-                    },
-                    {
-                        "id": "74",
-                        "name": "Yo Yos"
-                    },
-                    {
-                        "id": "L-12",
-                        "name": "Sports Gear"
-                    },
-                ]
-            },
+            // {
+            //     "label": "GOLF",
+            //     "items": [
+            //         {
+            //             "id": "70",
+            //             "name": "Golf Ball Markers"
+            //         },
+            //         {
+            //             "id": "L-05",
+            //             "name": "Golf Balls"
+            //         },
+
+            //     ]
+            // },
+            // {
+            //     "label": "Outdoor toys",
+            //     "items": [
+            //         {
+            //             "id": "73",
+            //             "name": "Frisbees & Throwing Toys"
+            //         },
+            //         {
+            //             "id": "74",
+            //             "name": "Yo Yos"
+            //         },
+            //         {
+            //             "id": "L-12",
+            //             "name": "Sports Gear"
+            //         },
+            //     ]
+            // },
             {
                 "label": "Indoor toys",
                 "items": [
                     {
-                        "id": "75",
-                        "name": "Jigsaws"
-                    },
-                    {
                         "id": "F-02",
                         "name": "Novelty Items"
-                    },
-                    {
-                        "id": "76",
-                        "name": "Plush Toys"
                     },
                     {
                         "id": "F-03",
@@ -1015,202 +1060,202 @@ export const megaMenu = [
 
         ]
     },
-    
+
 ]
 
-export const megaMenuClothing= [
+export const megaMenuClothing = [
     {
-      "id": "B-CW", 
-      "name": "Corporate Wear",
-      "subTypes": [
-        {
-          "label": "Top",
-          "items": [
-            { "id": "B-09", "name": "Polo Shirts" },
-            { "id": "B-13", "name": "Shirts" },
-            { "id": "B-18", "name": "T Shirts" },
-          ],
-        },
-        {
-          "label": "Pants",
-          "items": [
-            { "id": "B-08", "name": "Pants" },
-            { "id": "B-14", "name": "Shorts" },
-            { "id": "B-16", "name": "Skirts" },
-            { "id": "B-03", "name": "Dresses" },
-          ],
-        },
-        {
-          "label": "Outwears",
-          "items": [
-            { "id": "B-06", "name": "Hoodies" },
-            { "id": "B-07", "name": "Jackets" },
-            { "id": "B-10", "name": "Pullovers" },
-            { "id": "B-19", "name": "Vests" },
-          ],
-        },
-        {
-          "label": "Footwears",
-          "items": [{ "id": "B-04", "name": "Footwear" }],
-        },
-        {
-          "label": "Accessories",
-          "items": [{ "id": "B-01", "name": "Accessories" },
-            { "id": "B-05", "name": "Gloves" },
-            { "id": "B-12", "name": "Scarves" },
-          ],
-        },
-      ],
+        "id": "B-CW",
+        "name": "Corporate Wear",
+        "subTypes": [
+            {
+                "label": "Top",
+                "items": [
+                    { "id": "B-09", "name": "Polo Shirts" },
+                    { "id": "B-13", "name": "Shirts" },
+                    { "id": "B-18", "name": "T Shirts" },
+                ],
+            },
+            {
+                "label": "Pants",
+                "items": [
+                    { "id": "B-08", "name": "Pants" },
+                    { "id": "B-14", "name": "Shorts" },
+                    { "id": "B-16", "name": "Skirts" },
+                    { "id": "B-03", "name": "Dresses" },
+                ],
+            },
+            {
+                "label": "Outwears",
+                "items": [
+                    { "id": "B-06", "name": "Hoodies" },
+                    { "id": "B-07", "name": "Jackets" },
+                    { "id": "B-10", "name": "Pullovers" },
+                    { "id": "B-19", "name": "Vests" },
+                ],
+            },
+            {
+                "label": "Footwears",
+                "items": [{ "id": "B-04", "name": "Footwear" }],
+            },
+            {
+                "label": "Accessories",
+                "items": [{ "id": "B-01", "name": "Accessories" },
+                { "id": "B-05", "name": "Gloves" },
+                { "id": "B-12", "name": "Scarves" },
+                ],
+            },
+        ],
     },
     {
-      "id": "B-WW",
-      "name": "Workwear",
-      "subTypes": [
-        {
-          "label": "Top",
-          "items": [
-            { "id": "B-18", "name": "T Shirts" },
-            { "id": "B-09", "name": "Polo Shirts" },
-            { "id": "B-13", "name": "Shirts" },
-          ],
-        },
-        {
-          "label": "Pants",
-          "items": [
-            { "id": "B-08", "name": "Pants" },
-            { "id": "B-14", "name": "Shorts" },
-            { "id": "B-11", "name": "Roughalls & Overalls" },
-          ],
-        },
-        {
-          "label": "Outwears",
-          "items": [
-            { "id": "B-06", "name": "Hoodies" },
-            { "id": "B-07", "name": "Jackets" },
-            { "id": "B-19", "name": "Vests" },
-          ],
-        },
-        {
-          "label": "Footwears",
-          "items": [{ "id": "B-04", "name": "Safety Footwear" }],
-        },
-        {
-          "label": "Accessories",
-          "items": [{ "id": "B-01", "name": "Accessories" },
-            { "id": "B-05", "name": "Gloves" },
-            { "id": "B-20", "name": "Misc Clothing" },
-          ],
-        },
-      ],
+        "id": "B-WW",
+        "name": "Workwear",
+        "subTypes": [
+            {
+                "label": "Top",
+                "items": [
+                    { "id": "B-18", "name": "T Shirts" },
+                    { "id": "B-09", "name": "Polo Shirts" },
+                    { "id": "B-13", "name": "Shirts" },
+                ],
+            },
+            {
+                "label": "Pants",
+                "items": [
+                    { "id": "B-08", "name": "Pants" },
+                    { "id": "B-14", "name": "Shorts" },
+                    { "id": "B-11", "name": "Roughalls & Overalls" },
+                ],
+            },
+            {
+                "label": "Outwears",
+                "items": [
+                    { "id": "B-06", "name": "Hoodies" },
+                    { "id": "B-07", "name": "Jackets" },
+                    { "id": "B-19", "name": "Vests" },
+                ],
+            },
+            {
+                "label": "Footwears",
+                "items": [{ "id": "B-04", "name": "Safety Footwear" }],
+            },
+            {
+                "label": "Accessories",
+                "items": [{ "id": "B-01", "name": "Accessories" },
+                { "id": "B-05", "name": "Gloves" },
+                { "id": "B-20", "name": "Misc Clothing" },
+                ],
+            },
+        ],
     },
     {
-      "id": "B-HT",
-      "name": "Hospitality",
-      "subTypes": [
-        {
-          "label": "Top",
-          "items": [
-            { "id": "B-18", "name": "T Shirts" },
-            { "id": "B-02", "name": "Aprons" },
-            { "id": "B-09", "name": "Polo Shirts" },
-            { "id": "B-13", "name": "Shirts" },
-          ],
-        },
-        {
-          "label": "Pants",
-          "items": [
-            { "id": "B-08", "name": "Pants" },
-            { "id": "B-14", "name": "Shorts" },
-            { "id": "B-16", "name": "Skirts" },
-          ],
-        },
-        {
-          "label": "Outwears",
-          "items": [], // Empty as no specific items for this category
-        },
-        {
-          "label": "Footwears",
-          "items": [], // Empty as no specific items for this category
-        },
-        {
-          "label": "Accessories",
-          "items": [{ "id": "B-12", "name": "Scarves" },
-          ],
-        },
-      ],
+        "id": "B-HT",
+        "name": "Hospitality",
+        "subTypes": [
+            {
+                "label": "Top",
+                "items": [
+                    { "id": "B-18", "name": "T Shirts" },
+                    { "id": "B-02", "name": "Aprons" },
+                    { "id": "B-09", "name": "Polo Shirts" },
+                    { "id": "B-13", "name": "Shirts" },
+                ],
+            },
+            {
+                "label": "Pants",
+                "items": [
+                    { "id": "B-08", "name": "Pants" },
+                    { "id": "B-14", "name": "Shorts" },
+                    { "id": "B-16", "name": "Skirts" },
+                ],
+            },
+            {
+                "label": "Outwears",
+                "items": [], // Empty as no specific items for this category
+            },
+            {
+                "label": "Footwears",
+                "items": [], // Empty as no specific items for this category
+            },
+            {
+                "label": "Accessories",
+                "items": [{ "id": "B-12", "name": "Scarves" },
+                ],
+            },
+        ],
     },
     {
-      "id": "B-AW",
-      "name": "Activewear",
-      "subTypes": [
-        {
-          "label": "Top",
-          "items": [
-            { "id": "B-18", "name": "Athletic T Shirts" },
-            { "id": "B-09", "name": "Athletic Polo Shirts" },
-            { "id": "B-15", "name": "Singlets" },
-          ],
-        },
-        {
-          "label": "Pants",
-          "items": [
-            { "id": "B-08", "name": "Athletic Pants" },
-            { "id": "B-14", "name": "Athletic Shorts" },
-          ],
-        },
-        {
-          "label": "Outwears",
-          "items": [
-            { "id": "B-06", "name": "Athletic Hoodies" },
-            { "id": "B-07", "name": "Athletic Jackets" },
-          ],
-        },
-        {
-          "label": "Footwears",
-          "items": [{ "id": "B-04", "name": "Athletic Footwear" }],
-        },
-        {
-          "label": "Accessories",
-          "items": [
-            { "id": "B-05", "name": "Gloves" },
-            { "id": "B-12", "name": "Scarves" },
+        "id": "B-AW",
+        "name": "Activewear",
+        "subTypes": [
+            {
+                "label": "Top",
+                "items": [
+                    { "id": "B-18", "name": "Athletic T Shirts" },
+                    { "id": "B-09", "name": "Athletic Polo Shirts" },
+                    { "id": "B-15", "name": "Singlets" },
+                ],
+            },
+            {
+                "label": "Pants",
+                "items": [
+                    { "id": "B-08", "name": "Athletic Pants" },
+                    { "id": "B-14", "name": "Athletic Shorts" },
+                ],
+            },
+            {
+                "label": "Outwears",
+                "items": [
+                    { "id": "B-06", "name": "Athletic Hoodies" },
+                    { "id": "B-07", "name": "Athletic Jackets" },
+                ],
+            },
+            {
+                "label": "Footwears",
+                "items": [{ "id": "B-04", "name": "Athletic Footwear" }],
+            },
+            {
+                "label": "Accessories",
+                "items": [
+                    { "id": "B-05", "name": "Gloves" },
+                    { "id": "B-12", "name": "Scarves" },
 
-          ],
-        },
-      ],
+                ],
+            },
+        ],
     },
     {
-      "id": "B-BR",
-      "name": "Brands",
-      "subTypes": [
-        {
-          "label": "Top",
-          "items": [
-            { "id": "B-09", "name": "Corporate Polo Shirts" },
-            { "id": "B-13", "name": "Corporate Shirts" },
-            { "id": "B-18", "name": "Corporate T Shirts" },
-          ],
-        },
-        {
-          "label": "Pants",
-          "items": [{ "id": "B-14", "name": "Athletic Shorts" }],
-        },
-        {
-          "label": "Outwears",
-          "items": [{ "id": "B-06", "name": "Athletic Hoodies" }],
-        },
-        {
-          "label": "Footwears",
-          "items": [{ "id": "B-04", "name": "Safety Footwear" }],
-        },
-        {
-          "label": "Accessories",
-          "items": [{ "id": "B-12", "name": "Scarves" }],
-        },
-      ],
+        "id": "B-BR",
+        "name": "Brands",
+        "subTypes": [
+            {
+                "label": "Top",
+                "items": [
+                    { "id": "B-09", "name": "Corporate Polo Shirts" },
+                    { "id": "B-13", "name": "Corporate Shirts" },
+                    { "id": "B-18", "name": "Corporate T Shirts" },
+                ],
+            },
+            {
+                "label": "Pants",
+                "items": [{ "id": "B-14", "name": "Athletic Shorts" }],
+            },
+            {
+                "label": "Outwears",
+                "items": [{ "id": "B-06", "name": "Athletic Hoodies" }],
+            },
+            {
+                "label": "Footwears",
+                "items": [{ "id": "B-04", "name": "Safety Footwear" }],
+            },
+            {
+                "label": "Accessories",
+                "items": [{ "id": "B-12", "name": "Scarves" }],
+            },
+        ],
     },
 ]
-export const headWear =[
+export const headWear = [
     {
         "id": "G",
         "name": "Headwear",
