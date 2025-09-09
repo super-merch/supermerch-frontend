@@ -39,9 +39,11 @@ import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/Promotional
 import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
 import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
 import { toast } from "react-toastify";
-import { megaMenu, headWear } from "@/assets/assets";
+import {  headWear } from "@/assets/assets";
+import {  megaMenu } from "@/assets/newAssets";
 import { megaMenuClothing } from "@/assets/asset";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { set } from "react-hook-form";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -332,6 +334,7 @@ const Spromotional = () => {
           setTotalFilteredPages(
             Math.ceil(sortedProducts.length / itemsPerPage)
           );
+          setCurrentPage(1);
         } else {
           setFilterError("No products found in the specified price range");
         }
@@ -500,8 +503,9 @@ const Spromotional = () => {
 
   // Fetch products when page or sort changes (only when no price filter is active)
   useEffect(() => {
-    if (selectedParamCategoryId && !isPriceFilterActive) {
-      fetchParamProducts(selectedParamCategoryId, currentPage).then(
+    const fetchProducts = async () => {
+      if (selectedParamCategoryId && !isPriceFilterActive) {
+      await fetchParamProducts(selectedParamCategoryId, currentPage).then(
         (response) => {
           if (response && response.total_pages) {
             setTotalApiPages(response.total_pages);
@@ -509,6 +513,8 @@ const Spromotional = () => {
         }
       );
     }
+    }
+    fetchProducts();
   }, [currentPage, sortOption, selectedParamCategoryId, isPriceFilterActive]);
 
   useEffect(() => {
@@ -554,24 +560,27 @@ const Spromotional = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const handleSubCategories = (
-    subCategory,
-    categoryId,
-    titleName,
-    labelName
-  ) => {
-    const encodedTitleName = encodeURIComponent(titleName);
-    const encodedlabelName = encodeURIComponent(labelName);
-    setSearchParams({
-      categoryName: encodedTitleName,
-      category: categoryId,
-      label: encodedlabelName,
-    });
-    setSelectedParamCategoryId(categoryId);
-    setActiveFilterCategory(subCategory);
-    setCurrentPage(1);
-    setSidebarActiveCategory(titleName);
-  };
+  const handleSubCategories = (subCategory, categoryId, titleName, labelName) => {
+  const encodedTitleName = encodeURIComponent(titleName);
+  const encodedlabelName = encodeURIComponent(labelName);
+  setSearchParams({
+    categoryName: encodedTitleName,
+    category: categoryId,
+    label: encodedlabelName,
+  });
+
+  // Clear old results so they don't flash
+  setParamProducts({ data: [], item_count: 0, total_pages: 0 });
+  // make sure loading shows skeleton state until fetch resolves
+  // (only do this if fetchParamProducts doesn't set loading itself synchronously)
+  // setParamLoading(true);
+
+  setSelectedParamCategoryId(categoryId);
+  setActiveFilterCategory(subCategory);
+  setCurrentPage(1);
+  setSidebarActiveCategory(titleName);
+};
+
 
   useEffect(() => {
     const urlCategory = searchParams.get("category");
@@ -608,18 +617,18 @@ const Spromotional = () => {
     }
   }, [searchParams, setSelectedParamCategoryId, v1categories]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (selectedParamCategoryId && !isPriceFilterActive) {
-        try {
-          await fetchParamProducts(selectedParamCategoryId, currentPage);
-        } catch (error) {
-          toast.error("Error fetching products for category");
-        }
-      }
-    };
-    fetchData();
-  }, [selectedParamCategoryId, currentPage, isPriceFilterActive]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (selectedParamCategoryId && !isPriceFilterActive) {
+  //       try {
+  //         await fetchParamProducts(selectedParamCategoryId, currentPage);
+  //       } catch (error) {
+  //         toast.error("Error fetching products for category");
+  //       }
+  //     }
+  //   };
+  //   fetchData();
+  // }, [selectedParamCategoryId, currentPage, isPriceFilterActive]);
 
   useEffect(() => {
     if (paramProducts && paramProducts.total_pages && !isPriceFilterActive) {
@@ -700,14 +709,15 @@ const getCurrentPageProducts = () => {
 
   // Calculate total count for display
   const getTotalCount = () => {
-    if (isPriceFilterActive) {
-      return allFilteredProducts.length;
-    } else if (searchProductName.trim() !== "") {
-      return currentPageFilteredCount;
-    } else {
-      return paramProducts.item_count || 0;
-    }
-  };
+  if (isPriceFilterActive) {
+    return allFilteredProducts.length;
+  } else if (searchProductName.trim() !== "") {
+    return currentPageFilteredCount;
+  } else {
+    return paramProducts?.item_count || 0;
+  }
+};
+
   // console.log(filteredCategories)
   const clothing = [
     { id: "B-01", name: "Accessories" },
@@ -787,9 +797,9 @@ const getCurrentPageProducts = () => {
                                     {group?.items?.map((item) => (
                                       <li
                                         key={item.id}
-                                        className="hover:underline ml-4"
+                                        className={`hover:underline ml-4 ${skeletonLoading ? "cursor-not-allowed" : ""}`}
                                       >
-                                        <button
+                                        <button disabled={skeletonLoading|| isFiltering}
                                           onClick={() =>
                                             handleSubCategories(
                                               item.name,
@@ -802,7 +812,7 @@ const getCurrentPageProducts = () => {
                                             activeFilterCategory === item.name
                                               ? "text-blue-500"
                                               : ""
-                                          }`}
+                                          } ${skeletonLoading ? "cursor-not-allowed" : ""}`}
                                         >
                                           {item.name}
                                         </button>
