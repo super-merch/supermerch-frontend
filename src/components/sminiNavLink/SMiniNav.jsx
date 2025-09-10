@@ -66,6 +66,26 @@ const SMiniNav = () => {
   const getNav = async () => {
     await fetchV1Categories();
   };
+  const searchRef = useRef(null);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchModal(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  // const [showCartModal, setShowCartModal] = useState(false);
+  // const [showFavModal, setShowFavModal] = useState(false);
+  // const [showUserModal, setShowUserModal] = useState(false);
+  // const [showFilterModal, setShowFilterModal] = useState(false);
+  // const [showPriceModal, setShowPriceModal] = useState(false);
 
   useEffect(() => {
     getNav();
@@ -374,61 +394,445 @@ const SMiniNav = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-6 pt-2 text-white Mycontainer">
-          <Link to={"/"} className="relative z-10">
+        <div className="flex items-center justify-between gap-2 pt-2 text-white Mycontainer">
+          {/* Mobile hamburger menu - positioned on left */}
+          <div className="lg:hidden flex items-center gap-3 flex-shrink-0">
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <div className="flex items-center justify-between">
+                <SheetTrigger>
+                  <div
+                    onClick={toggleNavbar}
+                    className="text-black focus:outline-none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  </div>
+                </SheetTrigger>
+              </div>
+              {/* Mobile sheet content */}
+              <SheetContent className="overflow-y-auto" side={"left"}>
+                <SheetHeader>
+                  <SheetTitle className="mb-3 text-2xl text-smallHeader">
+                    SuperMerch
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="space-y-2">
+                  {route.map((link, index) => (
+                    <li
+                      key={index}
+                      onClick={() => {
+                        if (link.name == "Sale") {
+                          navigate("/sales");
+                          setIsSheetOpen(false);
+                        } else if (link.name == "24 Hour production") {
+                          navigate("/hour-production");
+                          setIsSheetOpen(false);
+                        } else if (link.name == "Return Gifts") {
+                          navigate("/shop");
+                          setIsSheetOpen(false);
+                        } else if (link.name == "Australia Made") {
+                          navigate("/australia-made");
+                          setIsSheetOpen(false);
+                        }
+                      }}
+                      className="list-none cursor-pointer"
+                    >
+                      <Collapsible>
+                        <CollapsibleTrigger className="flex items-center capitalize cursor-pointer">
+                          {link.name}
+                          {(link.name === "Promotional" ||
+                            link.name === "Clothing" ||
+                            link.name === "Headwear") && (
+                            <RiArrowDropDownLine className="text-xl transition-all duration-300" />
+                          )}
+                        </CollapsibleTrigger>
+                        {link.name === "Promotional" && (
+                          <CollapsibleContent className="ml-4 space-y-2">
+                            {megaMenu?.map((item) => (
+                              <Collapsible
+                                key={item.id}
+                                open={openPromoId === item.id}
+                                onOpenChange={(isOpen) =>
+                                  setOpenPromoId(isOpen ? item.id : null)
+                                }
+                              >
+                                <div>
+                                  <CollapsibleTrigger className="flex items-center justify-between gap-2 text-sm font-medium text-black transition-colors text-start">
+                                    {item.name}
+                                    <ChevronRight
+                                      className={`h-3 w-3 ${
+                                        openPromoId === item.id && "rotate-90"
+                                      }`}
+                                    />
+                                  </CollapsibleTrigger>
+                                  <CollapsibleContent>
+                                    <div className="ml-6 space-y-2">
+                                      {item.subTypes?.map(
+                                        (subType, subIndex) => (
+                                          <button
+                                            key={subIndex}
+                                            onClick={() => {
+                                              handleSubCategories(
+                                                subType.name,
+                                                subType.id,
+                                                item.name
+                                              );
+                                              setIsSheetOpen(false);
+                                            }}
+                                            className="font-semibold hover:underline text-[13px] block text-start text-black"
+                                          >
+                                            {subType.name}
+                                          </button>
+                                        )
+                                      )}
+                                    </div>
+                                  </CollapsibleContent>
+                                </div>
+                              </Collapsible>
+                            ))}
+                          </CollapsibleContent>
+                        )}
+                        {link.name === "Clothing" && clothingCategory && (
+                          <CollapsibleContent className="ml-4 space-y-2">
+                            {clothingCategory.subTypes?.map(
+                              (subType, subIndex) => (
+                                <button
+                                  key={subIndex}
+                                  onClick={() => {
+                                    handleSubCategories(
+                                      subType.name,
+                                      subType.id,
+                                      clothingCategory.name
+                                    );
+                                    setIsSheetOpen(false);
+                                  }}
+                                  className="font-semibold hover:underline text-[13px] block text-start text-black"
+                                >
+                                  {subType.name}
+                                </button>
+                              )
+                            )}
+                          </CollapsibleContent>
+                        )}
+                        {link.name === "Headwear" && headwearCategory && (
+                          <CollapsibleContent className="ml-4 space-y-2">
+                            {headwearCategory.subTypes?.map(
+                              (subType, subIndex) => (
+                                <button
+                                  key={subIndex}
+                                  onClick={() => {
+                                    handleSubCategories(
+                                      subType.name,
+                                      subType.id,
+                                      headwearCategory.name
+                                    );
+                                    setIsSheetOpen(false);
+                                  }}
+                                  className="font-semibold hover:underline text-[13px] block text-start text-black"
+                                >
+                                  {subType.name}
+                                </button>
+                              )
+                            )}
+                          </CollapsibleContent>
+                        )}
+                      </Collapsible>
+                    </li>
+                  ))}
+                </div>
+              </SheetContent>
+            </Sheet>
+          <Link to={"/"} className="relative z-10 flex-shrink-0">
             <img
               src={supermerch}
-              className="object-contain w-24 pl-8 lg:w-36"
+              className="object-contain w-24 lg:w-36 pl-2 lg:pl-8"
               alt=""
             />
           </Link>
-          <div className="lg:flex md:flex hidden gap-2 border border-black items-center bg-white lg:w-[55%] md:w-[55%] w-full h-[48px] px-4">
-            <input
-              value={inputValue}
-              onChange={handleChange}
-              type="text"
-              placeholder="Search for products..."
-              className="w-full text-black bg-transparent outline-none"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch();
-                }
-              }}
-            />
-            <IoSearchSharp
-              onClick={handleSearch}
-              className="text-xl cursor-pointer text-black"
-            />
           </div>
-          <div className="relative z-20 flex items-center gap-2 lg:gap-6 md:gap-6 sm:gap-5">
-            <Link to={"/cart"}>
+
+          {/* Logo */}
+          <Link to={"/"} className="relative hidden lg:flex z-10 flex-shrink-0">
+            <img
+              src={supermerch}
+              className="object-contain w-24 lg:w-30 xl:w-36 pl-2"
+              alt=""
+            />
+          </Link>
+
+          {/* Navigation - Desktop Only */}
+          <div className="hidden lg:flex flex-1 justify-center max-w-4xl mx-auto">
+            <nav className="py-3 z-20 text-white">
+              <ul className="flex space-x-3 xl:space-x-5  ">
+                {route.map((link, index) => (
+                  <li
+                    key={index}
+                    onMouseLeave={() => {
+                      sethoverMegaMenu(false);
+                      sethoverClothingMenu(false);
+                      setHoverHeadwearMenu(false);
+                    }}
+                    className={`cursor-pointer whitespace-nowrap ${
+                      link.name === "Promotional" ||
+                      link.name === "Clothing" ||
+                      link.name === "Headwear"
+                        ? "group relative"
+                        : ""
+                    }`}
+                  >
+                    <div className="text-customBlue">
+                      <span
+                        className="flex items-center capitalize text-sm xl:text-base"
+                        onMouseEnter={() => {
+                          if (link.name === "Promotional") {
+                            sethoverMegaMenu(true);
+                          } else if (link.name === "Clothing") {
+                            sethoverClothingMenu(true);
+                          } else if (link.name === "Headwear") {
+                            setHoverHeadwearMenu(true);
+                          }
+                        }}
+                        onClick={() => {
+                          if (link.name === "Promotional") return;
+                          conditionalCategoryNameHandler(link);
+                        }}
+                      >
+                        {link.name}
+                        {(link.name === "Promotional" ||
+                          link.name === "Clothing" ||
+                          link.name === "Headwear") && (
+                          <RiArrowDropDownLine className="-rotate-90 group-hover:rotate-[52px] text-xl transition-all duration-300 ml-1" />
+                        )}
+                      </span>
+
+                      {/* Dropdown menus */}
+                      {link.name === "Promotional" && (
+                        <div
+                          className={`absolute -left-[120px] lg:-left-[150px] top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
+                            hoverMegaMenu ? "group-hover:flex" : "hidden"
+                          }`}
+                        >
+                          <div className="container mx-auto">
+                            <div className="overflow-hidden rounded-lg border bg-[#333333] w-[900px] shadow-lg">
+                              <div className="grid grid-cols-[1fr_3fr]">
+                                <div className="border-r backdrop-blur-sm">
+                                  <nav className="flex flex-col py-2">
+                                    {megaMenu?.map((item) => (
+                                      <button
+                                        key={item.id}
+                                        className={cn(
+                                          "flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted",
+                                          activeItem === item.id
+                                            ? "bg-muted font-medium text-primary"
+                                            : "text-white"
+                                        )}
+                                        onMouseEnter={() =>
+                                          setActiveItem(item.id)
+                                        }
+                                        onClick={() =>
+                                          handleNameCategories(
+                                            item.name,
+                                            item.id
+                                          )
+                                        }
+                                      >
+                                        {item.name}
+                                        <ChevronRight className="w-4 h-4" />
+                                      </button>
+                                    ))}
+                                  </nav>
+                                </div>
+                                <div className="w-full p-5">
+                                  <div className="grid grid-cols-3 gap-4">
+                                    {megaMenu
+                                      .find((item) => item.id === activeItem)
+                                      ?.subTypes?.map((subType, index) => (
+                                        <button
+                                          key={index}
+                                          onClick={() =>
+                                            handleSubCategories(
+                                              subType.name,
+                                              subType.id,
+                                              megaMenu.find(
+                                                (item) => item.id === activeItem
+                                              )?.name
+                                            )
+                                          }
+                                          className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                                        >
+                                          {subType.name}
+                                        </button>
+                                      ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {link.name === "Clothing" && clothingCategory && (
+                        <div
+                          className={`absolute -left-[120px] lg:-left-[150px] top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
+                            hoverClothingMenu ? "group-hover:flex" : "hidden"
+                          }`}
+                        >
+                          <div className="container mx-auto">
+                            <div className="overflow-hidden rounded-lg border bg-[#333333] w-[600px] shadow-lg">
+                              <div className="p-5">
+                                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                                  {clothingCategory.name}
+                                </h3>
+                                <div className="grid grid-cols-3 gap-4">
+                                  {clothingCategory.subTypes?.map(
+                                    (subType, index) => (
+                                      <button
+                                        key={index}
+                                        onClick={() =>
+                                          handleSubCategories(
+                                            subType.name,
+                                            subType.id,
+                                            clothingCategory.name
+                                          )
+                                        }
+                                        className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                                      >
+                                        {subType.name}
+                                      </button>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {link.name === "Headwear" && headwearCategory && (
+                        <div
+                          className={`absolute -left-[120px] lg:-left-[150px] top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
+                            hoverHeadwearMenu ? "group-hover:flex" : "hidden"
+                          }`}
+                        >
+                          <div className="container mx-auto">
+                            <div className="overflow-hidden rounded-lg border bg-[#333333] w-[600px] shadow-lg">
+                              <div className="p-5">
+                                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                                  {headwearCategory.name}
+                                </h3>
+                                <div className="grid grid-cols-3 gap-4">
+                                  {headwearCategory.subTypes?.map(
+                                    (subType, index) => (
+                                      <button
+                                        key={index}
+                                        onClick={() => {
+                                          handleSubCategories(
+                                            subType.name,
+                                            subType.id,
+                                            headwearCategory.name
+                                          );
+                                          setHoverHeadwearMenu(false);
+                                        }}
+                                        className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                                      >
+                                        {subType.name}
+                                      </button>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Search Modal */}
+          {showSearchModal && (
+            <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-60">
+              <motion.div
+                ref={searchRef}
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="relative w-full max-w-lg sm:max-w-2xl mt-20 mx-4 bg-white rounded-xl shadow-lg flex items-center md:px-4 md:py-3 px-2 py-2"
+              >
+                <input
+                  value={inputValue}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Search for products..."
+                  autoFocus
+                  className="flex-1 text-black bg-transparent outline-none text-base md:text-lg placeholder-gray-400"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch();
+                      setShowSearchModal(false);
+                    }
+                  }}
+                />
+                <IoSearchSharp
+                  onClick={() => {
+                    handleSearch();
+                    setShowSearchModal(false);
+                  }}
+                  className="text-2xl cursor-pointer text-blue-600 ml-3 hover:scale-110 transition-transform"
+                />
+              </motion.div>
+            </div>
+          )}
+
+          {/* Right side icons */}
+          <div className="relative z-20 flex items-center gap-3  xl:gap-6 flex-shrink-0">
+            <div>
+              <IoSearchSharp
+                onClick={() => setShowSearchModal(true)}
+                className="text-xl xl:text-2xl cursor-pointer text-black"
+              />
+            </div>
+            <Link to={"/cart"} className="relative">
               {totalQuantity > 0 && (
-                <span
-                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500  text-[13px]
-                   rounded-full w-5 h-5 flex items-center justify-center`}
-                >
+                <span className="absolute -top-1.5 -right-1.5 bg-white border border-red-500 text-red-500 text-[11px] lg:text-[13px] rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center">
                   {totalQuantity}
                 </span>
               )}
-              <IoCartOutline className="text-3xl text-customBlue" />
+              <IoCartOutline className="text-2xl xl:text-3xl text-customBlue" />
             </Link>
-            <Link to={"/favourites"}>
+            <Link to={"/favourites"} className="relative">
               {favouriteQuantity > 0 && (
-                <span className="absolute -top-1.5 right-[35%] bg-white border border-red-500 text-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 bg-white border border-red-500 text-red-500 text-[11px] lg:text-[13px] rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center">
                   {favouriteQuantity}
                 </span>
               )}
-              <CiHeart className="text-3xl text-customBlue" />
+              <CiHeart className="text-2xl xl:text-3xl text-customBlue" />
             </Link>
             {!token ? (
               <Link to={"/signup"}>
-                <BiUser className="text-3xl text-customBlue" />
+                <BiUser className="text-2xl lg:text-3xl text-customBlue" />
               </Link>
             ) : (
               <div className="relative" ref={dropdownRef}>
                 <BiUser
                   onClick={toggleLogout}
-                  className="text-3xl cursor-pointer text-customBlue"
+                  className="text-2xl xl:text-3xl cursor-pointer text-customBlue"
                 />
                 {isDropdownOpen && (
                   <div className="absolute right-0 w-48 mt-2 bg-white border rounded shadow-lg">
@@ -458,7 +862,7 @@ const SMiniNav = () => {
         </div>
       </div>
 
-      <div className="relative bg-line">
+      {/* <div className="relative bg-line">
         <div className="absolute flex items-center gap-1 Mycontainer lg:relative md:relative -top-10 lg:-top-0 md:-top-0 sm:left-7 left-4 lg:left-0 lg:justify-center">
           <nav className="py-3 z-20 text-white lg:px-4">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -805,9 +1209,9 @@ const SMiniNav = () => {
             </div>
           </nav>
         </div>
-      </div>
+      </div> */}
 
-      <div className="Mycontainer">
+      {/* <div className="Mycontainer">
         <div className="mt-2 lg:hidden md:hidden flex gap-2 border border-black items-center bg-white w-full h-[40px] px-4">
           <input
             value={inputValue}
@@ -826,9 +1230,9 @@ const SMiniNav = () => {
             className="text-xl cursor-pointer text-black"
           />
         </div>
-      </div>
+      </div> */}
 
-      <div className="py-3 mt-1 bg-shipping lg:mt-0 md:mt-0">
+      {/* <div className="py-3 mt-1 bg-shipping lg:mt-0 md:mt-0">
         <div className="flex flex-wrap items-center justify-center gap-2 Mycontainer lg:gap-8 md:gap-8">
           <h1 className="text-sm font-medium lg:text-lg md:text-lg text-smallHeader">
             Get Discount Using Coupon
@@ -846,7 +1250,7 @@ const SMiniNav = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {navbarLogout && (
         <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">
