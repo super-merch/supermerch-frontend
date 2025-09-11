@@ -23,10 +23,10 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { AppContext } from "../../context/AppContext";
 import noimage from "/noimage.png";
-import DescripTabs from "./DescriptionTabs/DescripTabs";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { colornames } from "color-name-list";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -34,8 +34,7 @@ const ProductDetails = () => {
   //get id from navigate's state
 
   // const { id } = useParams();
-    const { state: id } = useLocation();
-    console.log(id)
+  const { state: id } = useLocation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -51,6 +50,7 @@ const ProductDetails = () => {
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [activeInfoTab, setActiveInfoTab] = useState("features"); // features | decoration | pricing
 
   useEffect(() => {
     const fetchUserEmail = async () => {
@@ -99,7 +99,7 @@ const ProductDetails = () => {
         setSingle_Product(data.data, "fetchSingleProduct");
         setLoading(false);
       }
-      
+
       // First, try to find sizes in details array
       const details = data.data?.product.details.filter((item) => {
         return (
@@ -108,27 +108,39 @@ const ProductDetails = () => {
           item.name.toLowerCase() === "size"
         );
       });
-      
+
       let extractedSizes = [];
-      
+
       if (details && details.length > 0) {
         // If sizes found in details array, use them
-        extractedSizes = details[0].detail.split(",").map(size => size.trim());
+        extractedSizes = details[0].detail
+          .split(",")
+          .map((size) => size.trim());
       } else {
         // If no sizes in details, check description for sizes
         const description = data.data?.product.description || "";
         const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
-        
+
         if (sizesMatch) {
           const sizesString = sizesMatch[1].trim();
           // Handle different formats like "XS - 2XL" or "72, 77, 82, ..."
           if (sizesString.includes(" - ")) {
             // Handle range format like "XS - 2XL"
             const [start, end] = sizesString.split(" - ");
-            const sizeOrder = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
+            const sizeOrder = [
+              "XS",
+              "S",
+              "M",
+              "L",
+              "XL",
+              "2XL",
+              "3XL",
+              "4XL",
+              "5XL",
+            ];
             const startIndex = sizeOrder.indexOf(start.trim());
             const endIndex = sizeOrder.indexOf(end.trim());
-            
+
             if (startIndex !== -1 && endIndex !== -1) {
               extractedSizes = sizeOrder.slice(startIndex, endIndex + 1);
             } else {
@@ -137,11 +149,11 @@ const ProductDetails = () => {
             }
           } else {
             // Handle comma-separated format
-            extractedSizes = sizesString.split(",").map(size => size.trim());
+            extractedSizes = sizesString.split(",").map((size) => size.trim());
           }
         }
       }
-      
+
       setSizes(extractedSizes);
       setSelectedSize(extractedSizes[0] || extractedSizes[1]);
 
@@ -306,7 +318,7 @@ const ProductDetails = () => {
       if (hasColors) {
         const firstColor = product.colours.list[0].colours[0];
         setSelectedColor(firstColor);
-        console.log("Colors:",product.colours.list);
+        console.log("Colors:", product.colours.list);
         setActiveImage(
           colorImages[firstColor] || product.images?.[0] || noimage
         );
@@ -789,10 +801,49 @@ const ProductDetails = () => {
       </div>
     );
 
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
+        <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Loading Spinner */}
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
+            </div>
+
+            {/* Loading Text */}
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Loading Product Details
+              </h3>
+              <p className="text-sm text-gray-600">
+                Please wait while we fetch the latest information...
+              </p>
+            </div>
+
+            {/* Progress Dots */}
+            <div className="flex space-x-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+              <div
+                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                style={{ animationDelay: "0.1s" }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                style={{ animationDelay: "0.2s" }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="Mycontainer ">
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-2">
           {/* 1st culmn  */}
           {loading ? (
             Array.from({ length: 1 }).map((_, index) => (
@@ -829,14 +880,14 @@ const ProductDetails = () => {
                 }}
               >
                 <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-2 sm:p-2">
-                    <IoArrowBackOutline className="text-base lg:text-xl md:text-xl sm:text-xl" />
+                  <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-1 sm:p-1">
+                    <IoArrowBackOutline className="text-base text-md" />
                   </button>
                 </div>
 
                 <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-2 sm:p-2">
-                    <IoMdArrowForward className="text-base lg:text-xl md:text-xl sm:text-xl" />
+                  <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-1 sm:p-1">
+                    <IoMdArrowForward className="text-base text-md" />
                   </button>
                 </div>
 
@@ -866,593 +917,1048 @@ const ProductDetails = () => {
           )}
           {/* 2nd column  */}
           <div>
-            <h2
-              className={`text-2xl ${
-                product?.name ? "font-bold" : "font-medium"
-              }`}
-            >
-              {product?.name ? product?.name : "Loading ..."}
-            </h2>
-            {/* <div className="flex flex-wrap items-center ">
+            <div className="flex justify-between">
+              <div>
+                <h2
+                  className={`text-2xl ${
+                    product?.name ? "font-bold" : "font-medium"
+                  }`}
+                >
+                  {product?.name}
+                </h2>{" "}
+                <div className="flex flex-wrap items-center gap-2 py-1">
+                  {!loading && (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200">
+                      SKU: SM-{single_product?.supplier.supplier_id}-
+                      {single_product?.meta.id}
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-200">
+                    In Stock
+                  </span>
+                </div>
+                {single_product?.product?.colours?.list.length > 0 && (
+                  <div className="flex justify-between items-center gap-4 mb-2">
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {(() => {
+                        // Extract all colors and remove duplicates
+                        const allColors = single_product?.product?.colours?.list
+                          .flatMap((colorObj) => colorObj.colours)
+                          .filter(
+                            (color, index, array) =>
+                              array.indexOf(color) === index
+                          );
+
+                        return allColors.length > 0 ? (
+                          allColors.map((color, index) => {
+                            const matchedColor = colornames.find(
+                              (item) => color === item.name
+                            );
+
+                            return (
+                              <div
+                                key={index}
+                                className={`w-5 h-5 text-xs font-medium rounded-full cursor-pointer border ${
+                                  selectedColor === color
+                                    ? "border-1 border-blue-500"
+                                    : "border-slate-900"
+                                }`}
+                                style={{
+                                  backgroundColor: matchedColor?.hex,
+                                }}
+                                onClick={() => handleColorClick(color)}
+                              ></div>
+                            );
+                          })
+                        ) : (
+                          <p>No colors available for this product</p>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* <div className="flex flex-wrap items-center ">
               <span className="text-2xl text-smallHeader">★★★★★</span>
               <p className="ml-2 text-gray-600">
                 4.7 Star Rating (1767 User Feedback)
               </p>
             </div> */}
-            <div className="flex items-center justify-between py-2 border-b-2">
-              {!loading &&<p className="text-black">SM-{single_product?.supplier.supplier_id}-{single_product?.meta.id}</p>}
-              <p className="font-bold text-smallHeader">
-                <span className="font-normal text-stock"> Availability:</span>{" "}
-                In Stock
-              </p>
             </div>
 
-            {/* Color Selection */}
-            {single_product?.product?.colours?.list.length > 0 && (
-              <div className="mb-2">
-                <p className="mt-2 font-medium">Color:</p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {(() => {
-                    // Extract all colors and remove duplicates
-                    const allColors = single_product?.product?.colours?.list
-                      .flatMap((colorObj) => colorObj.colours)
-                      .filter(
-                        (color, index, array) => array.indexOf(color) === index
-                      );
+            {/* Feature/Decoration/Pricing Tabs */}
+            <div className="mt-1 mb-0">
+              {/* Tab headers */}
+              <div className="flex gap-2 border-b">
+                {[
+                  { key: "features", label: "Features" },
+                  { key: "decoration", label: "Decoration" },
+                  { key: "pricing", label: "Pricing Table" },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveInfoTab(tab.key)}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                      activeInfoTab === tab.key
+                        ? "border-smallHeader text-smallHeader"
+                        : "border-transparent text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-                    return allColors.length > 0 ? (
-                      allColors.map((color, index) => (
-                        <div
-                          key={index}
-                          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer border ${
-                            selectedColor === color
-                              ? "border-[3px] border-blue-500"
-                              : "border-slate-900"
-                          }`}
-                          onClick={() => handleColorClick(color)}
-                        >
-                          {color}
+              {/* Tab content */}
+              <div className="mt-3 rounded-lg border border-border bg-perUnit p-4">
+                {activeInfoTab === "features" && (
+                  <div className="space-y-1">
+                    {/* Brief Description */}
+                    {single_product?.product?.description && (
+                      <>
+                        {single_product.product.description.includes(
+                          "Features:"
+                        ) && (
+                          <div className="text-sm leading-6 text-gray-800 mb-2">
+                            <span className="font-semibold">Features:</span>
+                            <ul className="mt-2 space-y-1 list-disc list-inside">
+                              {single_product.product.description
+                                .split("Features:")[1]
+                                ?.split("\n")
+                                .filter((item) => item.trim().startsWith("*"))
+                                .map((feature, index) => (
+                                  <li key={index} className="text-gray-800">
+                                    {feature.replace("*", "").trim()}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <span className="font-semibold">Description:</span>
+                        <p className="text-sm leading-6 text-gray-800">
+                          {
+                            single_product.product.description.split(
+                              "Features:"
+                            )[0]
+                          }
+                        </p>
+                      </>
+                    )}
+
+                    {/* Highlights chips */}
+                    {Array.isArray(single_product?.product?.features) &&
+                      single_product.product.features.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {single_product.product.features
+                            .slice(0, 8)
+                            .map((f, i) => (
+                              <span
+                                key={i}
+                                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200"
+                              >
+                                <span className="h-1.5 w-1.5 rounded-full bg-smallHeader" />
+                                {f}
+                              </span>
+                            ))}
+                        </div>
+                      )}
+
+                    {/* Specifications Table */}
+                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
+                      <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Specifications
+                        </h3>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <tbody className="divide-y divide-gray-200">
+                            {/* API Details */}
+                            {Array.isArray(single_product?.product?.details) &&
+                              single_product.product.details.map(
+                                (item, idx) => (
+                                  <tr key={idx} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3 capitalize">
+                                      {item?.name || "Detail"}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-pre-line">
+                                      {item?.detail || "-"}
+                                    </td>
+                                  </tr>
+                                )
+                              )}
+
+                            {/* Fallback specs */}
+                            {single_product?.product?.material && (
+                              <tr className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
+                                  Material
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {single_product.product.material}
+                                </td>
+                              </tr>
+                            )}
+
+                            {single_product?.product?.dimensions && (
+                              <tr className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
+                                  Dimensions
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {single_product.product.dimensions}
+                                </td>
+                              </tr>
+                            )}
+
+                            {single_product?.product?.packaging && (
+                              <tr className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
+                                  Packaging
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {single_product.product.packaging}
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeInfoTab === "decoration" && (
+                  <div className="space-y-3 text-sm leading-6">
+                    {single_product?.product?.decoration?.length > 0 ? (
+                      single_product.product.decoration.map((d, i) => (
+                        <div key={i} className="border-b last:border-0 pb-3">
+                          <p className="font-semibold">{d.method || d.name}</p>
+                          {d?.positions && (
+                            <p className="text-gray-600">
+                              Positions: {d.positions.join(", ")}
+                            </p>
+                          )}
+                          {d?.max_colors && (
+                            <p className="text-gray-600">
+                              Max colors: {d.max_colors}
+                            </p>
+                          )}
+                          {d?.details && (
+                            <p className="text-gray-600">{d.details}</p>
+                          )}
                         </div>
                       ))
                     ) : (
-                      <p>No colors available for this product</p>
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
+                      <p>No decoration info available.</p>
+                    )}
+                  </div>
+                )}
 
-            {/* Dropdowns */}
+                {activeInfoTab === "pricing" && (
+                  <div className="overflow-x-auto">
+                    {/* Color Selection */}
+                    {single_product?.product?.colours?.list.length > 0 && (
+                      <div className="flex justify-between items-center gap-4 mb-2">
+                        <p className="mt-2 font-medium">Color:</p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {(() => {
+                            // Extract all colors and remove duplicates
+                            const allColors =
+                              single_product?.product?.colours?.list
+                                .flatMap((colorObj) => colorObj.colours)
+                                .filter(
+                                  (color, index, array) =>
+                                    array.indexOf(color) === index
+                                );
 
-            {availablePriceGroups.length > 0 && (
-              <div className="">
-                <label
-                  htmlFor="print-method"
-                  className="block my-2  font-medium"
-                >
-                  Print Method:
-                </label>
-                <select
-                  id="print-method"
-                  value={selectedPrintMethod?.key}
-                  onChange={(e) => {
-                    const selected = availablePriceGroups.find(
-                      (method) => method.key === e.target.value
-                    );
-                    setSelectedPrintMethod(selected);
-                    // Reset quantity to first price break of new selection
-                    if (selected?.price_breaks?.length > 0) {
-                      console.log(
-                        "Selected price breaks:",
-                        selected.price_breaks[0].qty
-                      );
-                      setCurrentQuantity(selected.price_breaks[0].qty);
-                    }
-                  }}
-                  className="w-full px-2 py-4 border rounded-md outline-none"
-                >
-                  {availablePriceGroups.map((method, index) => (
-                    <option key={method.key} value={method.key}>
-                      {method.description}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            {sizes.length > 1 && (
-              <div className="">
-                <label
-                  htmlFor="print-method"
-                  className="block my-2  font-medium"
-                >
-                  Print Method:
-                </label>
-                <select
-                  id="print-method"
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full px-2 py-4 border rounded-md outline-none"
-                >
-                  {sizes
-                    .filter((item) => item !== "") // Remove empty strings first
-                    .map((item) => {
-                      // Extract only the part before \n if it exists
-                      const sizePart = item.includes("\n")
-                        ? item.split("\n")[0]
-                        : item;
-                      return sizePart;
-                    })
-                    .filter((size) => {
-                      // Now filter for valid sizes (S, M, L, XL, 2XL, 3XL, etc.)
-                      return /^[0-9]*[A-Za-z]+$/.test(size);
-                    })
-                    .map((size, index) => (
-                      <option key={index} value={size}>
-                        {size}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            )}
+                            return allColors.length > 0 ? (
+                              allColors.map((color, index) => {
+                                const matchedColor = colornames.find(
+                                  (item) =>
+                                    color === item.name ||
+                                    color.includes(item.name)
+                                );
+                                console.log(
+                                  colornames.find((item) => color === item.name)
+                                );
 
-            <div className="mb-4 ">
-              <label
-                htmlFor="logo-color"
-                className="block pt-3 mb-2 font-medium"
-              >
-                Logo Colour:
-              </label>
-              <select
-                value={logoColor}
-                onChange={(e) => setLogoColor(e.target.value)}
-                id="logo-color"
-                className="w-full px-2 py-4 border rounded-md outline-none"
-              >
-                <option>1 Colour Print</option>
-                <option>2 Colour Print</option>
-              </select>
-            </div>
-
-            <div>
-              <p className="mt-2 mb-2 text-sm font-medium ">
-                {" "}
-                Quantity ({currentQuantity}):
-              </p>
-
-              <div className="grid gap-2 mt-4 lg:grid-cols-4 max-md:grid-cols-3 max-default:grid-cols-2">
-                {selectedPrintMethod?.price_breaks?.map((item, i) => {
-                  const marginEntry = marginApi[productId];
-
-                  // Get base product price for this quantity
-                  const baseProductPrice = getPriceForQuantity(item.qty);
-
-                  // Calculate final unit price based on print method type
-                  let finalUnitPrice;
-                  if (selectedPrintMethod.type === "base") {
-                    finalUnitPrice = item.price;
-                  } else {
-                    finalUnitPrice = baseProductPrice + item.price;
-                  }
-
-                  const rawTierPrice = marginEntry
-                    ? finalUnitPrice + marginEntry.marginFlat
-                    : finalUnitPrice;
-
-                  const discountedTierPrice = rawTierPrice * discountMultiplier;
-
-                  return (
-                    <div
-                      className={`flex cursor-pointer justify-center border border-smallHeader items-end gap-2 px-2 py-3 ${
-                        activeIndex === i ? "border-blue-500 bg-blue-50" : ""
-                      }`}
-                      key={i}
-                      // onClick={() => handleBoxClick(i)}
-                      onClick={() => {
-                        setCurrentQuantity(item.qty);
-                        setActiveIndex(i);
-                      }}
-                    >
-                      {activeIndex === i && (
-                        <span className="bg-smallHeader p-1 rounded-[50%] ">
-                          <FaCheck className="text-sm text-white" />
-                        </span>
-                      )}
-                      <div>
-                        <p className="text-sm text-center">
-                          {i === 0 && "0 - "}
-                          {item.qty}+
-                        </p>
-                        <p className="text-sm">
-                          $
-                          {discountedTierPrice.toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </p>
+                                return (
+                                  <div
+                                    key={index}
+                                    className={`w-5 h-5 text-xs font-medium rounded-full cursor-pointer border ${
+                                      selectedColor === color
+                                        ? "border-[3px] border-blue-500"
+                                        : "border-slate-900"
+                                    }`}
+                                    style={{
+                                      backgroundColor: matchedColor?.hex,
+                                    }}
+                                    onClick={() => handleColorClick(color)}
+                                  ></div>
+                                );
+                              })
+                            ) : (
+                              <p>No colors available for this product</p>
+                            );
+                          })()}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-                <div
-                  className="flex justify-center px-4 py-4 text-center border cursor-pointer border-smallHeader lg:col-span-2 max-md:col-span-3 max-default:col-span-2"
-                  onClick={() => setShowQuoteForm(true)}
-                >
-                  <p className="text-sm font-semibold">Larger Order?</p>
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 mb-3">
-              <div className="py-3 border rounded-md border-smallHeader">
-                <div className="flex items-center justify-between gap-2 px-6">
-                  <button onClick={handleDecrement} className="text-2xl">
-                    -
-                  </button>
-                  <input
-                    type="text"
-                    value={currentQuantity}
-                    onChange={handleInputChange}
-                    className="text-xl text-center w-[80%] border-none outline-none"
-                    min="1"
-                  />
-                  <button onClick={handleIncrement} className="text-2xl">
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Enhanced Drag and Drop Section */}
-            <div
-              className={`px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
-                isDragging ? "border-blue-500 bg-blue-50" : "border-smallHeader"
-              }`}
-              onClick={handleDivClick}
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-            >
-              <img
-                src={selectedFile || "/drag.png"}
-                alt="Uploaded File"
-                className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-              />
-              <p className=" text-lg font-medium text-smallHeader">
-                {selectedFile
-                  ? "Logo image Uploaded"
-                  : isDragging
-                  ? "Drop files here"
-                  : "Click or Drag your Artwork/Logo to upload"}
-              </p>
-              {/* <p className="mb-1 text-xl font-semibold text-smallHeader">
+                    )}
+                    {/* Dropdowns */}
+                    {availablePriceGroups.length > 0 && (
+                      <div className="flex justify-between items-center gap-4">
+                        <label
+                          htmlFor="print-method"
+                          className="w-full my-2  font-medium"
+                        >
+                          Print Method:
+                        </label>
+                        <select
+                          id="print-method"
+                          value={selectedPrintMethod?.key}
+                          onChange={(e) => {
+                            const selected = availablePriceGroups.find(
+                              (method) => method.key === e.target.value
+                            );
+                            setSelectedPrintMethod(selected);
+                            // Reset quantity to first price break of new selection
+                            if (selected?.price_breaks?.length > 0) {
+                              setCurrentQuantity(selected.price_breaks[0].qty);
+                            }
+                          }}
+                          className="w-full px-2 py-2 border rounded-md outline-none pr-3"
+                        >
+                          {availablePriceGroups.map((method, index) => (
+                            <option key={method.key} value={method.key}>
+                              {method.description}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {sizes.length > 1 && (
+                      <div className="flex justify-between items-center gap-4 my-2">
+                        <label
+                          htmlFor="print-method"
+                          className="w-full my-2  font-medium"
+                        >
+                          Size:
+                        </label>
+                        <select
+                          id="print-method"
+                          value={selectedSize}
+                          onChange={(e) => setSelectedSize(e.target.value)}
+                          className="w-full px-2 py-2 border rounded-md outline-none"
+                        >
+                          {sizes
+                            .filter((item) => item !== "") // Remove empty strings first
+                            .map((item) => {
+                              // Extract only the part before \n if it exists
+                              const sizePart = item.includes("\n")
+                                ? item.split("\n")[0]
+                                : item;
+                              return sizePart;
+                            })
+                            .filter((size) => {
+                              // Now filter for valid sizes (S, M, L, XL, 2XL, 3XL, etc.)
+                              return /^[0-9]*[A-Za-z]+$/.test(size);
+                            })
+                            .map((size, index) => (
+                              <option key={index} value={size}>
+                                {size}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+                    <span className="text-sm text-gray-600">
+                      * The pricing includes 1 col - 1 position
+                    </span>
+                    {/* <div className="flex justify-between items-center gap-4 mb-4 ">
+                      <label
+                        htmlFor="logo-color"
+                        className="w-full pt-3 mb-2 font-medium"
+                      >
+                        Logo Colour:
+                      </label>
+                      <select
+                        value={logoColor}
+                        onChange={(e) => setLogoColor(e.target.value)}
+                        id="logo-color"
+                        className="w-full px-2 py-2 border rounded-md outline-none"
+                      >
+                        <option>1 Colour Print</option>
+                        <option>2 Colour Print</option>
+                      </select>
+                    </div> */}
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-gray-600">
+                          <th className="py-2 pr-4">Select</th>
+                          <th className="py-2 pr-4">Qty</th>
+                          <th className="py-2 pr-4">Unit</th>
+                          <th className="py-2">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedPrintMethod?.price_breaks?.map((item, i) => {
+                          const marginEntry = marginApi[productId];
+                          const baseProductPrice = getPriceForQuantity(
+                            item.qty
+                          );
+                          const methodUnit =
+                            selectedPrintMethod.type === "base"
+                              ? item.price
+                              : baseProductPrice + item.price;
+                          const unitWithMargin = marginEntry
+                            ? methodUnit + marginEntry.marginFlat
+                            : methodUnit;
+                          const unitDiscounted =
+                            unitWithMargin * discountMultiplier;
+                          const total = unitDiscounted * item.qty;
+                          const isSelected = currentQuantity === item.qty;
+                          return (
+                            <tr
+                              key={item.qty}
+                              className={`border-t cursor-pointer hover:bg-blue-50/80 ${
+                                isSelected
+                                  ? "bg-blue-50/80"
+                                  : "hover:bg-gray-50"
+                              }`}
+                              onClick={() => {
+                                setCurrentQuantity(item.qty);
+                                setActiveIndex(i);
+                              }}
+                            >
+                              <td className="py-2 pr-4 align-middle">
+                                <input
+                                  type="radio"
+                                  name="priceTier"
+                                  aria-label={`Select ${item.qty}+ tier`}
+                                  checked={isSelected}
+                                  onChange={() => {
+                                    setCurrentQuantity(item.qty);
+                                    setActiveIndex(i);
+                                  }}
+                                />
+                              </td>
+                              <td className="py-2 pr-4 align-middle">
+                                {i === 0 && "0 - "} {item.qty}+
+                              </td>
+                              <td className="py-2 pr-4 align-middle">
+                                ${unitDiscounted.toFixed(2)}
+                              </td>
+                              <td className="py-2 align-middle">
+                                ${total.toFixed(2)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>{" "}
+                    {/* Enhanced Drag and Drop Section */}
+                    <div
+                      className={`mt-2 px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
+                        isDragging
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-smallHeader"
+                      }`}
+                      onClick={handleDivClick}
+                      onDragEnter={handleDragEnter}
+                      onDragLeave={handleDragLeave}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                    >
+                      <img
+                        src={selectedFile || "/drag.png"}
+                        alt="Uploaded File"
+                        className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
+                      />
+                      <p className=" text-lg font-medium text-smallHeader">
+                        {selectedFile
+                          ? "Logo image Uploaded"
+                          : isDragging
+                          ? "Drop files here"
+                          : "Click or Drag your Artwork/Logo to upload"}
+                      </p>
+                      {/* <p className="mb-1 text-xl font-semibold text-smallHeader">
                 Upload artwork or logo
               </p> */}
-              <p className="text-smallHeader  m-auto text-sm">
-                Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG. Max file
-                size: 16 MB
-              </p>
-              <input
-                type="file"
-                id="fileUpload"
-                accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                className="hidden"
-                onChange={handleFileChange}
-              />
+                      <p className="text-smallHeader  m-auto text-sm">
+                        Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG.
+                        Max file size: 16 MB
+                      </p>
+                      <input
+                        type="file"
+                        id="fileUpload"
+                        accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                    <Link
+                      onClick={(e) => {
+                        handleAddToCart(e);
+                      }}
+                      className="flex items-center justify-center w-full gap-3 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+                    >
+                      <button className="text-sm uppercase">Add to cart</button>
+                      <IoCartOutline className="text-xl" />
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
-
-            <Link
-              onClick={(e) => {
-                handleAddToCart(e);
-              }}
-              className="flex items-center justify-center w-full gap-3 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
-            >
-              <button className="text-sm uppercase">Add to cart</button>
-              <IoCartOutline className="text-xl" />
-            </Link>
           </div>
           {/* 3rd column  */}
 
           <div className="">
-            <div className="px-6 py-5 border bg-perUnit border-border">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xl font-bold text-smallHeader">
-                  $
-                  {discountedUnitPrice.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <p className="text-xs font-normal text-smallHeader">
-                  (Per Unit)
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 mb-4 ">
-                <p className="text-2xl font-bold text-smallHeader ">
-                  $
-                  {currentPrice.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <p className="text-xs font-normal text-smallHeader">(Total)</p>
+            {/* Consolidated Order Summary */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm lg:sticky lg:top-4">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 rounded-t-xl">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-xs text-gray-600">Per Unit</p>
+                    <p className="text-2xl font-bold text-smallHeader">
+                      $
+                      {discountedUnitPrice.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-600">
+                      Total for{" "}
+                      <span className="rounded-full bg-white/80 px-2 py-1 text-md text-gray-700 ring-1 ring-border">
+                        {currentQuantity} pcs
+                      </span>
+                    </p>
+                    <p className="text-3xl font-extrabold text-smallHeader">
+                      $
+                      {currentPrice.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  {discountPct > 0 && (
+                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700 ring-1 ring-green-200">
+                      Save {discountPct}%
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div
-                onClick={() => setShowQuoteForm(!showQuoteForm)}
-                className="flex items-center justify-center gap-2 py-2 text-white cursor-pointer bg-smallHeader"
-              >
-                <img src="/money.png" alt="" />
-                <button className="text-sm">Get Express Quote</button>
-              </div>
-              <div
-                onClick={() => {
-                  //                 if (!userEmail) {
-                  //   toast.error("Please login to add items to cart");
-                  //   navigate("/signup");
-                  //   return;
-                  // }
-                  // inside ProductDetails - BUY 1 SAMPLE handler
-                  dispatch(
-                    addToCart({
-                      id: productId,
-                      name: product.name,
-                      image: product.images?.[0] || "",
-                      // add basePrices so reducer can compute correct unit price
-                      basePrices:
-                        priceGroups.find((g) => g.base_price)?.base_price
-                          ?.price_breaks || [],
-                      // price optional — reducer currently ignores passed-in price for computation
-                      price: perUnitWithMargin,
-                      marginFlat: marginEntry.marginFlat,
-                      discountPct,
-                      totalPrice: perUnitWithMargin * 1, // optional: a helpful hint, reducer recalculates
-                      code: product.code,
-                      color: selectedColor,
-                      quantity: 1, // Force quantity to 1 for sample
-                      print: selectedPrintMethod?.description || "",
-                      logoColor: logoColor,
-                      size: selectedSize,
-                      setupFee: selectedPrintMethod?.setup || 0,
-                      dragdrop: selectedFile,
-                      deliveryDate,
-                      priceBreaks: selectedPrintMethod?.price_breaks || [],
-                      printMethodKey: selectedPrintMethod?.key || "",
-                      freightFee: freightFee,
-                      userEmail: userEmail || "guest@gmail.com",
-                    })
-                  );
+              {/* Order Details */}
+              <div className="px-6 py-2">
+                {/* Product Details */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Print Method:</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {selectedPrintMethod?.description || "Not selected"}
+                    </span>
+                  </div>
 
-                  navigate("/cart");
-                }}
-                className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-buy"
-              >
-                <img src="/buy2.png" alt="" />
-                <button className="text-sm">BUY 1 SAMPLE</button>
-              </div>
-              {showQuoteForm && (
-                <div className="bg-perUnit border border-border py-5 mt-0.5">
-                  <button className="w-full py-3 text-sm text-white bg-smallHeader">
-                    We'll Email You A Quote
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Size:</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {selectedSize || "Not selected"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Logo Color:</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {logoColor || "No logo color selected"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Quantity:</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {currentQuantity}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Pricing Breakdown */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                    Pricing Breakdown
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Unit Price</span>
+                      <span className="font-medium">
+                        ${discountedUnitPrice.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Setup Charge</span>
+                      <span className="font-medium">
+                        ${(selectedPrintMethod?.setup || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Freight</span>
+                      <span className="font-medium">
+                        ${freightFee.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="border-t pt-2 flex justify-between font-semibold">
+                      <span className="text-gray-900">Total</span>
+                      <span className="text-smallHeader">
+                        ${currentPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delivery Info */}
+                <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg
+                      className="w-4 h-4 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="text-sm font-semibold text-blue-900">
+                      Estimated Delivery
+                    </span>
+                  </div>
+                  <p className="text-sm text-blue-800">{deliveryDate}</p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Sample: ${discountedUnitPrice.toFixed(2)} + ${freightFee}{" "}
+                    delivery
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setShowQuoteForm(true)}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-smallHeader py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 3a9 9 0 100 18 9 9 0 000-18zm1 13h-2v-2h2v2zm0-4h-2V7h2v5z" />
+                    </svg>
+                    Get Express Quote
                   </button>
-                  <div className="px-6 mt-7">
+
+                  <button
+                    onClick={() => {
+                      dispatch(
+                        addToCart({
+                          id: productId,
+                          name: product.name,
+                          image: product.images?.[0] || "",
+                          basePrices:
+                            priceGroups.find((g) => g.base_price)?.base_price
+                              ?.price_breaks || [],
+                          price: perUnitWithMargin,
+                          marginFlat: marginEntry.marginFlat,
+                          discountPct,
+                          totalPrice: perUnitWithMargin * 1,
+                          code: product.code,
+                          color: selectedColor,
+                          quantity: 1,
+                          print: selectedPrintMethod?.description || "",
+                          logoColor: logoColor,
+                          size: selectedSize,
+                          setupFee: selectedPrintMethod?.setup || 0,
+                          dragdrop: selectedFile,
+                          deliveryDate,
+                          priceBreaks: selectedPrintMethod?.price_breaks || [],
+                          printMethodKey: selectedPrintMethod?.key || "",
+                          freightFee: freightFee,
+                          userEmail: userEmail || "guest@gmail.com",
+                        })
+                      );
+                      navigate("/cart");
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-buy py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                  >
+                    <img src="/buy2.png" alt="" className="h-5 w-5" />
+                    BUY 1 SAMPLE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Show on click */}
+
+          {/* Show on click */}
+        </div>
+      </div>
+
+      {/* Tabs moved above within the middle column for better UX */}
+
+      {/* Quote Modal */}
+      {showQuoteForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Get Express Quote
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  We'll email you a detailed quote within 24 hours
+                </p>
+              </div>
+              <button
+                onClick={() => setShowQuoteForm(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <form className="space-y-6">
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name *
+                    </label>
                     <input
                       name="name"
                       value={formData.name}
                       type="text"
-                      placeholder="Your name"
-                      className="w-full p-3 rounded shadow outline-none shadow-shadow bg-line"
+                      placeholder="Your full name"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       onChange={handleChange}
+                      required
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address *
+                    </label>
                     <input
                       name="email"
                       value={formData.email}
                       type="email"
-                      placeholder="Email"
-                      className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                      placeholder="your@email.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       onChange={handleChange}
+                      required
                     />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number *
+                    </label>
                     <input
                       name="phone"
                       value={formData.phone}
-                      type="phone"
-                      placeholder="Phone"
-                      className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       onChange={handleChange}
+                      required
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Delivery State *
+                    </label>
                     <input
                       name="delivery"
                       value={formData.delivery}
                       type="text"
-                      placeholder="Delivery state"
-                      className="w-full p-3 mt-2 rounded shadow outline-none shadow-shadow"
+                      placeholder="e.g., California, New York"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       onChange={handleChange}
+                      required
                     />
-
-                    <div>
-                      <p className="pt-6 text-xs">Logo Artworks</p>
-                      {/* Enhanced Second Drag and Drop Section */}
-                      <div
-                        className={`px-5 mt-4 text-center border shadow cursor-pointer shadow-shadow py-7 transition-all duration-200 ${
-                          isDragging2
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-smallHeader bg-line"
-                        }`}
-                        onDragEnter={handleDragEnter2}
-                        onDragLeave={handleDragLeave2}
-                        onDragOver={handleDragOver2}
-                        onDrop={handleDrop2}
-                      >
-                        {selectedFile2 ? (
-                          <img
-                            // value={formData.file}
-                            src={previewImage2}
-                            alt="Uploaded File"
-                            className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-                          />
-                        ) : (
-                          <>
-                            <img
-                              src="/drag.png"
-                              alt="Drag"
-                              className="flex m-auto text-smallHeader"
-                            />
-                            <p className="pt-4 text-xs">
-                              {isDragging2
-                                ? "Drop files here"
-                                : "Drop files here or"}
-                            </p>
-                          </>
-                        )}
-                        <button
-                          onClick={handleDivClick2}
-                          className="w-full py-3 mt-4 text-sm font-bold text-white uppercase rounded bg-smallHeader"
-                        >
-                          select file
-                        </button>
-                        <input
-                          type="file"
-                          id="fileUpload2"
-                          accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                          className="hidden"
-                          onChange={handleFileChange2}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="pt-3 text-xs">
-                        Accepted file types: ai, eps, svg, pdf, jpg, jpeg, png,
-                        Max. file size: 16 MB.
-                      </p>
-                      <textarea
-                        onChange={handleChange}
-                        value={formData.comment}
-                        name="comment"
-                        placeholder="comment"
-                        id=""
-                        className="w-full px-4 py-3 mt-4 border shadow outline-none h-36 shadow-shadow bg-line border-smallHeader"
-                      ></textarea>
-                    </div>
-
-                    <div className="flex items-center gap-2 px-3 py-4 mt-3 mb-5 border border-border">
-                      <input
-                        type="checkbox"
-                        id="not-robot"
-                        onClick={() => setNotRobot(!notRobot)}
-                        className="w-4 h-4"
-                      />
-                      <label
-                        htmlFor="not-robot"
-                        id="not-robot"
-                        onClick={() => setNotRobot(!notRobot)}
-                        className="text-sm"
-                      >
-                        I'm not a robot
-                      </label>
-                    </div>
-
-                    {notRobot ? (
-                      <button
-                        onClick={onSubmitHandler}
-                        className="w-full py-3 font-medium text-white rounded-md bg-smallHeader"
-                      >
-                        {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
-                      </button>
-                    ) : (
-                      <button
-                        disabled
-                        className="w-full py-3 font-medium text-white rounded-md bg-gray-400 cursor-not-allowed"
-                      >
-                        {quoteLoading ? "LOADING..." : " GET YOUR QUOTE"}
-                      </button>
-                    )}
                   </div>
                 </div>
-              )}
-              <div className="mt-6">
-                <p className="text-sm text-black">
-                  Est Delivery Date: {deliveryDate}
-                </p>
-                <p className="pt-2 text-xs text-black ">
-                  ${discountedUnitPrice.toFixed(2)} (Non-Branded sample) + $
-                  {freightFee} delivery
-                </p>
-              </div>
 
-              <div className="pb-4 mt-2 mb-4 border-b">
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  <p className="text-sm">
-                    Color: {selectedColor ? selectedColor : "No color selected"}
-                  </p>
-                </div>
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  <p className="text-sm">
-                    Print Method:{" "}
-                    {selectedPrintMethod?.description || "Not selected"}
-                  </p>
-                </div>
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  <p className="text-sm">
-                    Selected SIze:{" "}&nbsp;
-                    {selectedSize || "Not selected"}
-                  </p>
-                </div>
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  <p className="text-sm">
-                    Logo Color: {logoColor || "No logo color selected"}
-                  </p>
-                </div>
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  {/* <p className='text-sm'>Quantity: {quantity2[activeIndex]?.sell || 50}</p> */}
-                  <p className="text-sm">Quantity: {currentQuantity}</p>
+                {/* File Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Logo/Artwork Files
+                  </label>
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragging2
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 hover:border-gray-400"
+                    }`}
+                    onDragEnter={handleDragEnter2}
+                    onDragLeave={handleDragLeave2}
+                    onDragOver={handleDragOver2}
+                    onDrop={handleDrop2}
+                  >
+                    {selectedFile2 ? (
+                      <div className="space-y-4">
+                        <img
+                          src={previewImage2}
+                          alt="Uploaded File"
+                          className="mx-auto max-w-[120px] max-h-[120px] object-contain rounded-lg"
+                        />
+                        <p className="text-sm text-green-600 font-medium">
+                          File uploaded successfully!
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedFile2(null);
+                            setPreviewImage2(null);
+                          }}
+                          className="text-sm text-red-600 hover:text-red-700"
+                        >
+                          Remove file
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <svg
+                          className="mx-auto h-12 w-12 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                          />
+                        </svg>
+                        <div>
+                          <p className="text-sm text-gray-600">
+                            {isDragging2
+                              ? "Drop files here"
+                              : "Drag and drop your files here, or"}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleDivClick2}
+                            className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            browse files
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Supported: AI, EPS, SVG, PDF, JPG, JPEG, PNG (Max
+                          16MB)
+                        </p>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      id="fileUpload2"
+                      accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
+                      className="hidden"
+                      onChange={handleFileChange2}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  <p className="text-sm">
-                    Setup Charge: $
-                    {selectedPrintMethod?.setup?.toFixed(2) || "0.00"}
-                  </p>
+                {/* Comments */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Additional Comments
+                  </label>
+                  <textarea
+                    name="comment"
+                    value={formData.comment}
+                    placeholder="Tell us about your project requirements, special instructions, or any questions you have..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-32 resize-none"
+                    onChange={handleChange}
+                  />
                 </div>
-                <div className="flex items-start gap-2 pt-3 ">
-                  <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
-                    <FaCheck />
-                  </p>
-                  <p className="text-sm">
-                    Freight Charge: ${freightFee.toFixed(2)}
-                  </p>
+
+                {/* Terms and Submit */}
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="not-robot"
+                      checked={notRobot}
+                      onChange={() => setNotRobot(!notRobot)}
+                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
+                    />
+                    <label
+                      htmlFor="not-robot"
+                      className="text-sm text-gray-700"
+                    >
+                      I confirm that I'm not a robot and agree to the{" "}
+                      <a
+                        href="/privacy"
+                        className="text-blue-600 hover:text-blue-700 underline"
+                      >
+                        Privacy Policy
+                      </a>
+                    </label>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowQuoteForm(false)}
+                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onSubmitHandler}
+                      disabled={!notRobot || quoteLoading}
+                      className="flex-1 px-6 py-3 bg-smallHeader text-white rounded-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    >
+                      {quoteLoading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Sending Quote Request...
+                        </div>
+                      ) : (
+                        "Send Quote Request"
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-              {/* <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs">See our 87 reviews on</p>
-                <img src="/star.png" alt="" />
-              </div> */}
+              </form>
             </div>
-
-            {/* Show on click */}
-
-            {/* Show on click */}
           </div>
         </div>
-      </div>
-      <div className="mt-12">
-        <DescripTabs single_product={single_product} />
+      )}
+
+      {/* Service Benefits Section - Simple & Minimalistic */}
+      <div className="bg-gray-50 py-12 my-16">
+        <div className="Mycontainer">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {/* Free Mockup */}
+            <div className="text-center">
+              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg
+                  className="w-10 h-10 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                Free Mockup
+              </h3>
+              <p className="text-sm text-gray-600">Professional Design</p>
+            </div>
+
+            {/* Fast & Free Delivery */}
+            <div className="text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg
+                  className="w-6 h-6 text-green-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19,7H16V6A4,4 0 0,0 8,6H11A4,4 0 0,0 19,6V7M11,4A2,2 0 0,1 13,6V7H5V6A2,2 0 0,1 7,4H11M4,10H20L19,9H5L4,10M6,12H18V14H6V12M4,15H20V17H4V15M6,18H18V20H6V18Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                Fast Delivery
+              </h3>
+              <p className="text-sm text-gray-600">2 - 4 working days*</p>
+            </div>
+
+            {/* Zero Setup Fees */}
+            <div className="text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg
+                  className="w-6 h-6 text-purple-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                Zero Setup Fees
+              </h3>
+              <p className="text-sm text-gray-600">No hidden charges</p>
+            </div>
+
+            {/* Low MOQs */}
+            <div className="text-center">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg
+                  className="w-6 h-6 text-orange-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                Low MOQs
+              </h3>
+              <p className="text-sm text-gray-600">Order what you need</p>
+            </div>
+
+            {/* AfterPay */}
+            <div className="text-center">
+              <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg
+                  className="w-6 h-6 text-teal-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                AfterPay
+              </h3>
+              <p className="text-sm text-gray-600">Promo now, AfterPay later</p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

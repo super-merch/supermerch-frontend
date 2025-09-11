@@ -20,6 +20,7 @@ const Home = () => {
   // }, [])
   const [loading, setLoading] = useState(false);
   const [cookieModal, setCookieModal] = useState(false);
+  const [couponModal, setCouponModal] = useState(false);
 
   useEffect(() => {
     const cookieShown = sessionStorage.getItem("cookieModalShown");
@@ -29,13 +30,13 @@ const Home = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const modalShown = sessionStorage.getItem("discountModalShown");
-    if (!modalShown) {
-      setDiscountModal(true);
-      sessionStorage.setItem("discountModalShown", "true");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const modalShown = sessionStorage.getItem("discountModalShown");
+  //   if (!modalShown) {
+  //     setDiscountModal(true);
+  //     sessionStorage.setItem("discountModalShown", "true");
+  //   }
+  // }, []);
   const [error, setError] = useState("");
   const handleSubmit = async (coupon, discount) => {
     console.log(coupon, discount);
@@ -182,13 +183,13 @@ const Home = () => {
             transition={{ duration: 0.3 }}
             whileInView={{ opacity: 1, z: 0 }}
             viewport={{ once: true }}
-            className="flex w-[90%] md:max-w-[30%] sm:w-full text-gray-800 justify-center bg-white rounded-[15px] relative"
+            className="flex w-[90%] md:max-w-[30%] sm:w-full text-gray-800 justify-center bg-white rounded-md relative"
           >
             <div className="fixed inset-0 z-[1000] flex items-center justify-center">
               <div className="absolute" />
               <div className="relative w-full max-w-md mx-4">
-                <div className="absolute -inset-2 -z-10 rotate-2 rounded-3xl bg-gradient-to-r from-fuchsia-500 to-indigo-500 opacity-30 blur-2xl" />
-                <div className="relative rounded-3xl bg-white p-4 shadow-2xl ring-1 ring-slate-100">
+                <div className="absolute -inset-2 -z-10 rotate-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-indigo-500 opacity-30 blur-2xl" />
+                <div className="relative rounded-xl bg-white p-4 shadow-2xl ring-1 ring-slate-100">
                   <p
                     className="absolute max-sm:top-[0] right-[20px] top-4 text-lg font-semibold cursor-pointer"
                     onClick={() => setDiscountModal(false)}
@@ -237,46 +238,94 @@ const Home = () => {
         </motion.div>
       )}
       {cookieModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-end sm:items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 pb-2">
-              <h3 className="text-base font-medium text-gray-900">
-                🍪 Cookies
-              </h3>
-              <button
-                onClick={() => setCookieModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-1"
-              >
-                ✕
-              </button>
-            </div>
+        <>
+          {/* Backdrop overlay */}
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"></div>
 
-            {/* Content */}
-            <div className="px-4 pb-4">
-              <p className="text-gray-600 text-sm mb-4">
-                We use cookies to improve your experience. Accept to continue or
-                decline to opt out.
-              </p>
+          {/* Modal */}
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                {/* Content */}
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg
+                      className="w-6 h-6 text-blue-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-gray-900 text-lg font-semibold mb-2">
+                      Cookie Preferences
+                    </h3>
+                    <p className="text-gray-700 text-base leading-relaxed mb-3">
+                      We use cookies to enhance your browsing experience,
+                      provide personalized content, and analyze our traffic. By
+                      continuing to use our site, you consent to our use of
+                      cookies.
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      You can manage your preferences at any time.{" "}
+                      <a
+                        href="/privacy"
+                        className="text-blue-600 underline hover:text-blue-700 font-medium"
+                      >
+                        View our Privacy Policy
+                      </a>
+                    </p>
+                  </div>
+                </div>
 
-              {/* Buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setCookieModal(false)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  Decline
-                </button>
-                <button
-                  onClick={() => setCookieModal(false)}
-                  className="flex-1 px-3 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700"
-                >
-                  Accept
-                </button>
+                {/* Buttons */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-shrink-0 w-full lg:w-auto">
+                  <button
+                    onClick={() => {
+                      setCookieModal(false);
+                      setTimeout(() => setDiscountModal(true), 500);
+                    }}
+                    className="px-6 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors duration-200 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Decline All
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setCookieModal(false);
+                      setTimeout(() => setDiscountModal(true), 500);
+                    }}
+                    className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-semibold transition-colors duration-200 shadow-lg"
+                  >
+                    Accept All
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCookieModal(false);
+                      setTimeout(() => setDiscountModal(true), 500);
+                    }}
+                    className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors duration-200 self-center sm:self-auto"
+                  >
+                    <svg
+                      className="w-5 h-5 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {emailModal && (
