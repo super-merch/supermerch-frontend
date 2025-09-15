@@ -3,6 +3,7 @@ import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { BiUser } from "react-icons/bi";
+import { HiOutlineShoppingCart, HiOutlineHeart, HiOutlineUser } from "react-icons/hi";
 import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,14 +12,8 @@ import { AppContext } from "../../context/AppContext";
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import {
-  setSelectedCategory,
-  applyFilters,
-} from "../../redux/slices/filterSlice";
-import {
-  fetchcategoryProduct,
-  matchProduct,
-} from "@/redux/slices/categorySlice";
+import { setSelectedCategory, applyFilters } from "../../redux/slices/filterSlice";
+import { fetchcategoryProduct, matchProduct } from "@/redux/slices/categorySlice";
 import supermerch from "../../assets/supermerch.png";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
@@ -102,17 +97,8 @@ const MiniNav = () => {
     ],
   ];
 
-  const {
-    token,
-    setToken,
-    products,
-    setProducts,
-    fetchProducts,
-    handleLogout,
-    categoryProducts,
-    setCategoryProducts,
-    fetchCategories,
-  } = useContext(AppContext);
+  const { token, setToken, products, setProducts, fetchProducts, handleLogout, categoryProducts, setCategoryProducts, fetchCategories } =
+    useContext(AppContext);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -229,11 +215,7 @@ const MiniNav = () => {
     },
     {
       title: "Headwear",
-      children: [
-        { title: "Hats and Caps" },
-        { title: "Beanies" },
-        { title: "Other Headwear" },
-      ],
+      children: [{ title: "Hats and Caps" }, { title: "Beanies" }, { title: "Other Headwear" }],
     },
     {
       title: "Awards and Recognition",
@@ -259,12 +241,7 @@ const MiniNav = () => {
     },
     {
       title: "Pens and Writing Instruments",
-      children: [
-        { title: "Pens" },
-        { title: "Pencils" },
-        { title: "Markers & Highlighters" },
-        { title: "Writing Sets" },
-      ],
+      children: [{ title: "Pens" }, { title: "Pencils" }, { title: "Markers & Highlighters" }, { title: "Writing Sets" }],
     },
   ];
 
@@ -283,9 +260,7 @@ const MiniNav = () => {
   const [isPromotionClickeed, setIsPromotionClickeed] = useState(false);
 
   // console.table([...new Set(products.map(p => p.product.categorisation.supplier_category))]);
-  let checkcatPro = useSelector(
-    (state) => state.categoryProduct.categoryProduct
-  );
+  let checkcatPro = useSelector((state) => state.categoryProduct.categoryProduct);
 
   // const filteredProducts = useSelector(
   //   (state) => state.categoryProduct.filteredProducts
@@ -309,8 +284,7 @@ const MiniNav = () => {
     //   product.product?.categorisation?.promodata_product_type?.type_name_text.includes(subCategory))
 
     const subFilterProducts = products.filter((product) => {
-      const typeName =
-        product.product?.categorisation?.promodata_product_type?.type_name_text;
+      const typeName = product.product?.categorisation?.promodata_product_type?.type_name_text;
       return typeName?.toLowerCase().includes(subCategory.toLowerCase());
     });
     setProducts(subFilterProducts);
@@ -349,26 +323,11 @@ const MiniNav = () => {
         {coupenModel && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">
-                🎁 Get Your Coupon!
-              </h2>
-              <p className="text-lg font-bold text-blue-600">
-                {coupenLoading
-                  ? "Loading..."
-                  : coupen
-                  ? coupen
-                  : "No Coupen available"}
-              </p>
+              <h2 className="text-xl font-semibold text-gray-800">🎁 Get Your Coupon!</h2>
+              <p className="text-lg font-bold text-blue-600">{coupenLoading ? "Loading..." : coupen ? coupen : "No Coupen available"}</p>
               <p className="text-sm text-gray-600">
                 Add this coupon at checkout to enjoy{" "}
-                <strong>
-                  {coupenLoading
-                    ? "Loading..."
-                    : discount
-                    ? discount + "%"
-                    : "No Discount"}
-                </strong>
-                .
+                <strong>{coupenLoading ? "Loading..." : discount ? discount + "%" : "No Discount"}</strong>.
                 {coupen && (
                   <p
                     className="text-blue-600 block cursor-pointer"
@@ -392,11 +351,7 @@ const MiniNav = () => {
         )}
         <div className="flex items-center justify-between gap-6 pt-2 text-white Mycontainer">
           <Link to={"/"} className="relative z-10">
-            <img
-              src={supermerch}
-              className="object-contain w-24  lg:w-36"
-              alt=""
-            />
+            <img src={supermerch} className="object-contain w-24  lg:w-36" alt="" />
           </Link>
 
           <div className="lg:flex md:flex hidden gap-2 border border-black   items-center bg-white lg:w-[55%] md:w-[55%] w-full h-[48px] px-4">
@@ -407,13 +362,10 @@ const MiniNav = () => {
               placeholder="Search for anything..."
               className="w-full text-black bg-transparent outline-none"
             />
-            <IoSearchSharp
-              onClick={handleSearch}
-              className="text-xl cursor-pointer text-black"
-            />
+            <IoSearchSharp onClick={handleSearch} className="text-xl cursor-pointer text-black" />
           </div>
-          <div className="relative z-20 flex items-center gap-2 lg:gap-6 md:gap-6 sm:gap-5">
-            <Link to={"/cart"}>
+          <div className="relative z-20 flex items-center gap-4 lg:gap-6 md:gap-6 sm:gap-4">
+            <Link to={"/cart"} className="relative">
               {totalQuantity > 0 && (
                 <span
                   className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${
@@ -423,29 +375,24 @@ const MiniNav = () => {
                   {totalQuantity > 999 ? "+999" : totalQuantity}
                 </span>
               )}
-              <IoCartOutline className="text-3xl text-customBlue" />
+              <HiOutlineShoppingCart className="text-3xl text-customBlue hover:text-blue-600 transition-colors" />
             </Link>
-            <CiHeart className="text-3xl text-customBlue" />
+            <HiOutlineHeart className="text-3xl text-customBlue hover:text-red-500 transition-colors cursor-pointer" />
             {!token ? (
               <Link to={"/signup"}>
-                <BiUser className="text-3xl text-customBlue" />
+                <HiOutlineUser className="text-3xl text-customBlue hover:text-blue-600 transition-colors" />
               </Link>
             ) : (
               <div className="relative" ref={dropdownRef}>
-                <BiUser
+                <HiOutlineUser
                   onClick={toggleLogout}
-                  className="text-3xl cursor-pointer text-customBlue"
+                  className="text-3xl cursor-pointer text-customBlue hover:text-blue-600 transition-colors"
                 />
                 {isDropdownOpen && (
                   <div className="absolute right-0 w-48 mt-2 bg-white border rounded shadow-lg">
                     <ul>
-                      <Link
-                        onClick={() => setIsDropdownOpen(false)}
-                        to="/admin"
-                      >
-                        <p className="px-4 py-2 text-black cursor-pointer hover:bg-gray-100">
-                          Manage Orders
-                        </p>
+                      <Link onClick={() => setIsDropdownOpen(false)} to="/admin">
+                        <p className="px-4 py-2 text-black cursor-pointer hover:bg-gray-100">Manage Orders</p>
                       </Link>
 
                       <li
@@ -473,18 +420,13 @@ const MiniNav = () => {
               <div
                 className={`absolute mt-2 bg-white border border-gray-300 rounded-md shadow-lg w-48 
                   transform transition-all duration-300 ease-in-out ${
-                    isOpen
-                      ? "opacity-100 translate-y-0 scale-100"
-                      : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
+                    isOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
                   }`}
               >
                 <ul className="py-1">
                   {route.map((link, index) => (
                     <li key={index} onClick={() => setIsOpen(false)}>
-                      <Link
-                        to={link.path}
-                        className="block px-4 py-2 text-gray-700 capitalize hover:bg-blue-500 hover:text-white"
-                      >
+                      <Link to={link.path} className="block px-4 py-2 text-gray-700 capitalize hover:bg-blue-500 hover:text-white">
                         <p className="capitalize ">{link.name}</p>
                       </Link>
                     </li>
@@ -496,24 +438,13 @@ const MiniNav = () => {
 
           <nav className="py-3 z-20 text-white lg:px-4">
             <div className="flex   items-center justify-between">
-              <button
-                onClick={toggleNavbar}
-                className="text-black focus:outline-none lg:hidden"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+              <button onClick={toggleNavbar} className="text-black focus:outline-none lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d={
-                      isnav ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
-                    }
+                    d={isnav ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
                   />
                 </svg>
               </button>
@@ -528,12 +459,7 @@ const MiniNav = () => {
             >
               <ul className="space-y-3 lg:space-y-0 lg:flex lg:space-x-6">
                 {route.map((link, index) => (
-                  <li
-                    className={`${
-                      link.name === "Promotional" ? "group relative" : ""
-                    }`}
-                    key={index}
-                  >
+                  <li className={`${link.name === "Promotional" ? "group relative" : ""}`} key={index}>
                     <Link
                       to={link.path}
                       className="text-customBlue"
@@ -565,11 +491,7 @@ const MiniNav = () => {
                               >
                                 {category.title}
                                 <RiArrowDropDownLine
-                                  className={`text-xl transition-all duration-300 ${
-                                    activeCategory === index
-                                      ? "rotate-0"
-                                      : "-rotate-90"
-                                  }`}
+                                  className={`text-xl transition-all duration-300 ${activeCategory === index ? "rotate-0" : "-rotate-90"}`}
                                 />
                               </h6>
 
@@ -577,10 +499,7 @@ const MiniNav = () => {
                                 <ul className="mt-2 pl-4 space-y-1">
                                   {category.children.map((child, i) => (
                                     <li key={i}>
-                                      <Link
-                                        to={child.path}
-                                        className=" font-semibold text-[15px] block"
-                                      >
+                                      <Link to={child.path} className=" font-semibold text-[15px] block">
                                         {child.title}
                                       </Link>
                                     </li>
@@ -595,23 +514,13 @@ const MiniNav = () => {
                     {link.name === "Promotional" && (
                       <div className="absolute max-lg:top-8 -left-[100px] lg:-left-[80px] z-50 flex shadow-lg bg-[#333333] max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-[700px] px-8 group-hover:pb-8 group-hover:pt-6 transition-all duration-500 gap-5 max-sm2:hidden">
                         {megaMenu.map((category, categoryIndex) => (
-                          <div
-                            key={categoryIndex}
-                            className="lg:min-w-[180px] max-lg:min-w-[140px]"
-                          >
+                          <div key={categoryIndex} className="lg:min-w-[180px] max-lg:min-w-[140px]">
                             <ul>
                               {category.map((item, index) => (
-                                <li
-                                  key={index}
-                                  className="max-lg:border-b py-1 hover:underline rounded"
-                                >
-                                  <p className="text-lg font-semibold text-blue-500 cursor-pointer">
-                                    {item?.title}
-                                  </p>
+                                <li key={index} className="max-lg:border-b py-1 hover:underline rounded">
+                                  <p className="text-lg font-semibold text-blue-500 cursor-pointer">{item?.title}</p>
                                   <Link
-                                    onClick={() =>
-                                      handleSubCategories(item.label)
-                                    }
+                                    onClick={() => handleSubCategories(item.label)}
                                     to={item.path}
                                     className="font-semibold text-[13px] block"
                                   >
@@ -640,10 +549,7 @@ const MiniNav = () => {
             placeholder="Search for anything..."
             className="w-full text-black bg-transparent outline-none"
           />
-          <IoSearchSharp
-            onClick={handleSearch}
-            className="text-xl cursor-pointer text-black"
-          />
+          <IoSearchSharp onClick={handleSearch} className="text-xl cursor-pointer text-black" />
         </div>
       </div>
 
@@ -660,9 +566,7 @@ const MiniNav = () => {
             className="flex items-center gap-2 px-4 py-1 border-2 border-smallHeader"
           >
             <IoPricetagSharp className="text-sm font-bold lg:text-lg md:text-lg text-smallHeader" />
-            <button className="text-sm font-bold uppercase lg:text-lg md:text-lg text-smallHeader">
-              Get Code
-            </button>
+            <button className="text-sm font-bold uppercase lg:text-lg md:text-lg text-smallHeader">Get Code</button>
           </div>
         </div>
       </div>
@@ -675,13 +579,8 @@ const MiniNav = () => {
             viewport={{ once: true }}
             className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
           >
-            <p className="text-sm font-semibold">
-              Are you sure you want to logout?
-            </p>
-            <p className="text-sm text-gray-500">
-              You can login back at any time. All the changes you've been made
-              will not be lost.
-            </p>
+            <p className="text-sm font-semibold">Are you sure you want to logout?</p>
+            <p className="text-sm text-gray-500">You can login back at any time. All the changes you've been made will not be lost.</p>
             <div className="flex gap-2 justify-end">
               <button
                 className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"

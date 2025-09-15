@@ -223,29 +223,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Section */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-xl font-semibold mb-2">Stay Updated</h3>
-            <p className="text-gray-300 mb-6">
-              Subscribe to our newsletter for exclusive offers and new product
-              updates
-            </p>
-            <div className="flex max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button className="px-6 py-3 bg-smallHeader text-white rounded-r-lg hover:opacity-90 transition-opacity font-medium">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Payment Methods */}
-        <div className="border-t border-gray-800 mt-8 pt-6">
+        <div className="border-t border-gray-800 mt-2 pt-2">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-gray-300 text-sm mb-3">We Accept</p>
@@ -258,6 +237,24 @@ const Footer = () => {
                     className="h-6 object-contain opacity-70 hover:opacity-100 transition-opacity"
                   />
                 ))}
+              </div>
+            </div>
+            <div className=" border-gray-800">
+              <div className="max-w-2xl mx-auto text-left">
+                <p className="text-gray-300 mb-2">
+                  Subscribe to our newsletter for exclusive offers and new
+                  product updates
+                </p>
+                <div className="flex max-w-md">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <button className="px-6 py-3 bg-smallHeader text-white rounded-r-lg hover:opacity-90 transition-opacity font-medium">
+                    Subscribe
+                  </button>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-4">

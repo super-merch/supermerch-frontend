@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
-import Home from "../src/pages/Home";
+import Home from "./pages/Home";
 import ProducPage from "./pages/ProducPage";
 import Footer from "./components/Home/Footer";
 import CategoryPage from "./pages/CategoryPage";
@@ -54,11 +54,16 @@ export const ScrollToTop = () => {
 const App = () => {
   const { token } = useContext(AppContext);
 
+  const handleCouponClick = () => {
+    // Dispatch custom event to trigger discount modal in Home component
+    window.dispatchEvent(new CustomEvent("triggerDiscountModal"));
+  };
+
   return (
     <div>
       <ToastContainer />
 
-      <Navbar />
+      <Navbar onCouponClick={handleCouponClick} />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />

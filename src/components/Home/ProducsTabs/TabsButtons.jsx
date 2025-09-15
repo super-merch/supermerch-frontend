@@ -6,27 +6,22 @@ import Clothing from "./Clothing";
 import Headwear from "./Headwear";
 import Bags from "./Bags";
 import Stationery from "./Stationery";
+import { Heading } from "../../Common";
 // import Promotional from './Promotional';
 
-const TabsButtons = ({changeBg=false}) => {
+const TabsButtons = ({ changeBg = false }) => {
   const [activeTab, setActiveTab] = useState("All Product");
-  
+
   return (
-    <div className={`${changeBg&&"bg-gray-100  py-5"}`} >
+    <div className={`${changeBg && "bg-gray-100  py-5"}`}>
       <div className="">
         <div className="flex flex-wrap  items-center justify-between gap-6 pb-8 Mycontainer ">
-          <div>
-            <h1 className="text-2xl font-semibold text-brand">
-              SHOP OUR BEST SELLERS
-            </h1>
-          </div>
+          <Heading title="SHOP OUR BEST SELLERS" align="left" size="default" titleClassName="uppercase" containerClassName="" />
           <div className="flex flex-wrap justify-between gap-4 ">
             <button
               type="button"
               className={` py-1    focus:outline-none text-sm font-semibold ${
-                activeTab === "All Product"
-                  ? " text-brand border-b-2 border-smallHeader "
-                  : "text-tabsColor"
+                activeTab === "All Product" ? " text-brand border-b-2 border-smallHeader " : "text-tabsColor"
               }`}
               onClick={() => setActiveTab("All Product")}
             >
@@ -35,9 +30,7 @@ const TabsButtons = ({changeBg=false}) => {
             <button
               type="button"
               className={` py-1  focus:outline-none text-sm font-semibold ${
-                activeTab === "Clothing"
-                  ? " text-brand border-b-2 border-smallHeader"
-                  : " text-tabsColor "
+                activeTab === "Clothing" ? " text-brand border-b-2 border-smallHeader" : " text-tabsColor "
               }`}
               onClick={() => setActiveTab("Clothing")}
             >
@@ -46,9 +39,7 @@ const TabsButtons = ({changeBg=false}) => {
             <button
               type="button"
               className={` py-1  focus:outline-none text-sm font-semibold ${
-                activeTab === "Headwear"
-                  ? " text-brand border-b-2 border-smallHeader"
-                  : "text-tabsColor"
+                activeTab === "Headwear" ? " text-brand border-b-2 border-smallHeader" : "text-tabsColor"
               }`}
               onClick={() => setActiveTab("Headwear")}
             >
@@ -57,9 +48,7 @@ const TabsButtons = ({changeBg=false}) => {
             <button
               type="button"
               className={` py-1  focus:outline-none text-sm font-semibold ${
-                activeTab === "Bags"
-                  ? " text-brand border-b-2 border-smallHeader"
-                  : "text-tabsColor"
+                activeTab === "Bags" ? " text-brand border-b-2 border-smallHeader" : "text-tabsColor"
               }`}
               onClick={() => setActiveTab("Bags")}
             >
@@ -68,16 +57,14 @@ const TabsButtons = ({changeBg=false}) => {
             <button
               type="button"
               className={` py-1  focus:outline-none text-sm font-semibold ${
-                activeTab === "Stationery"
-                  ? " text-brand border-b-2 border-smallHeader"
-                  : "text-tabsColor"
+                activeTab === "Stationery" ? " text-brand border-b-2 border-smallHeader" : "text-tabsColor"
               }`}
               onClick={() => setActiveTab("Stationery")}
             >
               Stationery & Office
             </button>
-            <Link to={'/shop'} className="flex items-center gap-2 text-sm font-semibold text-smallHeader">
-                Browse All Product
+            <Link to={"/shop"} className="flex items-center gap-2 text-sm font-semibold text-smallHeader">
+              Browse All Product
               <FaArrowRight className="text-lg" />
             </Link>
           </div>

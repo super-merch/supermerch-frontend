@@ -1,22 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-*{
+* {
   padding: 0px;
   margin: 0px;
   box-sizing: border-box;
 }
-body{
-font-family: "Red Hat Text", sans-serif;}
+body {
+  font-family: "Red Hat Text", sans-serif;
+}
 
-.Mycontainer{
+/* Ensure all elements use Red Hat Text font */
+* {
+  font-family: "Red Hat Text", sans-serif;
+}
+
+/* Standardize heading styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Red Hat Text", sans-serif;
+  font-weight: 600;
+}
+
+/* Standardize text elements */
+p,
+span,
+div,
+a,
+button,
+input,
+textarea,
+select {
+  font-family: "Red Hat Text", sans-serif;
+}
+
+.Mycontainer {
   width: 90%;
   max-width: 1500px;
   margin: auto;
 }
-.Mycontainer2{
+.Mycontainer2 {
   width: 90%;
   max-width: 1400px;
   margin: auto;
@@ -35,14 +64,11 @@ font-family: "Red Hat Text", sans-serif;}
   appearance: textfield;
 }
 
-
-@media all and (max-width:768px){
-  .Mycontainer2{
+@media all and (max-width: 768px) {
+  .Mycontainer2 {
     width: 100%;
   }
 }
-
-
 
 /* ensure two slides on very small screens if anything else interferes */
 @media (max-width: 479px) {
@@ -51,9 +77,6 @@ font-family: "Red Hat Text", sans-serif;}
     max-width: calc((100% - 8px) / 2) !important;
   }
 }
-
-
-
 
 @layer base {
   :root {
@@ -111,12 +134,6 @@ font-family: "Red Hat Text", sans-serif;}
   }
 }
 
-
-
-
-
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -125,6 +142,3 @@ font-family: "Red Hat Text", sans-serif;}
     @apply bg-background text-foreground;
   }
 }
-
-
-

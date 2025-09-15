@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
+import { Heading } from "../Common";
 
 const Brands = () => {
   const containerRef = useRef(null);
@@ -32,28 +33,37 @@ const Brands = () => {
   };
 
   return (
-    <div className="Mycontainer relative lg:pt-32 md:pt-24 sm:pt-10 pt-4">
-      <h1 className="text-brand text-center text-3xl pb-6 font-bold">
-        Australia's most loved brands
-      </h1>
+    <div className="Mycontainer relative">
+      <style jsx>{`
+        .scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      <Heading
+        title="AUSTRALIA'S MOST LOVED BRANDS"
+        align="center"
+        size="default"
+        titleClassName="uppercase"
+        containerClassName="pb-4 !pt-0"
+      />
 
       {/* Navigation buttons */}
       <div className="absolute flex justify-between w-full h-32 md:h-36 lg:h-40 items-center">
-        <div className="absolute lg:-left-8 md:-left-6 -left-4 top-1/2 transform -translate-y-1/2 z-20">
+        <div className="absolute lg:-left-4 md:-left-3 -left-2 top-1/2 transform -translate-y-1/2 z-20">
           <button
             onClick={() => scroll("left")}
-            className="bg-smallHeader text-white p-2 max-sm:p-1 rounded-full shadow-md"
+            className="bg-gray-600 hover:bg-gray-700 text-white p-1.5 rounded-md shadow-sm transition-colors duration-200"
           >
-            <IoArrowBackOutline className="lg:text-2xl md:text-2xl text-lg" />
+            <IoArrowBackOutline className="text-lg" />
           </button>
         </div>
 
-        <div className="absolute lg:-right-8 md:-right-6 -right-4 top-1/2 transform -translate-y-1/2 z-20">
+        <div className="absolute lg:-right-4 md:-right-3 -right-2 top-1/2 transform -translate-y-1/2 z-20">
           <button
             onClick={() => scroll("right")}
-            className="bg-smallHeader text-white p-2 max-sm:p-1 rounded-full shadow-md"
+            className="bg-gray-600 hover:bg-gray-700 text-white p-1.5 rounded-md shadow-sm transition-colors duration-200"
           >
-            <IoMdArrowForward className="lg:text-2xl md:text-2xl text-lg" />
+            <IoMdArrowForward className="text-lg" />
           </button>
         </div>
       </div>
@@ -61,7 +71,8 @@ const Brands = () => {
       {/* Scrollable container */}
       <motion.div
         ref={containerRef}
-        className="flex overflow-x-scroll no-scrollbar scroll-smooth gap-4"
+        className="flex overflow-x-scroll scroll-smooth gap-4 scroll-container"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {slide.map((item, index) => (
           <motion.div
@@ -71,7 +82,7 @@ const Brands = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 200 }}
           >
-            <div className="w-full h-32 md:h-36 lg:h-40 flex items-center justify-center bg-line px-3 py-3">
+            <div className="w-full h-32 md:h-36 lg:h-40 flex items-center justify-center bg-line px-3 py-3 rounded-lg">
               <img
                 src={item.img}
                 alt={`brand-${item.id}`}
