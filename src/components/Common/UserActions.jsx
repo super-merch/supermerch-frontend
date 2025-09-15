@@ -77,7 +77,7 @@ const UserActions = ({
 
       {/* User Account */}
       {!isAuthenticated ? (
-        <Link to="/signup">
+        <Link to="/login">
           <HiOutlineUser className={`${currentSize.icon} text-customBlue hover:text-blue-600 transition-colors`} />
         </Link>
       ) : (
