@@ -16,6 +16,9 @@ const Home = () => {
     closeEmailModal,
     closeCookieModal,
     openEmailModal,
+    setDiscountModal,
+    setEmailModal,
+    setCookieModal,
   } = useModals();
   const { fetchCurrentCoupon } = useCoupons();
   const [discountModalShown, setDiscountModalShown] = useSessionStorageBoolean(

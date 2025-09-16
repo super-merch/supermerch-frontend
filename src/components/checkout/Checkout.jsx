@@ -20,12 +20,17 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
-  console.log(items, "items");
 
   const { token, addressData, backednUrl, shippingAddressData, totalDiscount } =
     useContext(AppContext);
 
-  const [checkoutTab, setCheckoutTab] = useState("billing");
+  // Collapsible step states
+  const [openCustomer, setOpenCustomer] = useState(true);
+  const [openShipping, setOpenShipping] = useState(false);
+  const [openBilling, setOpenBilling] = useState(false);
+  const [openPayment, setOpenPayment] = useState(false);
+  const [billingSameAsShipping, setBillingSameAsShipping] = useState(false);
+  // Legacy tab state removed in favor of collapsible steps
   const dispatch = useDispatch();
 
   // Get coupon data from navigation state (passed from cart)
@@ -366,6 +371,21 @@ const Checkout = () => {
     );
   };
 
+  const isShippingComplete = () => {
+    const shipping = getValues("shipping");
+    return (
+      shipping.firstName &&
+      shipping.lastName &&
+      shipping.address &&
+      shipping.country &&
+      shipping.region &&
+      shipping.city &&
+      shipping.zip &&
+      shipping.email &&
+      shipping.phone
+    );
+  };
+
   return (
     <div className="py-8 Mycontainer">
       <div className="mb-0">
@@ -375,765 +395,242 @@ const Checkout = () => {
         <p className="text-gray-600">Complete your order with secure payment</p>
       </div>
 
-      {/* Progress Steps */}
-      <div className="mb-4">
-        <div className="flex items-center justify-center">
-          <div className="flex items-center space-x-4 bg-gray-100 rounded-xl p-1">
-            <button
-              type="button"
-              className={`flex items-center space-x-2 md:px-6 px-3 md:py-3 py-1 rounded-lg md:font-medium transition-all duration-200 text-sm md:text-base ${
-                checkoutTab === "billing"
-                  ? "bg-smallHeader text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-white"
-              }`}
-              onClick={() => setCheckoutTab("billing")}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-              <span>Billing Information</span>
-            </button>
-
-            <div className="w-8 h-px bg-gray-300"></div>
-
-            <button
-              type="button"
-              className={`flex items-center space-x-2 md:px-6 px-3 md:py-3 py-1 rounded-lg md:font-medium transition-all duration-200 text-sm md:text-base ${
-                checkoutTab === "shipping"
-                  ? "bg-smallHeader text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-white"
-              }`}
-              onClick={() => setCheckoutTab("shipping")}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                />
-              </svg>
-              <span>Shipping Information</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Collapsible Steps */}
+      <div className="mb-4"></div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-wrap items-start gap-5 lg:flex-nowrap">
-          {checkoutTab === "billing" && (
-            <div className="w-full lg:w-[65%]">
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="bg-smallHeader px-6 py-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">
-                        Billing Information
-                      </h3>
-                      <p className="text-sm text-white/90">
-                        Enter your billing details
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        First Name <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        defaultValue={addressData?.firstName || ""}
-                        placeholder="Enter first name"
-                        {...register("billing.firstName", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        Last Name <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter last name"
-                        {...register("billing.lastName")}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        Company Name{" "}
-                        <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter company name"
-                        {...register("billing.companyName")}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                      <svg
-                        className="w-4 h-4 mr-2 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      Address <span className="text-red-500 ml-1">*</span>
-                    </label>
-
-                    {/* Autocomplete component (Nominatim) */}
-                    <AddressAutocomplete
-                      placeholder="Start typing your address..."
-                      defaultValue={getValues("billing.address")}
-                      countryCode="au"
-                      onSelect={(place) => {
-                        setValue("billing.address", place.display_name || "");
-                        const addr = place.address || {};
-                        setValue(
-                          "billing.city",
-                          addr.city ||
-                            addr.town ||
-                            addr.village ||
-                            addr.hamlet ||
-                            ""
-                        );
-                        setValue("billing.region", addr.state || "");
-                        setValue("billing.zip", addr.postcode || "");
-                        setValue(
-                          "billing.country",
-                          addr.country || "Australia"
-                        );
-                      }}
-                    />
-
-                    <input
-                      type="hidden"
-                      {...register("billing.address", { required: true })}
-                      value={getValues("billing.address")}
-                    />
-                  </div>
-
-                  <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        Country <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("billing.country", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      >
-                        {addressData?.country && (
-                          <option value={addressData?.country}>
-                            {addressData?.country}
-                          </option>
-                        )}
-                        <option value="Australia">Australia</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        State <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("billing.region", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      >
-                        {addressData?.state && (
-                          <option value={addressData?.state}>
-                            {addressData?.state}
-                          </option>
-                        )}
-                        <option value="New South Wales">New South Wales</option>
-                        <option value="Victoria">Victoria</option>
-                        <option value="Queensland">Queensland</option>
-                        <option value="Western Australia">
-                          Western Australia
-                        </option>
-                        <option value="South Australia">South Australia</option>
-                        <option value="Tasmania">Tasmania</option>
-                        <option value="Northern Territory">
-                          Northern Territory
-                        </option>
-                        <option value="Australian Capital Territory">
-                          Australian Capital Territory
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        City <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("billing.city", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      >
-                        {addressData?.city && (
-                          <option value={addressData.city}>
-                            {addressData?.city}
-                          </option>
-                        )}
-                        <option value="Sydney">Sydney</option>
-                        <option value="Melbourne">Melbourne</option>
-                        <option value="Brisbane">Brisbane</option>
-                        <option value="Perth">Perth</option>
-                        <option value="Adelaide">Adelaide</option>
-                        <option value="Gold Coast">Gold Coast</option>
-                        <option value="Canberra">Canberra</option>
-                        <option value="Newcastle">Newcastle</option>
-                        <option value="Wollongong">Wollongong</option>
-                        <option value="Hobart">Hobart</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M7 4a2 2 0 012-2h6a2 2 0 012 2"
-                          />
-                        </svg>
-                        Postal Code <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter postal code"
-                        {...register("billing.zip", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {/* <div className="grid gap-4 mt-4 lg:grid-cols-2 md:grid-cols-2">
-                <div>
-                  <p>
-                    Email <span className="text-red-600 ">*</span>
-                  </p>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    {...register("billing.email", { required: true })}
-                    className="w-full p-2 mt-1 border"
-                  />
-                </div>
-                <div>
-                  <p>
-                    Phone Number <span className="text-red-600 ">*</span>
-                  </p>
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    {...register("billing.phone", { required: true })}
-                    className="w-full p-2 mt-1 border"
-                  />
-                </div>
-              </div> */}
-
-          {checkoutTab === "shipping" && (
-            <div className="w-full lg:w-[65%]">
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="bg-smallHeader px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg
-                          className="w-5 h-5 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-white">
-                          Shipping Information
-                        </h3>
-                        <p className="text-sm text-white/90">
-                          Enter your shipping details
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const billingValues = getValues("billing");
-                        Object.keys(billingValues).forEach((key) => {
-                          setValue(`shipping.${key}`, billingValues[key]);
-                        });
-                      }}
-                      disabled={!isBillingComplete()}
-                      className={`inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                        isBillingComplete()
-                          ? "bg-white/20 text-white hover:bg-white/30"
-                          : "bg-gray-400 text-gray-200 cursor-not-allowed"
-                      }`}
+          <div className="w-full lg:w-2/3 space-y-6">
+            {/* Step 1: Customer Details */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div
+                className="px-4 py-3 cursor-pointer flex items-center justify-between border-b border-gray-200 bg-white"
+                onClick={() => setOpenCustomer(!openCustomer)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-gray-700"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                        />
-                      </svg>
-                      <span>Copy Billing Details</span>
-                    </button>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Customer Details
+                    </h3>
+                    <p className="text-sm text-gray-500">Basic contact info</p>
                   </div>
                 </div>
-
+                <button
+                  type="button"
+                  aria-label="Toggle customer"
+                  className={`transition-transform ${
+                    openCustomer ? "rotate-180" : "rotate-0"
+                  }`}
+                >
+                  <svg
+                    className="w-8 h-8 text-gray-600"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {openCustomer && (
                 <div className="p-6">
-                  <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        First Name <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter first name"
-                        {...register("shipping.firstName", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        Last Name <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter last name"
-                        {...register("shipping.lastName")}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        Company Name{" "}
-                        <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter company name"
-                        {...register("shipping.companyName")}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                      <svg
-                        className="w-4 h-4 mr-2 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      Address <span className="text-red-500 ml-1">*</span>
-                    </label>
-
-                    <AddressAutocomplete
-                      placeholder="Start typing your address..."
-                      defaultValue={getValues("shipping.address")}
-                      countryCode="au"
-                      onSelect={(place) => {
-                        setValue("shipping.address", place.display_name || "");
-                        const addr = place.address || {};
-                        setValue(
-                          "shipping.city",
-                          addr.city ||
-                            addr.town ||
-                            addr.village ||
-                            addr.hamlet ||
-                            ""
-                        );
-                        setValue("shipping.region", addr.state || "");
-                        setValue("shipping.zip", addr.postcode || "");
-                        setValue(
-                          "shipping.country",
-                          addr.country || "Australia"
-                        );
-                      }}
-                    />
-
-                    <input
-                      type="hidden"
-                      {...register("shipping.address", { required: true })}
-                      value={getValues("shipping.address")}
-                    />
-                  </div>
-
-                  <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        Country <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("shipping.country", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      >
-                        {addressData?.country && (
-                          <option value={addressData?.country}>
-                            {addressData?.country}
-                          </option>
-                        )}
-                        <option value="Australia">Australia</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        State <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("shipping.region", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      >
-                        {addressData?.state && (
-                          <option value={addressData?.state}>
-                            {addressData?.state}
-                          </option>
-                        )}
-                        <option value="New South Wales">New South Wales</option>
-                        <option value="Victoria">Victoria</option>
-                        <option value="Queensland">Queensland</option>
-                        <option value="Western Australia">
-                          Western Australia
-                        </option>
-                        <option value="South Australia">South Australia</option>
-                        <option value="Tasmania">Tasmania</option>
-                        <option value="Northern Territory">
-                          Northern Territory
-                        </option>
-                        <option value="Australian Capital Territory">
-                          Australian Capital Territory
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        City <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("shipping.city", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      >
-                        {addressData?.city && (
-                          <option value={addressData.city}>
-                            {addressData?.city}
-                          </option>
-                        )}
-                        <option value="Sydney">Sydney</option>
-                        <option value="Melbourne">Melbourne</option>
-                        <option value="Brisbane">Brisbane</option>
-                        <option value="Perth">Perth</option>
-                        <option value="Adelaide">Adelaide</option>
-                        <option value="Gold Coast">Gold Coast</option>
-                        <option value="Canberra">Canberra</option>
-                        <option value="Newcastle">Newcastle</option>
-                        <option value="Wollongong">Wollongong</option>
-                        <option value="Hobart">Hobart</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M7 4a2 2 0 012-2h6a2 2 0 012 2"
-                          />
-                        </svg>
-                        Postal Code <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter postal code"
-                        {...register("shipping.zip", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-6 mt-6 lg:grid-cols-2 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
-                        <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                          />
-                        </svg>
-                        Email <span className="text-red-500 ml-1">*</span>
+                      <label className="text-sm font-medium text-gray-700">
+                        Email <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="email"
                         placeholder="Enter email address"
-                        {...register("shipping.email", { required: true })}
+                        {...register("billing.email")}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                       />
                     </div>
-
                     <div className="space-y-2">
-                      <label className="flex items-center text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-gray-700">
+                        Phone <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="Enter phone number"
+                        {...register("billing.phone")}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-6">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenCustomer(false);
+                        setOpenShipping(true);
+                      }}
+                      className="bg-smallHeader text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                    >
+                      Continue to Shipping
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step 2: Shipping Information */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div
+                className="px-4 py-3 cursor-pointer flex items-center justify-between border-b border-gray-200 bg-white"
+                onClick={() => setOpenShipping(!openShipping)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-gray-700"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Shipping Information
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Enter your shipping details
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Toggle shipping"
+                  className={`transition-transform ${
+                    openShipping ? "rotate-180" : "rotate-0"
+                  }`}
+                >
+                  <svg
+                    className="w-8 h-8 text-gray-600"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {openShipping && (
+                <div className="p-6">
+                  {/* Shipping FIELDS START */}
+                  <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
+                    <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          First Name{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          defaultValue={addressData?.firstName || ""}
+                          placeholder="Enter first name"
+                          {...register("billing.firstName", {
+                            required: true,
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          Last Name <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter last name"
+                          {...register("billing.lastName")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          Company Name{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter company name"
+                          {...register("billing.companyName")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                         <svg
-                          className="w-4 h-4 mr-2 text-gray-500"
+                          className="w-8 h-8 mr-2 text-gray-500"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -1142,32 +639,710 @@ const Checkout = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
-                        Phone Number{" "}
-                        <span className="text-red-500 ml-1">*</span>
+                        Address <span className="text-red-500 ml-1">*</span>
                       </label>
+
+                      {/* Autocomplete component (Nominatim) */}
+                      <AddressAutocomplete
+                        placeholder="Start typing your address..."
+                        defaultValue={getValues("billing.address")}
+                        countryCode="au"
+                        onSelect={(place) => {
+                          setValue("billing.address", place.display_name || "");
+                          const addr = place.address || {};
+                          setValue(
+                            "billing.city",
+                            addr.city ||
+                              addr.town ||
+                              addr.village ||
+                              addr.hamlet ||
+                              ""
+                          );
+                          setValue("billing.region", addr.state || "");
+                          setValue("billing.zip", addr.postcode || "");
+                          setValue(
+                            "billing.country",
+                            addr.country || "Australia"
+                          );
+                        }}
+                      />
+
                       <input
-                        type="tel"
-                        placeholder="Enter phone number"
-                        {...register("shipping.phone", { required: true })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        type="hidden"
+                        {...register("billing.address", { required: true })}
+                        value={getValues("billing.address")}
                       />
                     </div>
+
+                    <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          Country <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <select
+                          {...register("billing.country", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        >
+                          {addressData?.country && (
+                            <option value={addressData?.country}>
+                              {addressData?.country}
+                            </option>
+                          )}
+                          <option value="Australia">Australia</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          State <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <select
+                          {...register("billing.region", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        >
+                          {addressData?.state && (
+                            <option value={addressData?.state}>
+                              {addressData?.state}
+                            </option>
+                          )}
+                          <option value="New South Wales">
+                            New South Wales
+                          </option>
+                          <option value="Victoria">Victoria</option>
+                          <option value="Queensland">Queensland</option>
+                          <option value="Western Australia">
+                            Western Australia
+                          </option>
+                          <option value="South Australia">
+                            South Australia
+                          </option>
+                          <option value="Tasmania">Tasmania</option>
+                          <option value="Northern Territory">
+                            Northern Territory
+                          </option>
+                          <option value="Australian Capital Territory">
+                            Australian Capital Territory
+                          </option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          City <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <select
+                          {...register("billing.city", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        >
+                          {addressData?.city && (
+                            <option value={addressData.city}>
+                              {addressData?.city}
+                            </option>
+                          )}
+                          <option value="Sydney">Sydney</option>
+                          <option value="Melbourne">Melbourne</option>
+                          <option value="Brisbane">Brisbane</option>
+                          <option value="Perth">Perth</option>
+                          <option value="Adelaide">Adelaide</option>
+                          <option value="Gold Coast">Gold Coast</option>
+                          <option value="Canberra">Canberra</option>
+                          <option value="Newcastle">Newcastle</option>
+                          <option value="Wollongong">Wollongong</option>
+                          <option value="Hobart">Hobart</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M7 4a2 2 0 012-2h6a2 2 0 012 2"
+                            />
+                          </svg>
+                          Postal Code{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter postal code"
+                          {...register("shipping.zip", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-6">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenShipping(false);
+                        setOpenBilling(true);
+                      }}
+                      className="bg-smallHeader text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                    >
+                      Continue to Billing
+                    </button>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+            {/* Step 3: Billing Information */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div
+                className="px-4 py-3 cursor-pointer flex items-center justify-between border-b border-gray-200 bg-white"
+                onClick={() => setOpenBilling(!openBilling)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-gray-700"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Billing Information
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Enter your billing details
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    aria-label="Toggle billing"
+                    className={`transition-transform ${
+                      openBilling ? "rotate-180" : "rotate-0"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenBilling(!openBilling);
+                    }}
+                  >
+                    <svg
+                      className="w-8 h-8 text-gray-600"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              {openBilling && (
+                <div className="p-6">
+                  {/* Reuse existing billing fields already bound to billing.* below */}
+                  {/* Since the fields above exist under shipping by mistake, we provide a minimal guard */}
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-700 mb-4">
+                    <input
+                      type="checkbox"
+                      name="billing_copy"
+                      checked={billingSameAsShipping}
+                      onChange={(e) => {
+                        const next = e.target.checked;
+                        setBillingSameAsShipping(next);
+                        if (next) {
+                          const shippingVals = getValues("shipping");
+                          Object.keys(shippingVals || {}).forEach((key) => {
+                            setValue(`billing.${key}`, shippingVals[key] || "");
+                          });
+                        } else {
+                          setBillingSameAsShipping(false);
+                        }
+                      }}
+                      className="h-4 w-4 text-smallHeader"
+                    />
+                    Same as shipping
+                  </label>
+                  <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
+                    <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          First Name{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          defaultValue={addressData?.firstName || ""}
+                          placeholder="Enter first name"
+                          {...register("billing.firstName", {
+                            required: true,
+                          })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          Last Name <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter last name"
+                          {...register("billing.lastName")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          Company Name{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter company name"
+                          {...register("billing.companyName")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <svg
+                          className="w-8 h-8 mr-2 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        Address <span className="text-red-500 ml-1">*</span>
+                      </label>
+
+                      {/* Autocomplete component (Nominatim) */}
+                      <AddressAutocomplete
+                        placeholder="Start typing your address..."
+                        defaultValue={getValues("billing.address")}
+                        countryCode="au"
+                        onSelect={(place) => {
+                          setValue("billing.address", place.display_name || "");
+                          const addr = place.address || {};
+                          setValue(
+                            "billing.city",
+                            addr.city ||
+                              addr.town ||
+                              addr.village ||
+                              addr.hamlet ||
+                              ""
+                          );
+                          setValue("billing.region", addr.state || "");
+                          setValue("billing.zip", addr.postcode || "");
+                          setValue(
+                            "billing.country",
+                            addr.country || "Australia"
+                          );
+                        }}
+                      />
+
+                      <input
+                        type="hidden"
+                        {...register("billing.address", { required: true })}
+                        value={getValues("billing.address")}
+                      />
+                    </div>
+
+                    <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          Country <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <select
+                          {...register("billing.country", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        >
+                          {addressData?.country && (
+                            <option value={addressData?.country}>
+                              {addressData?.country}
+                            </option>
+                          )}
+                          <option value="Australia">Australia</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          State <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <select
+                          {...register("billing.region", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        >
+                          {addressData?.state && (
+                            <option value={addressData?.state}>
+                              {addressData?.state}
+                            </option>
+                          )}
+                          <option value="New South Wales">
+                            New South Wales
+                          </option>
+                          <option value="Victoria">Victoria</option>
+                          <option value="Queensland">Queensland</option>
+                          <option value="Western Australia">
+                            Western Australia
+                          </option>
+                          <option value="South Australia">
+                            South Australia
+                          </option>
+                          <option value="Tasmania">Tasmania</option>
+                          <option value="Northern Territory">
+                            Northern Territory
+                          </option>
+                          <option value="Australian Capital Territory">
+                            Australian Capital Territory
+                          </option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          City <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <select
+                          {...register("billing.city", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        >
+                          {addressData?.city && (
+                            <option value={addressData.city}>
+                              {addressData?.city}
+                            </option>
+                          )}
+                          <option value="Sydney">Sydney</option>
+                          <option value="Melbourne">Melbourne</option>
+                          <option value="Brisbane">Brisbane</option>
+                          <option value="Perth">Perth</option>
+                          <option value="Adelaide">Adelaide</option>
+                          <option value="Gold Coast">Gold Coast</option>
+                          <option value="Canberra">Canberra</option>
+                          <option value="Newcastle">Newcastle</option>
+                          <option value="Wollongong">Wollongong</option>
+                          <option value="Hobart">Hobart</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M7 4a2 2 0 012-2h6a2 2 0 012 2"
+                            />
+                          </svg>
+                          Postal Code{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter postal code"
+                          {...register("shipping.zip", { required: true })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-6">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenBilling(false);
+                        setOpenPayment(true);
+                      }}
+                      className="bg-smallHeader text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                    >
+                      Continue to Payment
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step 4: Payment */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div
+                className="px-4 py-3 cursor-pointer flex items-center justify-between border-b border-gray-200 bg-white"
+                onClick={() => setOpenPayment(!openPayment)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-gray-700"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Payment</h3>
+                    <p className="text-sm text-gray-500">
+                      Review your total and pay securely
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Toggle payment"
+                  className={`transition-transform ${
+                    openPayment ? "rotate-180" : "rotate-0"
+                  }`}
+                >
+                  <svg
+                    className="w-8 h-8 text-gray-600"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {openPayment && (
+                <div className="p-6 md:w-1/2 mr-auto">
+                  {" "}
+                  <button
+                    type="submit"
+                    disabled={loading || items.length === 0}
+                    className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
+                      loading || items.length === 0
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-smallHeader hover:opacity-90 shadow-lg hover:shadow-xl"
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        <svg
+                          className="animate-spin w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                          />
+                        </svg>
+                        <span>
+                          Pay $
+                          {total.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="w-full h-fit lg:w-[35%]">
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-6">
-              <div className="bg-smallHeader px-6 py-4">
+              <div className="px-4 py-3 border-b border-gray-200 bg-white">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
                     <svg
-                      className="w-5 h-5 text-white"
+                      className="w-5 h-5 text-gray-700"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1181,10 +1356,10 @@ const Checkout = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">
+                    <h3 className="text-lg font-bold text-gray-900">
                       Order Summary
                     </h3>
-                    <p className="text-sm text-white/90">
+                    <p className="text-sm text-gray-500">
                       {items.length} item{items.length !== 1 ? "s" : ""} in
                       order
                     </p>
@@ -1224,11 +1399,10 @@ const Checkout = () => {
                           </div>
 
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{item.name}</p>
+                            <p className="font-medium text-sm">
+                              {item.quantity} * {item.name}
+                            </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <p className="text-xs text-gray-600">
-                                {item.quantity} x
-                              </p>
                               <p className="text-xs font-medium text-smallHeader">
                                 ${item.price?.toFixed(2)}
                               </p>
@@ -1338,7 +1512,7 @@ const Checkout = () => {
                   </div>
                 )}
 
-                <div className="mt-0 space-y-2">
+                <div className="mt-0 space-y-2 border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-sm">
                     <span>Sub-total:</span>
                     <span>
@@ -1438,64 +1612,6 @@ const Checkout = () => {
                       Your cart is empty
                     </div>
                   )}
-
-                  <button
-                    type="submit"
-                    disabled={loading || items.length === 0}
-                    className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
-                      loading || items.length === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-smallHeader hover:opacity-90 shadow-lg hover:shadow-xl"
-                    }`}
-                  >
-                    {loading ? (
-                      <>
-                        <svg
-                          className="animate-spin w-5 h-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                          />
-                        </svg>
-                        <span>
-                          Pay $
-                          {total.toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
             </div>

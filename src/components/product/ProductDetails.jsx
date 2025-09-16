@@ -27,6 +27,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { colornames } from "color-name-list";
+import Services from "./Services";
+import SizeGuideModal from "./SizeGuideModal";
+import QuoteFormModal from "./QuoteFormModal";
+import { Button } from "../ui/button";
+import { CheckCheck } from "lucide-react";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -57,7 +62,6 @@ const ProductDetails = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.log("No token found, using guest email");
           setUserEmail("guest@gmail.com");
           dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
           return;
@@ -222,7 +226,6 @@ const ProductDetails = () => {
       );
 
       const data = await response.json();
-      console.log("Shipping Charges Data:", data);
       setFreightFee(data.shipping || 0);
 
       if (!response.ok) {
@@ -319,7 +322,6 @@ const ProductDetails = () => {
       if (hasColors) {
         const firstColor = product.colours.list[0].colours[0];
         setSelectedColor(firstColor);
-        console.log("Colors:", product.colours.list);
         setActiveImage(
           colorImages[firstColor] || product.images?.[0] || noimage
         );
@@ -629,7 +631,6 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         return;
       }
-      console.log("product:", single_product);
 
       formData1.append("name", formData.name);
       formData1.append("email", formData.email);
@@ -667,7 +668,6 @@ const ProductDetails = () => {
       );
       if (data.success) {
         toast.success("Quote sent successfully");
-        console.log(data);
         setFormData({
           name: "",
           email: "",
@@ -682,11 +682,9 @@ const ProductDetails = () => {
       } else {
         toast.error(data.message || "Something went wrong");
         setQuoteLoading(false);
-        console.log(data.message);
       }
     } catch (error) {
       setQuoteLoading(false);
-      console.log(error.message);
     }
   };
 
@@ -820,9 +818,10 @@ const ProductDetails = () => {
   const filterByNamesForDecoration = (array) => {
     const namesToInclude = ["Branding Options", "Print Areas"];
     const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
-    return array?.filter((item) =>
+    const arr = array?.filter((item) =>
       lowerCaseNames.includes(item?.name?.toLowerCase())
     );
+    return arr;
   };
 
   const filterByNamesForShipping = (array) => {
@@ -855,6 +854,18 @@ const ProductDetails = () => {
     });
 
     return result;
+  };
+
+  const minimumPrice = () => {
+    const priceGroups = product?.prices?.price_groups || [];
+    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+    const priceBreaks = basePrice.base_price?.price_breaks || [];
+    const prices = priceBreaks
+      .map((breakItem) => breakItem.price)
+      .filter((price) => price !== undefined);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    return minPrice === maxPrice ? minPrice.toFixed(2) : minPrice.toFixed(2);
   };
 
   if (error)
@@ -1000,6 +1011,7 @@ const ProductDetails = () => {
                     In Stock
                   </span>
                 </div>
+                {/* Color Selection */}
                 {single_product?.product?.colours?.list.length > 0 && (
                   <div className="flex justify-between items-center gap-4 mb-2">
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -1047,6 +1059,38 @@ const ProductDetails = () => {
                 4.7 Star Rating (1767 User Feedback)
               </p>
             </div> */}
+              {/* Starting Price */}
+              <div className="flex justify-between items-center gap-4 my-4 p-2 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-200 to-emerald-200 rounded-full -translate-y-8 translate-x-8 opacity-30"></div>
+                <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-tr from-teal-200 to-green-200 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
+
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg text-white">
+                    $
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600 mb-1">
+                      Starting From
+                    </div>
+                    <div className="text-2xl font-extrabold text-green-600">
+                      ${minimumPrice()}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Per unit • Best value
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-full">
+                    <CheckCheck className="w-4 h-4 text-green-700" />
+                    <span className="text-sm font-semibold text-green-700">
+                      Great Deal!
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Feature/Decoration/Pricing Tabs */}
@@ -1238,6 +1282,7 @@ const ProductDetails = () => {
                         <option>2 Colour Print</option>
                       </select>
                     </div> */}
+                    {/* Custom Quantity Input */}
                     <table className="min-w-full text-sm">
                       <thead>
                         <tr className="text-left text-gray-600">
@@ -1263,7 +1308,13 @@ const ProductDetails = () => {
                           const unitDiscounted =
                             unitWithMargin * discountMultiplier;
                           const total = unitDiscounted * item.qty;
-                          const isSelected = currentQuantity === item.qty;
+                          // Check if this price tier applies to the current quantity
+                          const isSelected =
+                            currentQuantity >= item.qty &&
+                            (i ===
+                              selectedPrintMethod.price_breaks.length - 1 ||
+                              currentQuantity <
+                                selectedPrintMethod.price_breaks[i + 1].qty);
                           return (
                             <tr
                               key={item.qty}
@@ -1302,7 +1353,44 @@ const ProductDetails = () => {
                           );
                         })}
                       </tbody>
-                    </table>{" "}
+                    </table>
+                    <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-center gap-4">
+                        <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                          Custom Quantity:
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="1"
+                            value={currentQuantity}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 1;
+                              setCurrentQuantity(value);
+                              // Find the appropriate price tier for this quantity
+                              const sortedBreaks = [
+                                ...(selectedPrintMethod?.price_breaks || []),
+                              ].sort((a, b) => a.qty - b.qty);
+                              let newActiveIndex = 0;
+                              for (let i = 0; i < sortedBreaks.length; i++) {
+                                if (value >= sortedBreaks[i].qty) {
+                                  newActiveIndex = i;
+                                } else {
+                                  break;
+                                }
+                              }
+                              setActiveIndex(newActiveIndex);
+                            }}
+                            className="w-24 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter qty"
+                          />
+                          <span className="text-sm text-gray-600">pieces</span>
+                        </div>
+                        {/* <div className="ml-auto text-sm text-gray-600">
+                          <Button>Large Order?</Button>
+                        </div> */}
+                      </div>
+                    </div>
                     {/* Enhanced Drag and Drop Section */}
                     {/* <div
                       className={`mt-2 px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
@@ -1352,14 +1440,14 @@ const ProductDetails = () => {
                   </div>
                 )}
                 {activeInfoTab === "features" && (
-                  <div className="space-y-1">
+                  <div className="space-y-1 border- border-gray-200 pt-2">
                     {/* Brief Description */}
                     {single_product?.product?.description && (
-                      <>
+                      <div className="border-b border-gray-200 pb-2">
                         {single_product.product.description.includes(
                           "Features:"
                         ) && (
-                          <div className="text-sm leading-6 text-gray-800 mb-2">
+                          <div className="text-sm leading-6 text-gray-800 mb-2 border-b border-gray-200 pb-2">
                             <span className="font-semibold">Features:</span>
                             <ul className="mt-2 space-y-1 list-disc list-inside">
                               {single_product.product.description
@@ -1383,7 +1471,7 @@ const ProductDetails = () => {
                             )[0]
                           }
                         </p>
-                      </>
+                      </div>
                     )}
 
                     {/* Highlights chips */}
@@ -1403,9 +1491,42 @@ const ProductDetails = () => {
                             ))}
                         </div>
                       )}
+                    {activeInfoTab === "features" && (
+                      <div className="space-y-3 text-sm leading-6">
+                        {filterByNames(single_product.product.details)?.length >
+                        0 ? (
+                          filterByNames(single_product.product.details)?.map(
+                            (d, i) => (
+                              <div
+                                key={i}
+                                className="border-b last:border-0 pb-3"
+                              >
+                                <p className="font-semibold">
+                                  {d.method || d.name}
+                                </p>
 
+                                {d?.detail && (
+                                  <div className="text-gray-600">
+                                    {d?.detail
+                                      ?.split(/[;]/)
+                                      .filter((entry) => entry.trim() !== "")
+                                      .map((entry, index) => (
+                                        <p key={index} className="mb-1">
+                                          • {entry.trim()}
+                                        </p>
+                                      ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          )
+                        ) : (
+                          <p>No features info available.</p>
+                        )}
+                      </div>
+                    )}
                     {/* Specifications Table */}
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
+                    {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
                       <div className="bg-gray-50 pl-6 py-3 border-b border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-900">
                           Specifications
@@ -1415,7 +1536,6 @@ const ProductDetails = () => {
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <tbody className="divide-y divide-gray-200">
-                            {/* API Details */}
                             {Array.isArray(single_product?.product?.details) &&
                               filterByNames(
                                 single_product?.product?.details
@@ -1430,7 +1550,6 @@ const ProductDetails = () => {
                                 </tr>
                               ))}
 
-                            {/* Fallback specs */}
                             {single_product?.product?.material && (
                               <tr className="hover:bg-gray-50">
                                 <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
@@ -1466,7 +1585,7 @@ const ProductDetails = () => {
                           </tbody>
                         </table>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 )}
 
@@ -1479,21 +1598,18 @@ const ProductDetails = () => {
                       ).map((d, i) => (
                         <div key={i} className="border-b last:border-0 pb-3">
                           <p className="font-semibold">{d.method || d.name}</p>
-                          {d?.positions && (
-                            <p className="text-gray-600">
-                              Positions: {d.positions.join(", ")}
-                            </p>
-                          )}
-                          {d?.max_colors && (
-                            <p className="text-gray-600">
-                              Max colors: {d.max_colors}
-                            </p>
-                          )}
+
                           {d?.detail && (
-                            <p className="text-gray-600">
-                              {d?.detail?.split(";" || ":" || ".").join("\n") ||
-                                "-"}
-                            </p>
+                            <div className="text-gray-600">
+                              {d?.detail
+                                ?.split(/[;]/)
+                                .filter((entry) => entry.trim() !== "")
+                                .map((entry, index) => (
+                                  <p key={index} className="mb-1">
+                                    • {entry.trim()}
+                                  </p>
+                                ))}
+                            </div>
                           )}
                         </div>
                       ))
@@ -1513,9 +1629,7 @@ const ProductDetails = () => {
                           <p className="font-semibold">{d.method || d.name}</p>
 
                           {d?.detail && (
-                            <p className="text-gray-600">
-                              {d?.detail?.split(". ").join("\n") || "-"}
-                            </p>
+                            <div className="text-gray-600">{d?.detail}</div>
                           )}
                         </div>
                       ))
@@ -1585,7 +1699,7 @@ const ProductDetails = () => {
                 <div className="space-y-3 mt-2">
                   <div
                     onClick={() => setShowQuoteForm(!showQuoteForm)}
-                    className="flex items-center justify-center gap-2 py-2 text-white cursor-pointer bg-smallHeader"
+                    className="flex items-center justify-center gap-2 py-2 text-white cursor-pointer bg-smallHeader rounded-sm"
                   >
                     <img src="/money.png" alt="" />
                     <button className="text-sm">Get Express Quote</button>
@@ -1630,7 +1744,7 @@ const ProductDetails = () => {
 
                       navigate("/cart");
                     }}
-                    className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-buy"
+                    className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-buy rounded-sm"
                   >
                     <img src="/buy2.png" alt="" />
                     <button className="text-sm">BUY 1 SAMPLE</button>
@@ -1712,10 +1826,6 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
-
-          {/* Show on click */}
-
-          {/* Show on click */}
         </div>
       </div>
 
@@ -1723,545 +1833,41 @@ const ProductDetails = () => {
 
       {/* Quote Modal */}
       {showQuoteForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-2 border-b border-gray-200">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Get Express Quote
-                </h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  We'll email you a detailed quote within 24 hours
-                </p>
-              </div>
-              <button
-                onClick={() => setShowQuoteForm(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <svg
-                  className="w-6 h-6 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="px-6 py-2">
-              {/* Selected Product Summary */}
-              <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50">
-                <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-gray-600">
-                      Selected Product:{" "}
-                      <span className="text-sm font-semibold text-gray-900">
-                        {product?.name || "Product"}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-                <div className="px-4 py-3 text-sm text-gray-800 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Color</span>
-                    <span className="font-medium">
-                      {selectedColor || "Not selected"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Size</span>
-                    <span className="font-medium">
-                      {selectedSize || "Not selected"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Print Method</span>
-                    <span className="font-medium truncate max-w-[180px] text-right">
-                      {selectedPrintMethod?.description || "Not selected"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Quantity</span>
-                    <span className="font-semibold">{currentQuantity}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Unit Price</span>
-                    <span className="font-semibold">
-                      ${discountedUnitPrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Total</span>
-                    <span className="font-extrabold text-smallHeader">
-                      ${currentPrice.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <form className="space-y-3">
-                {/* Contact Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      name="name"
-                      value={formData.name}
-                      type="text"
-                      placeholder="Your full name"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      name="email"
-                      value={formData.email}
-                      type="email"
-                      placeholder="your@email.com"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      name="phone"
-                      value={formData.phone}
-                      type="tel"
-                      placeholder="+61 410 123 456"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Delivery State *
-                    </label>
-                    <input
-                      name="delivery"
-                      value={formData.delivery}
-                      type="text"
-                      placeholder="e.g., Sydney, Melbourne"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* File Upload */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Logo/Artwork Files
-                  </label>
-                  <div
-                    className={`border-2 border-dashed rounded-lg px-4 py-2 text-center transition-colors ${
-                      isDragging2
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 hover:border-gray-400"
-                    }`}
-                    onDragEnter={handleDragEnter2}
-                    onDragLeave={handleDragLeave2}
-                    onDragOver={handleDragOver2}
-                    onDrop={handleDrop2}
-                  >
-                    {selectedFile2 ? (
-                      <div className="space-y-4">
-                        <img
-                          src={previewImage2}
-                          alt="Uploaded File"
-                          className="mx-auto max-w-[120px] max-h-[120px] object-contain rounded-lg"
-                        />
-                        <p className="text-sm text-green-600 font-medium">
-                          File uploaded successfully!
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedFile2(null);
-                            setPreviewImage2(null);
-                          }}
-                          className="text-sm text-red-600 hover:text-red-700"
-                        >
-                          Remove file
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-full space-y-1">
-                        <svg
-                          className="mx-auto h-12 w-12 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          />
-                        </svg>
-                        <div className="w-full flex justify-center items-center gap-2">
-                          <p className="text-sm text-gray-600">
-                            {isDragging2
-                              ? "Drop files here"
-                              : "Drag and drop your files here, or"}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={handleDivClick2}
-                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                          >
-                            browse files
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          Supported: AI, EPS, SVG, PDF, JPG, JPEG, PNG (Max
-                          16MB)
-                        </p>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      id="fileUpload2"
-                      accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                      className="hidden"
-                      onChange={handleFileChange2}
-                    />
-                  </div>
-                </div>
-
-                {/* Comments */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Additional Comments
-                  </label>
-                  <textarea
-                    name="comment"
-                    value={formData.comment}
-                    placeholder="Tell us about your project requirements, special instructions, or any questions you have..."
-                    className="w-full px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none h-32 resize-none"
-                    onChange={handleChange}
-                    rows={2}
-                  />
-                </div>
-
-                {/* Terms and Submit */}
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      id="not-robot"
-                      checked={notRobot}
-                      onChange={() => setNotRobot(!notRobot)}
-                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
-                    />
-                    <label
-                      htmlFor="not-robot"
-                      className="text-sm text-gray-700"
-                    >
-                      I confirm that I'm not a robot and agree to the{" "}
-                      <a
-                        href="/privacy"
-                        className="text-blue-600 hover:text-blue-700 underline"
-                      >
-                        Privacy Policy
-                      </a>
-                    </label>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setShowQuoteForm(false)}
-                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={onSubmitHandler}
-                      disabled={!notRobot || quoteLoading}
-                      className="flex-1 px-6 py-3 bg-smallHeader text-white rounded-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                    >
-                      {quoteLoading ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Sending Quote Request...
-                        </div>
-                      ) : (
-                        "Send Quote Request"
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+        <QuoteFormModal
+          {...{
+            product,
+            selectedColor,
+            selectedSize,
+            selectedPrintMethod,
+            currentQuantity,
+            discountedUnitPrice,
+            currentPrice,
+            formData,
+            handleChange,
+            handleDragEnter2,
+            handleDragLeave2,
+            handleDragOver2,
+            handleDrop2,
+            handleFileChange2,
+            handleDivClick2,
+            notRobot,
+            onSubmitHandler,
+            quoteLoading,
+            selectedFile2,
+            setSelectedFile2,
+            previewImage2,
+            isDragging2,
+            setPreviewImage2,
+            setNotRobot,
+            setShowQuoteForm,
+          }}
+        />
       )}
-
-      {/* Service Benefits Section - Simple & Minimalistic */}
-      <div className="bg-gray-50 py-12 my-16">
-        <div className="Mycontainer">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {/* Free Mockup */}
-            <div className="text-center">
-              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg
-                  className="w-10 h-10 text-blue-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Free Mockup
-              </h3>
-              <p className="text-sm text-gray-600">Professional Design</p>
-            </div>
-
-            {/* Fast & Free Delivery */}
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <svg
-                  className="w-6 h-6 text-green-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M19,7H16V6A4,4 0 0,0 8,6H11A4,4 0 0,0 19,6V7M11,4A2,2 0 0,1 13,6V7H5V6A2,2 0 0,1 7,4H11M4,10H20L19,9H5L4,10M6,12H18V14H6V12M4,15H20V17H4V15M6,18H18V20H6V18Z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Fast Delivery
-              </h3>
-              <p className="text-sm text-gray-600">2 - 4 working days*</p>
-            </div>
-
-            {/* Zero Setup Fees */}
-            <div className="text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <svg
-                  className="w-6 h-6 text-purple-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Zero Setup Fees
-              </h3>
-              <p className="text-sm text-gray-600">No hidden charges</p>
-            </div>
-
-            {/* Low MOQs */}
-            <div className="text-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <svg
-                  className="w-6 h-6 text-orange-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Low MOQs
-              </h3>
-              <p className="text-sm text-gray-600">Order what you need</p>
-            </div>
-
-            {/* AfterPay */}
-            <div className="text-center">
-              <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <svg
-                  className="w-6 h-6 text-teal-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                AfterPay
-              </h3>
-              <p className="text-sm text-gray-600">Promo now, AfterPay later</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Services */}
+      <Services />
 
       {/* Size Guide Modal */}
-      {showSizeGuide && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              onClick={() => setShowSizeGuide(false)}
-            ></div>
-
-            {/* Modal */}
-            <div className="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
-              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Size Guide
-                  </h3>
-                  <button
-                    onClick={() => setShowSizeGuide(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="space-y-6">
-                  {/* General Size Information */}
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-2">
-                      How to Measure
-                    </h4>
-                    <p className="text-sm text-gray-600 mb-3">
-                      To find your perfect size, measure your body as follows:
-                    </p>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>
-                        • <strong>Chest:</strong> Measure around the fullest
-                        part of your chest
-                      </li>
-                      <li>
-                        • <strong>Waist:</strong> Measure around your natural
-                        waistline
-                      </li>
-                      <li>
-                        • <strong>Hip:</strong> Measure around the fullest part
-                        of your hips
-                      </li>
-                      <li>
-                        • <strong>Length:</strong> Measure from shoulder to
-                        desired length
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Product Size Chart */}
-                  {parseSizing().length > 0 ? (
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-900 mb-4 text-center">
-                        Product Size Chart
-                      </h4>
-                      <div className="space-y-1">
-                        {parseSizing().map((sizeInfo, index) => (
-                          <div
-                            key={index}
-                            className={`p-2 rounded-lg border-b ${
-                              index % 2 === 0
-                                ? "bg-gray-50 border-gray-200"
-                                : "bg-white border-gray-200"
-                            }`}
-                          >
-                            <p className="text-sm font-medium text-gray-900 text-center">
-                              {sizeInfo}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <div className="flex items-center space-x-2">
-                        <svg
-                          className="w-5 h-5 text-yellow-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                          />
-                        </svg>
-                        <p className="text-sm text-yellow-800">
-                          Size information not available for this product
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Additional Information */}
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-900 mb-2">
-                      Important Notes
-                    </h4>
-                    <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• All measurements are in centimeters</li>
-                      <li>
-                        • Sizes may vary slightly between different products
-                      </li>
-                      <li>
-                        • If you're between sizes, we recommend choosing the
-                        larger size
-                      </li>
-                      <li>
-                        • For custom sizing, please contact our customer service
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  type="button"
-                  onClick={() => setShowSizeGuide(false)}
-                  className="w-full inline-flex justify-center rounded-md bg-smallHeader px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 sm:ml-3 sm:w-auto"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showSizeGuide && <SizeGuideModal setShowSizeGuide={setShowSizeGuide} />}
     </>
   );
 };

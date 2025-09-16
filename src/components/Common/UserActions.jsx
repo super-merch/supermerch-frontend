@@ -61,9 +61,11 @@ const UserActions = ({
       <Link to="/cart" className="relative">
         {cartQuantity > 0 && (
           <span
-            className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center`}
+            className={`absolute -top-1.5 -right-2 bg-primary text-white rounded-full ${currentSize.badge} flex items-center justify-center px-2 min-w-[20px] max-w-[40px]`}
           >
-            {cartQuantity}
+            <span className="text-xs">
+              {cartQuantity > 999 ? "999+" : cartQuantity}
+            </span>
           </span>
         )}
         <HiOutlineShoppingCart
@@ -75,9 +77,11 @@ const UserActions = ({
       <Link to="/favourites" className="relative">
         {favouriteQuantity > 0 && (
           <span
-            className={`absolute -top-1.5 right-[35%] bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center`}
+            className={`absolute -top-1.5 -right-2 bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center px-1.5 min-w-[20px] max-w-[40px]`}
           >
-            {favouriteQuantity}
+            <span className="text-xs font-bold truncate">
+              {favouriteQuantity > 999 ? "999+" : favouriteQuantity}
+            </span>
           </span>
         )}
         <HiOutlineHeart

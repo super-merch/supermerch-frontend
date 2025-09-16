@@ -25,6 +25,7 @@ const UploadArtwork = () => {
   const [artworkFile, setArtworkFile] = useState(null);
   const [artworkInstructions, setArtworkInstructions] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [artworkOption, setArtworkOption] = useState("no_artwork"); // 'upload' | 'text' | 'on_file' | 'no_artwork'
 
   // Calculate totals
   const totalAmount = items.reduce(
@@ -85,12 +86,19 @@ const UploadArtwork = () => {
   };
 
   const handleProceedToCheckout = () => {
-    // Validate that artwork or instructions are provided
-    if (!artworkFile && !artworkInstructions.trim()) {
-      toast.error(
-        "Please upload artwork or provide instructions for your order"
-      );
-      return;
+    // Validate based on selected option
+    if (artworkOption === "upload") {
+      if (!artworkFile && !artworkInstructions.trim()) {
+        toast.error("Upload a file or add instructions for your artwork");
+        return;
+      }
+    }
+
+    if (artworkOption === "text") {
+      if (!artworkInstructions.trim()) {
+        toast.error("Please enter the text you want on the product");
+        return;
+      }
     }
 
     // Navigate to checkout with artwork data
@@ -102,6 +110,7 @@ const UploadArtwork = () => {
         shippingCharges,
         artworkFile,
         artworkInstructions,
+        artworkOption,
       },
     });
   };
@@ -139,115 +148,200 @@ const UploadArtwork = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">
-                    Upload Artwork
+                    Tell us about your artwork
                   </h3>
                   <p className="text-sm text-white/90">
-                    Upload artwork for each product in your order
+                    Choose one option below and add any comments
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="p-6">
-              {/* Single Upload Area */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Artwork (Optional)
+              {/* Artwork Choice */}
+              <div className="mb-6 space-y-4">
+                <label className="block text-lg font-bold text-gray-900">
+                  Tell us about your artwork
                 </label>
-                <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                    isDragging
-                      ? "border-smallHeader bg-smallHeader/5"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  {artworkFile ? (
-                    <div className="space-y-4">
-                      {artworkFile.file.type.startsWith("image/") ? (
-                        <img
-                          src={artworkFile.preview}
-                          alt="Artwork preview"
-                          className="w-48 h-48 object-cover rounded-lg mx-auto border border-gray-200"
-                        />
-                      ) : (
-                        <div className="w-48 h-48 mx-auto bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-                          <div className="text-center">
-                            <svg
-                              className="w-12 h-12 text-gray-400 mx-auto mb-2"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <p className="text-sm text-gray-600">
-                              PDF Document
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-center space-x-2">
-                        <span className="text-sm text-gray-600">
-                          {artworkFile.name}
-                        </span>
-                        <button
-                          onClick={removeArtwork}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTimes className="w-4 h-4" />
-                        </button>
+                <div className="space-y-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      className="mt-1"
+                      checked={artworkOption === "upload"}
+                      onChange={() => setArtworkOption("upload")}
+                    />
+                    <div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        Upload artwork
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Upload an image or PDF of your artwork.
                       </div>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <FaUpload className="w-12 h-12 text-gray-400 mx-auto" />
-                      <div>
-                        <p className="text-lg text-gray-600 mb-2">
-                          Drag and drop your artwork here, or{" "}
-                          <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="text-smallHeader hover:underline font-medium"
-                          >
-                            browse files
-                          </button>
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Supports PNG, JPG, PDF files up to 10MB
-                        </p>
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      className="mt-1"
+                      checked={artworkOption === "text"}
+                      onChange={() => setArtworkOption("text")}
+                    />
+                    <div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        I only need text
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Tell us the text you want printed and any styling.
                       </div>
                     </div>
-                  )}
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      className="mt-1"
+                      checked={artworkOption === "on_file"}
+                      onChange={() => setArtworkOption("on_file")}
+                    />
+                    <div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        You have my artwork on file
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        We’ll use your artwork from a previous order.
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      className="mt-1"
+                      checked={artworkOption === "no_artwork"}
+                      onChange={() => setArtworkOption("no_artwork")}
+                    />
+                    <div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        I don't have artwork right now
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Please send your artwork to{" "}
+                        <span className="font-medium">
+                          artwork@promotionalproducts.com.au
+                        </span>{" "}
+                        with your company name in the subject and a sales member
+                        will be in touch.
+                      </div>
+                    </div>
+                  </label>
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,.pdf"
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files[0]) {
-                      handleFileUpload(e.target.files[0]);
-                    }
-                  }}
-                />
               </div>
 
-              {/* Instructions */}
+              {artworkOption === "upload" && (
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Artwork
+                  </label>
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragging
+                        ? "border-smallHeader bg-smallHeader/5"
+                        : "border-gray-300 hover:border-gray-400"
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    {artworkFile ? (
+                      <div className="space-y-4">
+                        {artworkFile.file.type.startsWith("image/") ? (
+                          <img
+                            src={artworkFile.preview}
+                            alt="Artwork preview"
+                            className="w-48 h-48 object-cover rounded-lg mx-auto border border-gray-200"
+                          />
+                        ) : (
+                          <div className="w-48 h-48 mx-auto bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                            <div className="text-center">
+                              <svg
+                                className="w-12 h-12 text-gray-400 mx-auto mb-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                />
+                              </svg>
+                              <p className="text-sm text-gray-600">
+                                PDF Document
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-center space-x-2">
+                          <span className="text-sm text-gray-600">
+                            {artworkFile.name}
+                          </span>
+                          <button
+                            onClick={removeArtwork}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTimes className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <FaUpload className="w-12 h-12 text-gray-400 mx-auto" />
+                        <div>
+                          <p className="text-lg text-gray-600 mb-2">
+                            Drag and drop your artwork here, or{" "}
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="text-smallHeader hover:underline font-medium"
+                            >
+                              browse files
+                            </button>
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Supports PNG, JPG, PDF files up to 10MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,.pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files[0]) {
+                        handleFileUpload(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </div>
+              )}
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Artwork Instructions (Required if no file uploaded)
+                <label className="block text-lg font-bold text-gray-900 mb-2">
+                  Artwork comments
                 </label>
                 <textarea
                   value={artworkInstructions}
                   onChange={(e) => setArtworkInstructions(e.target.value)}
-                  placeholder="Describe how you want your artwork to look, any specific requirements, colors, text, positioning, etc. This will apply to all products in your order."
+                  placeholder={
+                    artworkOption === "text"
+                      ? "Type the exact text you want printed and any styling (font, size, color)."
+                      : "Add any notes for our design team (placement, colors, sizing, etc.)."
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors resize-none"
                   rows={5}
                 />
@@ -305,10 +399,10 @@ const UploadArtwork = () => {
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                          {item.name}
+                          {item.quantity} x {item.name}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {item.quantity} x ${item.price}
+                          ${item.price.toFixed(2)}
                         </p>
                         <p className="text-xs text-gray-600">
                           {item.color} • {item.size}

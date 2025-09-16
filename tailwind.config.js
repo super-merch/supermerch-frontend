@@ -9,6 +9,7 @@ export default {
         sans: ["Red Hat Text", "sans-serif"],
       },
       colors: {
+        primary: "rgba(17,24,39)",
         customBlue: "rgba(12, 0, 71, 1)",
         linkColor: "rgba(53, 53, 53, 1)",
         smallHeader: "rgba(8, 10, 84, 1)",

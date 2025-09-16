@@ -97,7 +97,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   About Us
                 </Link>
@@ -105,7 +105,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Contact
                 </Link>
@@ -113,7 +113,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/all-blogs"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Blog
                 </Link>
@@ -121,7 +121,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/faqs"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   FAQ
                 </Link>
@@ -129,7 +129,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/clearance"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Clearance
                 </Link>
@@ -137,7 +137,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/shop"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Shop
                 </Link>
@@ -152,7 +152,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/artwork-policy"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Artwork Policy
                 </Link>
@@ -160,7 +160,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/refund-policy"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Refund Policy
                 </Link>
@@ -168,7 +168,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/privacy"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -176,7 +176,7 @@ const Footer = () => {
               <li>
                 <button
                   onClick={goToTrack}
-                  className="text-gray-300 hover:text-white transition-colors text-left"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors text-left"
                 >
                   Track Order
                 </button>
@@ -184,7 +184,7 @@ const Footer = () => {
               <li>
                 <button
                   onClick={goToCheckout}
-                  className="text-gray-300 hover:text-white transition-colors text-left"
+                  className="text-gray-300 hover:text-white hover:underline transition-colors text-left"
                 >
                   Pay Invoice
                 </button>
