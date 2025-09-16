@@ -22,7 +22,8 @@ const HeroWithHotDeals = () => {
       id: 1,
       span: "THE BEST PLACE Australia made products",
       title: "20% OFF +FREE SHIPPING",
-      description: "Rep your brand in style with custom hats, caps, and beanies.",
+      description:
+        "Rep your brand in style with custom hats, caps, and beanies.",
       buttonText: "Shop Now",
       // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",
@@ -74,14 +75,24 @@ const HeroWithHotDeals = () => {
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
       <div className="Mycontainer">
-        <div className="flex flex-col lg:flex-row gap-4 h-96 lg:h-[500px]">
+        <div className="flex flex-col lg:flex-row gap-4 h-auto md:h-[420px] lg:h-[500px]">
           {/* Image Slider - 75% width */}
-          <div className="w-full lg:w-3/4 h-full relative">
+          <div className="w-full lg:w-3/4 h-64 md:h-full relative">
             {/* Navigation Arrow - Right Only */}
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10">
               <button className="swiper-button-next-custom p-2 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>
@@ -97,13 +108,17 @@ const HeroWithHotDeals = () => {
             >
               {slider.map((slide) => {
                 // decide inline style only if imageUrl is present
-                const style = slide.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {};
+                const style = slide.imageUrl
+                  ? { backgroundImage: `url(${slide.imageUrl})` }
+                  : {};
 
                 return (
                   <SwiperSlide key={slide.id}>
                     <div
                       // apply either bgClass or nothing, plus common cover/center sizing
-                      className={`${slide.bgClass ?? ""} bg-cover bg-center w-full h-full`}
+                      className={`${
+                        slide.bgClass ?? ""
+                      } bg-cover bg-center w-full h-full`}
                       style={style}
                     >
                       <div className="pt-6 pb-6 text-line px-6 lg:pt-12 md:pt-12 lg:pb-12 md:pb-12">
@@ -111,8 +126,12 @@ const HeroWithHotDeals = () => {
                           <span className="w-5 bg-line h-[2px]" />
                           <h3 className="uppercase">{slide.span}</h3>
                         </div>
-                        <h2 className="lg:text-4xl md:text-4xl text-2xl max-w-[400px] pt-3 text-heading">{slide.title}</h2>
-                        <p className="text-base max-w-[300px] pt-3 font-normal text-line">{slide.description}</p>
+                        <h2 className="lg:text-4xl md:text-4xl text-2xl max-w-[400px] pt-3 text-heading">
+                          {slide.title}
+                        </h2>
+                        <p className="text-base max-w-[300px] pt-3 font-normal text-line">
+                          {slide.description}
+                        </p>
                         <div className="flex gap-3 mt-4">
                           <div
                             onClick={() => navigate("/shop")}
@@ -137,7 +156,7 @@ const HeroWithHotDeals = () => {
           </div>
 
           {/* Hot Deals Section - 25% width */}
-          <div className="w-full lg:w-1/4 h-full">
+          <div className="w-full lg:w-1/4 h-auto md:h-full">
             <HotDeals />
           </div>
         </div>
@@ -149,7 +168,10 @@ const HeroWithHotDeals = () => {
       </div>
 
       {/* Help Me Pick Modal */}
-      <HelpMePickModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
+      <HelpMePickModal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
     </div>
   );
 };

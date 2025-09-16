@@ -11,7 +11,7 @@ import Signup from "./pages/Signup";
 import ContactPage from "./pages/ContactPage";
 import Cart from "./pages/Cart";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutPage from "./pages/CheckoutPage";
 import AboutPage from "./pages/AboutPage";
 import { AppContext } from "./context/AppContext";
@@ -40,6 +40,8 @@ import MailOffer from "./pages/MailOffer";
 import TrackOrder from "./pages/TrackOrder";
 import Australia from "./pages/Australia";
 import HourProduction24 from "./pages/HourProduction24";
+import UploadArtwork from "./pages/UploadArtwork";
+import { useModals } from "./hooks/useModals";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -53,10 +55,19 @@ export const ScrollToTop = () => {
 
 const App = () => {
   const { token } = useContext(AppContext);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleCouponClick = () => {
-    // Dispatch custom event to trigger discount modal in Home component
-    window.dispatchEvent(new CustomEvent("triggerDiscountModal"));
+    // Ensure we are on Home so the modal listener exists, then trigger it
+    if (location.pathname !== "/") {
+      // navigate("/");
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("triggerDiscountModal"));
+      }, 150);
+    } else {
+      window.dispatchEvent(new CustomEvent("triggerDiscountModal"));
+    }
   };
 
   return (
@@ -97,6 +108,7 @@ const App = () => {
         {!token && <Route path="/signup" element={<Signup />} />}
         {!token && <Route path="/login" element={<Login />} />}
         <Route path="/cart" element={<Cart />} />
+        <Route path="/upload-artwork" element={<UploadArtwork />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/about" element={<AboutPage />} />

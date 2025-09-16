@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { HiOutlineShoppingCart, HiOutlineHeart, HiOutlineUser } from "react-icons/hi";
+import {
+  HiOutlineShoppingCart,
+  HiOutlineHeart,
+  HiOutlineUser,
+} from "react-icons/hi";
 import PropTypes from "prop-types";
 
 const UserActions = ({
@@ -50,29 +54,39 @@ const UserActions = ({
   }, []);
 
   return (
-    <div className={`relative z-20 flex items-center gap-4 lg:gap-6 md:gap-6 sm:gap-4 ${className}`}>
+    <div
+      className={`relative z-20 flex items-center gap-4 lg:gap-6 md:gap-6 sm:gap-4 ${className} `}
+    >
       {/* Cart */}
       <Link to="/cart" className="relative">
         {cartQuantity > 0 && (
           <span
-            className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center`}
+            className={`absolute -top-1.5 -right-2 bg-primary text-white rounded-full ${currentSize.badge} flex items-center justify-center px-2 min-w-[20px] max-w-[40px]`}
           >
-            {cartQuantity}
+            <span className="text-xs">
+              {cartQuantity > 999 ? "999+" : cartQuantity}
+            </span>
           </span>
         )}
-        <HiOutlineShoppingCart className={`${currentSize.icon} text-customBlue hover:text-blue-600 transition-colors`} />
+        <HiOutlineShoppingCart
+          className={`${currentSize.icon} text-customBlue hover:text-blue-600 transition-colors`}
+        />
       </Link>
 
       {/* Favourites */}
       <Link to="/favourites" className="relative">
         {favouriteQuantity > 0 && (
           <span
-            className={`absolute -top-1.5 right-[35%] bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center`}
+            className={`absolute -top-1.5 -right-2 bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center px-1.5 min-w-[20px] max-w-[40px]`}
           >
-            {favouriteQuantity}
+            <span className="text-xs font-bold truncate">
+              {favouriteQuantity > 999 ? "999+" : favouriteQuantity}
+            </span>
           </span>
         )}
-        <HiOutlineHeart className={`${currentSize.icon} text-customBlue hover:text-red-500 transition-colors`} />
+        <HiOutlineHeart
+          className={`${currentSize.icon} text-customBlue hover:text-red-500 transition-colors`}
+        />
       </Link>
 
       {/* User Account */}

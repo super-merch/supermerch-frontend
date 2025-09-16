@@ -40,5 +40,9 @@ export const useModals = () => {
 
     // Utility
     closeAllModals,
+
+    setDiscountModal,
+    setEmailModal,
+    setCookieModal,
   };
 };

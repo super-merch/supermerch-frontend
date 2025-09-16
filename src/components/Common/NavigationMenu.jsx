@@ -63,7 +63,9 @@ const NavigationMenu = ({
         }`}
       >
         <div className="container mx-auto">
-          <div className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}>
+          <div
+            className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}
+          >
             {item.megaMenu ? (
               // Mega menu layout
               <div className="grid grid-cols-[1fr_3fr]">
@@ -74,7 +76,9 @@ const NavigationMenu = ({
                         key={subItem.id}
                         className={cn(
                           "flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted",
-                          activeItem === subItem.id ? "bg-muted font-medium text-primary" : "text-white"
+                          activeItem === subItem.id
+                            ? "bg-muted font-medium text-primary"
+                            : "text-white"
                         )}
                         onMouseEnter={() => setActiveItem(subItem.id)}
                         onClick={() => handleItemClick(subItem)}
@@ -104,7 +108,9 @@ const NavigationMenu = ({
             ) : (
               // Regular submenu layout
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-blue-500 mb-4">{item.name}</h3>
+                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                  {item.name}
+                </h3>
                 <div className="grid grid-cols-3 gap-4">
                   {item.submenu.map((subItem, index) => (
                     <button
@@ -134,7 +140,9 @@ const NavigationMenu = ({
               onClick={() => handleItemClick(item)}
             >
               <span className="text-customBlue capitalize">{item.name}</span>
-              {item.hasSubmenu && <RiArrowDropDownLine className="text-xl transition-all duration-300" />}
+              {item.hasSubmenu && (
+                <RiArrowDropDownLine className="text-xl transition-all duration-300" />
+              )}
             </div>
             {item.hasSubmenu && item.submenu && (
               <div className="ml-4 space-y-1">
@@ -159,16 +167,22 @@ const NavigationMenu = ({
     <nav className={`${className}`}>
       <ul className="space-y-3 lg:space-y-0 lg:flex lg:space-x-2">
         {menuItems.map((item) => (
-          <li key={item.id} onMouseLeave={handleMouseLeave} className={`cursor-pointer ${item.hasSubmenu ? "group relative" : ""}`}>
+          <li
+            key={item.id}
+            onMouseLeave={handleMouseLeave}
+            className={`cursor-pointer ${
+              item.hasSubmenu ? "group relative" : ""
+            }`}
+          >
             <div className="text-customBlue">
               <span
-                className={`flex capitalize hover:text-blue-400 hover:drop-shadow-lg hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
+                className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg  hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
                 onMouseEnter={() => handleMouseEnter(item)}
                 onClick={() => handleItemClick(item)}
               >
                 {item.name}
                 {item.hasSubmenu && (
-                  <RiArrowDropDownLine className="-rotate-90 group-hover:rotate-[52px] text-xl transition-all duration-300" />
+                  <RiArrowDropDownLine className="-rotate-90 group-hover:rotate-[52px] text-2xl transition-all duration-300" />
                 )}
               </span>
               {renderSubmenu(item)}
