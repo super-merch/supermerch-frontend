@@ -22,7 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "color-name-list": "^11.24.2",
+    "color-name-list": "^12.1.0",
     "country-data-list": "^1.4.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",

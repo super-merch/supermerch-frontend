@@ -38,7 +38,7 @@ const AuthLayout = ({ children, title, subtitle, linkText, linkPath, linkLabel }
         <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
           <div className="w-full max-w-md">
             {/* Logo */}
-            <div className="mb-8">
+            <div className="mb-1">
               <img src="/authimg/supermerch.svg" alt="Super Merch" className="h-16 w-auto" />
             </div>
 
