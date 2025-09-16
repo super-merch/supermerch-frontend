@@ -4,22 +4,31 @@ import { useEmailSubscription } from "../../hooks/useEmailSubscription";
 import { useCoupons } from "../../hooks/useCoupons";
 import PropTypes from "prop-types";
 
-const HomeModals = ({ discountModal, emailModal, cookieModal, closeDiscountModal, closeEmailModal, closeCookieModal, openEmailModal }) => {
+const HomeModals = ({
+  discountModal,
+  emailModal,
+  cookieModal,
+  closeDiscountModal,
+  closeEmailModal,
+  closeCookieModal,
+  openEmailModal,
+}) => {
   const { selectedCoupon, coupenLoading } = useCoupons();
-  const { emailInput, setEmailInput, loading, error, handleSubmit, resetForm } = useEmailSubscription();
+  const { emailInput, setEmailInput, loading, error, handleSubmit, resetForm } =
+    useEmailSubscription();
 
   const handleDiscountSubscribe = () => {
-    console.log("Discount subscribe clicked");
     closeDiscountModal();
     openEmailModal();
   };
 
   const handleEmailSubmit = async () => {
-    console.log("Email submit clicked");
     if (selectedCoupon) {
-      const result = await handleSubmit(selectedCoupon.coupen, selectedCoupon.discount);
+      const result = await handleSubmit(
+        selectedCoupon.coupen,
+        selectedCoupon.discount
+      );
       if (result?.success) {
-        console.log("Email submitted successfully, closing modal");
         closeEmailModal();
         resetForm();
       }
@@ -54,7 +63,12 @@ const HomeModals = ({ discountModal, emailModal, cookieModal, closeDiscountModal
         loading={loading}
       />
 
-      <CookieModal isOpen={cookieModal} onClose={closeCookieModal} onAccept={handleCookieAccept} onDecline={handleCookieDecline} />
+      <CookieModal
+        isOpen={cookieModal}
+        onClose={closeCookieModal}
+        onAccept={handleCookieAccept}
+        onDecline={handleCookieDecline}
+      />
     </>
   );
 };

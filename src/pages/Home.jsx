@@ -16,10 +16,19 @@ const Home = () => {
     closeEmailModal,
     closeCookieModal,
     openEmailModal,
+    setDiscountModal,
+    setEmailModal,
+    setCookieModal,
   } = useModals();
   const { fetchCurrentCoupon } = useCoupons();
-  const [discountModalShown, setDiscountModalShown] = useSessionStorageBoolean("discountModalShown", false);
-  const [cookieModalShown, setCookieModalShown] = useSessionStorageBoolean("cookieModalShown", false);
+  const [discountModalShown, setDiscountModalShown] = useSessionStorageBoolean(
+    "discountModalShown",
+    false
+  );
+  const [cookieModalShown, setCookieModalShown] = useSessionStorageBoolean(
+    "cookieModalShown",
+    false
+  );
 
   // Expose function to trigger discount modal from parent
   useEffect(() => {
@@ -61,12 +70,10 @@ const Home = () => {
         emailModal={emailModal}
         cookieModal={cookieModal}
         closeDiscountModal={() => {
-          console.log("Closing discount modal");
           closeDiscountModal();
           setDiscountModalShown(true);
         }}
         closeEmailModal={() => {
-          console.log("Closing email modal");
           closeEmailModal();
         }}
         closeCookieModal={() => {

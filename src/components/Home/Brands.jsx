@@ -33,13 +33,19 @@ const Brands = () => {
   };
 
   return (
-    <div className="Mycontainer relative pt-2">
+    <div className="Mycontainer relative">
       <style jsx>{`
         .scroll-container::-webkit-scrollbar {
           display: none;
         }
       `}</style>
-      <Heading title="AUSTRALIA'S MOST LOVED BRANDS" align="center" size="default" titleClassName="uppercase" containerClassName="pb-4" />
+      <Heading
+        title="AUSTRALIA'S MOST LOVED BRANDS"
+        align="center"
+        size="default"
+        titleClassName="uppercase"
+        containerClassName="pb-4 !pt-0"
+      />
 
       {/* Navigation buttons */}
       <div className="absolute flex justify-between w-full h-32 md:h-36 lg:h-40 items-center">
@@ -77,7 +83,12 @@ const Brands = () => {
             transition={{ type: "spring", stiffness: 200 }}
           >
             <div className="w-full h-32 md:h-36 lg:h-40 flex items-center justify-center bg-line px-3 py-3 rounded-lg">
-              <img src={item.img} alt={`brand-${item.id}`} className="max-h-full max-w-full object-contain" draggable="false" />
+              <img
+                src={item.img}
+                alt={`brand-${item.id}`}
+                className="max-h-full max-w-full object-contain"
+                draggable="false"
+              />
             </div>
           </motion.div>
         ))}
