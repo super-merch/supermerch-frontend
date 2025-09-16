@@ -6,7 +6,6 @@ import ProducPage from "./pages/ProducPage";
 import Footer from "./components/Home/Footer";
 import CategoryPage from "./pages/CategoryPage";
 import ShopPage from "./pages/ShopPage";
-import SignUp from "./components/singup/SignUp";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ContactPage from "./pages/ContactPage";
@@ -95,9 +94,8 @@ const App = () => {
         <Route path="/new-arrivals" element={<NewArrival />} />
         <Route path="/sales" element={<SalesPage />} />
         <Route path="/bestSellers" element={<BestSellerPage />} />
-        {!token && <Route path="/signup" element={<SignUp />} />}
+        {!token && <Route path="/signup" element={<Signup />} />}
         {!token && <Route path="/login" element={<Login />} />}
-        {!token && <Route path="/signup-new" element={<Signup />} />}
         <Route path="/cart" element={<Cart />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />

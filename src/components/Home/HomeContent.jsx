@@ -5,7 +5,7 @@ import TabsCategory from "./TabsCategory";
 import TabsButtons from "./ProducsTabs/TabsButtons";
 import Blogs from "./Blogs";
 import LetsConnect from "./LetsConnect";
-import GoogleReviews from "./GoogleReviews";
+import GoogleReviewsComponent from "./GoogleReviews";
 import BannerSection from "./BannerSection";
 import { Heading } from "../Common";
 
@@ -54,7 +54,7 @@ const HomeContent = () => {
 
       {/* Google Reviews */}
       <div className="pt-2 pb-4">
-        <GoogleReviews />
+        <GoogleReviewsComponent />
       </div>
     </>
   );
