@@ -291,7 +291,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     googleLogout();
     dispatch(clearCurrentUser());
     dispatch(clearFavourites());
-    navigate("/signup");
+    navigate("/login");
   };
 
   const fetchCurrentCoupon = async () => {

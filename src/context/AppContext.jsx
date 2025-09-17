@@ -4,10 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import {
-  clearFavourites,
-  loadFavouritesFromDB,
-} from "@/redux/slices/favouriteSlice";
+import { clearFavourites, loadFavouritesFromDB } from "@/redux/slices/favouriteSlice";
 import { clearCart } from "@/redux/slices/cartSlice";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
 
@@ -25,17 +22,13 @@ const AppContextProvider = (props) => {
 
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
 
-  const [token, setToken] = useState(
-    localStorage.getItem("token") ? localStorage.getItem("token") : false
-  );
+  const [token, setToken] = useState(localStorage.getItem("token") ? localStorage.getItem("token") : false);
 
   const [blogs, setBlogs] = useState([]);
 
   const getGlobalDiscount = async () => {
     try {
-      const response = await axios.get(
-        `${backednUrl}/api/add-discount/global-discount`
-      );
+      const response = await axios.get(`${backednUrl}/api/add-discount/global-discount`);
       if (response.data.data) {
         setGlobalDiscount(response.data.data);
         return response.data.data;
@@ -57,20 +50,20 @@ const AppContextProvider = (props) => {
     if (window.google && window.google.accounts) {
       window.google.accounts.id.disableAutoSelect();
     }
-    navigate("/signup");
+    navigate("/login");
   };
   const [shippingAddressData, setShippingAddressData] = useState({
-  firstName: "",
-  lastName: "",
-  companyName: "",
-  addressLine: "",
-  city: "",
-  postalCode: "",
-  state: "",
-  country: "",
-  email: "",
-  phone: "",
-}); 
+    firstName: "",
+    lastName: "",
+    companyName: "",
+    addressLine: "",
+    city: "",
+    postalCode: "",
+    state: "",
+    country: "",
+    email: "",
+    phone: "",
+  });
   const [addressData, setAddressData] = useState({
     firstName: "",
     lastName: "",
@@ -105,10 +98,7 @@ const AppContextProvider = (props) => {
 
   const loadUserOrder = async () => {
     try {
-      const { data } = await axios.get(
-        `${backednUrl}/api/checkout/user-order`,
-        { headers: { token } }
-      );
+      const { data } = await axios.get(`${backednUrl}/api/checkout/user-order`, { headers: { token } });
       if (data.success) {
         setUserOrder(data.orders.reverse());
       }
@@ -129,16 +119,16 @@ const AppContextProvider = (props) => {
           setAddressData(data.user.defaultAddress);
         }
         if (data.user.defaultShippingAddress) {
-        setShippingAddressData(data.user.defaultShippingAddress);
-      }
+          setShippingAddressData(data.user.defaultShippingAddress);
+        }
         if (data.success) {
           setUserData(data.user);
         }
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
       toast.error("An error occurred while fetching the address.");
-      handleLogout()
+      handleLogout();
     }
   };
   const [productsCategory, setProductsCategory] = useState([]);
@@ -183,9 +173,7 @@ const AppContextProvider = (props) => {
     setSkeletonLoading(true);
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      const response = await fetch(`${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`);
 
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
@@ -220,21 +208,12 @@ const AppContextProvider = (props) => {
   const [searchedProducts, setSearchedProducts] = useState([]);
   // Add this method to your AppContext
 
-  const fetchMultipleSearchPages = async (
-    searchTerm,
-    maxPages = 1,
-    limit = 100,
-    sortOption = "",
-    startPage = 1
-  ) => {
+  const fetchMultipleSearchPages = async (searchTerm, maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
     try {
       const endPage = startPage + maxPages - 1;
 
       // Create array of page numbers to fetch
-      const pageNumbers = Array.from(
-        { length: endPage - startPage + 1 },
-        (_, i) => startPage + i
-      );
+      const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
       // Fetch all pages in parallel
       const fetchPromises = pageNumbers.map(async (page) => {
@@ -297,12 +276,7 @@ const AppContextProvider = (props) => {
 
   const [trendingProducts, setTrendingProducts] = useState([]);
 
-  const fetchMultipleTrendingPages = async (
-    maxPages = 1,
-    limit = 100,
-    sortOption = "",
-    startPage = 1
-  ) => {
+  const fetchMultipleTrendingPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -339,9 +313,7 @@ const AppContextProvider = (props) => {
   const fetchTrendingProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      const response = await fetch(`${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`);
 
       if (!response.ok) throw new Error("Failed to fetch products");
 
@@ -363,9 +335,7 @@ const AppContextProvider = (props) => {
   const fetchNewArrivalProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      const response = await fetch(`${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`);
 
       if (!response.ok) throw new Error("Failed to fetch products");
 
@@ -383,12 +353,7 @@ const AppContextProvider = (props) => {
       setError(err.message);
     }
   };
-  const fetchMultipleArrivalPages = async (
-    maxPages = 1,
-    limit = 100,
-    sortOption = "",
-    startPage = 1
-  ) => {
+  const fetchMultipleArrivalPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -423,12 +388,7 @@ const AppContextProvider = (props) => {
       return allProducts;
     }
   };
-  const fetchMultipleDiscountedPages = async (
-    maxPages = 1,
-    limit = 100,
-    sortOption = "",
-    startPage = 1
-  ) => {
+  const fetchMultipleDiscountedPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -467,9 +427,7 @@ const AppContextProvider = (props) => {
   const fetchDiscountedProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      const response = await fetch(`${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`);
 
       if (!response.ok) throw new Error("Failed to fetch products");
 
@@ -488,12 +446,7 @@ const AppContextProvider = (props) => {
     }
   };
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
-  const fetchMultipleBestSellerPages = async (
-    maxPages = 1,
-    limit = 100,
-    sortOption = "",
-    startPage = 1
-  ) => {
+  const fetchMultipleBestSellerPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -530,9 +483,7 @@ const AppContextProvider = (props) => {
   const fetchBestSellerProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      const response = await fetch(`${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`);
 
       if (!response.ok) throw new Error("Failed to fetch products");
 
@@ -553,21 +504,12 @@ const AppContextProvider = (props) => {
 
   const [paramProducts, setParamProducts] = useState([]);
 
-  const fetchMultipleParamPages = async (
-    categoryId,
-    maxPages = 1,
-    limit = 100,
-    sortOption = "",
-    startPage = 1
-  ) => {
+  const fetchMultipleParamPages = async (categoryId, maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
     try {
       const endPage = startPage + maxPages - 1;
 
       // Create array of page numbers to fetch
-      const pageNumbers = Array.from(
-        { length: endPage - startPage + 1 },
-        (_, i) => startPage + i
-      );
+      const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
       // Fetch all pages in parallel
       const fetchPromises = pageNumbers.map(async (page) => {
@@ -658,7 +600,7 @@ const AppContextProvider = (props) => {
       }
 
       setV1categories(data.data);
-      return data.data
+      return data.data;
     } catch (err) {
       console.log("Error fetching products:", err);
       setError(err.message);
@@ -671,16 +613,10 @@ const AppContextProvider = (props) => {
   const [totalAustraliaPages, setTotalAustraliaPages] = useState(0);
 
   // Function to fetch Australia products with pagination
-  const fetchAustraliaProducts = async (
-    page = 1,
-    limit = 9,
-    sortOption = ""
-  ) => {
+  const fetchAustraliaProducts = async (page = 1, limit = 9, sortOption = "") => {
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/australia/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
         {
           method: "GET",
           headers: {
@@ -711,20 +647,14 @@ const AppContextProvider = (props) => {
   // Function to fetch all Australia products (for price filtering)
   const fetchAllAustraliaProducts = async (sortOption = "") => {
     try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/australia/get-products?all=true&sort=${sortOption}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products?all=true&sort=${sortOption}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      if (!response.ok)
-        throw new Error("Failed to fetch all Australia products");
+      if (!response.ok) throw new Error("Failed to fetch all Australia products");
 
       const data = await response.json();
       return data;
@@ -737,15 +667,12 @@ const AppContextProvider = (props) => {
   // Legacy function (keep for backward compatibility)
   const fetchAustralia = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
       setAustralia(data);
@@ -761,9 +688,7 @@ const AppContextProvider = (props) => {
   const fetchHourProducts = async (page = 1, limit = 9, sortOption = "") => {
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/24hour/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
         {
           method: "GET",
           headers: {
@@ -794,17 +719,12 @@ const AppContextProvider = (props) => {
   // Function to fetch all Australia products (for price filtering)
   const fetchAllHourProducts = async (sortOption = "") => {
     try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/24hour/get-products?all=true&sort=${sortOption}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products?all=true&sort=${sortOption}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to fetch all 24 hour products");
 
@@ -819,15 +739,12 @@ const AppContextProvider = (props) => {
   // Legacy function (keep for backward compatibility)
   const fetchHour = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
       setHourProd(data);
@@ -843,9 +760,7 @@ const AppContextProvider = (props) => {
 
   const listDiscount = async () => {
     try {
-      const { data } = await axios.get(
-        `${backednUrl}/api/add-discount/list-discounts`
-      );
+      const { data } = await axios.get(`${backednUrl}/api/add-discount/list-discounts`);
       if (data.success) {
         setDiscountPromo(data.discounts);
         if (data.globalDiscount) {
@@ -864,14 +779,11 @@ const AppContextProvider = (props) => {
     if (!productId) return { productId, discount: 0, discountPrice: 0 };
 
     try {
-      const res = await axios.get(
-        `${backednUrl}/api/add-discount/discounts/${productId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axios.get(`${backednUrl}/api/add-discount/discounts/${productId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (res.data && res.data.data) {
         return {
@@ -901,9 +813,7 @@ const AppContextProvider = (props) => {
 
   const marginAdd = async () => {
     try {
-      const { data } = await axios.get(
-        `${backednUrl}/api/product-margin/list-margin`
-      );
+      const { data } = await axios.get(`${backednUrl}/api/product-margin/list-margin`);
 
       if (data.success) {
         const marginMap = {};
@@ -1052,7 +962,7 @@ const AppContextProvider = (props) => {
     filterLocalProducts,
     setFilterLocalProducts,
     shippingAddressData,
-  setShippingAddressData,
+    setShippingAddressData,
     discountPromo,
     globalDiscount,
     getGlobalDiscount,
@@ -1085,9 +995,7 @@ const AppContextProvider = (props) => {
     setMarginApi,
   };
 
-  return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
 };
 
 // export default AppContextProvider;
