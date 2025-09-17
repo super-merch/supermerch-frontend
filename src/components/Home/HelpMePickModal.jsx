@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
 import { motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 import { megaMenu } from "../../assets/assets.js";
 
 // Price ranges for Help me Pick
@@ -235,62 +236,64 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0.2, z: 90 }}
-      transition={{ duration: 0.3 }}
-      whileInView={{ opacity: 1, z: 0 }}
-      viewport={{ once: true }}
-      className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center p-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
     >
-      <div className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white rounded-md max-h-[440px] h-full">
-        <div className="flex py-4 border-b text-[15px] relative px-5 text-center items-center justify-between">
-          <h2 className="text-lg text-center font-semibold text-gray-800">Help Me Pick</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition">
-            ✖
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full relative max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Help Me Pick</h2>
+            <p className="text-sm text-gray-500 mt-1">Step {step} of 3</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <FaTimes className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
         {/* Step 1: Main Category Selection */}
         {step === 1 && (
-          <div className="overflow-y-auto">
-            <div className="flex flex-col justify-center items-center my-5">
-              <h2 className="text-lg font-bold">Select a Main Category</h2>
-              <p className="text-sm font-semibold">What type of products are you looking for?</p>
-              <p className="text-sm font-medium italic mb-4">Choose 1 from {mainCategories?.length} options</p>
-              <div className="grid p-2 grid-cols-1 justify-center items-center gap-4">
-                {mainCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      handleMainCategorySelect(category);
-                      handleNext();
-                    }}
-                    className="px-4 sm:px-10 py-2 border group border-[#1b6ce0] rounded-md mt-2 font-semibold"
-                  >
-                    <p
-                      className={`${
-                        selectedMainCategory?.id === category.id
-                          ? "text-[#1d6ce3] underline"
-                          : "text-[#1d6ce3] group-hover:scale-105 transition-all duration-300"
-                      }`}
-                    >
-                      {category.name}
-                    </p>
-                  </button>
-                ))}
-              </div>
+          <div className="p-6">
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Main Category</h3>
+              <p className="text-gray-600 mb-1">What type of products are you looking for?</p>
+              <p className="text-sm text-gray-500">Choose 1 from {mainCategories?.length} options</p>
             </div>
-            <div className="flex flex-auto py-4 border-t leading-5 text-[15px] sticky bottom-0 bg-white px-5 text-center items-center justify-between">
+
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              {mainCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    handleMainCategorySelect(category);
+                    handleNext();
+                  }}
+                  className={`px-6 py-4 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 ${
+                    selectedMainCategory?.id === category.id
+                      ? "border-blue-500 text-blue-600 bg-blue-50"
+                      : "border-gray-300 text-gray-700 hover:bg-blue-50"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-between pt-4 border-t border-gray-200">
               <button
                 disabled={step === 1}
                 onClick={handleBack}
-                className="text-sm disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer text-center font-semibold text-gray-600"
+                className="px-6 py-2 text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleNext}
                 disabled={!selectedMainCategory}
-                className="text-sm disabled:text-blue-400 disabled:cursor-not-allowed cursor-pointer text-center font-semibold text-blue-600"
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -300,46 +303,42 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
 
         {/* Step 2: Price Range Selection */}
         {step === 2 && (
-          <div className="overflow-y-auto">
-            <div className="flex flex-col justify-center items-center my-5">
-              <h2 className="text-lg font-bold">Select a Price Range</h2>
-              <p className="text-sm font-semibold">Select price range you are looking for...</p>
-              <p className="text-sm font-medium italic mb-4">Choose 1 from {priceRanges?.length} options</p>
-              <div className="grid p-2 grid-cols-2 justify-center items-center gap-4">
-                {priceRanges.map((range) => (
-                  <button
-                    key={range.label}
-                    onClick={() => {
-                      handlePriceSelect(range);
-                      handleNext();
-                    }}
-                    className="px-3 sm:px-10 py-2 border group border-[#1b6ce0] rounded-md mt-2 font-semibold"
-                  >
-                    <p
-                      className={`${
-                        selectedPrice === range
-                          ? "text-[#1d6ce3] underline"
-                          : "text-[#1d6ce3] group-hover:scale-105 transition-all duration-300"
-                      }`}
-                    >
-                      {range.label}
-                    </p>
-                  </button>
-                ))}
-              </div>
+          <div className="p-6">
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Price Range</h3>
+              <p className="text-gray-600 mb-1">Select price range you are looking for...</p>
+              <p className="text-sm text-gray-500">Choose 1 from {priceRanges?.length} options</p>
             </div>
-            <div className="flex flex-auto py-4 border-t leading-5 text-[15px] bg-white sticky bottom-0 px-5 text-center items-center justify-between">
+
+            <div className="grid grid-cols-3 gap-4 mb-8 max-h-64 overflow-y-auto">
+              {priceRanges.map((range) => (
+                <button
+                  key={range.label}
+                  onClick={() => {
+                    handlePriceSelect(range);
+                    handleNext();
+                  }}
+                  className={`px-4 py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 ${
+                    selectedPrice === range ? "border-blue-500 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-700 hover:bg-blue-50"
+                  }`}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-between pt-4 border-t border-gray-200">
               <button
                 disabled={step === 1}
                 onClick={handleBack}
-                className="text-sm disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer text-center font-semibold text-gray-600"
+                className="px-6 py-2 text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleNext}
                 disabled={!selectedPrice}
-                className="text-sm disabled:text-blue-400 disabled:cursor-not-allowed cursor-pointer text-center font-semibold text-blue-600"
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -349,43 +348,41 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
 
         {/* Step 3: Sub Category Selection */}
         {step === 3 && (
-          <div className="overflow-y-auto">
-            <div className="flex flex-col justify-center items-center my-5">
-              <h2 className="text-lg font-bold">Select a Category</h2>
-              <p className="text-sm font-semibold">Select the specific category you want...</p>
-              <p className="text-sm font-medium italic mb-4">Choose 1 from {availableSubCategories?.length} options</p>
-              <div className="grid p-2 grid-cols-2 justify-center items-center gap-4 max-h-48 overflow-y-auto">
-                {availableSubCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleSubCategorySelect(category)}
-                    className="px-4 sm:px-10 py-2 border group border-[#1b6ce0] rounded-md mt-2 font-semibold"
-                  >
-                    <p
-                      className={`${
-                        selectedSubCategory?.id === category.id
-                          ? "text-[#1d6ce3] underline"
-                          : "text-[#1d6ce3] group-hover:scale-105 transition-all duration-300"
-                      }`}
-                    >
-                      {category.name}
-                    </p>
-                  </button>
-                ))}
-              </div>
+          <div className="p-6">
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Category</h3>
+              <p className="text-gray-600 mb-1">Select the specific category you want...</p>
+              <p className="text-sm text-gray-500">Choose 1 from {availableSubCategories?.length} options</p>
             </div>
-            <div className="flex flex-auto py-4 border-t leading-5 text-[15px] sticky bottom-0 bg-white px-5 text-center items-center justify-between">
+
+            <div className="grid grid-cols-3 gap-4 mb-8 max-h-64 overflow-y-auto">
+              {availableSubCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleSubCategorySelect(category)}
+                  className={`px-4 py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 ${
+                    selectedSubCategory?.id === category.id
+                      ? "border-blue-500 text-blue-600 bg-blue-50"
+                      : "border-gray-300 text-gray-700 hover:bg-blue-50"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-between pt-4 border-t border-gray-200">
               <button
                 disabled={step === 1}
                 onClick={handleBack}
-                className="text-sm disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer text-center font-semibold text-gray-600"
+                className="px-6 py-2 text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleApplyFilters}
                 disabled={!selectedSubCategory}
-                className="text-sm disabled:text-blue-400 disabled:cursor-not-allowed cursor-pointer text-center font-semibold text-blue-600"
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Apply Filter
               </button>
