@@ -96,7 +96,6 @@ const Login = () => {
       }
     } catch (err) {
       setError(err?.response?.data?.message);
-      console.log(err);
       clearError();
     } finally {
       setLoading(false);

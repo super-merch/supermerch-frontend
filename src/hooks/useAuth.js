@@ -39,7 +39,6 @@ export const useAuth = () => {
 
   // Clear error helper
   const clearError = () => {
-    setError("");
     setTimeout(() => setError(""), 2000);
   };
 
@@ -65,7 +64,6 @@ export const useAuth = () => {
       }
     },
     onError: () => {
-      console.log("Login Failed");
       toast.error("Google authentication failed");
     },
   });
@@ -120,7 +118,6 @@ export const useAuth = () => {
       }
     } catch (err) {
       setGoogleError(err?.response?.data?.message || "Authentication failed");
-      console.log(err);
       setTimeout(() => setGoogleError(""), 2000);
     } finally {
       setLoadingGoogle(false);
