@@ -1,6 +1,6 @@
 import React from "react";
 
-const SizeGuideModal = ({ setShowSizeGuide }) => {
+const SizeGuideModal = ({ setShowSizeGuide, parseSizing }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
@@ -36,42 +36,62 @@ const SizeGuideModal = ({ setShowSizeGuide }) => {
             </div>
 
             <div className="space-y-6">
-              {/* General Size Information */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-900 mb-2">
-                  How to Measure
-                </h4>
-                <p className="text-sm text-gray-600 mb-3">
-                  To find your perfect size, measure your body as follows:
-                </p>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>
-                    • <strong>Chest:</strong> Measure around the fullest part of
-                    your chest
-                  </li>
-                  <li>
-                    • <strong>Waist:</strong> Measure around your natural
-                    waistline
-                  </li>
-                  <li>
-                    • <strong>Hip:</strong> Measure around the fullest part of
-                    your hips
-                  </li>
-                  <li>
-                    • <strong>Length:</strong> Measure from shoulder to desired
-                    length
-                  </li>
-                </ul>
+              <div className="flex items-start justify-between h-full">
+                {/* General Size Information */}
+                <div className="bg-gray-50 p-4 rounded-lg h-full">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    How to Measure
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    To find your perfect size, measure your body as follows:
+                  </p>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>
+                      • <strong>Chest:</strong> Measure around the fullest part
+                      of your chest
+                    </li>
+                    <li>
+                      • <strong>Waist:</strong> Measure around your natural
+                      waistline
+                    </li>
+                    <li>
+                      • <strong>Hip:</strong> Measure around the fullest part of
+                      your hips
+                    </li>
+                    <li>
+                      • <strong>Length:</strong> Measure from shoulder to
+                      desired length
+                    </li>
+                  </ul>
+                </div>
+                {/* Additional Information */}
+                <div className="bg-blue-50 p-4 rounded-lg h-full">
+                  <h4 className="font-semibold text-blue-900 mb-2">
+                    Important Notes
+                  </h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• All measurements are in centimeters</li>
+                    <li>
+                      • Sizes may vary slightly between different products
+                    </li>
+                    <li>
+                      • If you're between sizes, we recommend choosing the
+                      larger size
+                    </li>
+                    <li>
+                      • For custom sizing, please contact our customer service
+                    </li>
+                  </ul>
+                </div>
               </div>
-
               {/* Product Size Chart */}
-              {parseSizing().length > 0 ? (
+              {parseSizing()?.sizes?.length > 0 ? (
                 <div className="bg-white border border-gray-200 rounded-lg p-4">
                   <h4 className="font-semibold text-gray-900 mb-4 text-center">
                     Product Size Chart
                   </h4>
                   <div className="space-y-1">
-                    {parseSizing().map((sizeInfo, index) => (
+                    {parseSizing()?.result?.map((sizeInfo, index) => (
                       <div
                         key={index}
                         className={`p-2 rounded-lg border-b ${
@@ -109,24 +129,6 @@ const SizeGuideModal = ({ setShowSizeGuide }) => {
                   </div>
                 </div>
               )}
-
-              {/* Additional Information */}
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">
-                  Important Notes
-                </h4>
-                <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• All measurements are in centimeters</li>
-                  <li>• Sizes may vary slightly between different products</li>
-                  <li>
-                    • If you're between sizes, we recommend choosing the larger
-                    size
-                  </li>
-                  <li>
-                    • For custom sizing, please contact our customer service
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
 

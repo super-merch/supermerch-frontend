@@ -52,15 +52,6 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
                   personalized content, and analyze our traffic. By continuing
                   to use our site, you consent to our use of cookies.
                 </p>
-                <p className="text-gray-600 text-sm">
-                  You can manage your preferences at any time.{" "}
-                  <a
-                    href="/privacy"
-                    className="text-blue-600 underline hover:text-blue-700 font-medium"
-                  >
-                    View our Privacy Policy
-                  </a>
-                </p>
               </div>
             </div>
 
