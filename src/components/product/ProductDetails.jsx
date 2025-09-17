@@ -55,7 +55,7 @@ const ProductDetails = () => {
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState("pricing"); // features | decoration | pricing
+  const [activeInfoTab, setActiveInfoTab] = useState("features"); // features | decoration | pricing
 
   useEffect(() => {
     const fetchUserEmail = async () => {
@@ -298,8 +298,11 @@ const ProductDetails = () => {
       );
 
       const allGroups = [baseGroup, ...additionGroups];
+      console.log(allGroups, "allGroups");
       setAvailablePriceGroups(allGroups);
-      setSelectedPrintMethod(allGroups[0]);
+      setSelectedPrintMethod(
+        allGroups.length === 1 ? allGroups[0] : allGroups[1]
+      );
 
       // Initialize quantity and price based on first price break
       if (allGroups[0]?.price_breaks?.length > 0) {
@@ -744,7 +747,7 @@ const ProductDetails = () => {
           const baseProductPrice = getPriceForQuantity(currentQuantity);
 
           // Sort price breaks and find the correct one for current quantity
-          const sortedBreaks = [...selectedPrintMethod.price_breaks].sort(
+          const sortedBreaks = [...selectedPrintMethod?.price_breaks].sort(
             (a, b) => a.qty - b.qty
           );
           let selectedBreak = sortedBreaks[0];
@@ -808,6 +811,9 @@ const ProductDetails = () => {
       "Tags",
       "Gender",
       "Qty Per Carton",
+      "Product Materials",
+      "Product Item Size",
+      "Product Packaging Inner",
     ];
     const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
     return array?.filter((item) =>
@@ -853,7 +859,7 @@ const ProductDetails = () => {
       return `${size} (Half Chest ${chest} cm, Length ${length} cm)`;
     });
 
-    return result;
+    return { sizes, result };
   };
 
   const minimumPrice = () => {
@@ -875,50 +881,49 @@ const ProductDetails = () => {
       </div>
     );
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
-        <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
-          <div className="flex flex-col items-center space-y-6">
-            {/* Loading Spinner */}
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
-            </div>
-
-            {/* Loading Text */}
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Loading Product Details
-              </h3>
-              <p className="text-sm text-gray-600">
-                Please wait while we fetch the latest information...
-              </p>
-            </div>
-
-            {/* Progress Dots */}
-            <div className="flex space-x-2">
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-              <div
-                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
-                style={{ animationDelay: "0.1s" }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
-                style={{ animationDelay: "0.2s" }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="Mycontainer ">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-2">
           {/* 1st culmn  */}
+
+          {loading && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
+              <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
+                <div className="flex flex-col items-center space-y-6">
+                  {/* Loading Spinner */}
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
+                  </div>
+
+                  {/* Loading Text */}
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      Loading Product Details
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Please wait while we fetch the latest information...
+                    </p>
+                  </div>
+
+                  {/* Progress Dots */}
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             Array.from({ length: 1 }).map((_, index) => (
               <div
@@ -1098,8 +1103,8 @@ const ProductDetails = () => {
               {/* Tab headers */}
               <div className="flex gap-2 border-b">
                 {[
-                  { key: "pricing", label: "Pricing" },
                   { key: "features", label: "Features" },
+                  { key: "pricing", label: "Pricing" },
                   { key: "decoration", label: "Decoration" },
                   { key: "shipping", label: "Shipping" },
                 ].map((tab) => (
@@ -1119,6 +1124,155 @@ const ProductDetails = () => {
 
               {/* Tab content */}
               <div className="mt-3 rounded-lg border border-border bg-perUnit p-4">
+                {activeInfoTab === "features" && (
+                  <div className="space-y-1 border- border-gray-200 pt-2">
+                    {/* Brief Description */}
+                    {single_product?.product?.description && (
+                      <div className="border-b border-gray-200 pb-2">
+                        {single_product.product.description.includes(
+                          "Features:"
+                        ) && (
+                          <div className="text-sm leading-6 text-gray-800 mb-2 border-b border-gray-200 pb-2">
+                            <span className="font-semibold">Features:</span>
+                            <ul className="mt-2 space-y-1 list-disc list-inside">
+                              {single_product.product.description
+                                .split("Features:")[1]
+                                ?.split("\n")
+                                .filter((item) => item.trim().startsWith("*"))
+                                .map((feature, index) => (
+                                  <li key={index} className="text-gray-800">
+                                    {feature.replace("*", "").trim()}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <span className="font-semibold">Description:</span>
+                        <p className="text-sm leading-6 text-gray-800">
+                          {
+                            single_product.product.description.split(
+                              "Features:"
+                            )[0]
+                          }
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Highlights chips */}
+                    {Array.isArray(single_product?.product?.features) &&
+                      single_product.product.features.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {single_product.product.features
+                            .slice(0, 8)
+                            .map((f, i) => (
+                              <span
+                                key={i}
+                                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200"
+                              >
+                                <span className="h-1.5 w-1.5 rounded-full bg-smallHeader" />
+                                {f}
+                              </span>
+                            ))}
+                        </div>
+                      )}
+                    {activeInfoTab === "features" && (
+                      <div className="space-y-3 text-sm leading-6">
+                        {filterByNames(single_product?.product?.details)
+                          ?.length > 0 ? (
+                          filterByNames(single_product?.product?.details)?.map(
+                            (d, i) => (
+                              <div
+                                key={i}
+                                className="border-b last:border-0 pb-3"
+                              >
+                                <p className="font-semibold capitalize">
+                                  {d.method || d.name}
+                                </p>
+
+                                {d?.detail && (
+                                  <div className="text-gray-600">
+                                    {d?.detail
+                                      ?.split(/[;]/)
+                                      .filter((entry) => entry.trim() !== "")
+                                      .map((entry, index) => (
+                                        <p key={index} className="mb-1">
+                                          • {entry.trim()}
+                                        </p>
+                                      ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          )
+                        ) : (
+                          <p>No features info available.</p>
+                        )}
+                      </div>
+                    )}
+                    {/* Specifications Table */}
+                    {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
+                      <div className="bg-gray-50 pl-6 py-3 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Specifications
+                        </h3>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <tbody className="divide-y divide-gray-200">
+                            {Array.isArray(single_product?.product?.details) &&
+                              filterByNames(
+                                single_product?.product?.details
+                              ).map((item, idx) => (
+                                <tr key={idx} className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3 capitalize">
+                                    {item?.name || "Detail"}
+                                  </td>
+                                  <td className="px-6 py-4 text-sm text-gray-600 whitespace-pre-line">
+                                    {item?.detail?.split(";").join("\n") || "-"}
+                                  </td>
+                                </tr>
+                              ))}
+
+                            {single_product?.product?.material && (
+                              <tr className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
+                                  Material
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {single_product.product.material}
+                                </td>
+                              </tr>
+                            )}
+
+                            {single_product?.product?.dimensions && (
+                              <tr className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
+                                  Dimensions
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {single_product.product.dimensions}
+                                </td>
+                              </tr>
+                            )}
+
+                            {single_product?.product?.packaging && (
+                              <tr className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
+                                  Packaging
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {single_product.product.packaging}
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div> */}
+                  </div>
+                )}{" "}
                 {activeInfoTab === "pricing" && (
                   <div className="overflow-x-auto">
                     {/* Color Selection */}
@@ -1170,7 +1324,7 @@ const ProductDetails = () => {
                       </div>
                     )} */}
                     {/* Dropdowns */}
-                    {availablePriceGroups.length > 0 && (
+                    {availablePriceGroups?.length > 0 && (
                       <div className="flex justify-between items-center gap-4">
                         <label
                           htmlFor="print-method"
@@ -1193,7 +1347,7 @@ const ProductDetails = () => {
                           }}
                           className="w-full px-2 py-2 border rounded-md outline-none pr-3"
                         >
-                          {availablePriceGroups.map((method, index) => (
+                          {availablePriceGroups?.map((method, index) => (
                             <option key={method.key} value={method.key}>
                               {method.description}
                             </option>
@@ -1232,7 +1386,7 @@ const ProductDetails = () => {
                         </select>
                       </div>
                     )} */}
-                    {parseSizing().length > 1 && (
+                    {parseSizing()?.sizes?.length > 1 && (
                       <div className="flex flex-col w-full mb-3">
                         <div className="flex justify-between items-center gap-4 my-2">
                           <label
@@ -1247,7 +1401,7 @@ const ProductDetails = () => {
                             onChange={(e) => setSelectedSize(e.target.value)}
                             className="w-full px-2 py-2 border rounded-md outline-none"
                           >
-                            {parseSizing()?.map((size, index) => (
+                            {parseSizing().sizes?.map((size, index) => (
                               <option key={index} value={size}>
                                 {size}
                               </option>
@@ -1439,156 +1593,6 @@ const ProductDetails = () => {
                     </Link>
                   </div>
                 )}
-                {activeInfoTab === "features" && (
-                  <div className="space-y-1 border- border-gray-200 pt-2">
-                    {/* Brief Description */}
-                    {single_product?.product?.description && (
-                      <div className="border-b border-gray-200 pb-2">
-                        {single_product.product.description.includes(
-                          "Features:"
-                        ) && (
-                          <div className="text-sm leading-6 text-gray-800 mb-2 border-b border-gray-200 pb-2">
-                            <span className="font-semibold">Features:</span>
-                            <ul className="mt-2 space-y-1 list-disc list-inside">
-                              {single_product.product.description
-                                .split("Features:")[1]
-                                ?.split("\n")
-                                .filter((item) => item.trim().startsWith("*"))
-                                .map((feature, index) => (
-                                  <li key={index} className="text-gray-800">
-                                    {feature.replace("*", "").trim()}
-                                  </li>
-                                ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        <span className="font-semibold">Description:</span>
-                        <p className="text-sm leading-6 text-gray-800">
-                          {
-                            single_product.product.description.split(
-                              "Features:"
-                            )[0]
-                          }
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Highlights chips */}
-                    {Array.isArray(single_product?.product?.features) &&
-                      single_product.product.features.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {single_product.product.features
-                            .slice(0, 8)
-                            .map((f, i) => (
-                              <span
-                                key={i}
-                                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200"
-                              >
-                                <span className="h-1.5 w-1.5 rounded-full bg-smallHeader" />
-                                {f}
-                              </span>
-                            ))}
-                        </div>
-                      )}
-                    {activeInfoTab === "features" && (
-                      <div className="space-y-3 text-sm leading-6">
-                        {filterByNames(single_product.product.details)?.length >
-                        0 ? (
-                          filterByNames(single_product.product.details)?.map(
-                            (d, i) => (
-                              <div
-                                key={i}
-                                className="border-b last:border-0 pb-3"
-                              >
-                                <p className="font-semibold">
-                                  {d.method || d.name}
-                                </p>
-
-                                {d?.detail && (
-                                  <div className="text-gray-600">
-                                    {d?.detail
-                                      ?.split(/[;]/)
-                                      .filter((entry) => entry.trim() !== "")
-                                      .map((entry, index) => (
-                                        <p key={index} className="mb-1">
-                                          • {entry.trim()}
-                                        </p>
-                                      ))}
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          )
-                        ) : (
-                          <p>No features info available.</p>
-                        )}
-                      </div>
-                    )}
-                    {/* Specifications Table */}
-                    {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
-                      <div className="bg-gray-50 pl-6 py-3 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Specifications
-                        </h3>
-                      </div>
-
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <tbody className="divide-y divide-gray-200">
-                            {Array.isArray(single_product?.product?.details) &&
-                              filterByNames(
-                                single_product?.product?.details
-                              ).map((item, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50">
-                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3 capitalize">
-                                    {item?.name || "Detail"}
-                                  </td>
-                                  <td className="px-6 py-4 text-sm text-gray-600 whitespace-pre-line">
-                                    {item?.detail?.split(";").join("\n") || "-"}
-                                  </td>
-                                </tr>
-                              ))}
-
-                            {single_product?.product?.material && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Material
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.material}
-                                </td>
-                              </tr>
-                            )}
-
-                            {single_product?.product?.dimensions && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Dimensions
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.dimensions}
-                                </td>
-                              </tr>
-                            )}
-
-                            {single_product?.product?.packaging && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Packaging
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.packaging}
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div> */}
-                  </div>
-                )}
-
                 {activeInfoTab === "decoration" && (
                   <div className="space-y-3 text-sm leading-6">
                     {filterByNamesForDecoration(single_product.product.details)
@@ -1819,7 +1823,8 @@ const ProductDetails = () => {
                       <FaCheck />
                     </p>
                     <p className="text-sm">
-                      Freight Charge: ${freightFee.toFixed(2)}
+                      Freight Charge:
+                      {freightFee > 0 ? `$${freightFee.toFixed(2)}` : "-"}
                     </p>
                   </div>
                 </div>
@@ -1867,7 +1872,12 @@ const ProductDetails = () => {
       <Services />
 
       {/* Size Guide Modal */}
-      {showSizeGuide && <SizeGuideModal setShowSizeGuide={setShowSizeGuide} />}
+      {showSizeGuide && (
+        <SizeGuideModal
+          setShowSizeGuide={setShowSizeGuide}
+          parseSizing={parseSizing}
+        />
+      )}
     </>
   );
 };

@@ -34,6 +34,7 @@ const UploadArtwork = () => {
   );
   const totalDiscountPercent =
     items.length > 0 ? Math.min(items.length * 5, 50) : 0;
+  console.log(items, totalDiscountPercent, "totalDiscountPercent");
   const discountedAmount = totalAmount * (1 - totalDiscountPercent / 100);
   const finalDiscountedAmount = appliedCoupon
     ? discountedAmount * (1 - couponDiscount / 100)
@@ -342,7 +343,7 @@ const UploadArtwork = () => {
                       ? "Type the exact text you want printed and any styling (font, size, color)."
                       : "Add any notes for our design team (placement, colors, sizing, etc.)."
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors resize-none text-lg"
                   rows={5}
                 />
               </div>
@@ -391,25 +392,28 @@ const UploadArtwork = () => {
                 {items.map((item) => {
                   const itemTotal = item.price * item.quantity;
                   return (
-                    <li key={item.id} className="flex items-center space-x-3">
+                    <li
+                      key={item.id}
+                      className="flex items-center space-x-3 text-lg"
+                    >
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                        className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                      <div className="flex-1 min-w-0 text-lg">
+                        <p className="text-lg font-medium text-gray-900 truncate">
                           {item.quantity} x {item.name}
                         </p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-base text-gray-600">
                           ${item.price.toFixed(2)}
                         </p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-base text-gray-600">
                           {item.color} • {item.size}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-lg font-semibold text-gray-900">
                           ${itemTotal.toFixed(2)}
                         </p>
                       </div>
@@ -420,7 +424,7 @@ const UploadArtwork = () => {
 
               {/* Pricing Breakdown */}
               <div className="space-y-2 mb-6">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-lg">
                   <span>Sub-total:</span>
                   <span>
                     $
@@ -430,26 +434,26 @@ const UploadArtwork = () => {
                     })}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-lg">
                   <span>Shipping:</span>
                   <span>
                     {shippingCharges > 0
                       ? `$${shippingCharges.toFixed(2)}`
-                      : "Free"}
+                      : "-"}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-lg">
                   <span>Product Discount:</span>
                   <span>{totalDiscountPercent}%</span>
                 </div>
 
                 {appliedCoupon && (
                   <div className="flex flex-col gap-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-lg">
                       <span>Coupon ({appliedCoupon.coupen}):</span>
                       <span className="text-green-600">-{couponDiscount}%</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-lg">
                       <span>Discounted Price:</span>
                       <span className="text-green-600">
                         ${finalDiscountedAmount.toFixed(2)}
@@ -458,7 +462,7 @@ const UploadArtwork = () => {
                   </div>
                 )}
 
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-lg">
                   <span>GST(10%):</span>
                   <span>${gstAmount.toFixed(2)}</span>
                 </div>
