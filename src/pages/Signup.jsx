@@ -157,11 +157,11 @@ const Signup = () => {
             />
             <span className="ml-2 text-sm text-gray-600">
               I agree to Super Merch's{" "}
-              <Link to="/terms" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link to="/terms" className="text-smallHeader hover:text-smallHeader/80 font-medium">
                 Terms & Conditions
               </Link>{" "}
               and{" "}
-              <Link to="/privacy" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link to="/privacy" className="text-smallHeader hover:text-smallHeader/80 font-medium">
                 Privacy Policy
               </Link>
             </span>
@@ -175,7 +175,7 @@ const Signup = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-smallHeader text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Creating Account..." : "Create Account"}
         </button>
@@ -197,7 +197,7 @@ const Signup = () => {
       <div className="mt-6">
         <button
           onClick={() => googleLogin()}
-          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          className="w-full flex items-center justify-center px-4 py-3 border border-smallHeader rounded-lg shadow-sm bg-white text-smallHeader hover:bg-smallHeader hover:text-white focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-colors"
         >
           <FcGoogle className="h-5 w-5 mr-3" />
           Sign up with Google

@@ -30,7 +30,7 @@ const AuthLayout = ({ children, title, subtitle, linkText, linkPath, linkLabel }
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             {linkText}{" "}
-            <Link to={linkPath} className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to={linkPath} className="font-medium text-smallHeader hover:text-smallHeader/80">
               {linkLabel}
             </Link>
           </p>
