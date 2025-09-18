@@ -117,7 +117,7 @@ const Login = () => {
       {/* Glass effect overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm"></div>
       {/* Login Form Container with card design */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300 relative z-10">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300 relative z-10">
         {/* Welcome Text */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Hello Again!</h1>

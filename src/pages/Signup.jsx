@@ -98,53 +98,55 @@ const Signup = () => {
     >
       {/* Signup Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name Field */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter your full name"
-            required
-          />
+        {/* Name and Email Fields - Same Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="example@email.com"
+              required
+            />
+          </div>
         </div>
 
-        {/* Email Field */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
+        {/* Password Fields - Same Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <PasswordInput
+            name="password"
+            value={formData.password}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="example@email.com"
-            required
+            placeholder="Create a password"
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+          />
+
+          <PasswordInput
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            placeholder="Confirm your password"
+            showPassword={showConfirmPassword}
+            onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
           />
         </div>
-
-        {/* Password Field */}
-        <PasswordInput
-          name="password"
-          value={formData.password}
-          onChange={handleInputChange}
-          placeholder="Create a password"
-          showPassword={showPassword}
-          onTogglePassword={() => setShowPassword(!showPassword)}
-        />
-
-        {/* Confirm Password Field */}
-        <PasswordInput
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleInputChange}
-          placeholder="Confirm your password"
-          showPassword={showConfirmPassword}
-          onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
-        />
 
         {/* Terms and Conditions */}
         <div>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const AuthLayout = ({ children, title, subtitle, linkText, linkPath, linkLabel }) => {
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-8 relative"
+      className="min-h-screen flex items-start justify-center px-8 pt-20 pb-8 relative"
       style={{
         backgroundImage: `url('/authimg/authbg.png')`,
         backgroundSize: "cover",
@@ -16,7 +16,7 @@ const AuthLayout = ({ children, title, subtitle, linkText, linkPath, linkLabel }
       {/* Glass effect overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm"></div>
       {/* Centered Auth Form Container with card design */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300 relative z-10">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300 relative z-10">
         {/* Welcome Text */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
