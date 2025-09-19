@@ -328,7 +328,7 @@ const UserProducts = () => {
     <div className='w-full px-2 lg:px-8 md:px-8'>
       <div className='flex items-center justify-between'>
         <button
-          onClick={() => setActiveTab('orders')}
+          onClick={() => setActiveTab('dashboard')}
           className='bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase'
         >
           <IoMdArrowRoundBack />

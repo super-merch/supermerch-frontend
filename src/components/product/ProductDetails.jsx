@@ -776,6 +776,7 @@ const ProductDetails = () => {
         priceBreaks: selectedPrintMethod.price_breaks,
         printMethodKey: selectedPrintMethod.key,
         userEmail: userEmail || "guest@gmail.com",
+        supplierName: single_product.overview.supplier
       })
     );
     navigate("/cart");
