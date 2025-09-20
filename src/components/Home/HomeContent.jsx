@@ -15,7 +15,7 @@ const HomeContent = () => {
       <HeroWithHotDeals />
 
       {/* Australia's most loved brands - moved above Shop by Category */}
-      <div className="py-20 my-12" style={{ backgroundColor: "#E8F4FD" }}>
+      <div className="py-8 my-4" style={{ backgroundColor: "#ffffff" }}>
         <Brands />
       </div>
 
@@ -40,17 +40,9 @@ const HomeContent = () => {
       {/* Easy Ways to Order - blank section for now */}
       <div className="py-4">
         <div className="Mycontainer">
-          <Heading
-            title="EASY WAYS TO ORDER"
-            align="center"
-            size="default"
-            titleClassName="uppercase"
-            containerClassName="mb-8"
-          />
+          <Heading title="EASY WAYS TO ORDER" align="center" size="default" titleClassName="uppercase" containerClassName="mb-8" />
           <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg">
-            <span className="text-lg text-gray-500">
-              Content will be added here later
-            </span>
+            <span className="text-lg text-gray-500">Content will be added here later</span>
           </div>
         </div>
       </div>

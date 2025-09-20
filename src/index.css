@@ -70,14 +70,6 @@ select {
   }
 }
 
-/* ensure two slides on very small screens if anything else interferes */
-@media (max-width: 479px) {
-  .mySwiper .swiper-slide {
-    width: calc((100% - 8px) / 2) !important; /* match spaceBetween */
-    max-width: calc((100% - 8px) / 2) !important;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;

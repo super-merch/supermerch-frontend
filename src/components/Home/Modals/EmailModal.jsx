@@ -5,13 +5,11 @@ import PropTypes from "prop-types";
 const EmailModal = ({ isOpen, onClose, onSubmit, emailInput, setEmailInput, error, loading }) => {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      console.log("Backdrop clicked, closing modal");
       onClose();
     }
   };
 
   const handleCloseClick = () => {
-    console.log("Close button clicked, closing modal");
     onClose();
   };
 

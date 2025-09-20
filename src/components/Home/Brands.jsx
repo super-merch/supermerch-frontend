@@ -82,13 +82,8 @@ const Brands = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 200 }}
           >
-            <div className="w-full h-32 md:h-36 lg:h-40 flex items-center justify-center bg-line px-3 py-3 rounded-lg">
-              <img
-                src={item.img}
-                alt={`brand-${item.id}`}
-                className="max-h-full max-w-full object-contain"
-                draggable="false"
-              />
+            <div className="w-full h-32 md:h-36 lg:h-40 flex items-center justify-center bg-white px-4 py-4 rounded-xl border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
+              <img src={item.img} alt={`brand-${item.id}`} className="max-h-full max-w-full object-contain" draggable="false" />
             </div>
           </motion.div>
         ))}

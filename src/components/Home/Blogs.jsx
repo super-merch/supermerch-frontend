@@ -38,9 +38,6 @@ const Blogs = () => {
   // Display only 4 blogs - use fallback if no blogs available
   const displayBlogs = blogs && blogs.length > 0 ? blogs.slice(0, 4) : fallbackBlogs;
 
-  console.log("Blogs data:", blogs);
-  console.log("Display blogs:", displayBlogs);
-
   return (
     <div className="w-full">
       <div className="Mycontainer">

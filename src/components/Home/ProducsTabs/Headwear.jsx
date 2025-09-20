@@ -47,7 +47,6 @@ const Headwear = ({ activeTab }) => {
         const data = await response.json();
         const productIds = data.map((item) => Number(item.id));
         setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
       } else {
         console.error("Failed to fetch 24 Hour Production products:", response.status);
       }
@@ -69,7 +68,6 @@ const Headwear = ({ activeTab }) => {
         // Ensure consistent data types (convert to strings)
         const productIds = data.map((item) => Number(item.id));
         setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
       } else {
         console.error("Failed to fetch Australia products:", response.status);
       }
