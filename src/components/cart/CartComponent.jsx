@@ -75,7 +75,6 @@ const CartComponent = () => {
       });
 
       const data = await response.json();
-      console.log("Shipping Charges Data:", data);
       setShippingCharges(data.shipping || 0);
 
       if (!response.ok) {
@@ -279,24 +278,36 @@ const CartComponent = () => {
                                 />
                                 <div className="flex-1 min-w-0">
                                   <h3
-                                    className="text-lg font-semibold text-gray-900 mb-2 cursor-pointer hover:text-smallHeader transition-colors"
-                                    onClick={() => handleViewProduct(item.id, item.name)}
+                                    className="text-xl font-semibold text-gray-900 mb-2 cursor-pointer hover:text-smallHeader transition-colors"
+                                    onClick={() =>
+                                      handleViewProduct(item.id, item.name)
+                                    }
                                   >
                                     {item.name}
                                   </h3>
                                   <div className="space-y-1 text-sm text-gray-600">
-                                    <div className="flex items-center space-x-2">
-                                      <div className="w-2 h-2 bg-smallHeader rounded-full"></div>
-                                      <span>
-                                        Color: <span className="font-medium text-gray-900">{item.color}</span>
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                      <span>
-                                        Print: <span className="font-medium text-gray-900">{item.print}</span>
-                                      </span>
-                                    </div>
+                                    {item.color && (
+                                      <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-smallHeader rounded-full"></div>
+                                        <span>
+                                          Color:{" "}
+                                          <span className="font-medium text-gray-900">
+                                            {item.color}
+                                          </span>
+                                        </span>
+                                      </div>
+                                    )}
+                                    {item.print && (
+                                      <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span>
+                                          Print:{" "}
+                                          <span className="font-medium text-gray-900">
+                                            {item.print}
+                                          </span>
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -304,8 +315,12 @@ const CartComponent = () => {
 
                             {/* Price */}
                             <td className="px-6 py-4 text-center">
-                              <div className="text-lg font-bold text-smallHeader">${item.price.toFixed(2)}</div>
-                              <div className="text-xs text-gray-500">per unit</div>
+                              <div className="text-2xl font-bold text-smallHeader">
+                                ${item.price.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                per unit
+                              </div>
                             </td>
 
                             {/* Quantity */}
@@ -330,7 +345,7 @@ const CartComponent = () => {
                                           })
                                         )
                                       }
-                                      className="w-16 py-2 text-center outline-none border-0 bg-transparent font-bold text-sm"
+                                      className="w-16 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
                                       min="1"
                                     />
                                     <button
@@ -346,7 +361,7 @@ const CartComponent = () => {
 
                             {/* Total */}
                             <td className="px-6 py-4 text-center">
-                              <div className="text-lg font-bold text-smallHeader">
+                              <div className="text-2xl font-bold text-smallHeader">
                                 $
                                 {(subTotal || 0).toLocaleString("en-US", {
                                   minimumFractionDigits: 2,
@@ -515,7 +530,11 @@ const CartComponent = () => {
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">Shipping</span>
                     <span className="text-lg font-bold text-gray-900">
-                      {items.length > 0 ? (shippingCharges > 0 ? `$${shippingCharges.toFixed(2)}` : "Free") : "$0.00"}
+                      {items.length > 0
+                        ? shippingCharges > 0
+                          ? `$${shippingCharges.toFixed(2)}`
+                          : "-"
+                        : "$0.00"}
                     </span>
                   </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa6";
@@ -15,6 +15,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { products } from "../shop/ProductData";
 import AddressAutocomplete from "./AddessAutocomplete";
+import { User } from "lucide-react";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ const Checkout = () => {
 
   const { token, addressData, backednUrl, shippingAddressData, totalDiscount } =
     useContext(AppContext);
-
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
   const [openShipping, setOpenShipping] = useState(false);
@@ -401,6 +401,17 @@ const Checkout = () => {
         <div className="flex flex-wrap items-start gap-5 lg:flex-nowrap">
           <div className="w-full lg:w-2/3 space-y-6">
             {/* Step 1: Customer Details */}
+            {!token && (
+              <span>
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-blue-600 hover:text-blue-500 hover:underline cursor-pointer"
+                >
+                  Login
+                </Link>
+              </span>
+            )}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
               <div
                 className="px-4 py-3 cursor-pointer flex items-center justify-between border-b border-gray-200 bg-white"
@@ -408,19 +419,7 @@ const Checkout = () => {
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-gray-700"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
+                    <User className="w-5 h-5 text-gray-700" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">
@@ -461,11 +460,12 @@ const Checkout = () => {
                         placeholder="Enter email address"
                         {...register("billing.email")}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        required
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">
-                        Phone <span className="text-red-500">*</span>
+                        Phone
                       </label>
                       <input
                         type="tel"
@@ -559,6 +559,32 @@ const Checkout = () => {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          Company Name{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter company name"
+                          {...register("billing.companyName")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+                      <div className="space-y-2"></div>
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
                               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                             />
                           </svg>
@@ -575,7 +601,6 @@ const Checkout = () => {
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
-
                       <div className="space-y-2">
                         <label className="flex items-center text-sm font-medium text-gray-700">
                           <svg
@@ -597,32 +622,6 @@ const Checkout = () => {
                           type="text"
                           placeholder="Enter last name"
                           {...register("billing.lastName")}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
-                          <svg
-                            className="w-8 h-8 mr-2 text-gray-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                            />
-                          </svg>
-                          Company Name{" "}
-                          <span className="text-red-500 ml-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter company name"
-                          {...register("billing.companyName")}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -674,6 +673,7 @@ const Checkout = () => {
                             addr.country || "Australia"
                           );
                         }}
+                        className="rounded-lg"
                       />
 
                       <input
@@ -918,6 +918,10 @@ const Checkout = () => {
                           });
                         } else {
                           setBillingSameAsShipping(false);
+                          const shippingVals = getValues("shipping");
+                          Object.keys(shippingVals || {}).forEach((key) => {
+                            setValue(`billing.${key}`, "");
+                          });
                         }
                       }}
                       className="h-4 w-4 text-smallHeader"
@@ -926,6 +930,32 @@ const Checkout = () => {
                   </label>
                   <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
                     <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="flex items-center text-sm font-medium text-gray-700">
+                          <svg
+                            className="w-8 h-8 mr-2 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          Company Name{" "}
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter company name"
+                          {...register("billing.companyName")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                        />
+                      </div>
+                      <div className="space-y-2"></div>
                       <div className="space-y-2">
                         <label className="flex items-center text-sm font-medium text-gray-700">
                           <svg
@@ -976,32 +1006,6 @@ const Checkout = () => {
                           type="text"
                           placeholder="Enter last name"
                           {...register("billing.lastName")}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
-                          <svg
-                            className="w-8 h-8 mr-2 text-gray-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                            />
-                          </svg>
-                          Company Name{" "}
-                          <span className="text-red-500 ml-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter company name"
-                          {...register("billing.companyName")}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -1272,8 +1276,38 @@ const Checkout = () => {
                 </button>
               </div>
               {openPayment && (
-                <div className="p-6 md:w-1/2 mr-auto">
+                <div className="p-6 md:w-1/2 mx-auto">
                   {" "}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 mb-4">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src="/stripe.png"
+                        className="w-8 h-8 rounded-full"
+                        alt="Stripe"
+                      />
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          Secure Payment
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Powered by Stripe
+                        </p>
+                      </div>
+                    </div>
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
                   <button
                     type="submit"
                     disabled={loading || items.length === 0}
@@ -1338,7 +1372,7 @@ const Checkout = () => {
 
           <div className="w-full h-fit lg:w-[35%]">
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-6">
-              <div className="px-4 py-3 border-b border-gray-200 bg-white">
+              <div className="px-4 py-3 border-b border-gray-200 bg-white flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
                     <svg
@@ -1360,11 +1394,68 @@ const Checkout = () => {
                       Order Summary
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {items.length} item{items.length !== 1 ? "s" : ""} in
+                      {items?.length} item{items?.length !== 1 ? "s" : ""} in
                       order
                     </p>
                   </div>
-                </div>
+                </div>{" "}
+                <button
+                  type="submit"
+                  disabled={loading || items?.length === 0}
+                  className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
+                    loading || items?.length === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-smallHeader hover:opacity-90 shadow-lg hover:shadow-xl"
+                  }`}
+                >
+                  {loading ? (
+                    <>
+                      <svg
+                        className="animate-spin w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                        />
+                      </svg>
+                      <span>
+                        Pay $
+                        {total.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </>
+                  )}
+                </button>
               </div>
 
               <div className="p-6">
@@ -1528,7 +1619,7 @@ const Checkout = () => {
                     <span>
                       {shippingCharges > 0
                         ? `$${shippingCharges.toFixed(2)}`
-                        : "Free"}
+                        : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -1607,7 +1698,7 @@ const Checkout = () => {
                     </span>
                   </div>
 
-                  {items.length === 0 && (
+                  {items?.length === 0 && (
                     <div className="text-center py-3 text-red-600 bg-red-50 rounded-lg border border-red-200 my-3">
                       Your cart is empty
                     </div>
