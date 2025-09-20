@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { FaFire } from "react-icons/fa";
-import { useContext as useAppContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { useNavigate } from "react-router-dom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import noimage from "/noimage.png";
 
 const ImageCarousel = () => {
   const navigate = useNavigate();
   const { fetchTrendingProducts, trendingProducts } = useContext(AppContext);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Fetch trending products on component mount
@@ -24,26 +25,51 @@ const ImageCarousel = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // fetchTrendingProducts is intentionally excluded to prevent infinite re-renders
 
-  // Group products into slides of 4
-  const productSlides = [];
-  if (trendingProducts && trendingProducts.length > 0) {
-    for (let i = 0; i < trendingProducts.length; i += 4) {
-      productSlides.push(trendingProducts.slice(i, i + 4));
+  // Group products into slides of 4 - memoized to prevent re-creation
+  const productSlides = useMemo(() => {
+    const slides = [];
+    if (trendingProducts && trendingProducts.length > 0) {
+      for (let i = 0; i < trendingProducts.length; i += 4) {
+        slides.push(trendingProducts.slice(i, i + 4));
+      }
     }
-  }
+    return slides;
+  }, [trendingProducts]);
 
-  // Auto-advance carousel every 5 seconds
-  useEffect(() => {
-    if (productSlides.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex === productSlides.length - 1 ? 0 : prevIndex + 1));
-      }, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, [productSlides.length]);
+  // React Slick carousel settings - memoized to prevent re-creation
+  const settings = useMemo(
+    () => ({
+      dots: productSlides.length > 1,
+      infinite: productSlides.length > 1,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      autoplay: productSlides.length > 1,
+      autoplaySpeed: 5000,
+      pauseOnHover: true,
+      arrows: false,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+      ],
+    }),
+    [productSlides.length]
+  );
 
   const handleViewProduct = (productId, name) => {
     navigate(`/product/${name}`, { state: productId });
@@ -91,15 +117,12 @@ const ImageCarousel = () => {
           </div>
         </div>
 
-        {/* Carousel Container */}
+        {/* React Slick Carousel Container */}
         <div className="relative w-full">
-          <div className="overflow-hidden rounded-lg">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
+          {productSlides.length > 0 ? (
+            <Slider {...settings}>
               {productSlides.map((slide, slideIndex) => (
-                <div key={slideIndex} className="w-full flex-shrink-0">
+                <div key={slideIndex} className="w-full">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
                     {slide.map((product) => {
                       const priceGroups = product.product?.prices?.price_groups || [];
@@ -144,21 +167,10 @@ const ImageCarousel = () => {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Navigation Dots */}
-          {productSlides.length > 1 && (
-            <div className="flex justify-center mt-4 gap-2">
-              {productSlides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === currentIndex ? "bg-blue-600 w-6" : "bg-gray-300"
-                  }`}
-                />
-              ))}
+            </Slider>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No products available to display</p>
             </div>
           )}
         </div>
