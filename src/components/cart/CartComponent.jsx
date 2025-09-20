@@ -279,9 +279,7 @@ const CartComponent = () => {
                                 <div className="flex-1 min-w-0">
                                   <h3
                                     className="text-xl font-semibold text-gray-900 mb-2 cursor-pointer hover:text-smallHeader transition-colors"
-                                    onClick={() =>
-                                      handleViewProduct(item.id, item.name)
-                                    }
+                                    onClick={() => handleViewProduct(item.id, item.name)}
                                   >
                                     {item.name}
                                   </h3>
@@ -290,10 +288,7 @@ const CartComponent = () => {
                                       <div className="flex items-center space-x-2">
                                         <div className="w-2 h-2 bg-smallHeader rounded-full"></div>
                                         <span>
-                                          Color:{" "}
-                                          <span className="font-medium text-gray-900">
-                                            {item.color}
-                                          </span>
+                                          Color: <span className="font-medium text-gray-900">{item.color}</span>
                                         </span>
                                       </div>
                                     )}
@@ -301,10 +296,7 @@ const CartComponent = () => {
                                       <div className="flex items-center space-x-2">
                                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                         <span>
-                                          Print:{" "}
-                                          <span className="font-medium text-gray-900">
-                                            {item.print}
-                                          </span>
+                                          Print: <span className="font-medium text-gray-900">{item.print}</span>
                                         </span>
                                       </div>
                                     )}
@@ -315,12 +307,8 @@ const CartComponent = () => {
 
                             {/* Price */}
                             <td className="px-6 py-4 text-center">
-                              <div className="text-2xl font-bold text-smallHeader">
-                                ${item.price.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                per unit
-                              </div>
+                              <div className="text-2xl font-bold text-smallHeader">${item.price.toFixed(2)}</div>
+                              <div className="text-xs text-gray-500">per unit</div>
                             </td>
 
                             {/* Quantity */}
@@ -530,11 +518,7 @@ const CartComponent = () => {
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">Shipping</span>
                     <span className="text-lg font-bold text-gray-900">
-                      {items.length > 0
-                        ? shippingCharges > 0
-                          ? `$${shippingCharges.toFixed(2)}`
-                          : "-"
-                        : "$0.00"}
+                      {items.length > 0 ? (shippingCharges > 0 ? `$${shippingCharges.toFixed(2)}` : "-") : "$0.00"}
                     </span>
                   </div>
 
