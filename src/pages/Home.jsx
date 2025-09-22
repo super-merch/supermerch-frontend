@@ -122,10 +122,11 @@ const Home = () => {
       const response = await fetch(`${API_BASE}/api/coupen/get`);
       const data = await response.json();
       if (response.ok && data.length > 0) {
-        setCoupons(data);
+        const coupons = data.filter((coupon) => coupon.isActive == true);
+        setCoupons(coupons);
 
         // Strategy 1: Show the coupon with highest discount
-        const bestCoupon = data.reduce((best, current) =>
+        const bestCoupon = coupons.reduce((best, current) =>
           current.discount > best.discount ? current : best
         );
 
@@ -202,14 +203,14 @@ const Home = () => {
                     <p className="mt-1 text-slate-600">Your reward is ready</p>
                     <div
                       className={`mt-5 ${
-                        coupenLoading
+                        coupenLoading ||!selectedCoupon?.discount
                           ? "text-xl font-semibold"
-                          : "text-5xl font-extrabold"
+                          :  "text-5xl font-extrabold"
                       }  text-slate-900`}
                     >
                       {coupenLoading
                         ? "Loading..."
-                        : `${selectedCoupon?.discount} % OFF`}
+                        : `${selectedCoupon?.discount ? selectedCoupon.discount+ ' % OFF':'No discount available' } `}
                     </div>
                     {/* <div className="mt-5 rounded-xl text-2xl bg-slate-50 px-5 py-4 text-slate-900 ring-1 ring-slate-200">
              CODE:{" "}
@@ -219,7 +220,8 @@ const Home = () => {
            </div> */}
                     <button
                       onClick={() => setEmailModal(true)}
-                      className="mt-6 inline-flex w-max items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-800"
+                      disabled={!selectedCoupon?.discount}
+                      className={`mt-6 inline-flex w-max items-center justify-center rounded-xl ${selectedCoupon?.discount ? "bg-blue-600":"bg-gray-600 cursor-not-allowed"} bg-blue-600 px-5 py-3 text-white font-semibold ${selectedCoupon?.discount ? "hover:bg-blue-800":"hover:bg-gray-800"}`}
                     >
                       Subscribe & Redeem
                     </button>

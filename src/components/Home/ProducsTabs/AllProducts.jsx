@@ -88,7 +88,7 @@ const AllProducts = ({ activeTab }) => {
   useEffect(() => {
     // Only fetch if activeTab is "All Product" to avoid unnecessary calls
     if (activeTab === "All Product") {
-      fetchProducts(1, "", 42);
+      fetchProducts(1, "", 8);
       getAll24HourProduction();
       getAllAustralia();
     }
