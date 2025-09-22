@@ -17,11 +17,6 @@ const HotDeals = () => {
   // Use discounted products if available, otherwise fall back to regular products
   const displayProducts = discountedProducts && discountedProducts.length > 0 ? discountedProducts : products || [];
 
-  // Debug logging
-  console.log("Discounted products:", discountedProducts);
-  console.log("Regular products:", products);
-  console.log("Display products:", displayProducts);
-
   // Handle product click
   const handleViewProduct = (productId, name) => {
     navigate(`/product/${name}`, { state: productId });

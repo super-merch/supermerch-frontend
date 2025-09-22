@@ -288,10 +288,8 @@ const MiniNav = () => {
       return typeName?.toLowerCase().includes(subCategory.toLowerCase());
     });
     setProducts(subFilterProducts);
-    console.log(subFilterProducts, "subfilters");
   };
 
-  // console.log(products, "sjsdsdj");
   const handleSearch = () => {
     navigate(`/search?search=${inputValue}`);
   };
