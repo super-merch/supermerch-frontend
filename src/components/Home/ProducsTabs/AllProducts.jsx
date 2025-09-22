@@ -275,8 +275,8 @@ const AllProducts = ({ activeTab }) => {
                           )}
                         </div>
 
-                        {/* Favourite button - moved to top-right of image */}
-                        <div className="absolute top-2 right-2 z-20">
+                        {/* Favourite button and discount tag - moved to top-right of image */}
+                        <div className="absolute top-2 right-2 z-20 flex flex-col gap-2">
                           <div
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent card click
@@ -291,6 +291,16 @@ const AllProducts = ({ activeTab }) => {
                               <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
                             )}
                           </div>
+
+                          {/* Discount tag below favorite icon */}
+                          {discountPct > 0 && (
+                            <div className="flex flex-col gap-1">
+                              <span className="px-1.5 py-0.5 text-xs font-bold text-white bg-red-500 rounded">{discountPct}%</span>
+                              {isGlobalDiscount && (
+                                <span className="px-1.5 py-0.5 text-xs font-bold text-white bg-orange-500 rounded">Sale</span>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Enlarged image section */}
@@ -399,8 +409,8 @@ const AllProducts = ({ activeTab }) => {
                                 ));
                               })()}
                           </div>
-                          <div className="text-left">
-                            <div className="flex items-center justify-between">
+                          <div className="text-center">
+                            <div className="flex items-center justify-center">
                               <h2
                                 className={`text-sm transition-all duration-300 ${
                                   cardHover === product.meta.id && product.overview.name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
@@ -412,15 +422,6 @@ const AllProducts = ({ activeTab }) => {
                                   product.overview.name) ||
                                   "No Name"}
                               </h2>
-                              {/* Discount badge on the right side */}
-                              {discountPct > 0 && (
-                                <div className="ml-2 flex flex-col gap-1">
-                                  <span className="px-1.5 py-0.5 text-xs font-bold text-white bg-red-500 rounded">{discountPct}%</span>
-                                  {isGlobalDiscount && (
-                                    <span className="px-1.5 py-0.5 text-xs font-bold text-white bg-orange-500 rounded">Sale</span>
-                                  )}
-                                </div>
-                              )}
                             </div>
 
                             {/* Minimum quantity */}
