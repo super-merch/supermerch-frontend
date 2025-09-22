@@ -35,25 +35,25 @@ const Heading = ({
       title: "text-lg md:text-xl lg:text-2xl",
       subtitle: "text-sm md:text-base",
       description: "text-sm md:text-base",
-      container: "py-4 md:py-6",
+      container: "p-4",
     },
     default: {
       title: "text-xl md:text-2xl lg:text-3xl",
       subtitle: "text-base md:text-lg",
       description: "text-base md:text-lg",
-      container: "py-6 md:py-8",
+      container: "p-4",
     },
     large: {
       title: "text-2xl md:text-3xl lg:text-4xl",
       subtitle: "text-lg md:text-xl",
       description: "text-lg md:text-xl",
-      container: "py-8 md:py-10",
+      container: "p-4",
     },
     xl: {
       title: "text-3xl md:text-4xl lg:text-5xl",
       subtitle: "text-xl md:text-2xl",
       description: "text-xl md:text-2xl",
-      container: "py-10 md:py-12",
+      container: "p-4",
     },
   };
 

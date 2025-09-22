@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
+import React, { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,11 +14,7 @@ import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 import { AppContext } from "../../context/AppContext";
-import {
-  setMinPrice,
-  setMaxPrice,
-  applyFilters,
-} from "../../redux/slices/filterSlice";
+import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import Sidebar from "./Sidebar";
@@ -62,61 +52,52 @@ const HourProduction24Products = () => {
   const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
 
   const [productionIds, setProductionIds] = useState(new Set());
-    const getAll24HourProduction = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          const productIds = data.map((item) => Number(item.id));
-          setProductionIds(new Set(productIds));
-          console.log("Fetched 24 Hour Production products:", productionIds);
-        } else {
-          console.error(
-            "Failed to fetch 24 Hour Production products:",
-            response.status
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching 24 Hour Production products:", error);
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error("Failed to fetch 24 Hour Production products:", response.status);
       }
-    };
-    const [australiaIds, setAustraliaIds] = useState(new Set());
-    const getAllAustralia = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          // Ensure consistent data types (convert to strings)
-          const productIds = data.map((item) => Number(item.id));
-          setAustraliaIds(new Set(productIds));
-          console.log("Fetched Australia products:", data);
-        } else {
-          console.error("Failed to fetch Australia products:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching Australia products:", error);
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
       }
-    };
-    useEffect(() => {
-      getAll24HourProduction();
-      getAllAustralia();
-    }, []);
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   // State for managing products and pagination
   const [allProducts, setAllProducts] = useState([]);
@@ -134,14 +115,7 @@ const HourProduction24Products = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    marginApi,
-    backendUrl,
-    fetchHourProducts,
-    fetchAllHourProducts,
-    hourProd,
-    skeletonLoading,
-  } = useContext(AppContext);
+  const { marginApi, backendUrl, fetchHourProducts, fetchAllHourProducts, hourProd, skeletonLoading } = useContext(AppContext);
 
   // Helper function to get real price with caching
   const priceCache = useRef(new Map());
@@ -155,8 +129,7 @@ const HourProduction24Products = () => {
     const priceGroups = product.product?.prices?.price_groups || [];
     const basePrice = priceGroups.find((group) => group?.base_price) || {};
     const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const price =
-      priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+    const price = priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
 
     // Cache the result
     priceCache.current.set(productId, price);
@@ -181,16 +154,12 @@ const HourProduction24Products = () => {
 
     try {
       const data = await fetchHourProducts(page, itemsPerPage, sortOption);
-      
+
       const validProducts = data.data.filter((product) => {
         const priceGroups = product.product?.prices?.price_groups || [];
         const basePrice = priceGroups.find((group) => group?.base_price) || {};
         const priceBreaks = basePrice.base_price?.price_breaks || [];
-        return (
-          priceBreaks.length > 0 &&
-          priceBreaks[0]?.price !== undefined &&
-          priceBreaks[0]?.price > 0
-        );
+        return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined && priceBreaks[0]?.price > 0;
       });
 
       setAllProducts(validProducts);
@@ -214,39 +183,31 @@ const HourProduction24Products = () => {
       const data = await fetchAllHourProducts(sortOption);
 
       if (data && data.length > 0) {
-        const validProducts = data.filter((item) => {
-          if (!item.product || item.error) return false;
-          const product = item.product;
-          const price = getRealPrice(product);
-          if (price <= 0) return false;
-          return price >= minPrice && price <= maxPrice;
-        }).map(item => item.product);
+        const validProducts = data
+          .filter((item) => {
+            if (!item.product || item.error) return false;
+            const product = item.product;
+            const price = getRealPrice(product);
+            if (price <= 0) return false;
+            return price >= minPrice && price <= maxPrice;
+          })
+          .map((item) => item.product);
 
         if (validProducts.length > 0) {
-          const uniqueProducts = Array.from(
-            new Map(
-              validProducts.map((product) => [product.meta?.id, product])
-            ).values()
-          );
+          const uniqueProducts = Array.from(new Map(validProducts.map((product) => [product.meta?.id, product])).values());
 
           const sortedProducts = sortOption
             ? [...uniqueProducts].sort((a, b) => {
                 const priceA = getRealPrice(a);
                 const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh"
-                  ? priceA - priceB
-                  : priceB - priceA;
+                return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
               })
             : uniqueProducts;
 
           setAllFilteredProducts(sortedProducts);
-          setTotalFilteredPages(
-            Math.ceil(sortedProducts.length / itemsPerPage)
-          );
+          setTotalFilteredPages(Math.ceil(sortedProducts.length / itemsPerPage));
         } else {
-          setFilterError(
-            "No products found in the specified price range."
-          );
+          setFilterError("No products found in the specified price range.");
         }
       } else {
         setFilterError("No products found in the specified price range");
@@ -290,18 +251,13 @@ const HourProduction24Products = () => {
         const basePrice = priceGroups.find((group) => group?.base_price) || {};
         const priceBreaks = basePrice.base_price?.price_breaks || [];
 
-        const prices = priceBreaks
-          .map((breakItem) => breakItem.price)
-          .filter((price) => price !== undefined);
+        const prices = priceBreaks.map((breakItem) => breakItem.price).filter((price) => price !== undefined);
 
         let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
 
         const productId = product.meta.id;
         const marginEntry = marginApi[productId] || {};
-        const marginFlat =
-          typeof marginEntry.marginFlat === "number"
-            ? marginEntry.marginFlat
-            : 0;
+        const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
 
         return minPrice + marginFlat;
       };
@@ -351,7 +307,6 @@ const HourProduction24Products = () => {
 
   // Handle page changes
   useEffect(() => {
-    
     if (currentPage > 0 && !isPriceFilterActive) {
       fetchHourProductsPaginated(currentPage, sortOption);
     }
@@ -394,8 +349,8 @@ const HourProduction24Products = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state: productId});
+  const handleViewProduct = (productId, name) => {
+    navigate(`/product/${name}`, { state: productId });
   };
 
   const handleOpenModal = (product) => {
@@ -438,15 +393,23 @@ const HourProduction24Products = () => {
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         {/* Price Filter Sidebar */}
         <div className="lg:w-[25%]">
-                  <Sidebar filter={true} />
-                </div>
+          <Sidebar filter={true} />
+        </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-16">
-
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              {/* Placeholder for search if needed later */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Results count on the left */}
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-brand">{!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}</span>
+              <p className="">
+                {isLoading || isFiltering
+                  ? "Loading..."
+                  : `24 Hour Production Results found${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                {isFiltering && " Please wait a while..."}
+              </p>
             </div>
+
+            {/* Sort dropdown on the right */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
@@ -454,80 +417,34 @@ const HourProduction24Products = () => {
                   className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
                 >
-                  {sortOption === "lowToHigh"
-                    ? "Lowest to Highest"
-                    : sortOption === "highToLow"
-                    ? "Highest to Lowest"
-                    : "Relevancy"}
+                  {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevancy"}
                   <span className="">
-                    {isDropdownOpen ? (
-                      <IoIosArrowUp className="text-black" />
-                    ) : (
-                      <IoIosArrowDown className="text-black" />
-                    )}
+                    {isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}
                   </span>
                 </button>
                 {isDropdownOpen && (
                   <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
                     <button
                       onClick={() => handleSortSelection("lowToHigh")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "lowToHigh" ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
                     >
                       Lowest to Highest
                     </button>
                     <button
                       onClick={() => handleSortSelection("highToLow")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
                     >
                       Highest to Lowest
                     </button>
                     <button
                       onClick={() => handleSortSelection("relevancy")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
                     >
                       Relevancy
                     </button>
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {isPriceFilterActive && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    ${minPrice} - ${maxPrice}
-                  </span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={handleClearPriceFilter}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">
-                {!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}
-              </span>
-              <p className="">
-                {isLoading || isFiltering
-                  ? "Loading..."
-                  : `24 Hour Production Products Found${
-                      isPriceFilterActive ? " (Price filtered)" : ""
-                    }`}
-                {isFiltering && " Please wait..."}
-              </p>
             </div>
           </div>
 
@@ -544,21 +461,14 @@ const HourProduction24Products = () => {
                 : ""
             }`}
           >
-            {(showSkeleton || isLoading || isFiltering)  ? (
+            {showSkeleton || isLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div
-                  key={index}
-                  className="relative p-4 border rounded-lg shadow-md border-border2"
-                >
+                <div key={index} className="relative p-4 border rounded-lg shadow-md border-border2">
                   <Skeleton height={200} className="rounded-md" />
                   <div className="p-4">
                     <Skeleton height={20} width={120} className="rounded" />
                     <Skeleton height={15} width={80} className="mt-2 rounded" />
-                    <Skeleton
-                      height={25}
-                      width={100}
-                      className="mt-3 rounded"
-                    />
+                    <Skeleton height={25} width={100} className="mt-3 rounded" />
                     <Skeleton height={15} width={60} className="mt-2 rounded" />
                     <div className="flex items-center justify-between pt-2">
                       <Skeleton height={20} width={80} className="rounded" />
@@ -575,43 +485,34 @@ const HourProduction24Products = () => {
             ) : currentPageProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentPageProducts.map((product) => {
-                  const priceGroups =
-                    product.product?.prices?.price_groups || [];
-                  const basePrice =
-                    priceGroups.find((group) => group?.base_price) || {};
+                  const priceGroups = product.product?.prices?.price_groups || [];
+                  const basePrice = priceGroups.find((group) => group?.base_price) || {};
                   const priceBreaks = basePrice.base_price?.price_breaks || [];
 
-                  const prices = priceBreaks
-                    .map((breakItem) => breakItem.price)
-                    .filter((price) => price !== undefined);
+                  const prices = priceBreaks.map((breakItem) => breakItem.price).filter((price) => price !== undefined);
 
                   let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
                   let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
                   const productId = product.meta.id;
                   const marginEntry = marginApi[productId] || {};
-                  const marginFlat =
-                    typeof marginEntry.marginFlat === "number"
-                      ? marginEntry.marginFlat
-                      : 0;
+                  const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
 
                   minPrice += marginFlat;
                   maxPrice += marginFlat;
 
                   const discountPct = product.discountInfo?.discount || 0;
-                  const isGlobalDiscount =
-                    product.discountInfo?.isGlobal || false;
+                  const isGlobalDiscount = product.discountInfo?.isGlobal || false;
 
                   return (
                     <div
                       key={productId}
                       className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                      onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                      onClick={() => handleViewProduct(product.meta.id, product.overview.name)}
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >
                       {/* Australia Made Badge */}
-                      
 
                       {discountPct > 0 && (
                         <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
@@ -626,8 +527,7 @@ const HourProduction24Products = () => {
                         </div>
                       )}
                       <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                        {(productionIds.has(product.meta.id) ||
-                          productionIds.has(String(product.meta.id))) && (
+                        {(productionIds.has(product.meta.id) || productionIds.has(String(product.meta.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
                             {/* small clock SVG (no extra imports) */}
                             <svg
@@ -637,13 +537,7 @@ const HourProduction24Products = () => {
                               xmlns="http://www.w3.org/2000/svg"
                               aria-hidden
                             >
-                              <path
-                                d="M12 7v5l3 1"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
+                              <path d="M12 7v5l3 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                               <circle
                                 cx="12"
                                 cy="12"
@@ -658,8 +552,7 @@ const HourProduction24Products = () => {
                           </span>
                         )}
 
-                        {(australiaIds.has(product.meta.id) ||
-                          australiaIds.has(String(product.meta.id))) && (
+                        {(australiaIds.has(product.meta.id) || australiaIds.has(String(product.meta.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                             {/* simple flag/triangle SVG */}
                             <svg
@@ -669,19 +562,8 @@ const HourProduction24Products = () => {
                               xmlns="http://www.w3.org/2000/svg"
                               aria-hidden
                             >
-                              <path
-                                d="M3 6h10l-2 3 2 3H3V6z"
-                                fill="currentColor"
-                              />
-                              <rect
-                                x="3"
-                                y="4"
-                                width="1"
-                                height="16"
-                                rx="0.5"
-                                fill="currentColor"
-                                opacity="0.9"
-                              />
+                              <path d="M3 6h10l-2 3 2 3H3V6z" fill="currentColor" />
+                              <rect x="3" y="4" width="1" height="16" rx="0.5" fill="currentColor" opacity="0.9" />
                             </svg>
                             <span>Australia Made</span>
                           </span>
@@ -707,11 +589,7 @@ const HourProduction24Products = () => {
 
                       <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
                         <img
-                          src={
-                            product.overview.hero_image
-                              ? product.overview.hero_image
-                              : noimage
-                          }
+                          src={product.overview.hero_image ? product.overview.hero_image : noimage}
                           alt=""
                           className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                         />
@@ -729,67 +607,51 @@ const HourProduction24Products = () => {
                                 ),
                               ];
 
-                              return uniqueColors
-                                .slice(0, 12)
-                                .map((color, index) => (
-                                  <div
-                                    key={index}
-                                    style={{
-                                      backgroundColor:
-                                        color
-                                          .toLowerCase()
-                                          .replace("navy", "#1e40af")
-                                          .replace("grey", "#6b7280")
-                                          .replace("gray", "#6b7280")
-                                          .replace("red", "#ef4444")
-                                          .replace("blue", "#3b82f6")
-                                          .replace("green", "#10b981")
-                                          .replace("yellow", "#eab308")
-                                          .replace("orange", "#f97316")
-                                          .replace("purple", "#a855f7")
-                                          .replace("pink", "#ec4899")
-                                          .replace("black", "#000000")
-                                          .replace("white", "#ffffff")
-                                          .replace("brown", "#92400e")
-                                          .replace(" ", "") || color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-full border border-slate-900"
-                                  />
-                                ));
+                              return uniqueColors.slice(0, 12).map((color, index) => (
+                                <div
+                                  key={index}
+                                  style={{
+                                    backgroundColor:
+                                      color
+                                        .toLowerCase()
+                                        .replace("navy", "#1e40af")
+                                        .replace("grey", "#6b7280")
+                                        .replace("gray", "#6b7280")
+                                        .replace("red", "#ef4444")
+                                        .replace("blue", "#3b82f6")
+                                        .replace("green", "#10b981")
+                                        .replace("yellow", "#eab308")
+                                        .replace("orange", "#f97316")
+                                        .replace("purple", "#a855f7")
+                                        .replace("pink", "#ec4899")
+                                        .replace("black", "#000000")
+                                        .replace("white", "#ffffff")
+                                        .replace("brown", "#92400e")
+                                        .replace(" ", "") || color.toLowerCase(),
+                                  }}
+                                  className="w-4 h-4 rounded-full border border-slate-900"
+                                />
+                              ));
                             })()}
                         </div>
                         <div className="text-center">
                           <h2
                             className={`text-sm transition-all duration-300 ${
-                              cardHover === product.meta.id &&
-                              product.overview.name.length > 20
-                                ? "sm:text-[18px]"
-                                : "sm:text-lg"
+                              cardHover === product.meta.id && product.overview.name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
                             } font-semibold text-brand sm:leading-[18px]`}
                           >
                             {product.overview.name || "No Name"}
                           </h2>
 
                           <p className="text-xs text-gray-500 pt-1">
-                            Min Qty:{" "}
-                            {product.product?.prices?.price_groups[0]
-                              ?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                            Min Qty: {product.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]?.qty || 1}{" "}
                           </p>
 
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
-                              From $
-                              {minPrice === maxPrice ? (
-                                <span>{minPrice.toFixed(2)}</span>
-                              ) : (
-                                <span>{minPrice.toFixed(2)}</span>
-                              )}
+                              From ${minPrice === maxPrice ? <span>{minPrice.toFixed(2)}</span> : <span>{minPrice.toFixed(2)}</span>}
                             </h2>
-                            {discountPct > 0 && (
-                              <p className="text-xs text-green-600 font-medium">
-                                {discountPct}% discount applied
-                              </p>
-                            )}
+                            {discountPct > 0 && <p className="text-xs text-green-600 font-medium">{discountPct}% discount applied</p>}
                           </div>
                         </div>
                       </div>
@@ -799,9 +661,7 @@ const HourProduction24Products = () => {
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <p className="pt-10 text-xl text-center text-red-500">
-                  No 24 Hour Production Products Found
-                </p>
+                <p className="pt-10 text-xl text-center text-red-500">No 24 Hour Production Products Found</p>
               </div>
             )}
           </div>
@@ -821,9 +681,7 @@ const HourProduction24Products = () => {
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                    currentPage === page
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200"
+                    currentPage === page ? "bg-blue-600 text-white" : "hover:bg-gray-200"
                   }`}
                 >
                   {page}
@@ -868,13 +726,9 @@ const HourProduction24Products = () => {
               />
 
               <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold text-brand mb-2">
-                  {selectedProduct.overview.name || "No Name"}
-                </h2>
+                <h2 className="text-2xl font-bold text-brand mb-2">{selectedProduct.overview.name || "No Name"}</h2>
                 {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {selectedProduct.overview.description}
-                  </p>
+                  <p className="text-gray-700 text-sm leading-relaxed">{selectedProduct.overview.description}</p>
                 )}
               </div>
             </div>

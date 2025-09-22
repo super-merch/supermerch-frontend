@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IoClose, IoMenu, IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,19 +16,11 @@ import { CiHeart } from "react-icons/ci";
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 
-import {
-  setSelectedBrands,
-  setMinPrice,
-  setMaxPrice,
-  setSelectedCategory,
-} from "../../redux/slices/filterSlice";
+import { setSelectedBrands, setMinPrice, setMaxPrice, setSelectedCategory } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
 import { matchProduct } from "@/redux/slices/categorySlice";
 import SpromotionalSidebar from "./SpromotionalSidebar";
-import {
-  matchPromotionalProduct,
-  setAllProducts,
-} from "@/redux/slices/promotionalSlice";
+import { matchPromotionalProduct, setAllProducts } from "@/redux/slices/promotionalSlice";
 import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/PromotionalPriceFilter";
 import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
 import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
@@ -158,31 +144,24 @@ const Spromotional = () => {
     fetchMultipleParamPages, // We'll need to create this function
   } = useContext(AppContext);
 
-  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
-    useSelector((state) => state.filters);
+  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector((state) => state.filters);
 
   const [productionIds, setProductionIds] = useState(new Set());
   const getAll24HourProduction = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         const productIds = data.map((item) => Number(item.id));
         setProductionIds(new Set(productIds));
         console.log("Fetched 24 Hour Production products:", productionIds);
       } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
+        console.error("Failed to fetch 24 Hour Production products:", response.status);
       }
     } catch (error) {
       console.error("Error fetching 24 Hour Production products:", error);
@@ -191,15 +170,12 @@ const Spromotional = () => {
   const [australiaIds, setAustraliaIds] = useState(new Set());
   const getAllAustralia = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         // Ensure consistent data types (convert to strings)
@@ -221,24 +197,19 @@ const Spromotional = () => {
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
 
-  const filteredProducts = useSelector(
-    (state) => state.promotionals.filteredPromotionalProducts
-  );
+  const filteredProducts = useSelector((state) => state.promotionals.filteredPromotionalProducts);
   const [prioritizedData, setPrioritizedData] = useState([]);
 
   // Replace your existing useEffect with this updated one
   useEffect(() => {
     const getPrioritize = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/prioritized`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/prioritized`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const result = await response.json();
 
         console.log(result);
@@ -251,12 +222,9 @@ const Spromotional = () => {
   }, []);
 
   const matchedProducts = filteredProducts.filter((product) => {
-    const typeId =
-      product.product?.categorisation?.promodata_product_type?.type_id;
+    const typeId = product.product?.categorisation?.promodata_product_type?.type_id;
     if (!typeId) return false;
-    return categoryProducts.some((category) =>
-      category.subTypes.some((sub) => sub.id === typeId)
-    );
+    return categoryProducts.some((category) => category.subTypes.some((sub) => sub.id === typeId));
   });
 
   // Helper function to get real price
@@ -269,8 +237,7 @@ const Spromotional = () => {
     const priceGroups = product.product?.prices?.price_groups || [];
     const basePrice = priceGroups.find((group) => group?.base_price) || {};
     const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const price =
-      priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+    const price = priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
 
     // Cache the result
     priceCache.current.set(productId, price);
@@ -278,12 +245,7 @@ const Spromotional = () => {
   }, []);
 
   // Function to fetch and filter products with multiple pages
-  const fetchAndFilterProducts = async (
-    categoryId,
-    minPrice,
-    maxPrice,
-    sortOption
-  ) => {
+  const fetchAndFilterProducts = async (categoryId, minPrice, maxPrice, sortOption) => {
     setIsFiltering(true);
     setFilterError("");
 
@@ -292,12 +254,7 @@ const Spromotional = () => {
       let maxPages = 3; // Increased from 1
 
       // Fetch products in parallel batches
-      const fetchedProducts = await fetchMultipleParamPages(
-        categoryId,
-        maxPages,
-        100,
-        sortOption
-      );
+      const fetchedProducts = await fetchMultipleParamPages(categoryId, maxPages, 100, sortOption);
       setFetchedPagesCount(maxPages);
 
       if (fetchedProducts && fetchedProducts.length > 0) {
@@ -311,27 +268,19 @@ const Spromotional = () => {
 
         if (filteredProducts.length > 0) {
           // Remove duplicates more efficiently using Map
-          const uniqueProducts = Array.from(
-            new Map(
-              filteredProducts.map((product) => [product.meta?.id, product])
-            ).values()
-          );
+          const uniqueProducts = Array.from(new Map(filteredProducts.map((product) => [product.meta?.id, product])).values());
 
           // Apply sorting only once at the end
           const sortedProducts = sortOption
             ? [...uniqueProducts].sort((a, b) => {
                 const priceA = getRealPrice(a);
                 const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh"
-                  ? priceA - priceB
-                  : priceB - priceA;
+                return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
               })
             : uniqueProducts;
 
           setAllFilteredProducts(sortedProducts);
-          setTotalFilteredPages(
-            Math.ceil(sortedProducts.length / itemsPerPage)
-          );
+          setTotalFilteredPages(Math.ceil(sortedProducts.length / itemsPerPage));
         } else {
           setFilterError("No products found in the specified price range");
         }
@@ -357,13 +306,7 @@ const Spromotional = () => {
       const pagesToFetch = 3; // Increased from 2
 
       // Fetch pages in parallel
-      const additionalProducts = await fetchMultipleParamPages(
-        selectedParamCategoryId,
-        pagesToFetch,
-        100,
-        sortOption,
-        startPage
-      );
+      const additionalProducts = await fetchMultipleParamPages(selectedParamCategoryId, pagesToFetch, 100, sortOption, startPage);
 
       if (additionalProducts && additionalProducts.length > 0) {
         // Use Set for faster duplicate checking
@@ -371,8 +314,7 @@ const Spromotional = () => {
 
         const newFilteredProducts = additionalProducts.filter((product) => {
           const price = getRealPrice(product);
-          const isInPriceRange =
-            price >= minPrice && price <= maxPrice && price > 0;
+          const isInPriceRange = price >= minPrice && price <= maxPrice && price > 0;
           const notDuplicate = !existingIds.has(product.meta?.id);
           return isInPriceRange && notDuplicate;
         });
@@ -383,20 +325,13 @@ const Spromotional = () => {
             ? [...newFilteredProducts].sort((a, b) => {
                 const priceA = getRealPrice(a);
                 const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh"
-                  ? priceA - priceB
-                  : priceB - priceA;
+                return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
               })
             : newFilteredProducts;
 
-          const updatedProducts = [
-            ...allFilteredProducts,
-            ...sortedNewProducts,
-          ];
+          const updatedProducts = [...allFilteredProducts, ...sortedNewProducts];
           setAllFilteredProducts(updatedProducts);
-          setTotalFilteredPages(
-            Math.ceil(updatedProducts.length / itemsPerPage)
-          );
+          setTotalFilteredPages(Math.ceil(updatedProducts.length / itemsPerPage));
         }
 
         setFetchedPagesCount((prev) => prev + pagesToFetch);
@@ -423,12 +358,7 @@ const Spromotional = () => {
   // Trigger price filtering when filters change
   useEffect(() => {
     if (isPriceFilterActive && selectedParamCategoryId) {
-      fetchAndFilterProducts(
-        selectedParamCategoryId,
-        minPrice,
-        maxPrice,
-        sortOption
-      );
+      fetchAndFilterProducts(selectedParamCategoryId, minPrice, maxPrice, sortOption);
     } else {
       // Reset filtered products when no price filter is active
       setAllFilteredProducts([]);
@@ -487,27 +417,23 @@ const Spromotional = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId,name) => {
+  const handleViewProduct = (productId, name) => {
     navigate(`/product/${name}`, { state: productId });
   };
 
   const [searchProductName, setSearchProductName] = useState("");
   const setSearchTextChanger = (e) => setSearchProductName(e.target.value);
 
-  const { categoryProduct, status, error } = useSelector(
-    (state) => state.categoryProduct
-  );
+  const { categoryProduct, status, error } = useSelector((state) => state.categoryProduct);
 
   // Fetch products when page or sort changes (only when no price filter is active)
   useEffect(() => {
     if (selectedParamCategoryId && !isPriceFilterActive) {
-      fetchParamProducts(selectedParamCategoryId, currentPage).then(
-        (response) => {
-          if (response && response.total_pages) {
-            setTotalApiPages(response.total_pages);
-          }
+      fetchParamProducts(selectedParamCategoryId, currentPage).then((response) => {
+        if (response && response.total_pages) {
+          setTotalApiPages(response.total_pages);
         }
-      );
+      });
     }
   }, [currentPage, sortOption, selectedParamCategoryId, isPriceFilterActive]);
 
@@ -554,12 +480,7 @@ const Spromotional = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const handleSubCategories = (
-    subCategory,
-    categoryId,
-    titleName,
-    labelName
-  ) => {
+  const handleSubCategories = (subCategory, categoryId, titleName, labelName) => {
     const encodedTitleName = encodeURIComponent(titleName);
     const encodedlabelName = encodeURIComponent(labelName);
     setSearchParams({
@@ -576,9 +497,7 @@ const Spromotional = () => {
   useEffect(() => {
     const urlCategory = searchParams.get("category");
     const urlCategoryName = searchParams.get("categoryName");
-    const decodedCategoryName = urlCategoryName
-      ? decodeURIComponent(urlCategoryName)
-      : "";
+    const decodedCategoryName = urlCategoryName ? decodeURIComponent(urlCategoryName) : "";
     const urlLabel = searchParams.get("label");
     const decodedLabel = urlLabel ? decodeURIComponent(urlLabel) : "";
     setSidebarActiveLabel(decodedLabel);
@@ -590,9 +509,7 @@ const Spromotional = () => {
       const allMenus = [...megaMenu, ...megaMenuClothing, ...headWear];
       for (const category of allMenus) {
         for (const subTypeGroup of category.subTypes) {
-          const matchingItem = subTypeGroup.items.find(
-            (item) => item.id === urlCategory
-          );
+          const matchingItem = subTypeGroup.items.find((item) => item.id === urlCategory);
           if (matchingItem) {
             foundSubCategory = matchingItem;
             break;
@@ -648,55 +565,50 @@ const Spromotional = () => {
 
   const currentMenuArray = getMenuArrayByCategoryName(sidebarActiveCategory);
   const filteredCategories = sidebarActiveCategory
-    ? currentMenuArray.filter(
-        (category) => category.name === sidebarActiveCategory
-      )
+    ? currentMenuArray.filter((category) => category.name === sidebarActiveCategory)
     : currentMenuArray;
 
   // Get current page products based on whether price filter is active
   // Get current page products based on whether price filter is active
-const getCurrentPageProducts = () => {
-  if (isPriceFilterActive) {
-    // Use filtered products (existing logic)
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return allFilteredProducts.slice(startIndex, endIndex);
-  } else {
-    // Use regular API products with local search filter
-    const apiProducts = paramProducts?.data || [];
+  const getCurrentPageProducts = () => {
+    if (isPriceFilterActive) {
+      // Use filtered products (existing logic)
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return allFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // Use regular API products with local search filter
+      const apiProducts = paramProducts?.data || [];
 
-    // Apply client-side sorting if requested
-    const sortedProducts =
-      sortOption === "lowToHigh" || sortOption === "highToLow"
-        ? [...apiProducts].sort((a, b) => {
-            const priceA = getRealPrice(a) || 0;
-            const priceB = getRealPrice(b) || 0;
-            return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
-          })
-        : apiProducts;
+      // Apply client-side sorting if requested
+      const sortedProducts =
+        sortOption === "lowToHigh" || sortOption === "highToLow"
+          ? [...apiProducts].sort((a, b) => {
+              const priceA = getRealPrice(a) || 0;
+              const priceB = getRealPrice(b) || 0;
+              return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+            })
+          : apiProducts;
 
-    // Then apply local name filter
-    return sortedProducts.filter((product) => {
-      const productName = (product.overview?.name || "").toLowerCase();
-      return productName.includes(searchProductName.toLowerCase());
-    });
-  }
-};
+      // Then apply local name filter
+      return sortedProducts.filter((product) => {
+        const productName = (product.overview?.name || "").toLowerCase();
+        return productName.includes(searchProductName.toLowerCase());
+      });
+    }
+  };
 
   //get categoryName from searchParams
   const categoryName = searchParams.get("categoryName");
 
   // Check if any filters are active
-  const hasActiveFilters =
-    searchProductName.trim() !== "" || isPriceFilterActive;
+  const hasActiveFilters = searchProductName.trim() !== "" || isPriceFilterActive;
 
   const currentPageProducts = getCurrentPageProducts();
   const currentPageFilteredCount = currentPageProducts.length;
 
   // Determine which pagination to use
-  const paginationTotalPages = isPriceFilterActive
-    ? totalFilteredPages
-    : totalApiPages;
+  const paginationTotalPages = isPriceFilterActive ? totalFilteredPages : totalApiPages;
 
   // Calculate total count for display
   const getTotalCount = () => {
@@ -730,9 +642,6 @@ const getCurrentPageProducts = () => {
     { id: "B-19", name: "Vests" },
 
     { id: "B-20", name: "Misc Clothing" },
-
-
-    
   ];
 
   return (
@@ -741,15 +650,8 @@ const getCurrentPageProducts = () => {
         <div className="lg:w-[22%]">
           <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
             {isMobile && (
-              <button
-                onClick={toggleSidebar}
-                className="absolute px-2 py-1 text-white rounded top-4 bg-smallHeader"
-              >
-                {isSidebarOpen ? (
-                  <IoClose className="text-xl" />
-                ) : (
-                  <IoMenu className="text-xl" />
-                )}
+              <button onClick={toggleSidebar} className="absolute px-2 py-1 text-white rounded top-4 bg-smallHeader">
+                {isSidebarOpen ? <IoClose className="text-xl" /> : <IoMenu className="text-xl" />}
               </button>
             )}
 
@@ -761,23 +663,15 @@ const getCurrentPageProducts = () => {
               }`}
             >
               <div className="h-full pr-3 overflow-y-auto">
-                {!filteredCategories.length > 0 && <p className="text-lg font-semibold text-blue-500">
-                            Clothing
-                          </p>}
+                {!filteredCategories.length > 0 && <p className="text-lg font-semibold text-blue-500">Clothing</p>}
                 <div className="pb-6 border-b-2">
                   {filteredCategories.length > 0
                     ? filteredCategories.map((category) => (
                         <div key={category.id}>
-                          <p className="text-lg font-semibold text-blue-500">
-                            {category.name}
-                          </p>
+                          <p className="text-lg font-semibold text-blue-500">{category.name}</p>
                           <ul>
                             {category.subTypes
-                              .filter(
-                                (group) =>
-                                  !sidebarActiveLabel ||
-                                  group.label === sidebarActiveLabel
-                              )
+                              .filter((group) => !sidebarActiveLabel || group.label === sidebarActiveLabel)
                               .map((group) => (
                                 <li key={group.label}>
                                   {/* <p className="mt-2 ml-2 text-base font-semibold">
@@ -785,23 +679,11 @@ const getCurrentPageProducts = () => {
                               </p> */}
                                   <ul>
                                     {group?.items?.map((item) => (
-                                      <li
-                                        key={item.id}
-                                        className="hover:underline ml-4"
-                                      >
+                                      <li key={item.id} className="hover:underline ml-4">
                                         <button
-                                          onClick={() =>
-                                            handleSubCategories(
-                                              item.name,
-                                              item.id,
-                                              category.name,
-                                              group.label
-                                            )
-                                          }
+                                          onClick={() => handleSubCategories(item.name, item.id, category.name, group.label)}
                                           className={`font-medium text-[13px] block ${
-                                            activeFilterCategory === item.name
-                                              ? "text-blue-500"
-                                              : ""
+                                            activeFilterCategory === item.name ? "text-blue-500" : ""
                                           }`}
                                         >
                                           {item.name}
@@ -816,22 +698,10 @@ const getCurrentPageProducts = () => {
                       ))
                     : clothing.map((category) => (
                         <div key={category.id}>
-                          
                           <ul>
                             <button
-                              onClick={() =>
-                                handleSubCategories(
-                                  category.name,
-                                  category.id,
-                                  "Clothing",
-                                  category.name
-                                )
-                              }
-                              className={`font-medium text-[13px] block ${
-                                activeFilterCategory === category.name
-                                  ? "text-blue-500"
-                                  : ""
-                              }`}
+                              onClick={() => handleSubCategories(category.name, category.id, "Clothing", category.name)}
+                              className={`font-medium text-[13px] block ${activeFilterCategory === category.name ? "text-blue-500" : ""}`}
                             >
                               {category.name}
                             </button>
@@ -848,21 +718,19 @@ const getCurrentPageProducts = () => {
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              {/* {!isPriceFilterActive && (
-                  <>
-                    <input
-                      type="text"
-                      placeholder="Search for products..."
-                      className="w-full border-none outline-none"
-                      value={searchProductName}
-                      onChange={setSearchTextChanger}
-                    />
-                    <IoSearchOutline className="text-2xl" />
-                  </>
-                )} */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Results count on the left */}
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-brand">{!skeletonLoading && !isFiltering && getTotalCount()}</span>
+              <p className="">
+                {skeletonLoading || isFiltering
+                  ? "Loading..."
+                  : `Results found${isPriceFilterActive ? ` (Price filtered)` : hasActiveFilters ? ` on page ${currentPage}` : ""}`}
+                {isFiltering && "Please wait a while..."}
+              </p>
             </div>
+
+            {/* Sort dropdown on the right */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
@@ -870,112 +738,34 @@ const getCurrentPageProducts = () => {
                   className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
                 >
-                  {sortOption === "lowToHigh"
-                    ? "Lowest to Highest"
-                    : sortOption === "highToLow"
-                    ? "Highest to Lowest"
-                    : "Relevency"}
+                  {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevency"}
                   <span className="">
-                    {isDropdownOpen ? (
-                      <IoIosArrowUp className="text-black" />
-                    ) : (
-                      <IoIosArrowDown className="text-black" />
-                    )}
+                    {isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}
                   </span>
                 </button>
                 {isDropdownOpen && (
                   <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
                     <button
                       onClick={() => handleSortSelection("lowToHigh")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "lowToHigh" ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
                     >
                       Lowest to Highest
                     </button>
                     <button
                       onClick={() => handleSortSelection("highToLow")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
                     >
                       Highest to Lowest
                     </button>
                     <button
                       onClick={() => handleSortSelection("relevency")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
                     >
                       Relenency
                     </button>
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {activeFilters.category && activeFilters.category !== "all" && (
-                <div className="filter-item">
-                  <span className="text-sm">{activeFilters.category}</span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={() => handleClearFilter("category")}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
-
-              {activeFilters.brands && activeFilters.brands.length > 0 && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    {activeFilters.brands.join(", ")}
-                  </span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={() => handleClearFilter("brand")}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
-              {activeFilters.price &&
-                activeFilters.price.length === 2 &&
-                (activeFilters.price[0] !== 0 ||
-                  activeFilters.price[1] !== 1000) && (
-                  <div className="filter-item">
-                    <span className="text-sm">
-                      ${activeFilters.price[0]} - ${activeFilters.price[1]}
-                    </span>
-                    <button
-                      className="px-2 text-lg"
-                      onClick={() => handleClearFilter("price")}
-                    >
-                      x
-                    </button>
-                  </div>
-                )}
-            </div>
-
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">
-                {!skeletonLoading && !isFiltering && getTotalCount()}
-              </span>
-              <p className="">
-                {skeletonLoading || isFiltering
-                  ? "Loading..."
-                  : `Results found${
-                      isPriceFilterActive
-                        ? ` (Price filtered)`
-                        : hasActiveFilters
-                        ? ` on page ${currentPage}`
-                        : ""
-                    }`}
-                {isFiltering && "Please wait a while..."}
-              </p>
             </div>
           </div>
 
@@ -994,19 +784,12 @@ const getCurrentPageProducts = () => {
           >
             {skeletonLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div
-                  key={index}
-                  className="relative p-4 border rounded-lg shadow-md border-border2"
-                >
+                <div key={index} className="relative p-4 border rounded-lg shadow-md border-border2">
                   <Skeleton height={200} className="rounded-md" />
                   <div className="p-4">
                     <Skeleton height={20} width={120} className="rounded" />
                     <Skeleton height={15} width={80} className="mt-2 rounded" />
-                    <Skeleton
-                      height={25}
-                      width={100}
-                      className="mt-3 rounded"
-                    />
+                    <Skeleton height={25} width={100} className="mt-3 rounded" />
                     <Skeleton height={15} width={60} className="mt-2 rounded" />
                     <div className="flex items-center justify-between pt-2">
                       <Skeleton height={20} width={80} className="rounded" />
@@ -1036,17 +819,12 @@ const getCurrentPageProducts = () => {
                   //   );
                   // })
                   .map((product) => {
-                    const priceGroups =
-                      product.product?.prices?.price_groups || [];
-                    const basePrice =
-                      priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks =
-                      basePrice.base_price?.price_breaks || [];
+                    const priceGroups = product.product?.prices?.price_groups || [];
+                    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks = basePrice.base_price?.price_breaks || [];
 
                     // Get an array of prices from priceBreaks (these are already discounted)
-                    const prices = priceBreaks.map(
-                      (breakItem) => breakItem.price
-                    );
+                    const prices = priceBreaks.map((breakItem) => breakItem.price);
                     // .filter((price) => price !== undefined);
 
                     // 1) compute raw min/max
@@ -1056,14 +834,8 @@ const getCurrentPageProducts = () => {
                     // 2) pull margin info (guarding against undefined)
                     const productId = product.meta.id;
                     const marginEntry = marginApi[productId] || {};
-                    const marginFlat =
-                      typeof marginEntry.marginFlat === "number"
-                        ? marginEntry.marginFlat
-                        : 0;
-                    const baseMarginPrice =
-                      typeof marginEntry.baseMarginPrice === "number"
-                        ? marginEntry.baseMarginPrice
-                        : 0;
+                    const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
+                    const baseMarginPrice = typeof marginEntry.baseMarginPrice === "number" ? marginEntry.baseMarginPrice : 0;
 
                     // 3) apply the flat margin to both ends of the range
                     minPrice += marginFlat;
@@ -1071,14 +843,13 @@ const getCurrentPageProducts = () => {
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
-                    const isGlobalDiscount =
-                      product.discountInfo?.isGlobal || false;
+                    const isGlobalDiscount = product.discountInfo?.isGlobal || false;
 
                     return (
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() => handleViewProduct(product.meta.id, product.overview.name)}
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >
@@ -1096,8 +867,7 @@ const getCurrentPageProducts = () => {
                           </div>
                         )}
                         <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                          {(productionIds.has(product.meta.id) ||
-                            productionIds.has(String(product.meta.id))) && (
+                          {(productionIds.has(product.meta.id) || productionIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
                               {/* small clock SVG (no extra imports) */}
                               <svg
@@ -1128,8 +898,7 @@ const getCurrentPageProducts = () => {
                             </span>
                           )}
 
-                          {(australiaIds.has(product.meta.id) ||
-                            australiaIds.has(String(product.meta.id))) && (
+                          {(australiaIds.has(product.meta.id) || australiaIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                               {/* simple flag/triangle SVG */}
                               <svg
@@ -1139,19 +908,8 @@ const getCurrentPageProducts = () => {
                                 xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden
                               >
-                                <path
-                                  d="M3 6h10l-2 3 2 3H3V6z"
-                                  fill="currentColor"
-                                />
-                                <rect
-                                  x="3"
-                                  y="4"
-                                  width="1"
-                                  height="16"
-                                  rx="0.5"
-                                  fill="currentColor"
-                                  opacity="0.9"
-                                />
+                                <path d="M3 6h10l-2 3 2 3H3V6z" fill="currentColor" />
+                                <rect x="3" y="4" width="1" height="16" rx="0.5" fill="currentColor" opacity="0.9" />
                               </svg>
                               <span>Australia Made</span>
                             </span>
@@ -1178,11 +936,7 @@ const getCurrentPageProducts = () => {
                         {/* Enlarged image section */}
                         <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
                           <img
-                            src={
-                              product.overview.hero_image
-                                ? product.overview.hero_image
-                                : noimage
-                            }
+                            src={product.overview.hero_image ? product.overview.hero_image : noimage}
                             alt=""
                             className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                           />
@@ -1204,96 +958,91 @@ const getCurrentPageProducts = () => {
                                   ),
                                 ];
 
-                                return uniqueColors
-                                  .slice(0, 12)
-                                  .map((color, index) => (
-                                    <div
-                                      key={index}
-                                      style={{
-                                        backgroundColor:
-                                          color
-                                            .toLowerCase()
-                                            // Blues
+                                return uniqueColors.slice(0, 12).map((color, index) => (
+                                  <div
+                                    key={index}
+                                    style={{
+                                      backgroundColor:
+                                        color
+                                          .toLowerCase()
+                                          // Blues
 
-                                            .replace("navy", "#1e40af")
+                                          .replace("navy", "#1e40af")
 
-                                            // Greys/Neutrals
+                                          // Greys/Neutrals
 
-                                            .replace("grey", "#6b7280")
-                                            .replace("gray", "#6b7280")
-                                            .replace("charcoal", "#374151")
-                                            .replace("carbon", "#1f2937")
-                                            .replace("gunmetal", "#2a3439")
-                                            .replace("slate", "#64748b")
-                                            .replace("stone", "#78716c")
-                                            .replace("zinc", "#71717a")
-                                            .replace("neutral", "#737373")
-                                            .replace("taupe", "#b8860b")
+                                          .replace("grey", "#6b7280")
+                                          .replace("gray", "#6b7280")
+                                          .replace("charcoal", "#374151")
+                                          .replace("carbon", "#1f2937")
+                                          .replace("gunmetal", "#2a3439")
+                                          .replace("slate", "#64748b")
+                                          .replace("stone", "#78716c")
+                                          .replace("zinc", "#71717a")
+                                          .replace("neutral", "#737373")
+                                          .replace("taupe", "#b8860b")
 
-                                            // Greens
+                                          // Greens
 
-                                            .replace("mint", "#10b981")
-                                            .replace("sage", "#9ca3af")
-                                            .replace("kiwi", "#8fbc8f")
-                                            .replace("khaki", "#bdb76b")
-                                            .replace("teal", "#0d9488")
-                                            .replace("emerald", "#10b981")
+                                          .replace("mint", "#10b981")
+                                          .replace("sage", "#9ca3af")
+                                          .replace("kiwi", "#8fbc8f")
+                                          .replace("khaki", "#bdb76b")
+                                          .replace("teal", "#0d9488")
+                                          .replace("emerald", "#10b981")
 
-                                            // Reds/Pinks
+                                          // Reds/Pinks
 
-                                            .replace("burgundy", "#7f1d1d")
-                                            .replace("red", "#ef4444")
-                                            .replace("pink", "#ec4899")
-                                            .replace("coral", "#ff7f7f")
-                                            .replace("berry", "#8b0000")
-                                            .replace("maroon", "#7f1d1d")
-                                            .replace("rose", "#f43f5e")
-                                            .replace("fuchsia", "#d946ef")
+                                          .replace("burgundy", "#7f1d1d")
+                                          .replace("red", "#ef4444")
+                                          .replace("pink", "#ec4899")
+                                          .replace("coral", "#ff7f7f")
+                                          .replace("berry", "#8b0000")
+                                          .replace("maroon", "#7f1d1d")
+                                          .replace("rose", "#f43f5e")
+                                          .replace("fuchsia", "#d946ef")
 
-                                            // Oranges/Yellows
-                                            .replace("orange", "#f97316")
-                                            .replace("yellow", "#eab308")
-                                            .replace("mustard", "#ffdb58")
-                                            .replace("rust", "#b7410e")
-                                            .replace("amber", "#f59e0b")
+                                          // Oranges/Yellows
+                                          .replace("orange", "#f97316")
+                                          .replace("yellow", "#eab308")
+                                          .replace("mustard", "#ffdb58")
+                                          .replace("rust", "#b7410e")
+                                          .replace("amber", "#f59e0b")
 
-                                            // Purples
-                                            .replace("lavender", "#c084fc")
-                                            .replace("violet", "#8b5cf6")
-                                            .replace("indigo", "#6366f1")
-                                            .replace("purple", "#a855f7")
-                                            .replace("mauve", "#dda0dd")
+                                          // Purples
+                                          .replace("lavender", "#c084fc")
+                                          .replace("violet", "#8b5cf6")
+                                          .replace("indigo", "#6366f1")
+                                          .replace("purple", "#a855f7")
+                                          .replace("mauve", "#dda0dd")
 
-                                            // Browns/Beiges
-                                            .replace("cream", "#fef3c7")
-                                            .replace("beige", "#f5f5dc")
-                                            .replace("ecru", "#c2b280")
-                                            .replace("tan", "#d2b48c")
-                                            .replace("brown", "#92400e")
+                                          // Browns/Beiges
+                                          .replace("cream", "#fef3c7")
+                                          .replace("beige", "#f5f5dc")
+                                          .replace("ecru", "#c2b280")
+                                          .replace("tan", "#d2b48c")
+                                          .replace("brown", "#92400e")
 
-                                            // Other colors
-                                            .replace("turquoise", "#06b6d4")
-                                            .replace("aqua", "#22d3ee")
-                                            .replace("cyan", "#06b6d4")
-                                            .replace("lime", "#84cc16")
-                                            .replace("white", "#ffffff")
-                                            .replace("black", "#000000")
+                                          // Other colors
+                                          .replace("turquoise", "#06b6d4")
+                                          .replace("aqua", "#22d3ee")
+                                          .replace("cyan", "#06b6d4")
+                                          .replace("lime", "#84cc16")
+                                          .replace("white", "#ffffff")
+                                          .replace("black", "#000000")
 
-                                            .replace(" ", "") || // remove remaining spaces
-                                          color.toLowerCase(),
-                                      }}
-                                      className="w-4 h-4 rounded-full border border-slate-900"
-                                    />
-                                  ));
+                                          .replace(" ", "") || // remove remaining spaces
+                                        color.toLowerCase(),
+                                    }}
+                                    className="w-4 h-4 rounded-full border border-slate-900"
+                                  />
+                                ));
                               })()}
                           </div>
                           <div className="text-center">
                             <h2
                               className={`text-sm transition-all duration-300 ${
-                                cardHover === product.meta.id &&
-                                product.overview.name.length > 20
-                                  ? "sm:text-[18px]"
-                                  : "sm:text-lg"
+                                cardHover === product.meta.id && product.overview.name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
                               } font-semibold text-brand sm:leading-[18px] `}
                             >
                               {(product.overview.name &&
@@ -1305,20 +1054,13 @@ const getCurrentPageProducts = () => {
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1 ">
-                              Min Qty:{" "}
-                              {product.product?.prices?.price_groups[0]
-                                ?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                              Min Qty: {product.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
 
                             {/* Updated Price display with better font */}
                             <div className="">
                               <h2 className="text-base sm:text-lg font-bold text-heading ">
-                                From $
-                                {minPrice === maxPrice ? (
-                                  <span>{minPrice.toFixed(2)}</span>
-                                ) : (
-                                  <span>{minPrice.toFixed(2)}</span>
-                                )}
+                                From ${minPrice === maxPrice ? <span>{minPrice.toFixed(2)}</span> : <span>{minPrice.toFixed(2)}</span>}
                               </h2>
                             </div>
                           </div>
@@ -1330,8 +1072,7 @@ const getCurrentPageProducts = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="pt-10 text-xl text-center text-red-900">
-                  No products found. Explore our categories or refine your
-                  search to discover more options
+                  No products found. Explore our categories or refine your search to discover more options
                 </p>
               </div>
             )}
@@ -1347,18 +1088,12 @@ const getCurrentPageProducts = () => {
                 <IoMdArrowBack className="text-xl" />
               </button>
 
-              {getPaginationButtons(
-                currentPage,
-                paginationTotalPages,
-                maxVisiblePages
-              ).map((page) => (
+              {getPaginationButtons(currentPage, paginationTotalPages, maxVisiblePages).map((page) => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                    currentPage === page
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200"
+                    currentPage === page ? "bg-blue-600 text-white" : "hover:bg-gray-200"
                   }`}
                 >
                   {page}
@@ -1366,11 +1101,7 @@ const getCurrentPageProducts = () => {
               ))}
 
               <button
-                onClick={() =>
-                  setCurrentPage((prev) =>
-                    Math.min(prev + 1, paginationTotalPages)
-                  )
-                }
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, paginationTotalPages))}
                 disabled={currentPage === paginationTotalPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
@@ -1404,14 +1135,10 @@ const getCurrentPageProducts = () => {
               />
 
               <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold text-brand mb-2">
-                  {selectedProduct.overview.name || "No Name"}
-                </h2>
+                <h2 className="text-2xl font-bold text-brand mb-2">{selectedProduct.overview.name || "No Name"}</h2>
 
                 {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {selectedProduct.overview.description}
-                  </p>
+                  <p className="text-gray-700 text-sm leading-relaxed">{selectedProduct.overview.description}</p>
                 )}
               </div>
             </div>
