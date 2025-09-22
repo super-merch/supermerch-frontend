@@ -76,16 +76,10 @@ const TabsCategory = () => {
       `}</style>
       <div style={{ backgroundColor: "#e3f2fd" }}>
         <div className="Mycontainer pb-16">
-          <Heading
-            title="MORE WAY'S TO SHOP"
-            align="center"
-            size="default"
-            titleClassName="uppercase"
-            containerClassName="lg:pt-8 md:pt-8 sm:pt-8 pt-4"
-          />
+          <Heading title="MORE WAY'S TO SHOP" align="center" size="default" titleClassName="uppercase" />
           {/* <div className="TabsCategory"> */}
           {/* Main Category Tabs */}
-          <div className="lg:mt-6 md:mt-6 mt-4 flex justify-between lg:grid md:grid sm:grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center lg:gap-6 md:gap-6 sm:gap-4 gap-1 border-b-4 border-blue-300">
+          <div className="mt-4 flex justify-between lg:grid md:grid sm:grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center lg:gap-6 md:gap-6 sm:gap-4 gap-1 border-b-4 border-blue-300">
             {megaMenu.slice(0, 4).map((category) => (
               <button
                 key={category.id}
@@ -103,7 +97,7 @@ const TabsCategory = () => {
 
           {/* Subcategories for the active main category */}
           <div
-            className={`mt-6 grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 text-center lg:gap-6 md:gap-6 gap-4 transition-all duration-300 ${
+            className={`mt-4 grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 text-center lg:gap-6 md:gap-6 gap-4 transition-all duration-300 ${
               isAnimating ? "opacity-0 transform translate-y-4" : "opacity-100 transform translate-y-0"
             }`}
           >

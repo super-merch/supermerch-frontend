@@ -498,21 +498,23 @@ const ArrivalCards = () => {
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            {/* <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              {!isPriceFilterActive && (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Search for new arrival products..."
-                    className="w-full border-none outline-none"
-                    value={searchProductName}
-                    onChange={setSearchTextChanger}
-                  />
-                  <IoSearchOutline className="text-2xl" />
-                </>
-              )}
-            </div> */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Results count on the left */}
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-brand">
+                {!isLoading && !isFiltering && getTotalCount()}
+              </span>
+              <p className="">
+                {isLoading || isFiltering
+                  ? "Loading..."
+                  : `New Arrivals Results found${
+                      isPriceFilterActive ? " (Price filtered)" : ""
+                    }`}
+                {isFiltering && " Please wait a while..."}
+              </p>
+            </div>
+            
+            {/* Sort dropdown on the right */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
@@ -609,22 +611,6 @@ const ArrivalCards = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">
-                {!skeletonLoading && !isFiltering && getTotalCount()}
-              </span>
-              <p className="">
-                {skeletonLoading || isFiltering
-                  ? "Loading..."
-                  : `New Arrivals Results found${
-                      isPriceFilterActive
-                        ? ` (Price filtered)`
-                        : hasActiveFilters
-                        ? ` on page ${currentPage}`
-                        : ""
-                    }`}
-              </p>
-            </div>
           </div>
 
           {filterError && (
