@@ -112,64 +112,13 @@ const Cards = () => {
     paramProducts,
     skeletonLoading,
     fetchMultipleParamPages,
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
+    // track in-flight requests for all-products to dedupe network calls
+  const pendingAllRequests = useRef({});
 
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
+
 
   // Helper function to get real price with caching
   const priceCache = useRef(new Map());
@@ -526,7 +475,6 @@ const Cards = () => {
     minPrice,
     maxPrice,
     sortOption,
-    selectedCategory,
     isPriceFilterActive,
     isSwitchingCategory,
     isResettingPriceFilter,
@@ -534,7 +482,6 @@ const Cards = () => {
 
   // Handle category selection - fetch category-specific products
   useEffect(() => {
-    console.log("Selected Category ID:", selectedCategory);
 
     // Reset visible products and pagination immediately (UI)
     setCategoryProducts([]);
@@ -595,9 +542,11 @@ const Cards = () => {
     // Fetch category products
     fetchCategoryProducts(selectedCategory, 1, requestId);
     setIsSwitchingCategory(false);
-  }, [isResettingPriceFilter, selectedCategory, sortOption]);
+  }, [isResettingPriceFilter, sortOption]);
+  const pendingCategoryRequests = useRef({});
 
   // Function to fetch category-specific products (original logic)
+    // Function to fetch category-specific products (deduped)
   const fetchCategoryProducts = async (
     categoryId,
     page = 1,
@@ -605,113 +554,164 @@ const Cards = () => {
   ) => {
     if (isPriceFilterActive) return; // Skip if price filter is active
 
+    const key = `${categoryId}_${page}`;
+
+    // Return cached page if available
     const categoryCache = cacheRef.current[categoryId];
     if (categoryCache && categoryCache[page]) {
       setCategoryProducts(categoryCache[page]);
       return;
     }
 
-    setError("");
-    try {
-      const response = await fetchParamProducts(categoryId, page);
-
-      if (requestId && requestId !== categoryRequestIdRef.current) {
-        return;
+    // If there's already a pending request for same category+page, await it and use the cache
+    if (pendingCategoryRequests.current[key]) {
+      try {
+        await pendingCategoryRequests.current[key];
+        const cachedAfter = cacheRef.current[categoryId]?.[page];
+        if (cachedAfter) setCategoryProducts(cachedAfter);
+      } catch (e) {
+        // ignore — error will be handled by original caller
       }
-
-      if (!response || !response.data) {
-        throw new Error("Unexpected response");
-      }
-
-      const validProducts = response.data.filter((product) => {
-        const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice = priceGroups.find((g) => g?.base_price) || {};
-        const priceBreaks = basePrice.base_price?.price_breaks || [];
-        return priceBreaks.length > 0 && priceBreaks[0]?.price > 0;
-      });
-
-      cacheRef.current[categoryId] = {
-        ...(cacheRef.current[categoryId] || {}),
-        [page]: validProducts,
-      };
-
-      setCategoryPageCache((prev) => ({
-        ...(prev || {}),
-        [categoryId]: {
-          ...(prev[categoryId] || {}),
-          [page]: validProducts,
-        },
-      }));
-
-      setCategoryProducts(validProducts);
-
-      if (response.total_pages) {
-        setTotalApiPages(response.total_pages);
-      }
-    } catch (err) {
-      console.error("Error fetching category products:", err);
-      setError("Error fetching category products. Please try again.");
-    } finally {
-      if (!requestId || requestId === categoryRequestIdRef.current) {
-        setIsLoading(false);
-      }
+      return;
     }
+
+    setError("");
+    setIsLoading(true);
+
+    // store the promise so concurrent calls reuse it
+    const p = (async () => {
+      try {
+        const response = await fetchParamProducts(categoryId, page);
+
+        // if requestId no longer current, bail out (keeps previous behavior)
+        if (requestId && requestId !== categoryRequestIdRef.current) {
+          return;
+        }
+
+        if (!response || !response.data) {
+          throw new Error("Unexpected response");
+        }
+
+        const validProducts = response.data.filter((product) => {
+          const priceGroups = product.product?.prices?.price_groups || [];
+          const basePrice = priceGroups.find((g) => g?.base_price) || {};
+          const priceBreaks = basePrice.base_price?.price_breaks || [];
+          return priceBreaks.length > 0 && priceBreaks[0]?.price > 0;
+        });
+
+        cacheRef.current[categoryId] = {
+          ...(cacheRef.current[categoryId] || {}),
+          [page]: validProducts,
+        };
+
+        setCategoryPageCache((prev) => ({
+          ...(prev || {}),
+          [categoryId]: {
+            ...(prev[categoryId] || {}),
+            [page]: validProducts,
+          },
+        }));
+
+        setCategoryProducts(validProducts);
+
+        if (response.total_pages) {
+          setTotalApiPages(response.total_pages);
+        }
+      } catch (err) {
+        console.error("Error fetching category products:", err);
+        setError("Error fetching category products. Please try again.");
+      } finally {
+        // only stop loading if this request is still relevant
+        if (!requestId || requestId === categoryRequestIdRef.current) {
+          setIsLoading(false);
+        }
+        // remove pending marker
+        delete pendingCategoryRequests.current[key];
+      }
+    })();
+
+    pendingCategoryRequests.current[key] = p;
+    await p;
   };
 
+
   // Function to fetch products in batches of 100 (for all products) - original logic
+    // Function to fetch products in batches of 100 (deduped)
   const fetchProductsBatch = async (apiPage = 1, sortOption = "") => {
     if (isPriceFilterActive) return; // Skip if price filter is active
+
+    const key = `all_${apiPage}_${String(sortOption)}`;
+
+    // If there's already a pending request for same key, reuse it
+    if (pendingAllRequests.current[key]) {
+      try {
+        await pendingAllRequests.current[key];
+      } catch (e) {
+        // swallow, original request handles error state
+      }
+      return;
+    }
 
     setIsLoading(true);
     setError("");
 
-    try {
-      const limit = 100;
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/client-products?page=${apiPage}&limit=${limit}&sort=${sortOption}&filter=true`
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch products");
-      const data = await response.json();
-
-      if (!data || !data.data) {
-        setIsLoading(false);
-        throw new Error("Unexpected API response structure");
-      }
-      setCount(data.item_count);
-
-      const validProducts = data.data.filter((product) => {
-        const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice = priceGroups.find((group) => group?.base_price) || {};
-        const priceBreaks = basePrice.base_price?.price_breaks || [];
-        return (
-          priceBreaks.length > 0 &&
-          priceBreaks[0]?.price !== undefined &&
-          priceBreaks[0]?.price > 0
+    // create the request promise and store it in the ref
+    const promise = (async () => {
+      try {
+        const limit = 10;
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/client-products?page=${apiPage}&limit=${limit}&sort=${sortOption}&filter=true`
         );
-      });
 
-      if (apiPage === 1) {
-        setAllProducts(validProducts);
-      } else {
-        setAllProducts((prev) => {
-          const existingIds = new Set(prev.map((p) => p.meta?.id));
-          const newProducts = validProducts.filter(
-            (product) => !existingIds.has(product.meta?.id)
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+        setCount(data.item_count);
+
+        const validProducts = data.data.filter((product) => {
+          const priceGroups = product.product?.prices?.price_groups || [];
+          const basePrice = priceGroups.find((group) => group?.base_price) || {};
+          const priceBreaks = basePrice.base_price?.price_breaks || [];
+          return (
+            priceBreaks.length > 0 &&
+            priceBreaks[0]?.price !== undefined &&
+            priceBreaks[0]?.price > 0
           );
-          return [...prev, ...newProducts];
         });
-      }
 
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Error fetching products. Please try again.");
-      setIsLoading(false);
+        if (apiPage === 1) {
+          setAllProducts(validProducts);
+        } else {
+          setAllProducts((prev) => {
+            const existingIds = new Set(prev.map((p) => p.meta?.id));
+            const newProducts = validProducts.filter(
+              (product) => !existingIds.has(product.meta?.id)
+            );
+            return [...prev, ...newProducts];
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Error fetching products. Please try again.");
+      } finally {
+        // leave isLoading false to callers after awaiting; keep it consistent
+        setIsLoading(false);
+      }
+    })();
+
+    pendingAllRequests.current[key] = promise;
+
+    try {
+      await promise;
+    } finally {
+      // remove pending marker regardless of success/failure
+      delete pendingAllRequests.current[key];
     }
   };
+
 
   // Get the current active products based on mode and price filter
   const getActiveProducts = () => {
@@ -795,7 +795,7 @@ const Cards = () => {
       setCurrentPage(1);
       fetchCategoryProducts(selectedCategory, 1);
     } else {
-      fetchProductsBatch(1, sortOption);
+      // fetchProductsBatch(1, sortOption);
       setCurrentPage(1);
     }
   }, [sortOption, isSwitchingCategory]);
@@ -812,7 +812,7 @@ const Cards = () => {
     if (selectedCategory && currentPage > 0 && !isPriceFilterActive) {
       fetchCategoryProducts(selectedCategory, currentPage);
     }
-  }, [currentPage, selectedCategory]);
+  }, [currentPage]);
 
   // Get current page products
   const getCurrentPageProducts = () => {
@@ -862,10 +862,6 @@ const Cards = () => {
     }
   }, [
     currentPage,
-    allProducts.length,
-    selectedCategory,
-    isLoading,
-    isPriceFilterActive,
   ]);
 
   // Rest of the useEffects remain the same...
@@ -899,9 +895,20 @@ const Cards = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
-  };
+  const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    // replace any sequence of non-alphanumeric chars with a single hyphen
+    .replace(/[^a-z0-9]+/g, "-")
+    // remove leading/trailing hyphens
+    .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+  const encodedId = btoa(productId); // base64 encode
+  const slug = slugify(name);
+  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+};
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);

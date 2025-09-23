@@ -24,61 +24,14 @@ const AllProducts = ({ activeTab }) => {
     marginApi,
     getGlobalDiscount,
     totalDiscount,
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
 
   // State for modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
+  
   // useEffect(() => {
 
   //   getAll24HourProduction();
@@ -89,16 +42,25 @@ const AllProducts = ({ activeTab }) => {
     // Only fetch if activeTab is "All Product" to avoid unnecessary calls
     if (activeTab === "All Product") {
       fetchProducts(1, "", 8);
-      getAll24HourProduction();
-      getAllAustralia();
     }
   }, [activeTab]); // Changed dependency to activeTab instead of empty array
 
   const dispatch = useDispatch();
+  const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    // replace any sequence of non-alphanumeric chars with a single hyphen
+    .replace(/[^a-z0-9]+/g, "-")
+    // remove leading/trailing hyphens
+    .replace(/(^-|-$)/g, "");
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
-  };
+  const handleViewProduct = (productId, name) => {
+  const encodedId = btoa(productId); // base64 encode
+  const slug = slugify(name);
+  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+};
+
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   const [cardHover, setCardHover] = useState(null);

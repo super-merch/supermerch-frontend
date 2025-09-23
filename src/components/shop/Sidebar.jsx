@@ -38,7 +38,9 @@ const Sidebar = (props) => {
   const filter = props.filter ? props.filter : false;
 
   useEffect(() => {
-    fetchCategories();
+    if(!filter){
+      fetchCategories();
+    }
   }, []);
 
   const handleCategoryClick = (category) => {

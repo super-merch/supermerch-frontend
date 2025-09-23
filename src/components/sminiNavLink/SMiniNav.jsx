@@ -256,9 +256,12 @@ const SMiniNav = () => {
   const conditionalCategoryNameHandler = (link) => {
     if (link.name === "Promotional") {
       sethoverMegaMenu(false);
-      setMegaMenuMobile(!megaMenuMobile);
-      productCategory();
-      return;
+      const clothingCategory = v1categories.find(
+        (category) => category.name === "Bags"
+      );
+      if (clothingCategory) {
+        handleNameCategories(clothingCategory.name, clothingCategory.id);
+      }
     }
     if (link.name === "Clothing") {
       sethoverClothingMenu(false);
@@ -605,7 +608,7 @@ const SMiniNav = () => {
                           }
                         }}
                         onClick={() => {
-                          if (link.name === "Promotional") return;
+                          // if (link.name === "Promotional") return;
                           conditionalCategoryNameHandler(link);
                         }}
                       >

@@ -73,6 +73,8 @@ const ArrivalCards = () => {
     marginApi,
     totalDiscount,
     backendUrl,
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
 
   // Get Redux filter state
@@ -92,62 +94,6 @@ const ArrivalCards = () => {
     }
   }, [contextArrivalProducts, dispatch]);
 
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -369,9 +315,20 @@ const ArrivalCards = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`, { state: "Home" });
-  };
+  const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    // replace any sequence of non-alphanumeric chars with a single hyphen
+    .replace(/[^a-z0-9]+/g, "-")
+    // remove leading/trailing hyphens
+    .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+  const encodedId = btoa(productId); // base64 encode
+  const slug = slugify(name);
+  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+};
 
   const setSearchTextChanger = (e) => {
     setSearchProductName(e.target.value);

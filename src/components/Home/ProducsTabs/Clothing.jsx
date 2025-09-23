@@ -4,7 +4,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -22,73 +22,20 @@ const Clothing = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi } = useContext(AppContext);
+  const { marginApi,productionIds,
+    australiaIds, } = useContext(AppContext);
 
   const dispatch = useDispatch();
 
-  const [productionIds, setProductionIds] = useState(new Set());
-      const getAll24HourProduction = async () => {
-        try {
-          const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (response.ok) {
-            const data = await response.json();
-            const productIds = data.map((item) => Number(item.id));
-            setProductionIds(new Set(productIds));
-            console.log("Fetched 24 Hour Production products:", productionIds);
-          } else {
-            console.error(
-              "Failed to fetch 24 Hour Production products:",
-              response.status
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching 24 Hour Production products:", error);
-        }
-      };
-      const [australiaIds, setAustraliaIds] = useState(new Set());
-      const getAllAustralia = async () => {
-        try {
-          const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (response.ok) {
-            const data = await response.json();
-            // Ensure consistent data types (convert to strings)
-            const productIds = data.map((item) => Number(item.id));
-            setAustraliaIds(new Set(productIds));
-            console.log("Fetched Australia products:", data);
-          } else {
-            console.error("Failed to fetch Australia products:", response.status);
-          }
-        } catch (error) {
-          console.error("Error fetching Australia products:", error);
-        }
-      };
-      // useEffect(() => {
-      //   getAll24HourProduction();
-      //   getAllAustralia();
-      // }, []);
+  // useEffect(() => {
+  //   getAll24HourProduction();
+  //   getAllAustralia();
+  // }, []);
 
   // Fetch products when tab opens
   useEffect(() => {
     if (activeTab === "Clothing") {
       fetchClothingProducts();
-      getAll24HourProduction();
-    getAllAustralia();
     }
   }, [activeTab]);
 
@@ -120,11 +67,12 @@ const Clothing = ({ activeTab }) => {
   };
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
-    
-      favouriteItems.map((item) => {
-        favSet.add(item.meta.id)
-      })
+  const [cardHover, setCardHover] = useState(null);
+  const favSet = new Set();
+
+  favouriteItems.map((item) => {
+    favSet.add(item.meta.id);
+  });
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -148,8 +96,19 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   if (error) {
@@ -288,9 +247,14 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
-                        onMouseEnter={()=>setCardHover(product.meta.id)}
-                        onMouseLeave={()=>setCardHover(null)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
+                        onMouseEnter={() => setCardHover(product.meta.id)}
+                        onMouseLeave={() => setCardHover(null)}
                       >
                         {/* Show discount badge */}
                         {discountPct > 0 && (
@@ -378,7 +342,11 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                             }}
                             className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                           >
-                            {favSet.has(product.meta.id) ? <IoIosHeart className="text-lg text-red-500" /> : <CiHeart  className="text-lg text-gray-700 hover:text-red-500 transition-colors" />}
+                            {favSet.has(product.meta.id) ? (
+                              <IoIosHeart className="text-lg text-red-500" />
+                            ) : (
+                              <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                            )}
                           </div>
                         </div>
 
@@ -395,7 +363,6 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                           />
                         </div>
 
-                     
                         {/* Reduced content area */}
                         <div className="p-2 ">
                           <div className=" flex justify-center mb-1 gap-1  z-10">
@@ -494,18 +461,26 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                               })()}
                           </div>
                           <div className="text-center">
-                            <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[18px] `}>
-                              {product.overview.name &&
-                              // product.overview.name.length > 20 && cardHover!==product.meta.id
-                              //   ? product.overview.name.slice(0, 20) + "..."
-                                 product.overview.name || "No Name"}
+                            <h2
+                              className={`text-sm transition-all duration-300 ${
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
+                              } font-semibold text-brand sm:leading-[18px] `}
+                            >
+                              {(product.overview.name &&
+                                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                //   ? product.overview.name.slice(0, 20) + "..."
+                                product.overview.name) ||
+                                "No Name"}
                             </h2>
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1">
-                              Min Qty: {product.product?.prices?.price_groups[0]
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
-                              
                             </p>
 
                             {/* Updated Price display with better font */}
@@ -518,7 +493,6 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                                   <span>{minPrice.toFixed(2)}</span>
                                 )}
                               </h2>
-                              
                             </div>
                           </div>
                         </div>

@@ -228,9 +228,20 @@ const CartComponent = () => {
     setId(id);
   };
   const Navigate = useNavigate();
-  const handleViewProduct = (id, name) => {
-    Navigate(`/product/${name}`, { state: id });
-  };
+  const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    // replace any sequence of non-alphanumeric chars with a single hyphen
+    .replace(/[^a-z0-9]+/g, "-")
+    // remove leading/trailing hyphens
+    .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+  const encodedId = btoa(productId); // base64 encode
+  const slug = slugify(name);
+  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+};
   console.log(items)
 
   return (

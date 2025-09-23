@@ -137,9 +137,20 @@ const Promotional = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`);
-  };
+  const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    // replace any sequence of non-alphanumeric chars with a single hyphen
+    .replace(/[^a-z0-9]+/g, "-")
+    // remove leading/trailing hyphens
+    .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+  const encodedId = btoa(productId); // base64 encode
+  const slug = slugify(name);
+  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+};
 
   const setSearchTextChanger = (e) => {
     dispatch(setSearchText(e.target.value));

@@ -52,9 +52,20 @@ const Sale = () => {
   });
 
   // Handle product click
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
-  };
+  const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    // replace any sequence of non-alphanumeric chars with a single hyphen
+    .replace(/[^a-z0-9]+/g, "-")
+    // remove leading/trailing hyphens
+    .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+  const encodedId = btoa(productId); // base64 encode
+  const slug = slugify(name);
+  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+};
 
   return (
     <div>

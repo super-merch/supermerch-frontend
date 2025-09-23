@@ -39,8 +39,8 @@ import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/Promotional
 import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
 import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
 import { toast } from "react-toastify";
-import {  headWear } from "@/assets/assets";
-import {  megaMenu } from "@/assets/newAssets";
+import { headWear } from "@/assets/assets";
+import { megaMenu } from "@/assets/newAssets";
 import { megaMenuClothing } from "@/assets/asset";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { set } from "react-hook-form";
@@ -157,68 +157,15 @@ const Spromotional = () => {
     setSidebarActiveCategory,
     sidebarActiveLabel,
     setSidebarActiveLabel,
-    fetchMultipleParamPages, // We'll need to create this function
+    fetchMultipleParamPages,
+    productionIds,
+    australiaIds // We'll need to create this function
   } = useContext(AppContext);
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
     useSelector((state) => state.filters);
 
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
+  
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
@@ -242,8 +189,6 @@ const Spromotional = () => {
           }
         );
         const result = await response.json();
-
-        console.log(result);
       } catch (error) {
         console.error("Error occurred:", error);
       }
@@ -490,8 +435,19 @@ const Spromotional = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state: productId });
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const [searchProductName, setSearchProductName] = useState("");
@@ -505,15 +461,15 @@ const Spromotional = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       if (selectedParamCategoryId && !isPriceFilterActive) {
-      await fetchParamProducts(selectedParamCategoryId, currentPage).then(
-        (response) => {
-          if (response && response.total_pages) {
-            setTotalApiPages(response.total_pages);
+        await fetchParamProducts(selectedParamCategoryId, currentPage).then(
+          (response) => {
+            if (response && response.total_pages) {
+              setTotalApiPages(response.total_pages);
+            }
           }
-        }
-      );
-    }
-    }
+        );
+      }
+    };
     fetchProducts();
   }, [currentPage, sortOption, selectedParamCategoryId, isPriceFilterActive]);
 
@@ -560,27 +516,31 @@ const Spromotional = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const handleSubCategories = (subCategory, categoryId, titleName, labelName) => {
-  const encodedTitleName = encodeURIComponent(titleName);
-  const encodedlabelName = encodeURIComponent(labelName);
-  setSearchParams({
-    categoryName: encodedTitleName,
-    category: categoryId,
-    label: encodedlabelName,
-  });
+  const handleSubCategories = (
+    subCategory,
+    categoryId,
+    titleName,
+    labelName
+  ) => {
+    const encodedTitleName = encodeURIComponent(titleName);
+    const encodedlabelName = encodeURIComponent(labelName);
+    setSearchParams({
+      categoryName: encodedTitleName,
+      category: categoryId,
+      label: encodedlabelName,
+    });
 
-  // Clear old results so they don't flash
-  setParamProducts({ data: [], item_count: 0, total_pages: 0 });
-  // make sure loading shows skeleton state until fetch resolves
-  // (only do this if fetchParamProducts doesn't set loading itself synchronously)
-  // setParamLoading(true);
+    // Clear old results so they don't flash
+    setParamProducts({ data: [], item_count: 0, total_pages: 0 });
+    // make sure loading shows skeleton state until fetch resolves
+    // (only do this if fetchParamProducts doesn't set loading itself synchronously)
+    // setParamLoading(true);
 
-  setSelectedParamCategoryId(categoryId);
-  setActiveFilterCategory(subCategory);
-  setCurrentPage(1);
-  setSidebarActiveCategory(titleName);
-};
-
+    setSelectedParamCategoryId(categoryId);
+    setActiveFilterCategory(subCategory);
+    setCurrentPage(1);
+    setSidebarActiveCategory(titleName);
+  };
 
   useEffect(() => {
     const urlCategory = searchParams.get("category");
@@ -654,43 +614,48 @@ const Spromotional = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+  const [searchParam] = useSearchParams();
+  const queryCategory = searchParam.get("categoryName");
 
-  const currentMenuArray = getMenuArrayByCategoryName(sidebarActiveCategory);
-  const filteredCategories = sidebarActiveCategory
-    ? currentMenuArray.filter(
-        (category) => category.name === sidebarActiveCategory
-      )
-    : currentMenuArray;
+  const currentMenuArray = getMenuArrayByCategoryName(
+    sidebarActiveCategory || queryCategory
+  );
+
+  const filteredCategories = currentMenuArray.filter(
+    (category) => category.name === (sidebarActiveCategory || queryCategory)
+  );
 
   // Get current page products based on whether price filter is active
   // Get current page products based on whether price filter is active
-const getCurrentPageProducts = () => {
-  if (isPriceFilterActive) {
-    // Use filtered products (existing logic)
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return allFilteredProducts.slice(startIndex, endIndex);
-  } else {
-    // Use regular API products with local search filter
-    const apiProducts = paramProducts?.data || [];
+  const getCurrentPageProducts = () => {
+    if (isPriceFilterActive) {
+      // Use filtered products (existing logic)
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return allFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // Use regular API products with local search filter
+      const apiProducts = paramProducts?.data || [];
 
-    // Apply client-side sorting if requested
-    const sortedProducts =
-      sortOption === "lowToHigh" || sortOption === "highToLow"
-        ? [...apiProducts].sort((a, b) => {
-            const priceA = getRealPrice(a) || 0;
-            const priceB = getRealPrice(b) || 0;
-            return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
-          })
-        : apiProducts;
+      // Apply client-side sorting if requested
+      const sortedProducts =
+        sortOption === "lowToHigh" || sortOption === "highToLow"
+          ? [...apiProducts].sort((a, b) => {
+              const priceA = getRealPrice(a) || 0;
+              const priceB = getRealPrice(b) || 0;
+              return sortOption === "lowToHigh"
+                ? priceA - priceB
+                : priceB - priceA;
+            })
+          : apiProducts;
 
-    // Then apply local name filter
-    return sortedProducts.filter((product) => {
-      const productName = (product.overview?.name || "").toLowerCase();
-      return productName.includes(searchProductName.toLowerCase());
-    });
-  }
-};
+      // Then apply local name filter
+      return sortedProducts.filter((product) => {
+        const productName = (product.overview?.name || "").toLowerCase();
+        return productName.includes(searchProductName.toLowerCase());
+      });
+    }
+  };
 
   //get categoryName from searchParams
   const categoryName = searchParams.get("categoryName");
@@ -709,14 +674,14 @@ const getCurrentPageProducts = () => {
 
   // Calculate total count for display
   const getTotalCount = () => {
-  if (isPriceFilterActive) {
-    return allFilteredProducts.length;
-  } else if (searchProductName.trim() !== "") {
-    return currentPageFilteredCount;
-  } else {
-    return paramProducts?.item_count || 0;
-  }
-};
+    if (isPriceFilterActive) {
+      return allFilteredProducts.length;
+    } else if (searchProductName.trim() !== "") {
+      return currentPageFilteredCount;
+    } else {
+      return paramProducts?.item_count || 0;
+    }
+  };
 
   // console.log(filteredCategories)
   const clothing = [
@@ -740,9 +705,6 @@ const getCurrentPageProducts = () => {
     { id: "B-19", name: "Vests" },
 
     { id: "B-20", name: "Misc Clothing" },
-
-
-    
   ];
 
   return (
@@ -771,9 +733,11 @@ const getCurrentPageProducts = () => {
               }`}
             >
               <div className="h-full pr-3 overflow-y-auto">
-                {!filteredCategories.length > 0 && <p className="text-lg font-semibold text-blue-500">
-                            Clothing
-                          </p>}
+                {!filteredCategories.length > 0 && (
+                  <p className="text-lg font-semibold text-blue-500">
+                    Clothing
+                  </p>
+                )}
                 <div className="pb-6 border-b-2">
                   {filteredCategories.length > 0
                     ? filteredCategories.map((category) => (
@@ -797,9 +761,16 @@ const getCurrentPageProducts = () => {
                                     {group?.items?.map((item) => (
                                       <li
                                         key={item.id}
-                                        className={`hover:underline ml-4 ${skeletonLoading ? "cursor-not-allowed" : ""}`}
+                                        className={`hover:underline ml-4 ${
+                                          skeletonLoading
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                        }`}
                                       >
-                                        <button disabled={skeletonLoading|| isFiltering}
+                                        <button
+                                          disabled={
+                                            skeletonLoading || isFiltering
+                                          }
                                           onClick={() =>
                                             handleSubCategories(
                                               item.name,
@@ -812,7 +783,11 @@ const getCurrentPageProducts = () => {
                                             activeFilterCategory === item.name
                                               ? "text-blue-500"
                                               : ""
-                                          } ${skeletonLoading ? "cursor-not-allowed" : ""}`}
+                                          } ${
+                                            skeletonLoading
+                                              ? "cursor-not-allowed"
+                                              : ""
+                                          }`}
                                         >
                                           {item.name}
                                         </button>
@@ -825,8 +800,7 @@ const getCurrentPageProducts = () => {
                         </div>
                       ))
                     : clothing.map((category) => (
-                        <div key={category.id}>
-                          
+                        <div className="pl-4" key={category.id}>
                           <ul>
                             <button
                               onClick={() =>
@@ -1088,7 +1062,12 @@ const getCurrentPageProducts = () => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >

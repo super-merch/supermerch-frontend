@@ -22,7 +22,8 @@ const Headwear = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi } = useContext(AppContext);
+  const { marginApi,productionIds,
+    australiaIds, } = useContext(AppContext);
 
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
@@ -34,58 +35,7 @@ const Headwear = ({ activeTab }) => {
     favSet.add(item.meta.id);
   });
 
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
+
   // useEffect(() => {
   //   getAll24HourProduction();
   //   getAllAustralia();
@@ -94,8 +44,6 @@ const Headwear = ({ activeTab }) => {
   useEffect(() => {
     if (activeTab === "Headwear") {
       fetchClothingProducts();
-      getAll24HourProduction();
-    getAllAustralia();
     }
   }, [activeTab]);
 
@@ -148,8 +96,19 @@ const Headwear = ({ activeTab }) => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   if (error) {
@@ -288,7 +247,12 @@ const Headwear = ({ activeTab }) => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >

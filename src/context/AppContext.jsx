@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
@@ -22,6 +22,9 @@ const AppContextProvider = (props) => {
   const [globalDiscount, setGlobalDiscount] = useState(null);
   const [productsCache, setProductsCache] = useState(null);
   const [isCacheValid, setIsCacheValid] = useState(false);
+  const paramProductsCacheRef = useRef({});
+  const pendingParamRequestsRef = useRef({});
+  const pendingParamMultiRequestsRef = useRef({});
 
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
 
@@ -60,17 +63,17 @@ const AppContextProvider = (props) => {
     navigate("/signup");
   };
   const [shippingAddressData, setShippingAddressData] = useState({
-  firstName: "",
-  lastName: "",
-  companyName: "",
-  addressLine: "",
-  city: "",
-  postalCode: "",
-  state: "",
-  country: "",
-  email: "",
-  phone: "",
-}); 
+    firstName: "",
+    lastName: "",
+    companyName: "",
+    addressLine: "",
+    city: "",
+    postalCode: "",
+    state: "",
+    country: "",
+    email: "",
+    phone: "",
+  });
   const [addressData, setAddressData] = useState({
     firstName: "",
     lastName: "",
@@ -129,16 +132,16 @@ const AppContextProvider = (props) => {
           setAddressData(data.user.defaultAddress);
         }
         if (data.user.defaultShippingAddress) {
-        setShippingAddressData(data.user.defaultShippingAddress);
-      }
+          setShippingAddressData(data.user.defaultShippingAddress);
+        }
         if (data.success) {
           setUserData(data.user);
         }
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
       toast.error("An error occurred while fetching the address.");
-      handleLogout()
+      handleLogout();
     }
   };
   const [productsCategory, setProductsCategory] = useState([]);
@@ -563,61 +566,155 @@ const AppContextProvider = (props) => {
     try {
       const endPage = startPage + maxPages - 1;
 
-      // Create array of page numbers to fetch
+      // Try to short-circuit if ALL requested pages are cached
+      const categoryCache = paramProductsCacheRef.current[categoryId];
+      let allCached = true;
+      const cachedProducts = [];
+
+      if (categoryCache && categoryCache.pages) {
+        for (let p = startPage; p <= endPage; p++) {
+          const pageEntry = categoryCache.pages[p];
+          if (!pageEntry) {
+            allCached = false;
+            break;
+          }
+          // pageEntry.data is the array of products for that page
+          cachedProducts.push(...(pageEntry.data || []));
+        }
+      } else {
+        allCached = false;
+      }
+
+      if (allCached) {
+        // Return combined products from cache (same shape as your original function: array of products)
+        return cachedProducts;
+      }
+
+      // Build a key for deduping this specific range
+      const multiKey = `${categoryId}_${startPage}_${maxPages}_${limit}_${sortOption}`;
+
+      // If a request for this same range is already in-flight, await it
+      if (pendingParamMultiRequestsRef.current[multiKey]) {
+        try {
+          const res = await pendingParamMultiRequestsRef.current[multiKey];
+          return res;
+        } catch (e) {
+          // fallback to performing requests
+        }
+      }
+
+      // Otherwise fetch the pages in parallel (same approach you already had)
       const pageNumbers = Array.from(
         { length: endPage - startPage + 1 },
         (_, i) => startPage + i
       );
 
-      // Fetch all pages in parallel
       const fetchPromises = pageNumbers.map(async (page) => {
-        const response = await fetch(
-          `${backednUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${limit}&page=${page}&sort=${sortOption}`
-        );
-
-        if (!response.ok) return { data: [] };
-        return await response.json();
+        // Reuse fetchParamProducts for single-page fetching (it will itself use the single-page cache/dedupe)
+        const single = await fetchParamProducts(categoryId, page);
+        // fetchParamProducts returns the full response object with .data array
+        return single?.data || [];
       });
 
-      // Wait for all requests to complete
-      const results = await Promise.allSettled(fetchPromises);
+      const multiPromise = (async () => {
+        const settled = await Promise.allSettled(fetchPromises);
+        const allProducts = [];
+        settled.forEach((r) => {
+          if (r.status === "fulfilled" && Array.isArray(r.value)) {
+            allProducts.push(...r.value);
+          }
+        });
+        return allProducts;
+      })();
 
-      // Combine all successful results
-      const allProducts = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled" && result.value?.data) {
-          allProducts.push(...result.value.data);
-        }
-      });
+      pendingParamMultiRequestsRef.current[multiKey] = multiPromise;
 
-      return allProducts;
+      try {
+        const result = await multiPromise;
+        return result;
+      } finally {
+        delete pendingParamMultiRequestsRef.current[multiKey];
+      }
     } catch (error) {
       console.error("Error fetching multiple param pages:", error);
       return [];
     }
   };
+  
   const fetchParamProducts = async (categoryId, page) => {
     try {
       setSkeletonLoading(true);
-      const itemCount = 9;
-      const response = await fetch(
-        `${backednUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${itemCount}&page=${page}`
-      );
-      if (!response.ok) throw new Error("Failed to fetch products");
-      const data = await response.json();
-      setSkeletonLoading(false);
+      const key = `${categoryId}_${page}`;
 
-      if (!data || !data.data) {
+      // 1) Return cached page if exists
+      const cachedPage =
+        paramProductsCacheRef.current?.[categoryId]?.pages?.[page];
+      if (cachedPage) {
+        // cachedPage is the full API response object (same shape as data)
+        setParamProducts(cachedPage);
+        if (cachedPage.total_pages) setTotalApiPages(cachedPage.total_pages);
         setSkeletonLoading(false);
-        throw new Error("Unexpected API response structure");
+        return cachedPage;
       }
 
-      setParamProducts(data);
-      setTotalApiPages(data.total_pages);
-      setSkeletonLoading(false);
-      return data;
+      // 2) If there's an in-flight request for same category+page, await it
+      if (pendingParamRequestsRef.current[key]) {
+        try {
+          const result = await pendingParamRequestsRef.current[key];
+          // result should be the full response
+          setParamProducts(result);
+          if (result?.total_pages) setTotalApiPages(result.total_pages);
+          setSkeletonLoading(false);
+          return result;
+        } catch (e) {
+          // fallthrough to try fetching again
+        }
+      }
+
+      // 3) Make the request and store promise in pending map (dedupe)
+      const promise = (async () => {
+        const itemCount = 9;
+        const response = await fetch(
+          `${backednUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${itemCount}&page=${page}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        // store in cache per-category -> pages -> page = full response
+        paramProductsCacheRef.current[categoryId] = {
+          ...(paramProductsCacheRef.current[categoryId] || { pages: {} }),
+          pages: {
+            ...(paramProductsCacheRef.current[categoryId]?.pages || {}),
+            [page]: data,
+          },
+          // keep a canonical total_pages (useful)
+          total_pages:
+            data.total_pages ??
+            paramProductsCacheRef.current[categoryId]?.total_pages,
+        };
+
+        // update exposed state exactly as before
+        setParamProducts(data);
+        if (data.total_pages) setTotalApiPages(data.total_pages);
+        return data;
+      })();
+
+      pendingParamRequestsRef.current[key] = promise;
+
+      try {
+        const res = await promise;
+        return res;
+      } finally {
+        // cleanup pending entry & loading state
+        delete pendingParamRequestsRef.current[key];
+        setSkeletonLoading(false);
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err?.message || "Error fetching param products");
       setSkeletonLoading(false);
     }
   };
@@ -658,7 +755,7 @@ const AppContextProvider = (props) => {
       }
 
       setV1categories(data.data);
-      return data.data
+      return data.data;
     } catch (err) {
       console.log("Error fetching products:", err);
       setError(err.message);
@@ -978,6 +1075,60 @@ const AppContextProvider = (props) => {
   //     fetchV1Categories(); // Only fetch if products array is empty
   //   }
   // }, []);
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -985,7 +1136,12 @@ const AppContextProvider = (props) => {
       loadUserOrder();
     }
   }, [token]);
+
   const value = {
+    productionIds,
+    getAll24HourProduction,
+    getAllAustralia,
+    australiaIds,
     token,
     setToken,
     userOrder,
@@ -1052,7 +1208,7 @@ const AppContextProvider = (props) => {
     filterLocalProducts,
     setFilterLocalProducts,
     shippingAddressData,
-  setShippingAddressData,
+    setShippingAddressData,
     discountPromo,
     globalDiscount,
     getGlobalDiscount,

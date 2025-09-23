@@ -5,7 +5,7 @@ const getData = async()=>{
     v1categories = result.data
 
 }
-getData()
+// getData()
 
 export const megaMenu =
     v1categories
