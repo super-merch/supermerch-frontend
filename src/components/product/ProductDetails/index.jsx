@@ -9,11 +9,11 @@ import { FaCheck } from "react-icons/fa6";
 import {
   addToCart,
   initializeCartFromStorage,
-} from "../../redux/slices/cartSlice";
+} from "../../../redux/slices/cartSlice";
 import {
   setCurrentUser,
   selectCurrentUserCartItems,
-} from "../../redux/slices/cartSlice";
+} from "../../../redux/slices/cartSlice";
 import { useSelector } from "react-redux";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -21,17 +21,22 @@ import { Navigation } from "swiper/modules";
 import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { AppContext } from "../../context/AppContext";
+import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { colornames } from "color-name-list";
-import Services from "./Services";
-import SizeGuideModal from "./SizeGuideModal";
-import QuoteFormModal from "./QuoteFormModal";
-import { Button } from "../ui/button";
+import Services from "../Services";
+import SizeGuideModal from "../SizeGuideModal";
+import QuoteFormModal from "../QuoteFormModal";
+import { Button } from "../../ui/button";
 import { CheckCheck } from "lucide-react";
+import DecorationTab from "./DecorationTab";
+import ShippingTab from "./ShippingTab";
+import FeaturesTab from "./FeaturesTab";
+import PricingTab from "./PricingTab";
+import ProductNotFound from "../ProductNotFound";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -55,6 +60,7 @@ const ProductDetails = () => {
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errorFetching, setErrorFetching] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState("features"); // features | decoration | pricing
 
   useEffect(() => {
@@ -93,6 +99,7 @@ const ProductDetails = () => {
   }, [dispatch, backednUrl]);
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
+
   const fetchSingleProduct = async () => {
     setLoading(true);
     try {
@@ -102,6 +109,7 @@ const ProductDetails = () => {
       if (data) {
         setSingle_Product(data.data, "fetchSingleProduct");
         setLoading(false);
+        setErrorFetching(false);
       }
 
       // First, try to find sizes in details array
@@ -164,6 +172,7 @@ const ProductDetails = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      setErrorFetching(true);
       console.log(error);
     }
   };
@@ -298,7 +307,6 @@ const ProductDetails = () => {
       );
 
       const allGroups = [baseGroup, ...additionGroups];
-      console.log(allGroups, "allGroups");
       setAvailablePriceGroups(allGroups);
       setSelectedPrintMethod(
         allGroups.length === 1 ? allGroups[0] : allGroups[1]
@@ -796,73 +804,33 @@ const ProductDetails = () => {
   };
   const [notRobot, setNotRobot] = useState(false);
 
-  function filterByNames(array) {
-    const namesToInclude = [
-      "Materials",
-      "Material",
-      "Packing",
-      "Features",
-      "Size",
-      "Item Size",
-      "Sizing",
-      "Product Dimensions",
-      "Dimensions",
-      "Fabric",
-      "Tags",
-      "Gender",
-      "Qty Per Carton",
-      "Product Materials",
-      "Product Item Size",
-      "Product Packaging Inner",
-    ];
-    const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
-    return array?.filter((item) =>
-      lowerCaseNames.includes(item?.name?.toLowerCase())
-    );
-  }
-
-  const filterByNamesForDecoration = (array) => {
-    const namesToInclude = ["Branding Options", "Print Areas"];
-    const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
-    const arr = array?.filter((item) =>
-      lowerCaseNames.includes(item?.name?.toLowerCase())
-    );
-    return arr;
-  };
-
-  const filterByNamesForShipping = (array) => {
-    const namesToInclude = ["Packaging", "Carton Size", "Carton Notes"];
-    const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
-    return array?.filter((item) =>
-      lowerCaseNames.includes(item?.name?.toLowerCase())
-    );
-  };
-
   const parseSizing = () => {
     const detailString = single_product?.product?.details?.find(
-      (d) => d.name === "Sizing"
+      (d) => d.name === "Sizing" || d.name === "Sizes"
     )?.detail;
     if (!detailString) return [];
     const lines = detailString.trim().split("\n");
-    if (lines.length < 3) return [];
-
+    if (!lines.length) return [];
     // Parse header (sizes)
-    const sizes = lines[0].split(",").slice(1); // Skip empty first value
-
+    const sizes = lines[0]?.split(","); // Skip empty first value
     // Parse measurements
-    const chestValues = lines[1].split(",").slice(1);
-    const lengthValues = lines[2].split(",").slice(1);
+    const chestValues = lines[1]?.split(",").slice(1);
+    const lengthValues = lines[2]?.split(",").slice(1);
 
-    const result = sizes.map((size, index) => {
-      const chest = chestValues[index];
-      const length = lengthValues[index];
-      return `${size} (Half Chest ${chest} cm, Length ${length} cm)`;
-    });
+    const result =
+      chestValues &&
+      sizes?.map((size, index) => {
+        const chest = chestValues[index];
+        const length = lengthValues[index];
+        return `${size} (Half Chest ${chest} cm, Length ${length} cm)`;
+      });
 
     return { sizes, result };
   };
 
   const minimumPrice = () => {
+    // const marginEntry = marginApi[productId];
+
     const priceGroups = product?.prices?.price_groups || [];
     const basePrice = priceGroups.find((group) => group?.base_price) || {};
     const priceBreaks = basePrice.base_price?.price_breaks || [];
@@ -871,8 +839,14 @@ const ProductDetails = () => {
       .filter((price) => price !== undefined);
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
-    return minPrice === maxPrice ? minPrice.toFixed(2) : minPrice.toFixed(2);
+    const finalPrice =
+      minPrice === maxPrice
+        ? Number(minPrice).toFixed(2)
+        : Number(minPrice).toFixed(2);
+    return finalPrice || 0;
   };
+
+  console.log(minimumPrice());
 
   if (error)
     return (
@@ -880,6 +854,8 @@ const ProductDetails = () => {
         <div className="w-10 h-10 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
       </div>
     );
+
+  if (errorFetching) return <ProductNotFound />;
 
   return (
     <>
@@ -997,7 +973,7 @@ const ProductDetails = () => {
           {/* 2nd column  */}
           <div>
             <div className="flex justify-between">
-              <div>
+              <div className="w-2/3">
                 <h2
                   className={`text-2xl ${
                     product?.name ? "font-bold" : "font-medium"
@@ -1065,30 +1041,30 @@ const ProductDetails = () => {
               </p>
             </div> */}
               {/* Starting Price */}
-              <div className="flex justify-between items-center gap-4 my-4 p-2 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+              <div className="w-1/3 flex justify-center items-center flex-wrap gap-2 p-1 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
                 {/* Decorative elements */}
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-200 to-emerald-200 rounded-full -translate-y-8 translate-x-8 opacity-30"></div>
                 <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-tr from-teal-200 to-green-200 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
 
                 <div className="relative z-10 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg text-white">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg text-white">
                     $
                   </div>
                   <div>
                     <div className="text-sm text-gray-600 mb-1">
                       Starting From
                     </div>
-                    <div className="text-2xl font-extrabold text-green-600">
-                      ${minimumPrice()}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Per unit • Best value
+                    <div className="flex items-center gap-1">
+                      <span className="text-2xl font-extrabold text-green-600">
+                        ${minimumPrice() ?? 0}{" "}
+                        <span className="text-xs text-gray-500">per unit</span>
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-full">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-full">
                     <CheckCheck className="w-4 h-4 text-green-700" />
                     <span className="text-sm font-semibold text-green-700">
                       Great Deal!
@@ -1125,522 +1101,36 @@ const ProductDetails = () => {
               {/* Tab content */}
               <div className="mt-3 rounded-lg border border-border bg-perUnit p-4">
                 {activeInfoTab === "features" && (
-                  <div className="space-y-1 border- border-gray-200 pt-2">
-                    {/* Brief Description */}
-                    {single_product?.product?.description && (
-                      <div className="border-b border-gray-200 pb-2">
-                        {single_product.product.description.includes(
-                          "Features:"
-                        ) && (
-                          <div className="text-sm leading-6 text-gray-800 mb-2 border-b border-gray-200 pb-2">
-                            <span className="font-semibold">Features:</span>
-                            <ul className="mt-2 space-y-1 list-disc list-inside">
-                              {single_product.product.description
-                                .split("Features:")[1]
-                                ?.split("\n")
-                                .filter((item) => item.trim().startsWith("*"))
-                                .map((feature, index) => (
-                                  <li key={index} className="text-gray-800">
-                                    {feature.replace("*", "").trim()}
-                                  </li>
-                                ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        <span className="font-semibold">Description:</span>
-                        <p className="text-sm leading-6 text-gray-800">
-                          {
-                            single_product.product.description.split(
-                              "Features:"
-                            )[0]
-                          }
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Highlights chips */}
-                    {Array.isArray(single_product?.product?.features) &&
-                      single_product.product.features.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {single_product.product.features
-                            .slice(0, 8)
-                            .map((f, i) => (
-                              <span
-                                key={i}
-                                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200"
-                              >
-                                <span className="h-1.5 w-1.5 rounded-full bg-smallHeader" />
-                                {f}
-                              </span>
-                            ))}
-                        </div>
-                      )}
-                    {activeInfoTab === "features" && (
-                      <div className="space-y-3 text-sm leading-6">
-                        {filterByNames(single_product?.product?.details)
-                          ?.length > 0 ? (
-                          filterByNames(single_product?.product?.details)?.map(
-                            (d, i) => (
-                              <div
-                                key={i}
-                                className="border-b last:border-0 pb-3"
-                              >
-                                <p className="font-semibold capitalize">
-                                  {d.method || d.name}
-                                </p>
-
-                                {d?.detail && (
-                                  <div className="text-gray-600">
-                                    {d?.detail
-                                      ?.split(/[;]/)
-                                      .filter((entry) => entry.trim() !== "")
-                                      .map((entry, index) => (
-                                        <p key={index} className="mb-1">
-                                          • {entry.trim()}
-                                        </p>
-                                      ))}
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          )
-                        ) : (
-                          <p>No features info available.</p>
-                        )}
-                      </div>
-                    )}
-                    {/* Specifications Table */}
-                    {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
-                      <div className="bg-gray-50 pl-6 py-3 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Specifications
-                        </h3>
-                      </div>
-
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <tbody className="divide-y divide-gray-200">
-                            {Array.isArray(single_product?.product?.details) &&
-                              filterByNames(
-                                single_product?.product?.details
-                              ).map((item, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50">
-                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3 capitalize">
-                                    {item?.name || "Detail"}
-                                  </td>
-                                  <td className="px-6 py-4 text-sm text-gray-600 whitespace-pre-line">
-                                    {item?.detail?.split(";").join("\n") || "-"}
-                                  </td>
-                                </tr>
-                              ))}
-
-                            {single_product?.product?.material && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Material
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.material}
-                                </td>
-                              </tr>
-                            )}
-
-                            {single_product?.product?.dimensions && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Dimensions
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.dimensions}
-                                </td>
-                              </tr>
-                            )}
-
-                            {single_product?.product?.packaging && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Packaging
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.packaging}
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div> */}
-                  </div>
-                )}{" "}
+                  <FeaturesTab
+                    single_product={single_product}
+                    activeInfoTab={activeInfoTab}
+                  />
+                )}
                 {activeInfoTab === "pricing" && (
-                  <div className="overflow-x-auto">
-                    {/* Color Selection */}
-                    {/* {single_product?.product?.colours?.list.length > 0 && (
-                      <div className="flex justify-between items-center gap-4 mb-2">
-                        <p className="mt-2 font-medium">Color:</p>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {(() => {
-                            // Extract all colors and remove duplicates
-                            const allColors =
-                              single_product?.product?.colours?.list
-                                .flatMap((colorObj) => colorObj.colours)
-                                .filter(
-                                  (color, index, array) =>
-                                    array.indexOf(color) === index
-                                );
-
-                            return allColors.length > 0 ? (
-                              allColors.map((color, index) => {
-                                const matchedColor = colornames.find(
-                                  (item) =>
-                                    color === item.name ||
-                                    color.includes(item.name)
-                                );
-                                console.log(
-                                  colornames.find((item) => color === item.name)
-                                );
-
-                                return (
-                                  <div
-                                    key={index}
-                                    className={`w-5 h-5 text-xs font-medium rounded-full cursor-pointer border ${
-                                      selectedColor === color
-                                        ? "border-[3px] border-blue-500"
-                                        : "border-slate-900"
-                                    }`}
-                                    style={{
-                                      backgroundColor: matchedColor?.hex,
-                                    }}
-                                    onClick={() => handleColorClick(color)}
-                                  ></div>
-                                );
-                              })
-                            ) : (
-                              <p>No colors available for this product</p>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                    )} */}
-                    {/* Dropdowns */}
-                    {availablePriceGroups?.length > 0 && (
-                      <div className="flex justify-between items-center gap-4">
-                        <label
-                          htmlFor="print-method"
-                          className="w-full my-2  font-medium"
-                        >
-                          Print Method:
-                        </label>
-                        <select
-                          id="print-method"
-                          value={selectedPrintMethod?.key}
-                          onChange={(e) => {
-                            const selected = availablePriceGroups.find(
-                              (method) => method.key === e.target.value
-                            );
-                            setSelectedPrintMethod(selected);
-                            // Reset quantity to first price break of new selection
-                            if (selected?.price_breaks?.length > 0) {
-                              setCurrentQuantity(selected.price_breaks[0].qty);
-                            }
-                          }}
-                          className="w-full px-2 py-2 border rounded-md outline-none pr-3"
-                        >
-                          {availablePriceGroups?.map((method, index) => (
-                            <option key={method.key} value={method.key}>
-                              {method.description}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}{" "}
-                    {/* {availablePriceGroups.length > 0 && (
-                      <div className="flex justify-between items-center gap-4">
-                        <label
-                          htmlFor="print-method"
-                          className="w-full my-2  font-medium"
-                        >
-                          Add ons:
-                        </label>
-                        <select
-                          id="print-method"
-                          value={selectedPrintMethod?.key}
-                          onChange={(e) => {
-                            const selected = availablePriceGroups.find(
-                              (method) => method.key === e.target.value
-                            );
-                            setSelectedPrintMethod(selected);
-                            // Reset quantity to first price break of new selection
-                            if (selected?.price_breaks?.length > 0) {
-                              setCurrentQuantity(selected.price_breaks[0].qty);
-                            }
-                          }}
-                          className="w-full px-2 py-2 border rounded-md outline-none pr-3"
-                        >
-                          {availablePriceGroups.map((method, index) => (
-                            <option key={method.key} value={method.key}>
-                              {method.description}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )} */}
-                    {parseSizing()?.sizes?.length > 1 && (
-                      <div className="flex flex-col w-full mb-3">
-                        <div className="flex justify-between items-center gap-4 my-2">
-                          <label
-                            htmlFor="print-method"
-                            className="w-full my-2  font-medium"
-                          >
-                            Size:
-                          </label>
-                          <select
-                            id="print-method"
-                            value={selectedSize}
-                            onChange={(e) => setSelectedSize(e.target.value)}
-                            className="w-full px-2 py-2 border rounded-md outline-none"
-                          >
-                            {parseSizing().sizes?.map((size, index) => (
-                              <option key={index} value={size}>
-                                {size}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <p
-                          className="w-full text-right hover:underline text-sm text-gray-600 cursor-pointer"
-                          onClick={() => setShowSizeGuide(true)}
-                        >
-                          * See Size Guide
-                        </p>
-                      </div>
-                    )}
-                    <span className="text-sm text-gray-600 mt-3">
-                      * The pricing includes 1 col - 1 position
-                    </span>
-                    {/* <div className="flex justify-between items-center gap-4 mb-4 ">
-                      <label
-                        htmlFor="logo-color"
-                        className="w-full pt-3 mb-2 font-medium"
-                      >
-                        Logo Colour:
-                      </label>
-                      <select
-                        value={logoColor}
-                        onChange={(e) => setLogoColor(e.target.value)}
-                        id="logo-color"
-                        className="w-full px-2 py-2 border rounded-md outline-none"
-                      >
-                        <option>1 Colour Print</option>
-                        <option>2 Colour Print</option>
-                      </select>
-                    </div> */}
-                    {/* Custom Quantity Input */}
-                    <table className="min-w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-gray-600">
-                          <th className="py-2 pr-4">Select</th>
-                          <th className="py-2 pr-4">Qty</th>
-                          <th className="py-2 pr-4">Unit</th>
-                          <th className="py-2">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedPrintMethod?.price_breaks?.map((item, i) => {
-                          const marginEntry = marginApi[productId];
-                          const baseProductPrice = getPriceForQuantity(
-                            item.qty
-                          );
-                          const methodUnit =
-                            selectedPrintMethod.type === "base"
-                              ? item.price
-                              : baseProductPrice + item.price;
-                          const unitWithMargin = marginEntry
-                            ? methodUnit + marginEntry.marginFlat
-                            : methodUnit;
-                          const unitDiscounted =
-                            unitWithMargin * discountMultiplier;
-                          const total = unitDiscounted * item.qty;
-                          // Check if this price tier applies to the current quantity
-                          const isSelected =
-                            currentQuantity >= item.qty &&
-                            (i ===
-                              selectedPrintMethod.price_breaks.length - 1 ||
-                              currentQuantity <
-                                selectedPrintMethod.price_breaks[i + 1].qty);
-                          return (
-                            <tr
-                              key={item.qty}
-                              className={`border-t cursor-pointer hover:bg-blue-50/80 ${
-                                isSelected
-                                  ? "bg-blue-50/80"
-                                  : "hover:bg-gray-50"
-                              }`}
-                              onClick={() => {
-                                setCurrentQuantity(item.qty);
-                                setActiveIndex(i);
-                              }}
-                            >
-                              <td className="py-2 pr-4 align-middle">
-                                <input
-                                  type="radio"
-                                  name="priceTier"
-                                  aria-label={`Select ${item.qty}+ tier`}
-                                  checked={isSelected}
-                                  onChange={() => {
-                                    setCurrentQuantity(item.qty);
-                                    setActiveIndex(i);
-                                  }}
-                                />
-                              </td>
-                              <td className="py-2 pr-4 align-middle">
-                                {i === 0 && "0 - "} {item.qty}+
-                              </td>
-                              <td className="py-2 pr-4 align-middle">
-                                ${unitDiscounted.toFixed(2)}
-                              </td>
-                              <td className="py-2 align-middle">
-                                ${total.toFixed(2)}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                    <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                          Custom Quantity:
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            min="1"
-                            value={currentQuantity}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value) || 1;
-                              setCurrentQuantity(value);
-                              // Find the appropriate price tier for this quantity
-                              const sortedBreaks = [
-                                ...(selectedPrintMethod?.price_breaks || []),
-                              ].sort((a, b) => a.qty - b.qty);
-                              let newActiveIndex = 0;
-                              for (let i = 0; i < sortedBreaks.length; i++) {
-                                if (value >= sortedBreaks[i].qty) {
-                                  newActiveIndex = i;
-                                } else {
-                                  break;
-                                }
-                              }
-                              setActiveIndex(newActiveIndex);
-                            }}
-                            className="w-24 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Enter qty"
-                          />
-                          <span className="text-sm text-gray-600">pieces</span>
-                        </div>
-                        {/* <div className="ml-auto text-sm text-gray-600">
-                          <Button>Large Order?</Button>
-                        </div> */}
-                      </div>
-                    </div>
-                    {/* Enhanced Drag and Drop Section */}
-                    {/* <div
-                      className={`mt-2 px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
-                        isDragging
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-smallHeader"
-                      }`}
-                      onClick={handleDivClick}
-                      onDragEnter={handleDragEnter}
-                      onDragLeave={handleDragLeave}
-                      onDragOver={handleDragOver}
-                      onDrop={handleDrop}
-                    >
-                      <img
-                        src={selectedFile || "/drag.png"}
-                        alt="Uploaded File"
-                        className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-                      />
-                      <p className=" text-lg font-medium text-smallHeader">
-                        {selectedFile
-                          ? "Logo image Uploaded"
-                          : isDragging
-                          ? "Drop files here"
-                          : "Click or Drag your Artwork/Logo to upload"}
-                      </p>
-                      <p className="text-smallHeader  m-auto text-sm">
-                        Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG.
-                        Max file size: 16 MB
-                      </p>
-                      <input
-                        type="file"
-                        id="fileUpload"
-                        accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                        className="hidden"
-                        onChange={handleFileChange}
-                      />
-                    </div> */}
-                    <Link
-                      onClick={(e) => {
-                        handleAddToCart(e);
-                      }}
-                      className="flex items-center justify-center w-full gap-3 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
-                    >
-                      <button className="text-sm uppercase">Add to cart</button>
-                      <IoCartOutline className="text-xl" />
-                    </Link>
-                  </div>
+                  <PricingTab
+                    {...{
+                      productId,
+                      selectedPrintMethod,
+                      selectedSize,
+                      currentQuantity,
+                      availablePriceGroups,
+                      parseSizing,
+                      setSelectedPrintMethod,
+                      setCurrentQuantity,
+                      setActiveIndex,
+                      handleAddToCart,
+                      setShowSizeGuide,
+                      getPriceForQuantity,
+                      marginApi,
+                      discountMultiplier,
+                    }}
+                  />
                 )}
                 {activeInfoTab === "decoration" && (
-                  <div className="space-y-3 text-sm leading-6">
-                    {filterByNamesForDecoration(single_product.product.details)
-                      ?.length > 0 ? (
-                      filterByNamesForDecoration(
-                        single_product.product.details
-                      ).map((d, i) => (
-                        <div key={i} className="border-b last:border-0 pb-3">
-                          <p className="font-semibold">{d.method || d.name}</p>
-
-                          {d?.detail && (
-                            <div className="text-gray-600">
-                              {d?.detail
-                                ?.split(/[;]/)
-                                .filter((entry) => entry.trim() !== "")
-                                .map((entry, index) => (
-                                  <p key={index} className="mb-1">
-                                    • {entry.trim()}
-                                  </p>
-                                ))}
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      <p>No decoration info available.</p>
-                    )}
-                  </div>
+                  <DecorationTab single_product={single_product} />
                 )}
                 {activeInfoTab === "shipping" && (
-                  <div className="space-y-3 text-sm leading-6">
-                    {filterByNamesForShipping(single_product.product.details)
-                      ?.length > 0 ? (
-                      filterByNamesForShipping(
-                        single_product.product.details
-                      )?.map((d, i) => (
-                        <div key={i} className="border-b last:border-0 pb-3">
-                          <p className="font-semibold">{d.method || d.name}</p>
-
-                          {d?.detail && (
-                            <div className="text-gray-600">{d?.detail}</div>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      <p>No decoration info available.</p>
-                    )}
-                  </div>
+                  <ShippingTab single_product={single_product} />
                 )}
               </div>
             </div>

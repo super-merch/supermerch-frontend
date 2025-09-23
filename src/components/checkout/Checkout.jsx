@@ -458,7 +458,7 @@ const Checkout = () => {
                       <input
                         type="email"
                         placeholder="Enter email address"
-                        {...register("billing.email")}
+                        {...register("shipping.email")}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         required
                       />
@@ -470,7 +470,7 @@ const Checkout = () => {
                       <input
                         type="tel"
                         placeholder="Enter phone number"
-                        {...register("billing.phone")}
+                        {...register("shipping.phone")}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                       />
                     </div>
@@ -568,7 +568,7 @@ const Checkout = () => {
                         <input
                           type="text"
                           placeholder="Enter company name"
-                          {...register("billing.companyName")}
+                          {...register("shipping.companyName")}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -595,7 +595,7 @@ const Checkout = () => {
                           type="text"
                           defaultValue={addressData?.firstName || ""}
                           placeholder="Enter first name"
-                          {...register("billing.firstName", {
+                          {...register("shipping.firstName", {
                             required: true,
                           })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
@@ -621,7 +621,7 @@ const Checkout = () => {
                         <input
                           type="text"
                           placeholder="Enter last name"
-                          {...register("billing.lastName")}
+                          {...register("shipping.lastName")}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -653,23 +653,26 @@ const Checkout = () => {
                       {/* Autocomplete component (Nominatim) */}
                       <AddressAutocomplete
                         placeholder="Start typing your address..."
-                        defaultValue={getValues("billing.address")}
+                        defaultValue={getValues("shipping.address")}
                         countryCode="au"
                         onSelect={(place) => {
-                          setValue("billing.address", place.display_name || "");
+                          setValue(
+                            "shipping.address",
+                            place.display_name || ""
+                          );
                           const addr = place.address || {};
                           setValue(
-                            "billing.city",
+                            "shipping.city",
                             addr.city ||
                               addr.town ||
                               addr.village ||
                               addr.hamlet ||
                               ""
                           );
-                          setValue("billing.region", addr.state || "");
-                          setValue("billing.zip", addr.postcode || "");
+                          setValue("shipping.region", addr.state || "");
+                          setValue("shipping.zip", addr.postcode || "");
                           setValue(
-                            "billing.country",
+                            "shipping.country",
                             addr.country || "Australia"
                           );
                         }}
@@ -678,7 +681,7 @@ const Checkout = () => {
 
                       <input
                         type="hidden"
-                        {...register("billing.address", { required: true })}
+                        {...register("shipping.address", { required: true })}
                         value={getValues("billing.address")}
                       />
                     </div>
@@ -702,7 +705,7 @@ const Checkout = () => {
                           Country <span className="text-red-500 ml-1">*</span>
                         </label>
                         <select
-                          {...register("billing.country", { required: true })}
+                          {...register("shipping.country", { required: true })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         >
                           {addressData?.country && (
@@ -732,7 +735,7 @@ const Checkout = () => {
                           State <span className="text-red-500 ml-1">*</span>
                         </label>
                         <select
-                          {...register("billing.region", { required: true })}
+                          {...register("shipping.region", { required: true })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         >
                           {addressData?.state && (
@@ -779,7 +782,7 @@ const Checkout = () => {
                           City <span className="text-red-500 ml-1">*</span>
                         </label>
                         <select
-                          {...register("billing.city", { required: true })}
+                          {...register("shipping.city", { required: true })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         >
                           {addressData?.city && (
@@ -821,7 +824,7 @@ const Checkout = () => {
                         <input
                           type="text"
                           placeholder="Enter postal code"
-                          {...register("shipping.zip", { required: true })}
+                          {...register("billing.zip", { required: true })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -1490,25 +1493,25 @@ const Checkout = () => {
                           </div>
 
                           <div className="flex-1">
-                            <p className="font-medium text-sm">
+                            <p className="font-medium text-lg">
                               {item.quantity} * {item.name}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <p className="text-xs font-medium text-smallHeader">
-                                ${item.price?.toFixed(2)}
+                              <p className="text-base font-medium text-smallHeader">
+                                ${item.price?.toFixed(2)} each
                               </p>
                             </div>
 
                             <div className="mt-1 space-y-0.5">
-                              <p className="text-xs text-gray-600">
+                              <p className="text-base text-gray-600">
                                 Color: {item.color || "No Color"}
                               </p>
-                              <p className="text-xs text-gray-600">
+                              <p className="text-base text-gray-600">
                                 Print:{" "}
                                 {item.print || "No print method selected"}
                               </p>
                               {item?.size && (
-                                <p className="text-xs text-gray-600">
+                                <p className="text-base text-gray-600">
                                   Size: {item.size || "No size"}
                                 </p>
                               )}
@@ -1516,7 +1519,7 @@ const Checkout = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-semibold text-gray-900">
+                          <p className="text-lg font-semibold text-gray-900">
                             ${itemTotal.toFixed(2)}
                           </p>
                         </div>
@@ -1542,14 +1545,14 @@ const Checkout = () => {
                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                       </svg>
-                      <h4 className="text-sm font-semibold text-blue-800">
+                      <h4 className="text-base font-semibold text-blue-800">
                         Order Artwork
                       </h4>
                     </div>
 
                     {artworkFile && (
                       <div className="mb-3">
-                        <p className="text-xs text-blue-700 font-medium mb-2">
+                        <p className="text-base text-blue-700 font-medium mb-2">
                           Uploaded File:
                         </p>
                         <div className="flex items-center space-x-3">
@@ -1577,7 +1580,7 @@ const Checkout = () => {
                             </div>
                           )}
                           <div>
-                            <p className="text-sm font-medium text-blue-900">
+                            <p className="text-base font-medium text-blue-900">
                               {artworkFile.name}
                             </p>
                             <p className="text-xs text-blue-600">
@@ -1592,7 +1595,7 @@ const Checkout = () => {
 
                     {artworkInstructions && (
                       <div>
-                        <p className="text-xs text-blue-700 font-medium mb-1">
+                        <p className="text-base text-blue-700 font-medium mb-1">
                           Instructions:
                         </p>
                         <p className="text-sm text-blue-800 italic bg-white p-2 rounded border border-blue-200">
@@ -1604,7 +1607,7 @@ const Checkout = () => {
                 )}
 
                 <div className="mt-0 space-y-2 border-t border-gray-200 pt-4">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-base">
                     <span>Sub-total:</span>
                     <span>
                       $
@@ -1614,7 +1617,7 @@ const Checkout = () => {
                       })}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-base">
                     <span>Shipping:</span>
                     <span>
                       {shippingCharges > 0
@@ -1622,7 +1625,7 @@ const Checkout = () => {
                         : "-"}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-base">
                     <span>Product Discount:</span>
                     <span>{totalDiscountPercent}%</span>
                   </div>
@@ -1630,13 +1633,13 @@ const Checkout = () => {
                   {/* Show coupon discount if applied */}
                   {appliedCoupon && (
                     <div className="flex flex-col gap-2">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-base">
                         <span>Coupon ({appliedCoupon.coupen}):</span>
                         <span className="text-green-600">
                           -{couponDiscount}%
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-base">
                         <span>Discounted Price:</span>
                         <span className="text-green-600">
                           ${finalDiscountedAmount.toFixed(2)}
@@ -1645,7 +1648,7 @@ const Checkout = () => {
                     </div>
                   )}
 
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-base">
                     <span>GST(10%):</span>
                     <span>${gstAmount.toFixed(2)}</span>
                   </div>

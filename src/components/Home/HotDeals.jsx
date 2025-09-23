@@ -6,21 +6,27 @@ import noimage from "/noimage.png";
 
 const HotDeals = () => {
   const navigate = useNavigate();
-  const { fetchDiscountedProducts, discountedProducts, fetchProducts, products, skeletonLoading } = useContext(AppContext);
+  const {
+    fetchDiscountedProducts,
+    discountedProducts,
+    fetchProducts,
+    products,
+    skeletonLoading,
+  } = useContext(AppContext);
 
   useEffect(() => {
     fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
     // Fallback: also fetch regular products in case discounted products are empty
     fetchProducts(1, "", 6);
-  }, [fetchDiscountedProducts, fetchProducts]);
+  }, []);
 
   // Use discounted products if available, otherwise fall back to regular products
-  const displayProducts = discountedProducts && discountedProducts.length > 0 ? discountedProducts : products || [];
+  const displayProducts =
+    discountedProducts && discountedProducts.length > 0
+      ? discountedProducts
+      : products || [];
 
   // Debug logging
-  console.log("Discounted products:", discountedProducts);
-  console.log("Regular products:", products);
-  console.log("Display products:", displayProducts);
 
   // Handle product click
   const handleViewProduct = (productId, name) => {
@@ -52,7 +58,12 @@ const HotDeals = () => {
             [...Array(4)].map((_, index) => {
               const isLastItem = index === 3;
               return (
-                <div key={index} className={`bg-blue-50 rounded-lg p-3 animate-pulse ${isLastItem ? "mb-0" : "mb-2"}`}>
+                <div
+                  key={index}
+                  className={`bg-blue-50 rounded-lg p-3 animate-pulse ${
+                    isLastItem ? "mb-0" : "mb-2"
+                  }`}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
                     <div className="flex-1">
@@ -71,12 +82,14 @@ const HotDeals = () => {
               });
 
               // If we have fewer than 4 products, repeat them to fill the space
-              const productsToShow = [];
-              for (let i = 0; i < 4; i++) {
-                if (filteredProducts.length > 0) {
-                  productsToShow.push(filteredProducts[i % filteredProducts.length]);
-                }
-              }
+              const productsToShow = filteredProducts;
+              // for (let i = 0; i < 4; i++) {
+              //   if (filteredProducts.length > 0) {
+              //     productsToShow.push(
+              //       filteredProducts[i % filteredProducts.length]
+              //     );
+              //   }
+              // }
 
               if (productsToShow.length === 0) {
                 return (
@@ -96,7 +109,12 @@ const HotDeals = () => {
                     className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${
                       isLastItem ? "mb-0" : "mb-2"
                     }`}
-                    onClick={() => handleViewProduct(product.meta?.id, product.overview?.name)}
+                    onClick={() =>
+                      handleViewProduct(
+                        product.meta?.id,
+                        product.overview?.name
+                      )
+                    }
                   >
                     <div className="flex items-center gap-3">
                       {/* Product Image */}
@@ -111,11 +129,16 @@ const HotDeals = () => {
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
                         {/* Product Name */}
-                        <h4 className="text-sm font-semibold text-gray-800 truncate mb-1" style={{ whiteSpace: "nowrap" }}>
+                        <h4
+                          className="text-sm font-semibold text-gray-800 truncate mb-1"
+                          style={{ whiteSpace: "nowrap" }}
+                        >
                           {product.overview?.name || "No Name"}
                         </h4>
                         {/* Price */}
-                        <span className="text-lg font-bold text-blue-600">${price.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-blue-600">
+                          ${price.toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -126,7 +149,10 @@ const HotDeals = () => {
 
       {/* View All Link */}
       <div className="mt-4 pt-3 border-t border-gray-200">
-        <Link to="/hot-deals" className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+        <Link
+          to="/hot-deals"
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+        >
           View All Hot Deals →
         </Link>
       </div>
