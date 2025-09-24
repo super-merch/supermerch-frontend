@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState, useCallback } from "rea
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
@@ -89,7 +89,34 @@ const Cards = () => {
   const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
   const [count, setCount] = useState(0);
 
-  const { marginApi, backendUrl, fetchParamProducts, paramProducts, skeletonLoading, fetchMultipleParamPages } = useContext(AppContext);
+  const { marginApi, backendUrl, fetchParamProducts, paramProducts, skeletonLoading, fetchMultipleParamPages, setSidebarActiveCategory } =
+    useContext(AppContext);
+
+  const location = useLocation();
+
+  // Set sidebar category based on current route
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    if (currentPath === "/Clothing") {
+      setSidebarActiveCategory("Clothing");
+    } else if (currentPath === "/Headwear") {
+      setSidebarActiveCategory("Headwear");
+    } else if (currentPath === "/Spromotional") {
+      setSidebarActiveCategory("Promotional");
+    } else if (currentPath === "/ReturnGifts") {
+      setSidebarActiveCategory("Return Gifts");
+    } else if (currentPath === "/production") {
+      setSidebarActiveCategory("24 Hour production");
+    } else if (currentPath === "/Sale") {
+      setSidebarActiveCategory("Sale");
+    } else if (currentPath === "/Australia") {
+      setSidebarActiveCategory("Australia Made");
+    } else {
+      // For other routes, clear the sidebar filter
+      setSidebarActiveCategory(null);
+    }
+  }, [location.pathname, setSidebarActiveCategory]);
 
   const [productionIds, setProductionIds] = useState(new Set());
   const getAll24HourProduction = async () => {

@@ -131,8 +131,8 @@ const SMiniNav = () => {
   // Simplified route structure
   const route = [
     { name: "Promotional", path: "/Spromotional" },
-    { name: "Clothing", path: "/Spromotional" },
-    { name: "Headwear", path: "/Spromotional" },
+    { name: "Clothing", path: "/Clothing" },
+    { name: "Headwear", path: "/Headwear" },
     { name: "Return Gifts", path: "/ReturnGifts" },
     { name: "24 Hour production", path: "/production" },
     { name: "Sale", path: "/sales" },
@@ -191,7 +191,17 @@ const SMiniNav = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`);
+
+    // Route to appropriate page based on category
+    let targetPath = `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`;
+
+    if (titleName === "Clothing") {
+      targetPath = `/Clothing?categoryName=${encodedTitleName}&category=${NameId}`;
+    } else if (titleName === "Headwear") {
+      targetPath = `/Headwear?categoryName=${encodedTitleName}&category=${NameId}`;
+    }
+
+    navigate(targetPath);
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -206,7 +216,17 @@ const SMiniNav = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);
+
+    // Route to appropriate page based on category
+    let targetPath = `/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`;
+
+    if (titleName === "Clothing") {
+      targetPath = `/Clothing?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`;
+    } else if (titleName === "Headwear") {
+      targetPath = `/Headwear?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`;
+    }
+
+    navigate(targetPath);
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
     setCurrentPage(1);

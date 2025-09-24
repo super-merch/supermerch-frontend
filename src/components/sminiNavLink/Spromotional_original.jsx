@@ -132,10 +132,7 @@ const Spromotional = () => {
     v1categories,
     sidebarActiveCategory,
     setSidebarActiveCategory,
-    sidebarActiveLabel,
-    setSidebarActiveLabel,
     fetchMultipleParamPages,
-    setFilterLocalProducts,
   } = useContext(AppContext);
 
   const { minPrice, maxPrice, activeFilters } = useSelector((state) => state.filters);

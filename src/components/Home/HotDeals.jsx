@@ -12,7 +12,7 @@ const HotDeals = () => {
     fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
     // Fallback: also fetch regular products in case discounted products are empty
     fetchProducts(1, "", 6);
-  }, [fetchDiscountedProducts, fetchProducts]);
+  }, []);
 
   // Use discounted products if available, otherwise fall back to regular products
   const displayProducts = discountedProducts && discountedProducts.length > 0 ? discountedProducts : products || [];
