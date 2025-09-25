@@ -26,8 +26,6 @@ const HotDeals = () => {
       ? discountedProducts
       : products || [];
 
-  // Debug logging
-
   // Handle product click
   const handleViewProduct = (productId, name) => {
     navigate(`/product/${name}`, { state: productId });
