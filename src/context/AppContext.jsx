@@ -22,6 +22,7 @@ const AppContextProvider = (props) => {
   const [globalDiscount, setGlobalDiscount] = useState(null);
   const [productsCache, setProductsCache] = useState(null);
   const [isCacheValid, setIsCacheValid] = useState(false);
+  const [openLoginModal, setOpenLoginModal] = useState(false);
 
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
 
@@ -1084,6 +1085,9 @@ const AppContextProvider = (props) => {
 
     marginApi,
     setMarginApi,
+
+    openLoginModal,
+    setOpenLoginModal,
   };
 
   return (

@@ -61,7 +61,7 @@ const ProductDetails = () => {
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorFetching, setErrorFetching] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState("features"); // features | decoration | pricing
+  const [activeInfoTab, setActiveInfoTab] = useState("features");
 
   useEffect(() => {
     const fetchUserEmail = async () => {
@@ -1123,6 +1123,7 @@ const ProductDetails = () => {
                       getPriceForQuantity,
                       marginApi,
                       discountMultiplier,
+                      setSelectedSize,
                     }}
                   />
                 )}

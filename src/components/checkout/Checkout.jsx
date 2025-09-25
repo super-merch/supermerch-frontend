@@ -22,8 +22,15 @@ const Checkout = () => {
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
 
-  const { token, addressData, backednUrl, shippingAddressData, totalDiscount } =
-    useContext(AppContext);
+  const {
+    token,
+    addressData,
+    backednUrl,
+    shippingAddressData,
+    totalDiscount,
+    openLoginModal,
+    setOpenLoginModal,
+  } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
   const [openShipping, setOpenShipping] = useState(false);
@@ -40,6 +47,13 @@ const Checkout = () => {
   // Get artwork data from upload artwork page
   const [artworkFile, setArtworkFile] = useState(null);
   const [artworkInstructions, setArtworkInstructions] = useState("");
+
+  // Login modal states
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [loginModalRef, setLoginModalRef] = useState(null);
 
   useEffect(() => {
     // Get coupon data from location state if available
@@ -61,28 +75,52 @@ const Checkout = () => {
       handlePaymentSuccess(location.state.sessionId);
     }
   }, [location.state]);
+
+  // Handle click outside login modal
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        loginModalRef &&
+        !loginModalRef.contains(event.target) &&
+        openLoginModal
+      ) {
+        setOpenLoginModal(false);
+        setLoginError("");
+        setLoginEmail("");
+        setLoginPassword("");
+      }
+    };
+
+    if (openLoginModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openLoginModal, loginModalRef]);
   // Add this state for shipping charges
   const [shippingCharges, setShippingCharges] = useState(0);
 
-  // Add this useEffect to get shipping charges from location state or API
-  useEffect(() => {
-    // First try to get from location state (passed from cart)
-    if (location.state?.shippingCharges) {
-      setShippingCharges(location.state.shippingCharges);
-    } else {
-      // Fallback: fetch from API if not in location state
-      const getShippingCharges = async () => {
-        try {
-          const response = await axios.get(`${backednUrl}/api/shipping/get`);
-          setShippingCharges(response.data.shipping || 0);
-        } catch (error) {
-          console.error("Error fetching shipping charges:", error);
-          setShippingCharges(0);
-        }
-      };
-      getShippingCharges();
-    }
-  }, [location.state, backednUrl]);
+  // // Add this useEffect to get shipping charges from location state or API
+  // useEffect(() => {
+  //   // First try to get from location state (passed from cart)
+  //   if (location.state?.shippingCharges) {
+  //     setShippingCharges(location.state.shippingCharges);
+  //   } else {
+  //     // Fallback: fetch from API if not in location state
+  //     const getShippingCharges = async () => {
+  //       try {
+  //         const response = await axios.get(`${backednUrl}/api/shipping/get`);
+  //         setShippingCharges(response.data.shipping || 0);
+  //       } catch (error) {
+  //         console.error("Error fetching shipping charges:", error);
+  //         setShippingCharges(0);
+  //       }
+  //     };
+  //     getShippingCharges();
+  //   }
+  // }, [location.state, backednUrl]);
 
   // Handle successful payment
   const handlePaymentSuccess = async (sessionId) => {
@@ -386,6 +424,41 @@ const Checkout = () => {
     );
   };
 
+  const handleInlineLogin = async (e) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      setLoginError("Email and password are required");
+      setTimeout(() => setLoginError(""), 2000);
+      return;
+    }
+    setLoginLoading(true);
+    try {
+      const response = await axios.post(`${backednUrl}/api/auth/login`, {
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (response.data?.success) {
+        const { token } = response.data;
+        setToken(token);
+        localStorage.setItem("token", token);
+        toast.success("Login successful!");
+        setOpenLoginModal(false);
+        // Clear form
+        setLoginEmail("");
+        setLoginPassword("");
+        setLoginError("");
+        // Reload to refresh the page with authenticated state
+        window.location.reload();
+      }
+    } catch (err) {
+      setLoginError(err?.response?.data?.message || "Login failed");
+      setTimeout(() => setLoginError(""), 2500);
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
   return (
     <div className="py-8 Mycontainer">
       <div className="mb-0">
@@ -402,15 +475,112 @@ const Checkout = () => {
           <div className="w-full lg:w-2/3 space-y-6">
             {/* Step 1: Customer Details */}
             {!token && (
-              <span>
-                Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="text-blue-600 hover:text-blue-500 hover:underline cursor-pointer"
-                >
-                  Login
-                </Link>
-              </span>
+              <div className="relative">
+                <span>
+                  Already have an account?{" "}
+                  <span
+                    onClick={() => {
+                      setOpenLoginModal(true);
+                    }}
+                    className="text-blue-600 hover:text-blue-500 hover:underline cursor-pointer"
+                  >
+                    Login
+                  </span>
+                </span>
+
+                {/* Login Modal */}
+                {openLoginModal && (
+                  <div
+                    ref={setLoginModalRef}
+                    className="absolute top-8 left-0 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4"
+                  >
+                    <form onSubmit={handleInlineLogin} className="space-y-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Quick Login
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOpenLoginModal(false);
+                            setLoginError("");
+                            setLoginEmail("");
+                            setLoginPassword("");
+                          }}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          value={loginEmail}
+                          onChange={(e) => setLoginEmail(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="you@example.com"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="••••••••"
+                          required
+                        />
+                      </div>
+
+                      {loginError && (
+                        <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                          {loginError}
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between">
+                        <Link
+                          to="/login"
+                          onClick={() => setOpenLoginModal(false)}
+                          className="text-sm text-blue-600 hover:underline"
+                        >
+                          Full login page
+                        </Link>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOpenLoginModal(false);
+                              setLoginError("");
+                              setLoginEmail("");
+                              setLoginPassword("");
+                            }}
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={loginLoading}
+                            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {loginLoading ? "Logging in..." : "Login"}
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
             )}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
               <div
@@ -1625,10 +1795,10 @@ const Checkout = () => {
                         : "-"}
                     </span>
                   </div>
-                  <div className="flex justify-between text-base">
+                  {/* <div className="flex justify-between text-base">
                     <span>Product Discount:</span>
                     <span>{totalDiscountPercent}%</span>
-                  </div>
+                  </div> */}
 
                   {/* Show coupon discount if applied */}
                   {appliedCoupon && (

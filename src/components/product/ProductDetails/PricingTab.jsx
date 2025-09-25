@@ -17,12 +17,23 @@ const PricingTab = ({
   getPriceForQuantity,
   marginApi,
   discountMultiplier,
+  setSelectedSize,
 }) => {
-  console.log(availablePriceGroups, "availablePriceGroups");
+  const getTrimmedDescription = (description) => {
+    return description.trim().split(" (")[0];
+  };
+
+  const printMethods = availablePriceGroups.filter(
+    (method) => method.undecorated === false
+  );
+
+  const addOns = availablePriceGroups.filter(
+    (method) => method.undecorated === true
+  );
 
   return (
-    <div className="overflow-x-auto">
-      {availablePriceGroups?.length > 0 && (
+    <div className="overflow-x-auto space-y-1">
+      {printMethods?.length > 0 && (
         <div className="flex justify-between items-center gap-4">
           <label htmlFor="print-method" className="w-full my-2  font-medium">
             Print Method:
@@ -31,7 +42,7 @@ const PricingTab = ({
             id="print-method"
             value={selectedPrintMethod?.key}
             onChange={(e) => {
-              const selected = availablePriceGroups.find(
+              const selected = printMethods.find(
                 (method) => method.key === e.target.value
               );
               setSelectedPrintMethod(selected);
@@ -42,45 +53,42 @@ const PricingTab = ({
             }}
             className="w-full px-2 py-2 border rounded-md outline-none pr-3"
           >
-            {availablePriceGroups?.map((method, index) => (
+            {printMethods?.map((method, index) => (
               <option key={method.key} value={method.key}>
-                {method.promodata_decoration}
+                {getTrimmedDescription(method.description)}
               </option>
             ))}
           </select>
         </div>
       )}{" "}
-      {/* {availablePriceGroups.length > 0 && (
-                      <div className="flex justify-between items-center gap-4">
-                        <label
-                          htmlFor="print-method"
-                          className="w-full my-2  font-medium"
-                        >
-                          Add ons:
-                        </label>
-                        <select
-                          id="print-method"
-                          value={selectedPrintMethod?.key}
-                          onChange={(e) => {
-                            const selected = availablePriceGroups.find(
-                              (method) => method.key === e.target.value
-                            );
-                            setSelectedPrintMethod(selected);
-                            // Reset quantity to first price break of new selection
-                            if (selected?.price_breaks?.length > 0) {
-                              setCurrentQuantity(selected.price_breaks[0].qty);
-                            }
-                          }}
-                          className="w-full px-2 py-2 border rounded-md outline-none pr-3"
-                        >
-                          {availablePriceGroups.map((method, index) => (
-                            <option key={method.key} value={method.key}>
-                              {method.description}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )} */}
+      {addOns.length > 0 && (
+        <div className="flex justify-between items-center gap-4">
+          <label htmlFor="print-method" className="w-full my-2  font-medium">
+            Add ons:
+          </label>
+          <select
+            id="print-method"
+            value={selectedPrintMethod?.key}
+            onChange={(e) => {
+              const selected = addOns.find(
+                (method) => method.key === e.target.value
+              );
+              setSelectedPrintMethod(selected);
+              // Reset quantity to first price break of new selection
+              if (selected?.price_breaks?.length > 0) {
+                setCurrentQuantity(selected.price_breaks[0].qty);
+              }
+            }}
+            className="w-full px-2 py-2 border rounded-md outline-none pr-3"
+          >
+            {addOns.map((method, index) => (
+              <option key={method.key} value={method.key}>
+                {getTrimmedDescription(method.description)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       {parseSizing()?.sizes?.length > 1 && (
         <div className="flex flex-col w-full mb-3">
           <div className="flex justify-between items-center gap-4 my-2">
