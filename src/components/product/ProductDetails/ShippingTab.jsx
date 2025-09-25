@@ -21,7 +21,15 @@ const ShippingTab = ({ single_product }) => {
             <div key={i} className="border-b last:border-0 pb-3">
               <p className="font-semibold">{d.method || d.name}</p>
 
-              {d?.detail && <div className="text-gray-600">{d?.detail}</div>}
+              {d?.detail && (
+                <div className="text-gray-600">
+                  {d?.detail?.split("\n").map((line, index) => (
+                    <p key={index} className="mb-1">
+                      - {line}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           )
         )

@@ -52,9 +52,9 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                       : item?.trim()
                   )
                   .map((feature, index) => (
-                    <li key={index} className="text-gray-800">
-                      {feature?.replace("*", "").trim()}
-                    </li>
+                    <p key={index} className="mb-1">
+                      - {feature?.replace("*", "").trim()}
+                    </p>
                   ))}
               </ul>
             </div>
@@ -99,14 +99,11 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
 
                 {d?.detail && (
                   <div className="text-gray-600">
-                    {d?.detail
-                      ?.split(/[;]/)
-                      .filter((entry) => entry.trim() !== "")
-                      .map((entry, index) => (
-                        <p key={index} className="mb-1">
-                          • {entry.trim()}
-                        </p>
-                      ))}
+                    {d?.detail?.split("\n").map((line, index) => (
+                      <p key={index} className="mb-1">
+                        - {line}
+                      </p>
+                    ))}
                   </div>
                 )}
               </div>

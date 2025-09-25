@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import LeadTimeModal from "./LeadTimeModal";
 
 const DecorationTab = ({ single_product }) => {
   const filterByNamesForDecoration = (array) => {
@@ -10,6 +11,8 @@ const DecorationTab = ({ single_product }) => {
     return arr;
   };
 
+  const [leadTimeModal, setLeadTimeModal] = useState(false);
+
   return (
     <div className="space-y-3 text-sm leading-6">
       {filterByNamesForDecoration(single_product.product.details)?.length >
@@ -18,17 +21,13 @@ const DecorationTab = ({ single_product }) => {
           (d, i) => (
             <div key={i} className="border-b last:border-0 pb-3">
               <p className="font-semibold">{d.method || d.name}</p>
-
               {d?.detail && (
                 <div className="text-gray-600">
-                  {d?.detail
-                    ?.split(/[;]/)
-                    .filter((entry) => entry.trim() !== "")
-                    .map((entry, index) => (
-                      <p key={index} className="mb-1">
-                        • {entry.trim()}
-                      </p>
-                    ))}
+                  {d?.detail?.split("\n").map((line, index) => (
+                    <p key={index} className="mb-1">
+                      - {line}
+                    </p>
+                  ))}
                 </div>
               )}
             </div>
@@ -36,6 +35,15 @@ const DecorationTab = ({ single_product }) => {
         )
       ) : (
         <p>No decoration info available.</p>
+      )}
+      <button
+        onClick={() => setLeadTimeModal(true)}
+        className="text-sm text-blue-500 cursor-pointer hover:text-blue-700 hover:underline"
+      >
+        View Lead Time
+      </button>
+      {leadTimeModal && (
+        <LeadTimeModal onClose={() => setLeadTimeModal(false)} />
       )}
     </div>
   );
