@@ -841,8 +841,8 @@ const ProductDetails = () => {
     const maxPrice = Math.max(...prices);
     const finalPrice =
       minPrice === maxPrice
-        ? Number(minPrice) + Number(marginEntry?.marginFlat)
-        : Number(minPrice) + Number(marginEntry?.marginFlat);
+        ? Number(minPrice) + Number(marginEntry?.marginFlat ?? 0)
+        : Number(minPrice) + Number(marginEntry?.marginFlat ?? 0);
     return finalPrice?.toFixed(2) || 0;
   };
 
