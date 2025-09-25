@@ -90,7 +90,7 @@ const CartComponent = () => {
     }
   };
   useEffect(() => {
-    getShippingCharges();
+    // getShippingCharges();
   }, []);
 
   useEffect(() => {

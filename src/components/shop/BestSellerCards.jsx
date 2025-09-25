@@ -306,8 +306,19 @@ const BestSellerCards = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
   const handleViewProduct = (productId, name) => {
-    navigate(`/product/${name}`, { state: productId });
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const setSearchTextChanger = (e) => {
