@@ -34,7 +34,6 @@ const UploadArtwork = () => {
   );
   const totalDiscountPercent =
     items.length > 0 ? Math.min(items.length * 5, 50) : 0;
-  console.log(items, totalDiscountPercent, "totalDiscountPercent");
   const discountedAmount = totalAmount * (1 - totalDiscountPercent / 100);
   const finalDiscountedAmount = appliedCoupon
     ? discountedAmount * (1 - couponDiscount / 100)
@@ -406,7 +405,7 @@ const UploadArtwork = () => {
                           {item.quantity} x {item.name}
                         </p>
                         <p className="text-base text-gray-600">
-                          ${item.price.toFixed(2)}
+                          ${item.price.toFixed(2)} each
                         </p>
                         <p className="text-base text-gray-600">
                           {item.color} • {item.size}
@@ -442,10 +441,10 @@ const UploadArtwork = () => {
                       : "-"}
                   </span>
                 </div>
-                <div className="flex justify-between text-lg">
+                {/* <div className="flex justify-between text-lg">
                   <span>Product Discount:</span>
                   <span>{totalDiscountPercent}%</span>
-                </div>
+                </div> */}
 
                 {appliedCoupon && (
                   <div className="flex flex-col gap-2">
