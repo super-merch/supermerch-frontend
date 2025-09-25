@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -39,8 +39,12 @@ const ProductDetails = () => {
   //get id from navigate's state
 
   // const { id } = useParams();
-  const { state: id } = useLocation();
+  // const { state: id } = useLocation();
+  const { name } = useParams();
+  const [searchParams] = useSearchParams();
 
+  const encodedId = searchParams.get("ref");
+  const id = encodedId ? atob(encodedId) : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -790,6 +794,7 @@ const ProductDetails = () => {
         priceBreaks: selectedPrintMethod.price_breaks,
         printMethodKey: selectedPrintMethod.key,
         userEmail: userEmail || "guest@gmail.com",
+        supplierName: single_product.overview.supplier,
       })
     );
     navigate("/cart");

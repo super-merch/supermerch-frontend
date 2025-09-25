@@ -239,6 +239,7 @@ const Checkout = () => {
         logo: item.dragdrop,
         id: item.id,
         size: item.size,
+        supplierName: item?.supplierName,
       })),
       shipping: shippingCharges,
       discount: totalDiscountPercent,

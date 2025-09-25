@@ -1,37 +1,28 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { IoSearchOutline } from "react-icons/io5";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
-import { IoIosHeart } from "react-icons/io";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { CiHeart } from "react-icons/ci";
-import { IoCartOutline, IoClose } from "react-icons/io5";
-import Skeleton from "react-loading-skeleton";
-import { setProducts } from "../../redux/slices/filterSlice";
-import noimage from "/noimage.png";
 import {
-  setSelectedBrands,
-  setMinPrice,
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoIosHeart,
+  IoMdArrowBack,
+  IoMdArrowForward,
+} from "react-icons/io";
+import { IoClose } from "react-icons/io5";
+import Skeleton from "react-loading-skeleton";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
+import {
+  applyFilters,
   setMaxPrice,
+  setMinPrice,
+  setSelectedBrands,
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
-import { AppContext } from "../../context/AppContext";
 import SideBar2 from "./SideBar2";
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
-import { toast } from "react-toastify";
+import noimage from "/noimage.png";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -83,59 +74,10 @@ const SearchCard = () => {
     totalApiPages,
     setTotalApiPages,
     backendUrl,
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
+
   // useEffect(() => {
   //   getAll24HourProduction();
   //   getAllAustralia();
@@ -367,8 +309,6 @@ const SearchCard = () => {
 
   // Fetch products when page or sort changes (only when no price filter is active)
   useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
     if (searchParam && !isPriceFilterActive) {
       fetchSearchedProducts(searchParam, currentPage, sortOption).then(
         (response) => {
@@ -397,8 +337,19 @@ const SearchCard = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const setSearchTextChanger = (e) => {
@@ -429,32 +380,34 @@ const SearchCard = () => {
 
   // Get current page products based on whether price filter is active
   const getCurrentPageProducts = () => {
-  if (isPriceFilterActive) {
-    // Use filtered products (existing logic)
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return allFilteredProducts.slice(startIndex, endIndex);
-  } else {
-    // Use regular API products with local search filter
-    const apiProducts = searchedProducts?.data || [];
+    if (isPriceFilterActive) {
+      // Use filtered products (existing logic)
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return allFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // Use regular API products with local search filter
+      const apiProducts = searchedProducts?.data || [];
 
-    // Apply client-side sorting if requested
-    const sortedProducts =
-      sortOption === "lowToHigh" || sortOption === "highToLow"
-        ? [...apiProducts].sort((a, b) => {
-            const priceA = getRealPrice(a) || 0;
-            const priceB = getRealPrice(b) || 0;
-            return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
-          })
-        : apiProducts;
+      // Apply client-side sorting if requested
+      const sortedProducts =
+        sortOption === "lowToHigh" || sortOption === "highToLow"
+          ? [...apiProducts].sort((a, b) => {
+              const priceA = getRealPrice(a) || 0;
+              const priceB = getRealPrice(b) || 0;
+              return sortOption === "lowToHigh"
+                ? priceA - priceB
+                : priceB - priceA;
+            })
+          : apiProducts;
 
-    // Then apply local name filter
-    return sortedProducts.filter((product) => {
-      const productName = (product.overview?.name || "").toLowerCase();
-      return productName.includes(searchProductName.toLowerCase());
-    });
-  }
-};
+      // Then apply local name filter
+      return sortedProducts.filter((product) => {
+        const productName = (product.overview?.name || "").toLowerCase();
+        return productName.includes(searchProductName.toLowerCase());
+      });
+    }
+  };
 
   // Check if any filters are active
   const hasActiveFilters =
@@ -735,7 +688,12 @@ const SearchCard = () => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >

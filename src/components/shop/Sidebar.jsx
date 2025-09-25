@@ -38,7 +38,9 @@ const Sidebar = (props) => {
   const filter = props.filter ? props.filter : false;
 
   useEffect(() => {
-    fetchCategories();
+    if (!filter) {
+      fetchCategories();
+    }
   }, []);
 
   const handleCategoryClick = (category) => {
@@ -81,7 +83,11 @@ const Sidebar = (props) => {
           onClick={toggleSidebar}
           className="absolute  top-4   bg-smallHeader text-white px-2 py-1 rounded"
         >
-          {isSidebarOpen ? <IoClose className="text-xl" /> : <IoMenu className="text-xl" />}
+          {isSidebarOpen ? (
+            <IoClose className="text-xl" />
+          ) : (
+            <IoMenu className="text-xl" />
+          )}
         </button>
       )}
 
@@ -94,65 +100,73 @@ const Sidebar = (props) => {
         }   `}
       >
         <div className="h-full overflow-y-auto pr-3 ">
-          {!filter && <div className="border-b-2 pb-6">
-            <h1 className="font-medium text-base mb-1 uppercase text-brand">
-              Categories
-            </h1>
+          {!filter && (
+            <div className="border-b-2 pb-6">
+              <h1 className="font-medium text-base mb-1 uppercase text-brand">
+                Categories
+              </h1>
 
-            {/* All Products */}
-            <div
-              onClick={() => {
-                handleCategoryClick("all");
-                dispatch(setCategoryId(null));
-              }}
-              className=" transform group hover:scale-x-95 transition duration-300 py-1 capitalize cursor-pointer"
-            >
-              <p
-                className={`text-category hover:underline text-sm font-normal ${
-                  selectedCategory === "all" ? "underline text-smallHeader" : ""
-                }`}
-              >
-                All Products
-              </p>
-            </div>
-
-            {/* Visible categories (first 5 or all) */}
-            {visibleCategories.map((category) => (
+              {/* All Products */}
               <div
-                key={category._id}
                 onClick={() => {
-                  // disable clicks while skeleton loading
-                  if (skeletonLoading) return;
-                  handleCategoryClick(category.name);
-                  dispatch(setCategoryId(category.id));
+                  handleCategoryClick("all");
+                  dispatch(setCategoryId(null));
                 }}
                 className=" transform group hover:scale-x-95 transition duration-300 py-1 capitalize cursor-pointer"
               >
                 <p
-                  className={`text-category  hover:underline ${
-                    skeletonLoading ? "hover:cursor-not-allowed" : ""
-                  } text-sm font-normal ${
-                    selectedCategory === category.name ? "underline text-smallHeader" : ""
+                  className={`text-category hover:underline text-sm font-normal ${
+                    selectedCategory === "all"
+                      ? "underline text-smallHeader"
+                      : ""
                   }`}
                 >
-                  {category.name}
+                  All Products
                 </p>
               </div>
-            ))}
 
-            {/* See all / Show less toggle */}
-            {categoriesData.length > visibleLimit && (
-              <div className="pt-2">
-                <button
-                  onClick={() => setShowAllCategories((prev) => !prev)}
-                  disabled={skeletonLoading}
-                  className="text-sm font-medium text-brand hover:underline"
+              {/* Visible categories (first 5 or all) */}
+              {visibleCategories.map((category) => (
+                <div
+                  key={category._id}
+                  onClick={() => {
+                    // disable clicks while skeleton loading
+                    if (skeletonLoading) return;
+                    handleCategoryClick(category.name);
+                    dispatch(setCategoryId(category.id));
+                  }}
+                  className=" transform group hover:scale-x-95 transition duration-300 py-1 capitalize cursor-pointer"
                 >
-                  {showAllCategories ? "Show less" : `See all (${categoriesData.length})`}
-                </button>
-              </div>
-            )}
-          </div>}
+                  <p
+                    className={`text-category  hover:underline ${
+                      skeletonLoading ? "hover:cursor-not-allowed" : ""
+                    } text-sm font-normal ${
+                      selectedCategory === category.name
+                        ? "underline text-smallHeader"
+                        : ""
+                    }`}
+                  >
+                    {category.name}
+                  </p>
+                </div>
+              ))}
+
+              {/* See all / Show less toggle */}
+              {categoriesData.length > visibleLimit && (
+                <div className="pt-2">
+                  <button
+                    onClick={() => setShowAllCategories((prev) => !prev)}
+                    disabled={skeletonLoading}
+                    className="text-sm font-medium text-brand hover:underline"
+                  >
+                    {showAllCategories
+                      ? "Show less"
+                      : `See all (${categoriesData.length})`}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="mt-4">
             <PriceFilter />

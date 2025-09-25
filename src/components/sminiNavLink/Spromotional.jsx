@@ -1,47 +1,36 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { IoClose, IoMenu, IoSearchOutline } from "react-icons/io5";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import {
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoIosHeart,
+  IoMdArrowBack,
+  IoMdArrowForward,
+} from "react-icons/io";
+import { IoClose, IoMenu } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import { IoCartOutline } from "react-icons/io5";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
-import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
+import { applyFilters } from "../../redux/slices/filterSlice";
 
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 
-import {
-  setSelectedBrands,
-  setMinPrice,
-  setMaxPrice,
-  setSelectedCategory,
-} from "../../redux/slices/filterSlice";
-import { AppContext } from "../../context/AppContext";
-import { matchProduct } from "@/redux/slices/categorySlice";
-import SpromotionalSidebar from "./SpromotionalSidebar";
+import { megaMenuClothing } from "@/assets/asset";
+import { headWear, megaMenu } from "@/assets/assets";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import {
   matchPromotionalProduct,
   setAllProducts,
 } from "@/redux/slices/promotionalSlice";
-import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/PromotionalPriceFilter";
-import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
-import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
 import { toast } from "react-toastify";
-import { megaMenu, headWear } from "@/assets/assets";
-import { megaMenuClothing } from "@/assets/asset";
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { AppContext } from "../../context/AppContext";
+import {
+  setMaxPrice,
+  setMinPrice,
+  setSelectedBrands,
+  setSelectedCategory,
+} from "../../redux/slices/filterSlice";
+import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/PromotionalPriceFilter";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -156,67 +145,12 @@ const Spromotional = () => {
     sidebarActiveLabel,
     setSidebarActiveLabel,
     fetchMultipleParamPages, // We'll need to create this function
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
     useSelector((state) => state.filters);
-
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
@@ -240,8 +174,6 @@ const Spromotional = () => {
           }
         );
         const result = await response.json();
-
-        console.log(result);
       } catch (error) {
         console.error("Error occurred:", error);
       }
@@ -487,8 +419,19 @@ const Spromotional = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state: productId });
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const [searchProductName, setSearchProductName] = useState("");
@@ -645,43 +588,45 @@ const Spromotional = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+  const [searchParam] = useSearchParams();
+  const queryCategory = searchParam.get("categoryName");
 
   const currentMenuArray = getMenuArrayByCategoryName(sidebarActiveCategory);
-  const filteredCategories = sidebarActiveCategory
-    ? currentMenuArray.filter(
-        (category) => category.name === sidebarActiveCategory
-      )
-    : currentMenuArray;
+  const filteredCategories = currentMenuArray.filter(
+    (category) => category.name === (sidebarActiveCategory || queryCategory)
+  );
 
   // Get current page products based on whether price filter is active
   // Get current page products based on whether price filter is active
-const getCurrentPageProducts = () => {
-  if (isPriceFilterActive) {
-    // Use filtered products (existing logic)
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return allFilteredProducts.slice(startIndex, endIndex);
-  } else {
-    // Use regular API products with local search filter
-    const apiProducts = paramProducts?.data || [];
+  const getCurrentPageProducts = () => {
+    if (isPriceFilterActive) {
+      // Use filtered products (existing logic)
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return allFilteredProducts.slice(startIndex, endIndex);
+    } else {
+      // Use regular API products with local search filter
+      const apiProducts = paramProducts?.data || [];
 
-    // Apply client-side sorting if requested
-    const sortedProducts =
-      sortOption === "lowToHigh" || sortOption === "highToLow"
-        ? [...apiProducts].sort((a, b) => {
-            const priceA = getRealPrice(a) || 0;
-            const priceB = getRealPrice(b) || 0;
-            return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
-          })
-        : apiProducts;
+      // Apply client-side sorting if requested
+      const sortedProducts =
+        sortOption === "lowToHigh" || sortOption === "highToLow"
+          ? [...apiProducts].sort((a, b) => {
+              const priceA = getRealPrice(a) || 0;
+              const priceB = getRealPrice(b) || 0;
+              return sortOption === "lowToHigh"
+                ? priceA - priceB
+                : priceB - priceA;
+            })
+          : apiProducts;
 
-    // Then apply local name filter
-    return sortedProducts.filter((product) => {
-      const productName = (product.overview?.name || "").toLowerCase();
-      return productName.includes(searchProductName.toLowerCase());
-    });
-  }
-};
+      // Then apply local name filter
+      return sortedProducts.filter((product) => {
+        const productName = (product.overview?.name || "").toLowerCase();
+        return productName.includes(searchProductName.toLowerCase());
+      });
+    }
+  };
 
   //get categoryName from searchParams
   const categoryName = searchParams.get("categoryName");
@@ -730,9 +675,6 @@ const getCurrentPageProducts = () => {
     { id: "B-19", name: "Vests" },
 
     { id: "B-20", name: "Misc Clothing" },
-
-
-    
   ];
 
   return (
@@ -761,9 +703,11 @@ const getCurrentPageProducts = () => {
               }`}
             >
               <div className="h-full pr-3 overflow-y-auto">
-                {!filteredCategories.length > 0 && <p className="text-lg font-semibold text-blue-500">
-                            Clothing
-                          </p>}
+                {!filteredCategories.length > 0 && (
+                  <p className="text-lg font-semibold text-blue-500">
+                    Clothing
+                  </p>
+                )}
                 <div className="pb-6 border-b-2">
                   {filteredCategories.length > 0
                     ? filteredCategories.map((category) => (
@@ -815,8 +759,7 @@ const getCurrentPageProducts = () => {
                         </div>
                       ))
                     : clothing.map((category) => (
-                        <div key={category.id}>
-                          
+                        <div className="pl-4" key={category.id}>
                           <ul>
                             <button
                               onClick={() =>
@@ -1078,7 +1021,12 @@ const getCurrentPageProducts = () => {
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >
@@ -1128,8 +1076,8 @@ const getCurrentPageProducts = () => {
                             </span>
                           )}
 
-                          {(australiaIds.has(product.meta.id) ||
-                            australiaIds.has(String(product.meta.id))) && (
+                          {(australiaIds?.has(product.meta.id) ||
+                            australiaIds?.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                               {/* simple flag/triangle SVG */}
                               <svg

@@ -1,28 +1,39 @@
-import React, { useState, useEffect, useRef } from "react";
-import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
-import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
-import { BiUser } from "react-icons/bi";
-import { HiOutlineShoppingCart, HiOutlineHeart, HiOutlineUser } from "react-icons/hi";
-import { googleLogout } from "@react-oauth/google";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppContext } from "../../context/AppContext";
-import { useContext } from "react";
-import { motion } from "framer-motion";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
-import { fetchcategoryProduct, matchProduct } from "@/redux/slices/categorySlice";
-import { matchPromotionalProduct, setAllProducts } from "@/redux/slices/promotionalSlice";
-import { toast } from "react-toastify";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { ArrowRight, ChevronRight } from "lucide-react";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import supermerch from "../../assets/supermerch.png";
+import { clearCurrentUser } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
-import { set } from "react-hook-form";
+import { googleLogout } from "@react-oauth/google";
+import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
+import {
+  HiOutlineHeart,
+  HiOutlineShoppingCart,
+  HiOutlineUser,
+} from "react-icons/hi";
+import { IoSearchSharp } from "react-icons/io5";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import supermerch from "../../assets/supermerch.png";
+import { AppContext } from "../../context/AppContext";
+import {
+  applyFilters,
+  setMaxPrice,
+  setMinPrice,
+} from "../../redux/slices/filterSlice";
 
 const SMiniNav = () => {
   // Dynamic categories from v1categories
@@ -52,7 +63,10 @@ const SMiniNav = () => {
   // Close category dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target)
+      ) {
         setIsCategoryDropdownOpen(false);
       }
     };
@@ -66,7 +80,12 @@ const SMiniNav = () => {
   // Create megaMenu from v1categories data
   const megaMenu =
     v1categories
-      ?.filter((category) => category.name !== "Clothing" && category.name !== "Headwear" && category.name !== "Capital Equipment")
+      ?.filter(
+        (category) =>
+          category.name !== "Clothing" &&
+          category.name !== "Headwear" &&
+          category.name !== "Capital Equipment"
+      )
       .map((category) => ({
         id: category.id,
         name: category.name,
@@ -170,9 +189,12 @@ const SMiniNav = () => {
   const productCategory = () => {
     navigate(`/Spromotional`);
     const matchedProducts = products.filter((product) => {
-      const typeId = product.product?.categorisation?.promodata_product_type?.type_id;
+      const typeId =
+        product.product?.categorisation?.promodata_product_type?.type_id;
       if (!typeId) return false;
-      return categoryProducts.some((category) => category.subTypes.some((sub) => sub.id === typeId));
+      return categoryProducts.some((category) =>
+        category.subTypes.some((sub) => sub.id === typeId)
+      );
     });
     setParamProducts({ data: matchedProducts, total_pages: 1 });
     setSelectedParamCategoryId(null);
@@ -191,7 +213,9 @@ const SMiniNav = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`);
+    navigate(
+      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
+    );
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -206,7 +230,9 @@ const SMiniNav = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);
+    navigate(
+      `/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+    );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
     setCurrentPage(1);
@@ -216,13 +242,18 @@ const SMiniNav = () => {
   const conditionalCategoryNameHandler = (link) => {
     if (link.name === "Promotional") {
       sethoverMegaMenu(false);
-      setMegaMenuMobile(!megaMenuMobile);
-      productCategory();
-      return;
+      const clothingCategory = v1categories.find(
+        (category) => category.name === "Bags"
+      );
+      if (clothingCategory) {
+        handleNameCategories(clothingCategory.name, clothingCategory.id);
+      }
     }
     if (link.name === "Clothing") {
       sethoverClothingMenu(false);
-      const clothingCategory = v1categories.find((category) => category.name === "Clothing");
+      const clothingCategory = v1categories.find(
+        (category) => category.name === "Clothing"
+      );
       if (clothingCategory) {
         handleNameCategories(clothingCategory.name, clothingCategory.id);
       }
@@ -230,7 +261,9 @@ const SMiniNav = () => {
     if (link.name === "Headwear") {
       // Add this block
       setHoverHeadwearMenu(false);
-      const headwearCategory = v1categories.find((category) => category.name === "Headwear");
+      const headwearCategory = v1categories.find(
+        (category) => category.name === "Headwear"
+      );
       if (headwearCategory) {
         handleNameCategories(headwearCategory.name, headwearCategory.id);
       }
@@ -246,7 +279,9 @@ const SMiniNav = () => {
     }
   };
   const [activeItem, setActiveItem] = useState(megaMenu[0]?.id);
-  const [activeClothingItem, setActiveClothingItem] = useState(megaMenuClothing[0]?.id);
+  const [activeClothingItem, setActiveClothingItem] = useState(
+    megaMenuClothing[0]?.id
+  );
   const [openPromoId, setOpenPromoId] = useState(null);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -258,35 +293,79 @@ const SMiniNav = () => {
       id: "promotional",
       name: "Promotional",
       subcategories: [
-        { id: "apparel", name: "Apparel", subcategories: ["T-Shirts", "Polo Shirts", "Hoodies"] },
-        { id: "drinkware", name: "Drinkware", subcategories: ["Mugs", "Water Bottles", "Tumblers"] },
-        { id: "bags", name: "Bags", subcategories: ["Tote Bags", "Backpacks", "Laptop Bags"] },
-        { id: "accessories", name: "Accessories", subcategories: ["Keychains", "Lanyards", "Badges"] },
+        {
+          id: "apparel",
+          name: "Apparel",
+          subcategories: ["T-Shirts", "Polo Shirts", "Hoodies"],
+        },
+        {
+          id: "drinkware",
+          name: "Drinkware",
+          subcategories: ["Mugs", "Water Bottles", "Tumblers"],
+        },
+        {
+          id: "bags",
+          name: "Bags",
+          subcategories: ["Tote Bags", "Backpacks", "Laptop Bags"],
+        },
+        {
+          id: "accessories",
+          name: "Accessories",
+          subcategories: ["Keychains", "Lanyards", "Badges"],
+        },
       ],
     },
     {
       id: "clothing",
       name: "Clothing",
       subcategories: [
-        { id: "mens", name: "Men's", subcategories: ["Shirts", "Pants", "Jackets"] },
-        { id: "womens", name: "Women's", subcategories: ["Blouses", "Dresses", "Skirts"] },
-        { id: "unisex", name: "Unisex", subcategories: ["T-Shirts", "Hoodies", "Caps"] },
+        {
+          id: "mens",
+          name: "Men's",
+          subcategories: ["Shirts", "Pants", "Jackets"],
+        },
+        {
+          id: "womens",
+          name: "Women's",
+          subcategories: ["Blouses", "Dresses", "Skirts"],
+        },
+        {
+          id: "unisex",
+          name: "Unisex",
+          subcategories: ["T-Shirts", "Hoodies", "Caps"],
+        },
       ],
     },
     {
       id: "headwear",
       name: "Headwear",
       subcategories: [
-        { id: "caps", name: "Caps", subcategories: ["Baseball Caps", "Snapbacks", "Beanies"] },
-        { id: "hats", name: "Hats", subcategories: ["Fedoras", "Bucket Hats", "Visors"] },
+        {
+          id: "caps",
+          name: "Caps",
+          subcategories: ["Baseball Caps", "Snapbacks", "Beanies"],
+        },
+        {
+          id: "hats",
+          name: "Hats",
+          subcategories: ["Fedoras", "Bucket Hats", "Visors"],
+        },
       ],
     },
     {
       id: "office",
       name: "Office Supplies",
       subcategories: [
-        { id: "writing", name: "Writing", subcategories: ["Pens", "Pencils", "Markers"] },
-        { id: "stationery", name: "Stationery", subcategories: ["Notebooks", "Staplers", "Clips"] },
+        {
+          id: "writing",
+          name: "Writing",
+          subcategories: ["Pens", "Pencils", "Markers"],
+        },
+        {
+          id: "stationery",
+          name: "Stationery",
+          subcategories: ["Notebooks", "Staplers", "Clips"],
+        },
       ],
     },
   ];
@@ -333,7 +412,9 @@ const SMiniNav = () => {
         {coupenModel && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
-              <h2 className="text-xl font-semibold text-gray-800">🎁 Exclusive Offers!</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                🎁 Exclusive Offers!
+              </h2>
 
               {coupenLoading ? (
                 <div className="space-y-3">
@@ -343,10 +424,16 @@ const SMiniNav = () => {
               ) : coupons.length > 0 ? (
                 <div className="space-y-3">
                   {coupons.map((coupon) => (
-                    <div key={coupon._id} className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3">
-                      <p className="text-lg font-bold text-blue-600">{coupon.coupen}</p>
+                    <div
+                      key={coupon._id}
+                      className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
+                    >
+                      <p className="text-lg font-bold text-blue-600">
+                        {coupon.coupen}
+                      </p>
                       <p className="text-sm text-gray-600 mb-2">
-                        Get <strong>{coupon.discount}% OFF</strong> on your order
+                        Get <strong>{coupon.discount}% OFF</strong> on your
+                        order
                       </p>
                       <p
                         className="text-blue-600 text-sm cursor-pointer hover:underline"
@@ -359,12 +446,16 @@ const SMiniNav = () => {
                       </p>
                     </div>
                   ))}
-                  <p className="text-xs text-gray-500 mt-3">Use any code at checkout • Valid on all products</p>
+                  <p className="text-xs text-gray-500 mt-3">
+                    Use any code at checkout • Valid on all products
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <p className="text-lg text-gray-600">No Coupons Available</p>
-                  <p className="text-sm text-gray-500">Check back soon for deals!</p>
+                  <p className="text-sm text-gray-500">
+                    Check back soon for deals!
+                  </p>
                 </div>
               )}
 
@@ -380,25 +471,43 @@ const SMiniNav = () => {
 
         <div className="flex items-center justify-between gap-6 pt-2 text-white Mycontainer">
           <Link to={"/"} className="relative z-10">
-            <img src={supermerch} className="object-contain w-24 pl-8 lg:w-36" alt="" />
+            <img
+              src={supermerch}
+              className="object-contain w-24 pl-8 lg:w-36"
+              alt=""
+            />
           </Link>
 
           <div className="relative z-20 flex items-center gap-4 lg:gap-6 md:gap-6 sm:gap-4">
-            <div className="lg:flex md:flex hidden items-center w-64" ref={categoryDropdownRef}>
+            <div
+              className="lg:flex md:flex hidden items-center w-64"
+              ref={categoryDropdownRef}
+            >
               <div className="flex items-center bg-white border-2 border-blue-100 rounded-lg px-3 py-2 hover:border-blue-200 transition-colors w-full">
                 {/* Dropdown selector */}
                 <div
                   className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-md mr-3 cursor-pointer hover:bg-gray-200 transition-colors"
-                  onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                  onClick={() =>
+                    setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
+                  }
                 >
-                  <span className="text-blue-600 font-semibold text-sm">{selectedCategory}</span>
+                  <span className="text-blue-600 font-semibold text-sm">
+                    {selectedCategory}
+                  </span>
                   <svg
-                    className={`w-3 h-3 text-blue-600 transition-transform ${isCategoryDropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-3 h-3 text-blue-600 transition-transform ${
+                      isCategoryDropdownOpen ? "rotate-180" : ""
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
 
@@ -435,19 +544,28 @@ const SMiniNav = () => {
                         setIsCategoryDropdownOpen(false);
                       }}
                     >
-                      <span className="text-gray-700 font-medium">All Categories</span>
+                      <span className="text-gray-700 font-medium">
+                        All Categories
+                      </span>
                     </div>
 
                     {/* Category tree */}
                     {categoryData.map((category) => (
-                      <div key={category.id} className="border-t border-gray-100">
+                      <div
+                        key={category.id}
+                        className="border-t border-gray-100"
+                      >
                         <div className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer">
-                          <span className="text-gray-800 font-semibold">{category.name}</span>
+                          <span className="text-gray-800 font-semibold">
+                            {category.name}
+                          </span>
                         </div>
                         {category.subcategories.map((subcategory) => (
                           <div key={subcategory.id} className="ml-4">
                             <div className="px-3 py-1 hover:bg-gray-50 rounded cursor-pointer">
-                              <span className="text-gray-600 text-sm">{subcategory.name}</span>
+                              <span className="text-gray-600 text-sm">
+                                {subcategory.name}
+                              </span>
                             </div>
                             {subcategory.subcategories.map((item, index) => (
                               <div
@@ -458,7 +576,9 @@ const SMiniNav = () => {
                                   setIsCategoryDropdownOpen(false);
                                 }}
                               >
-                                <span className="text-gray-500 text-xs">{item}</span>
+                                <span className="text-gray-500 text-xs">
+                                  {item}
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -532,16 +652,32 @@ const SMiniNav = () => {
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <div className="flex items-center justify-between">
                 <SheetTrigger>
-                  <div onClick={toggleNavbar} className="text-black focus:outline-none lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <div
+                    onClick={toggleNavbar}
+                    className="text-black focus:outline-none lg:hidden"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
                     </svg>
                   </div>
                 </SheetTrigger>
               </div>
               <SheetContent className="overflow-y-auto" side={"left"}>
                 <SheetHeader>
-                  <SheetTitle className="mb-3 text-2xl text-smallHeader">SuperMerch</SheetTitle>
+                  <SheetTitle className="mb-3 text-2xl text-smallHeader">
+                    SuperMerch
+                  </SheetTitle>
                 </SheetHeader>
                 <div className="space-y-2">
                   {route.map((link, index) => (
@@ -567,7 +703,9 @@ const SMiniNav = () => {
                       <Collapsible>
                         <CollapsibleTrigger className="flex items-center capitalize cursor-pointer">
                           {link.name}
-                          {(link.name === "Promotional" || link.name === "Clothing" || link.name === "Headwear") && ( // Add "Headwear" here
+                          {(link.name === "Promotional" ||
+                            link.name === "Clothing" ||
+                            link.name === "Headwear") && ( // Add "Headwear" here
                             <RiArrowDropDownLine className="text-xl transition-all duration-300" />
                           )}
                         </CollapsibleTrigger>
@@ -577,27 +715,39 @@ const SMiniNav = () => {
                               <Collapsible
                                 key={item.id}
                                 open={openPromoId === item.id}
-                                onOpenChange={(isOpen) => setOpenPromoId(isOpen ? item.id : null)}
+                                onOpenChange={(isOpen) =>
+                                  setOpenPromoId(isOpen ? item.id : null)
+                                }
                               >
                                 <div>
                                   <CollapsibleTrigger className="flex items-center justify-between gap-2 text-sm font-medium text-black transition-colors text-start">
                                     {item.name}
-                                    <ChevronRight className={`h-3 w-3 ${openPromoId === item.id && "rotate-90"}`} />
+                                    <ChevronRight
+                                      className={`h-3 w-3 ${
+                                        openPromoId === item.id && "rotate-90"
+                                      }`}
+                                    />
                                   </CollapsibleTrigger>
                                   <CollapsibleContent>
                                     <div className="ml-6 space-y-2">
-                                      {item.subTypes?.map((subType, subIndex) => (
-                                        <button
-                                          key={subIndex}
-                                          onClick={() => {
-                                            handleSubCategories(subType.name, subType.id, item.name);
-                                            setIsSheetOpen(false);
-                                          }}
-                                          className="font-semibold hover:underline text-[13px] block text-start text-black"
-                                        >
-                                          {subType.name}
-                                        </button>
-                                      ))}
+                                      {item.subTypes?.map(
+                                        (subType, subIndex) => (
+                                          <button
+                                            key={subIndex}
+                                            onClick={() => {
+                                              handleSubCategories(
+                                                subType.name,
+                                                subType.id,
+                                                item.name
+                                              );
+                                              setIsSheetOpen(false);
+                                            }}
+                                            className="font-semibold hover:underline text-[13px] block text-start text-black"
+                                          >
+                                            {subType.name}
+                                          </button>
+                                        )
+                                      )}
                                     </div>
                                   </CollapsibleContent>
                                 </div>
@@ -607,34 +757,46 @@ const SMiniNav = () => {
                         )}
                         {link.name === "Clothing" && clothingCategory && (
                           <CollapsibleContent className="ml-4 space-y-2">
-                            {clothingCategory.subTypes?.map((subType, subIndex) => (
-                              <button
-                                key={subIndex}
-                                onClick={() => {
-                                  handleSubCategories(subType.name, subType.id, clothingCategory.name);
-                                  setIsSheetOpen(false);
-                                }}
-                                className="font-semibold hover:underline text-[13px] block text-start text-black"
-                              >
-                                {subType.name}
-                              </button>
-                            ))}
+                            {clothingCategory.subTypes?.map(
+                              (subType, subIndex) => (
+                                <button
+                                  key={subIndex}
+                                  onClick={() => {
+                                    handleSubCategories(
+                                      subType.name,
+                                      subType.id,
+                                      clothingCategory.name
+                                    );
+                                    setIsSheetOpen(false);
+                                  }}
+                                  className="font-semibold hover:underline text-[13px] block text-start text-black"
+                                >
+                                  {subType.name}
+                                </button>
+                              )
+                            )}
                           </CollapsibleContent>
                         )}
                         {link.name === "Headwear" && headwearCategory && (
                           <CollapsibleContent className="ml-4 space-y-2">
-                            {headwearCategory.subTypes?.map((subType, subIndex) => (
-                              <button
-                                key={subIndex}
-                                onClick={() => {
-                                  handleSubCategories(subType.name, subType.id, headwearCategory.name);
-                                  setIsSheetOpen(false);
-                                }}
-                                className="font-semibold hover:underline text-[13px] block text-start text-black"
-                              >
-                                {subType.name}
-                              </button>
-                            ))}
+                            {headwearCategory.subTypes?.map(
+                              (subType, subIndex) => (
+                                <button
+                                  key={subIndex}
+                                  onClick={() => {
+                                    handleSubCategories(
+                                      subType.name,
+                                      subType.id,
+                                      headwearCategory.name
+                                    );
+                                    setIsSheetOpen(false);
+                                  }}
+                                  className="font-semibold hover:underline text-[13px] block text-start text-black"
+                                >
+                                  {subType.name}
+                                </button>
+                              )
+                            )}
                           </CollapsibleContent>
                         )}
                       </Collapsible>
@@ -655,7 +817,9 @@ const SMiniNav = () => {
                       setHoverHeadwearMenu(false); // Add this line
                     }}
                     className={`cursor-pointer ${
-                      link.name === "Promotional" || link.name === "Clothing" || link.name === "Headwear" // Add this line
+                      link.name === "Promotional" ||
+                      link.name === "Clothing" ||
+                      link.name === "Headwear" // Add this line
                         ? "group relative"
                         : ""
                     }`}
@@ -674,12 +838,14 @@ const SMiniNav = () => {
                           }
                         }}
                         onClick={() => {
-                          if (link.name === "Promotional") return;
+                          // if (link.name === "Promotional") return;
                           conditionalCategoryNameHandler(link);
                         }}
                       >
                         {link.name}
-                        {(link.name === "Promotional" || link.name === "Clothing" || link.name === "Headwear") && ( // Update this line
+                        {(link.name === "Promotional" ||
+                          link.name === "Clothing" ||
+                          link.name === "Headwear") && ( // Update this line
                           <RiArrowDropDownLine className="-rotate-90 group-hover:rotate-[52px] text-xl transition-all duration-300" />
                         )}
                       </span>
@@ -700,10 +866,19 @@ const SMiniNav = () => {
                                         key={item.id}
                                         className={cn(
                                           "flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted",
-                                          activeItem === item.id ? "bg-muted font-medium text-primary" : "text-white"
+                                          activeItem === item.id
+                                            ? "bg-muted font-medium text-primary"
+                                            : "text-white"
                                         )}
-                                        onMouseEnter={() => setActiveItem(item.id)}
-                                        onClick={() => handleNameCategories(item.name, item.id)}
+                                        onMouseEnter={() =>
+                                          setActiveItem(item.id)
+                                        }
+                                        onClick={() =>
+                                          handleNameCategories(
+                                            item.name,
+                                            item.id
+                                          )
+                                        }
                                       >
                                         {item.name}
                                         <ChevronRight className="w-4 h-4" />
@@ -722,7 +897,9 @@ const SMiniNav = () => {
                                             handleSubCategories(
                                               subType.name,
                                               subType.id,
-                                              megaMenu.find((item) => item.id === activeItem)?.name
+                                              megaMenu.find(
+                                                (item) => item.id === activeItem
+                                              )?.name
                                             )
                                           }
                                           className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
@@ -747,17 +924,27 @@ const SMiniNav = () => {
                           <div className="container mx-auto">
                             <div className="overflow-hidden rounded-lg border bg-[#333333] w-[600px] shadow-lg">
                               <div className="p-5">
-                                <h3 className="text-lg font-semibold text-blue-500 mb-4">{clothingCategory.name}</h3>
+                                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                                  {clothingCategory.name}
+                                </h3>
                                 <div className="grid grid-cols-3 gap-4">
-                                  {clothingCategory.subTypes?.map((subType, index) => (
-                                    <button
-                                      key={index}
-                                      onClick={() => handleSubCategories(subType.name, subType.id, clothingCategory.name)}
-                                      className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
-                                    >
-                                      {subType.name}
-                                    </button>
-                                  ))}
+                                  {clothingCategory.subTypes?.map(
+                                    (subType, index) => (
+                                      <button
+                                        key={index}
+                                        onClick={() =>
+                                          handleSubCategories(
+                                            subType.name,
+                                            subType.id,
+                                            clothingCategory.name
+                                          )
+                                        }
+                                        className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                                      >
+                                        {subType.name}
+                                      </button>
+                                    )
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -773,20 +960,28 @@ const SMiniNav = () => {
                           <div className="container mx-auto">
                             <div className="overflow-hidden rounded-lg border bg-[#333333] w-[600px] shadow-lg">
                               <div className="p-5">
-                                <h3 className="text-lg font-semibold text-blue-500 mb-4">{headwearCategory.name}</h3>
+                                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                                  {headwearCategory.name}
+                                </h3>
                                 <div className="grid grid-cols-3 gap-4">
-                                  {headwearCategory.subTypes?.map((subType, index) => (
-                                    <button
-                                      key={index}
-                                      onClick={() => {
-                                        handleSubCategories(subType.name, subType.id, headwearCategory.name);
-                                        setHoverHeadwearMenu(false);
-                                      }}
-                                      className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
-                                    >
-                                      {subType.name}
-                                    </button>
-                                  ))}
+                                  {headwearCategory.subTypes?.map(
+                                    (subType, index) => (
+                                      <button
+                                        key={index}
+                                        onClick={() => {
+                                          handleSubCategories(
+                                            subType.name,
+                                            subType.id,
+                                            headwearCategory.name
+                                          );
+                                          setHoverHeadwearMenu(false);
+                                        }}
+                                        className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                                      >
+                                        {subType.name}
+                                      </button>
+                                    )
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -809,16 +1004,27 @@ const SMiniNav = () => {
               {/* Dropdown selector */}
               <div
                 className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-md mr-3 cursor-pointer hover:bg-gray-200 transition-colors"
-                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                onClick={() =>
+                  setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
+                }
               >
-                <span className="text-blue-600 font-semibold text-sm">{selectedCategory}</span>
+                <span className="text-blue-600 font-semibold text-sm">
+                  {selectedCategory}
+                </span>
                 <svg
-                  className={`w-3 h-3 text-blue-600 transition-transform ${isCategoryDropdownOpen ? "rotate-180" : ""}`}
+                  className={`w-3 h-3 text-blue-600 transition-transform ${
+                    isCategoryDropdownOpen ? "rotate-180" : ""
+                  }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
 
@@ -855,19 +1061,25 @@ const SMiniNav = () => {
                       setIsCategoryDropdownOpen(false);
                     }}
                   >
-                    <span className="text-gray-700 font-medium">All Categories</span>
+                    <span className="text-gray-700 font-medium">
+                      All Categories
+                    </span>
                   </div>
 
                   {/* Category tree */}
                   {categoryData.map((category) => (
                     <div key={category.id} className="border-t border-gray-100">
                       <div className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer">
-                        <span className="text-gray-800 font-semibold">{category.name}</span>
+                        <span className="text-gray-800 font-semibold">
+                          {category.name}
+                        </span>
                       </div>
                       {category.subcategories.map((subcategory) => (
                         <div key={subcategory.id} className="ml-4">
                           <div className="px-3 py-1 hover:bg-gray-50 rounded cursor-pointer">
-                            <span className="text-gray-600 text-sm">{subcategory.name}</span>
+                            <span className="text-gray-600 text-sm">
+                              {subcategory.name}
+                            </span>
                           </div>
                           {subcategory.subcategories.map((item, index) => (
                             <div
@@ -878,7 +1090,9 @@ const SMiniNav = () => {
                                 setIsCategoryDropdownOpen(false);
                               }}
                             >
-                              <span className="text-gray-500 text-xs">{item}</span>
+                              <span className="text-gray-500 text-xs">
+                                {item}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -901,8 +1115,13 @@ const SMiniNav = () => {
             viewport={{ once: true }}
             className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
           >
-            <p className="text-sm font-semibold">Are you sure you want to logout?</p>
-            <p className="text-sm text-gray-500">You can login back at any time. All the changes you've been made will not be lost.</p>
+            <p className="text-sm font-semibold">
+              Are you sure you want to logout?
+            </p>
+            <p className="text-sm text-gray-500">
+              You can login back at any time. All the changes you've been made
+              will not be lost.
+            </p>
             <div className="flex justify-end gap-2">
               <button
                 className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
