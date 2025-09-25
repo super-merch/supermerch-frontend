@@ -33,7 +33,7 @@ const PricingTab = ({
 
   return (
     <div className="overflow-x-auto space-y-1">
-      {printMethods?.length > 0 && (
+      {availablePriceGroups?.length > 0 && (
         <div className="flex justify-between items-center gap-4">
           <label htmlFor="print-method" className="w-full my-2  font-medium">
             Print Method:
@@ -42,7 +42,7 @@ const PricingTab = ({
             id="print-method"
             value={selectedPrintMethod?.key}
             onChange={(e) => {
-              const selected = printMethods.find(
+              const selected = availablePriceGroups.find(
                 (method) => method.key === e.target.value
               );
               setSelectedPrintMethod(selected);
@@ -53,7 +53,7 @@ const PricingTab = ({
             }}
             className="w-full px-2 py-2 border rounded-md outline-none pr-3"
           >
-            {printMethods?.map((method, index) => (
+            {availablePriceGroups?.map((method, index) => (
               <option key={method.key} value={method.key}>
                 {getTrimmedDescription(method.description)}
               </option>
@@ -61,7 +61,7 @@ const PricingTab = ({
           </select>
         </div>
       )}{" "}
-      {addOns.length > 0 && (
+      {/* {addOns.length > 0 && (
         <div className="flex justify-between items-center gap-4">
           <label htmlFor="print-method" className="w-full my-2  font-medium">
             Add ons:
@@ -88,7 +88,7 @@ const PricingTab = ({
             ))}
           </select>
         </div>
-      )}
+      )} */}
       {parseSizing()?.sizes?.length > 1 && (
         <div className="flex flex-col w-full mb-3">
           <div className="flex justify-between items-center gap-4 my-2">
@@ -201,7 +201,7 @@ const PricingTab = ({
       </table>
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+          <label className="text-lg font-medium text-gray-700 whitespace-nowrap">
             Custom Quantity:
           </label>
           <div className="flex items-center gap-2">
@@ -226,10 +226,10 @@ const PricingTab = ({
                 }
                 setActiveIndex(newActiveIndex);
               }}
-              className="w-24 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-24 px-3 py-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter qty"
             />
-            <span className="text-sm text-gray-600">pieces</span>
+            <span className="text-lg text-gray-600">pieces</span>
           </div>
           {/* <div className="ml-auto text-sm text-gray-600">
                           <Button>Large Order?</Button>
@@ -277,9 +277,9 @@ const PricingTab = ({
         onClick={(e) => {
           handleAddToCart(e);
         }}
-        className="flex items-center justify-center w-full gap-3 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+        className="flex items-center justify-center w-full gap-3 px-2 py-3 mt-4 text-white rounded-sm cursor-pointer bg-smallHeader"
       >
-        <button className="text-sm uppercase">Add to cart</button>
+        <button className="text-lg uppercase">Add to cart</button>
         <IoCartOutline className="text-xl" />
       </Link>
     </div>

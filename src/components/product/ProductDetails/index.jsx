@@ -829,7 +829,7 @@ const ProductDetails = () => {
   };
 
   const minimumPrice = () => {
-    // const marginEntry = marginApi[productId];
+    const marginEntry = marginApi[productId];
 
     const priceGroups = product?.prices?.price_groups || [];
     const basePrice = priceGroups.find((group) => group?.base_price) || {};
@@ -841,12 +841,10 @@ const ProductDetails = () => {
     const maxPrice = Math.max(...prices);
     const finalPrice =
       minPrice === maxPrice
-        ? Number(minPrice).toFixed(2)
-        : Number(minPrice).toFixed(2);
-    return finalPrice || 0;
+        ? Number(minPrice) + Number(marginEntry?.marginFlat)
+        : Number(minPrice) + Number(marginEntry?.marginFlat);
+    return finalPrice?.toFixed(2) || 0;
   };
-
-  console.log(minimumPrice());
 
   if (error)
     return (
