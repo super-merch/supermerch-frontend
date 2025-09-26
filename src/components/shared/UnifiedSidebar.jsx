@@ -1,23 +1,31 @@
 import React, { useState, useEffect, useContext } from "react";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { getSidebarConfig, getCategoriesForConfig } from "../../config/sidebarConfig";
-import { setSelectedCategory, applyFilters } from "../../redux/slices/filterSlice";
+import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
 import BrandCheckboxes from "../shop/BrandFilter";
 import PopularTags from "../shop/PopularTags";
 
 const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { selectedCategory } = useSelector((state) => state.filters);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [searchParams] = useSearchParams();
+  const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
 
   // Get configuration for this page type
   const config = customConfig || getSidebarConfig(pageType);
   const categories = getCategoriesForConfig(config);
+
+  // Get URL parameters for active state
+  const urlSubCategory = searchParams.get("subCategory");
+  const urlCategoryName = searchParams.get("categoryName");
 
   // Mobile responsiveness
   useEffect(() => {
@@ -35,6 +43,20 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Auto-expand category that contains the active subcategory
+  useEffect(() => {
+    if (urlSubCategory && urlCategoryName) {
+      // Find the category that contains this subcategory
+      const categoryWithSubcategory = categories.find(
+        (category) => category.name === urlCategoryName && category.subTypes?.some((subType) => subType.name === urlSubCategory)
+      );
+
+      if (categoryWithSubcategory) {
+        setActiveCategory(categoryWithSubcategory.id);
+      }
+    }
+  }, [urlSubCategory, urlCategoryName, categories]);
+
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
@@ -45,9 +67,29 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   };
 
   const handleSubCategoryClick = (subCategory, categoryId, categoryName) => {
-    // This will be implemented based on your existing navigation logic
-    console.log("Subcategory clicked:", subCategory, categoryId, categoryName);
-    // TODO: Implement navigation logic similar to existing components
+    const encodedTitleName = encodeURIComponent(categoryName);
+    const encodedSubCategory = encodeURIComponent(subCategory);
+    dispatch(setMinPrice(0));
+    dispatch(setMaxPrice(1000));
+    dispatch(applyFilters());
+
+    // Determine the correct route based on the category name
+    let targetRoute = "/Spromotional"; // Default fallback
+
+    if (categoryName === "Clothing") {
+      targetRoute = "/Clothing";
+    } else if (categoryName === "Headwear") {
+      targetRoute = "/Headwear";
+    } else if (categoryName === "Capital Equipment") {
+      targetRoute = "/Spromotional"; // Keep as promotional for now
+    }
+    // For all other categories, use /Spromotional
+
+    navigate(`${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);
+    setSelectedParamCategoryId(categoryId);
+    setActiveFilterCategory(subCategory);
+    setCurrentPage(1);
+    setSidebarActiveCategory(categoryName);
   };
 
   return (
@@ -92,19 +134,24 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                   {/* Subcategories */}
                   {activeCategory === category.id && category.subTypes && (
                     <div className="ml-4 mt-2 space-y-1">
-                      {category.subTypes.map((subType) => (
-                        <button
-                          key={subType.id}
-                          onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                          className={`font-semibold text-[13px] block text-start w-full text-left py-1 px-2 rounded transition-colors ${
-                            selectedCategory === subType.name
-                              ? "text-blue-500 bg-blue-50"
-                              : "text-gray-700 hover:text-blue-500 hover:bg-gray-50"
-                          }`}
-                        >
-                          {subType.name}
-                        </button>
-                      ))}
+                      {category.subTypes.map((subType) => {
+                        // Check if this subcategory is active based on URL parameters
+                        const isActive = urlSubCategory === subType.name && urlCategoryName === category.name;
+
+                        return (
+                          <button
+                            key={subType.id}
+                            onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
+                            className={`font-semibold text-[13px] block text-start w-full text-left py-1 px-2 rounded transition-colors ${
+                              isActive || selectedCategory === subType.name
+                                ? "text-blue-500 bg-blue-50"
+                                : "text-gray-700 hover:text-blue-500 hover:bg-gray-50"
+                            }`}
+                          >
+                            {subType.name}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
