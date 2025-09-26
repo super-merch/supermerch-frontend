@@ -18,6 +18,7 @@ import noimage from "/noimage.png";
 
 import { setSelectedBrands, setMinPrice, setMaxPrice, setSelectedCategory } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
+import useProductFiltering from "../../hooks/useProductFiltering";
 import { matchProduct } from "@/redux/slices/categorySlice";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
 import { matchPromotionalProduct, setAllProducts } from "@/redux/slices/promotionalSlice";
@@ -143,6 +144,23 @@ const Spromotional = () => {
     setSidebarActiveLabel,
     fetchMultipleParamPages, // We'll need to create this function
   } = useContext(AppContext);
+
+  // Use the reusable product filtering hook
+  const {
+    isLoading: hookLoading,
+    error: hookError,
+    currentProducts: hookProducts,
+    totalPages: hookTotalPages,
+    urlCategory,
+    urlCategoryName,
+    urlSubCategory,
+    filterInfo,
+    resetFilters: hookResetFilters,
+    isPriceFilterActive: hookPriceFilterActive
+  } = useProductFiltering({
+    autoFetch: true,
+    pageType: null // Spromotional handles its own filtering
+  });
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector((state) => state.filters);
 

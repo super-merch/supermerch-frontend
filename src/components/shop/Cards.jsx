@@ -14,6 +14,7 @@ import { AppContext } from "../../context/AppContext";
 import { setMinPrice, setMaxPrice, setSelectedCategory, setSelectedBrands, applyFilters } from "../../redux/slices/filterSlice";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
+import useProductFiltering from "../../hooks/useProductFiltering";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -88,6 +89,25 @@ const Cards = () => {
   const [count, setCount] = useState(0);
 
   const { marginApi, backendUrl, fetchParamProducts, paramProducts, skeletonLoading, fetchMultipleParamPages } = useContext(AppContext);
+
+  // Use the reusable product filtering hook
+  const {
+    isLoading: hookLoading,
+    error: hookError,
+    currentProducts: hookProducts,
+    totalPages: hookTotalPages,
+    urlCategory,
+    urlCategoryName,
+    urlSubCategory,
+    filterInfo,
+    resetFilters: hookResetFilters,
+    isPriceFilterActive: hookPriceFilterActive
+  } = useProductFiltering({
+    autoFetch: true,
+    pageType: pageType === "SALE" ? "SALE" : 
+              pageType === "24HOUR" ? "24HOUR" : 
+              pageType === "AUSTRALIA" ? "AUSTRALIA" : null
+  });
 
   const [productionIds, setProductionIds] = useState(new Set());
   const getAll24HourProduction = async () => {
@@ -574,6 +594,11 @@ const Cards = () => {
 
   // Get the current active products based on mode and price filter
   const getActiveProducts = () => {
+    // Prioritize hook products if available (from URL parameters)
+    if (hookProducts && hookProducts.length > 0) {
+      return hookProducts;
+    }
+    
     if (isPriceFilterActive) {
       return selectedCategory ? categoryFilteredProducts : allFilteredProducts;
     }
@@ -775,6 +800,11 @@ const Cards = () => {
 
   // Calculate total count for display
   const getTotalCount = () => {
+    // Use hook products count if available
+    if (hookProducts && hookProducts.length > 0) {
+      return hookProducts.length;
+    }
+    
     if (isPriceFilterActive) {
       const currentFilteredProducts = selectedCategory ? categoryFilteredProducts : allFilteredProducts;
       return currentFilteredProducts.length;
@@ -784,8 +814,8 @@ const Cards = () => {
   };
 
   const currentPageProducts = getCurrentPageProducts();
-  const totalPages = getTotalPages();
-  const showSkeleton = isLoading || skeletonLoading || isSwitchingCategory || isFiltering;
+  const totalPages = hookTotalPages || getTotalPages();
+  const showSkeleton = isLoading || skeletonLoading || isSwitchingCategory || isFiltering || hookLoading;
 
   return (
     <>
@@ -798,11 +828,11 @@ const Cards = () => {
           <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Product Count - Left Side */}
             <div className="flex items-center gap-1">
-              <span className="font-semibold text-brand">{!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}</span>
+              <span className="font-semibold text-brand">{!showSkeleton && getTotalCount()}</span>
               <p className="">
-                {isLoading || isFiltering
+                {showSkeleton
                   ? "Loading..."
-                  : `Results found ${selectedCategory ? "(Category)" : "(All Products)"}${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  : `Results found ${urlCategoryName ? `(${filterInfo.name})` : selectedCategory ? "(Category)" : "(All Products)"}${isPriceFilterActive ? " (Price filtered)" : ""}`}
                 {isFiltering && " Please wait a while..."}
               </p>
             </div>
