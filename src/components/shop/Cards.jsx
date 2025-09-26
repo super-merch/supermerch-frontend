@@ -15,6 +15,7 @@ import { setMinPrice, setMaxPrice, setSelectedCategory, setSelectedBrands, apply
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import useProductFiltering from "../../hooks/useProductFiltering";
+import ProductSkeleton from "../shared/ProductSkeleton";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -101,12 +102,10 @@ const Cards = () => {
     urlSubCategory,
     filterInfo,
     resetFilters: hookResetFilters,
-    isPriceFilterActive: hookPriceFilterActive
+    isPriceFilterActive: hookPriceFilterActive,
   } = useProductFiltering({
     autoFetch: true,
-    pageType: pageType === "SALE" ? "SALE" : 
-              pageType === "24HOUR" ? "24HOUR" : 
-              pageType === "AUSTRALIA" ? "AUSTRALIA" : null
+    pageType: pageType === "SALE" ? "SALE" : pageType === "24HOUR" ? "24HOUR" : pageType === "AUSTRALIA" ? "AUSTRALIA" : null,
   });
 
   const [productionIds, setProductionIds] = useState(new Set());
@@ -598,7 +597,7 @@ const Cards = () => {
     if (hookProducts && hookProducts.length > 0) {
       return hookProducts;
     }
-    
+
     if (isPriceFilterActive) {
       return selectedCategory ? categoryFilteredProducts : allFilteredProducts;
     }
@@ -804,7 +803,7 @@ const Cards = () => {
     if (hookProducts && hookProducts.length > 0) {
       return hookProducts.length;
     }
-    
+
     if (isPriceFilterActive) {
       const currentFilteredProducts = selectedCategory ? categoryFilteredProducts : allFilteredProducts;
       return currentFilteredProducts.length;
@@ -832,7 +831,9 @@ const Cards = () => {
               <p className="">
                 {showSkeleton
                   ? "Loading..."
-                  : `Results found ${urlCategoryName ? `(${filterInfo.name})` : selectedCategory ? "(Category)" : "(All Products)"}${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  : `Results found ${urlCategoryName ? `(${filterInfo.name})` : selectedCategory ? "(Category)" : "(All Products)"}${
+                      isPriceFilterActive ? " (Price filtered)" : ""
+                    }`}
                 {isFiltering && " Please wait a while..."}
               </p>
             </div>
@@ -926,26 +927,7 @@ const Cards = () => {
             }`}
           >
             {showSkeleton || skeletonLoading || (isLoading && getActiveProducts().length === 0) ? (
-              Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div key={index} className="relative p-4 border rounded-lg shadow-md border-border2">
-                  <Skeleton height={200} className="rounded-md" />
-                  <div className="p-4">
-                    <Skeleton height={20} width={120} className="rounded" />
-                    <Skeleton height={15} width={80} className="mt-2 rounded" />
-                    <Skeleton height={25} width={100} className="mt-3 rounded" />
-                    <Skeleton height={15} width={60} className="mt-2 rounded" />
-                    <div className="flex items-center justify-between pt-2">
-                      <Skeleton height={20} width={80} className="rounded" />
-                      <Skeleton height={20} width={80} className="rounded" />
-                    </div>
-                    <div className="flex justify-between gap-1 mt-6 mb-2">
-                      <Skeleton circle height={40} width={40} />
-                      <Skeleton height={40} width={120} className="rounded" />
-                      <Skeleton circle height={40} width={40} />
-                    </div>
-                  </div>
-                </div>
-              ))
+              <ProductSkeleton count={itemsPerPage} />
             ) : currentPageProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentPageProducts.map((product) => {

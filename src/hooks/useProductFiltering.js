@@ -6,13 +6,13 @@ import { setMinPrice, setMaxPrice, applyFilters } from "../redux/slices/filterSl
 
 /**
  * Reusable hook for handling URL parameter-based product filtering
- * 
+ *
  * Features:
  * - Reads categoryName, subCategory, and category from URL parameters
  * - Automatically sets Redux state for category filtering
  * - Provides filtered products based on URL parameters
  * - Handles special cases like Sale, 24 Hour Production, Australia Made
- * 
+ *
  * @param {Object} options - Configuration options
  * @param {boolean} options.autoFetch - Whether to automatically fetch products (default: true)
  * @param {string} options.pageType - Page type for special filtering (Sale, 24Hour, Australia)
@@ -20,13 +20,13 @@ import { setMinPrice, setMaxPrice, applyFilters } from "../redux/slices/filterSl
  */
 export const useProductFiltering = (options = {}) => {
   const { autoFetch = true, pageType = null } = options;
-  
+
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const { 
-    setSelectedParamCategoryId, 
-    setCurrentPage, 
-    setSidebarActiveCategory, 
+  const {
+    setSelectedParamCategoryId,
+    setCurrentPage,
+    setSidebarActiveCategory,
     setActiveFilterCategory,
     fetchParamProducts,
     paramProducts,
@@ -35,7 +35,7 @@ export const useProductFiltering = (options = {}) => {
     fetchHourProducts,
     hourProd,
     fetchAustraliaProducts,
-    australiaProd
+    australiaProd,
   } = useContext(AppContext);
 
   // Redux state
@@ -53,7 +53,7 @@ export const useProductFiltering = (options = {}) => {
   const urlCategoryName = searchParams.get("categoryName");
   const urlSubCategory = searchParams.get("subCategory");
   const urlLabel = searchParams.get("label");
-  
+
   // Decode URL parameters
   const decodedCategoryName = urlCategoryName ? decodeURIComponent(urlCategoryName) : "";
   const decodedSubCategory = urlSubCategory ? decodeURIComponent(urlSubCategory) : "";
@@ -64,7 +64,12 @@ export const useProductFiltering = (options = {}) => {
     if (pageType === "SALE") return "sale";
     if (pageType === "24HOUR") return "24hour";
     if (pageType === "AUSTRALIA") return "australia";
-    if (urlCategory && decodedCategoryName) return "category";
+    if (urlCategory && decodedCategoryName) {
+      // If we have a subCategory parameter, it's subcategory filtering
+      if (decodedSubCategory) return "subcategory";
+      // Otherwise it's category filtering
+      return "category";
+    }
     return "all";
   };
 
@@ -75,17 +80,25 @@ export const useProductFiltering = (options = {}) => {
     if (urlCategory && decodedCategoryName) {
       setSelectedParamCategoryId(urlCategory);
       setSidebarActiveCategory(decodedCategoryName);
-      
+
       if (decodedSubCategory) {
         setActiveFilterCategory(decodedSubCategory);
       } else if (decodedLabel) {
         setActiveFilterCategory(decodedLabel);
       }
-      
+
       setCurrentPage(1);
     }
-  }, [urlCategory, decodedCategoryName, decodedSubCategory, decodedLabel, 
-      setSelectedParamCategoryId, setSidebarActiveCategory, setActiveFilterCategory, setCurrentPage]);
+  }, [
+    urlCategory,
+    decodedCategoryName,
+    decodedSubCategory,
+    decodedLabel,
+    setSelectedParamCategoryId,
+    setSidebarActiveCategory,
+    setActiveFilterCategory,
+    setCurrentPage,
+  ]);
 
   // Fetch products based on filtering mode
   useEffect(() => {
@@ -102,22 +115,29 @@ export const useProductFiltering = (options = {}) => {
               await fetchParamProducts(urlCategory, 1);
             }
             break;
-            
+
+          case "subcategory":
+            if (urlCategory && !isPriceFilterActive) {
+              // For subcategory filtering, urlCategory contains the subcategory ID
+              await fetchParamProducts(urlCategory, 1);
+            }
+            break;
+
           case "sale":
             // Fetch products with sale tag
             await fetchProducts(1, "", "sale");
             break;
-            
+
           case "24hour":
             // Fetch 24-hour production products
             await fetchHourProducts(1, 9, "");
             break;
-            
+
           case "australia":
             // Fetch Australia-made products
             await fetchAustraliaProducts(1, 9, "");
             break;
-            
+
           case "all":
           default:
             // Fetch all products
@@ -133,8 +153,16 @@ export const useProductFiltering = (options = {}) => {
     };
 
     fetchProductsByMode();
-  }, [filteringMode, urlCategory, autoFetch, isPriceFilterActive, 
-      fetchParamProducts, fetchProducts, fetchHourProducts, fetchAustraliaProducts]);
+  }, [
+    filteringMode,
+    urlCategory,
+    autoFetch,
+    isPriceFilterActive,
+    fetchParamProducts,
+    fetchProducts,
+    fetchHourProducts,
+    fetchAustraliaProducts,
+  ]);
 
   // Update current products based on filtering mode
   useEffect(() => {
@@ -145,28 +173,35 @@ export const useProductFiltering = (options = {}) => {
           setTotalPages(paramProducts.total_pages || 0);
         }
         break;
-        
+
+      case "subcategory":
+        if (paramProducts?.data) {
+          setCurrentProducts(paramProducts.data);
+          setTotalPages(paramProducts.total_pages || 0);
+        }
+        break;
+
       case "sale":
         if (contextProducts) {
           setCurrentProducts(contextProducts);
           setTotalPages(Math.ceil(contextProducts.length / 9));
         }
         break;
-        
+
       case "24hour":
         if (hourProd?.data) {
           setCurrentProducts(hourProd.data);
           setTotalPages(hourProd.total_pages || 0);
         }
         break;
-        
+
       case "australia":
         if (australiaProd?.data) {
           setCurrentProducts(australiaProd.data);
           setTotalPages(australiaProd.total_pages || 0);
         }
         break;
-        
+
       case "all":
       default:
         if (contextProducts) {
@@ -213,20 +248,20 @@ export const useProductFiltering = (options = {}) => {
     error,
     currentProducts,
     totalPages,
-    
+
     // URL parameters
     urlCategory,
     urlCategoryName: decodedCategoryName,
     urlSubCategory: decodedSubCategory,
     urlLabel: decodedLabel,
-    
+
     // Filtering info
     filteringMode,
     filterInfo: getFilterInfo(),
-    
+
     // Utilities
     resetFilters,
-    isPriceFilterActive
+    isPriceFilterActive,
   };
 };
 

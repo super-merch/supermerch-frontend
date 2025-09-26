@@ -156,10 +156,10 @@ const Spromotional = () => {
     urlSubCategory,
     filterInfo,
     resetFilters: hookResetFilters,
-    isPriceFilterActive: hookPriceFilterActive
+    isPriceFilterActive: hookPriceFilterActive,
   } = useProductFiltering({
     autoFetch: true,
-    pageType: null // Spromotional handles its own filtering
+    pageType: null, // Spromotional handles its own filtering
   });
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector((state) => state.filters);

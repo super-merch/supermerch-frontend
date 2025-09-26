@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -8,13 +8,11 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
-import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
-import { AppContext } from "../../context/AppContext";
-import { setMinPrice, setMaxPrice, setSelectedCategory, setSelectedBrands, applyFilters } from "../../redux/slices/filterSlice";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import useProductFiltering from "../../hooks/useProductFiltering";
+import ProductSkeleton from "../shared/ProductSkeleton";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -32,7 +30,6 @@ const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
 };
 
 const CardsWithFiltering = () => {
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
@@ -47,7 +44,7 @@ const CardsWithFiltering = () => {
   const pageType = getPageTypeFromRoute(location.pathname);
 
   // Get Redux filter state
-  const { activeFilters, minPrice, maxPrice } = useSelector((state) => state.filters);
+  const { minPrice, maxPrice } = useSelector((state) => state.filters);
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   // Use the reusable product filtering hook
@@ -56,23 +53,17 @@ const CardsWithFiltering = () => {
     error,
     currentProducts,
     totalPages,
-    urlCategory,
     urlCategoryName,
-    urlSubCategory,
     filterInfo,
     resetFilters,
-    isPriceFilterActive
+    isPriceFilterActive,
   } = useProductFiltering({
     autoFetch: true,
-    pageType: pageType === "SALE" ? "SALE" : 
-              pageType === "24HOUR" ? "24HOUR" : 
-              pageType === "AUSTRALIA" ? "AUSTRALIA" : null
+    pageType: pageType === "SALE" ? "SALE" : pageType === "24HOUR" ? "24HOUR" : pageType === "AUSTRALIA" ? "AUSTRALIA" : null,
   });
 
-  const { marginApi, backendUrl } = useContext(AppContext);
-
   // Create a set of favorite product IDs for quick lookup
-  const favSet = new Set(favouriteItems.map(item => item.meta.id));
+  const favSet = new Set(favouriteItems.map((item) => item.meta.id));
 
   // Helper function to get real price with caching
   const priceCache = useRef(new Map());
@@ -136,7 +127,7 @@ const CardsWithFiltering = () => {
   // Handle page changes
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Handle favorite toggle
@@ -202,9 +193,7 @@ const CardsWithFiltering = () => {
             <div className="flex items-center gap-1">
               <span className="font-semibold text-brand">{!isLoading && getTotalCount()}</span>
               <p className="">
-                {isLoading
-                  ? "Loading..."
-                  : `Results found for ${getFilterDisplayText()}${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                {isLoading ? "Loading..." : `Results found for ${getFilterDisplayText()}${isPriceFilterActive ? " (Price filtered)" : ""}`}
               </p>
             </div>
 
@@ -223,9 +212,7 @@ const CardsWithFiltering = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10">
                     <button
                       onClick={() => handleSortChange("")}
-                      className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                        sortOption === "" ? "bg-blue-50 text-blue-600" : ""
-                      }`}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${sortOption === "" ? "bg-blue-50 text-blue-600" : ""}`}
                     >
                       Default
                     </button>
@@ -280,10 +267,7 @@ const CardsWithFiltering = () => {
                   <span className="text-md font-semibold">
                     Price: ${minPrice} - ${maxPrice}
                   </span>
-                  <button
-                    onClick={handleClearPriceFilter}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
+                  <button onClick={handleClearPriceFilter} className="ml-2 text-red-500 hover:text-red-700">
                     ✕
                   </button>
                 </div>
@@ -301,17 +285,7 @@ const CardsWithFiltering = () => {
           {/* Products Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             {isLoading ? (
-              // Loading skeleton
-              Array.from({ length: 9 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <Skeleton height={200} />
-                  <div className="p-4">
-                    <Skeleton height={20} width="80%" />
-                    <Skeleton height={16} width="60%" className="mt-2" />
-                    <Skeleton height={16} width="40%" className="mt-2" />
-                  </div>
-                </div>
-              ))
+              <ProductSkeleton count={9} />
             ) : getCurrentPageProducts().length > 0 ? (
               getCurrentPageProducts().map((product) => {
                 const isFavorite = favSet.has(product.meta.id);
@@ -336,24 +310,14 @@ const CardsWithFiltering = () => {
                         }}
                         className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
                       >
-                        {isFavorite ? (
-                          <IoIosHeart className="text-red-500 text-xl" />
-                        ) : (
-                          <CiHeart className="text-gray-600 text-xl" />
-                        )}
+                        {isFavorite ? <IoIosHeart className="text-red-500 text-xl" /> : <CiHeart className="text-gray-600 text-xl" />}
                       </button>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {product.product?.name || "Unnamed Product"}
-                      </h3>
-                      <p className="text-lg font-bold text-brand">
-                        ${price.toFixed(2)}
-                      </p>
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.product?.name || "Unnamed Product"}</h3>
+                      <p className="text-lg font-bold text-brand">${price.toFixed(2)}</p>
                       {product.product?.description && (
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                          {product.product.description}
-                        </p>
+                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{product.product.description}</p>
                       )}
                     </div>
                   </div>
@@ -362,9 +326,7 @@ const CardsWithFiltering = () => {
             ) : (
               <div className="col-span-full text-center py-12">
                 <p className="text-gray-500 text-lg">No products found</p>
-                <p className="text-gray-400 text-sm mt-2">
-                  Try adjusting your filters or search criteria
-                </p>
+                <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or search criteria</p>
               </div>
             )}
           </div>
@@ -386,9 +348,7 @@ const CardsWithFiltering = () => {
                   key={page}
                   onClick={() => handlePageChange(page)}
                   className={`px-3 py-2 border rounded-md ${
-                    currentPage === page
-                      ? "bg-brand text-white border-brand"
-                      : "border-gray-300 hover:bg-gray-50"
+                    currentPage === page ? "bg-brand text-white border-brand" : "border-gray-300 hover:bg-gray-50"
                   }`}
                 >
                   {page}
@@ -415,10 +375,7 @@ const CardsWithFiltering = () => {
             <h2 className="text-xl font-bold mb-4">{selectedProduct.product?.name}</h2>
             <p className="text-gray-600 mb-4">{selectedProduct.product?.description}</p>
             <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-              >
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
                 Close
               </button>
               <button
