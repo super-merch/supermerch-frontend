@@ -131,8 +131,8 @@ const SMiniNav = () => {
   // Simplified route structure
   const route = [
     { name: "Promotional", path: "/Spromotional" },
-    { name: "Clothing", path: "/Spromotional" },
-    { name: "Headwear", path: "/Spromotional" },
+    { name: "Clothing", path: "/Clothing" },
+    { name: "Headwear", path: "/Headwear" },
     { name: "Return Gifts", path: "/ReturnGifts" },
     { name: "24 Hour production", path: "/production" },
     { name: "Sale", path: "/sales" },

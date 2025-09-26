@@ -1,17 +1,13 @@
-import React, { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { IoSearchOutline } from "react-icons/io5";
+import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import { useNavigate, useLocation } from "react-router-dom";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
+import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
-import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 import { AppContext } from "../../context/AppContext";
@@ -86,6 +82,8 @@ const Cards = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const pageType = getPageTypeFromRoute(location.pathname);
   const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
   const [count, setCount] = useState(0);
 
@@ -793,7 +791,7 @@ const Cards = () => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          <Sidebar />
+          <UnifiedSidebar pageType={pageType} />
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
