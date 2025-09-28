@@ -145,67 +145,12 @@ const Spromotional = () => {
     sidebarActiveLabel,
     setSidebarActiveLabel,
     fetchMultipleParamPages, // We'll need to create this function
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
     useSelector((state) => state.filters);
-
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
@@ -229,8 +174,6 @@ const Spromotional = () => {
           }
         );
         const result = await response.json();
-
-        console.log(result);
       } catch (error) {
         console.error("Error occurred:", error);
       }
@@ -476,8 +419,19 @@ const Spromotional = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
   const handleViewProduct = (productId, name) => {
-    navigate(`/product/${name}`, { state: productId });
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const [searchProductName, setSearchProductName] = useState("");
@@ -634,13 +588,13 @@ const Spromotional = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+  const [searchParam] = useSearchParams();
+  const queryCategory = searchParam.get("categoryName");
 
   const currentMenuArray = getMenuArrayByCategoryName(sidebarActiveCategory);
-  const filteredCategories = sidebarActiveCategory
-    ? currentMenuArray.filter(
-        (category) => category.name === sidebarActiveCategory
-      )
-    : currentMenuArray;
+  const filteredCategories = currentMenuArray.filter(
+    (category) => category.name === (sidebarActiveCategory || queryCategory)
+  );
 
   // Get current page products based on whether price filter is active
   // Get current page products based on whether price filter is active
@@ -805,7 +759,7 @@ const Spromotional = () => {
                         </div>
                       ))
                     : clothing.map((category) => (
-                        <div key={category.id}>
+                        <div className="pl-4" key={category.id}>
                           <ul>
                             <button
                               onClick={() =>
@@ -1122,8 +1076,8 @@ const Spromotional = () => {
                             </span>
                           )}
 
-                          {(australiaIds.has(product.meta.id) ||
-                            australiaIds.has(String(product.meta.id))) && (
+                          {(australiaIds?.has(product.meta.id) ||
+                            australiaIds?.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                               {/* simple flag/triangle SVG */}
                               <svg

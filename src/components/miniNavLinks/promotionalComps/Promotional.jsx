@@ -11,11 +11,10 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { fetchcategoryProduct } from "../../../redux/slices/categorySlice";
-
 
 import { setProducts } from "../../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
@@ -137,8 +136,19 @@ const Promotional = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`);
+  const slugify = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
+
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const setSearchTextChanger = (e) => {
@@ -348,7 +358,12 @@ const Promotional = () => {
                     return (
                       <div
                         key={product.id}
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         className="relative "
                       >
                         <img
@@ -382,7 +397,6 @@ const Promotional = () => {
                             </p>
                             <h2 className="pt-2 text-xl font-semibold text-heading">
                               From $:<span>{realPrice}</span>
-                              
                             </h2>
                             <p className="pt-2 text-base font-normal text-brand">
                               {product.stock}

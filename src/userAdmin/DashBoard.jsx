@@ -4,7 +4,14 @@ import { AppContext } from "../context/AppContext";
 import { FaBullseye } from "react-icons/fa";
 
 const DashBoard = () => {
-  const { backednUrl, handleLogout, userOrder } = useContext(AppContext);
+  const {
+    backednUrl,
+    handleLogout,
+    setNewId,
+    activeTab,
+    setActiveTab,
+    userOrder,
+  } = useContext(AppContext);
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(FaBullseye);
   useEffect(() => {
@@ -35,6 +42,10 @@ const DashBoard = () => {
 
     fetchUserEmail();
   }, []);
+  const handleSetView = (id) => {
+    setNewId(id);
+    setActiveTab("ordersDetails");
+  };
 
   return (
     <>
@@ -58,7 +69,7 @@ const DashBoard = () => {
         )}
 
         {/* Dashboard Stats Cards */}
-        {!loading && userOrder  && (
+        {!loading && userOrder && (
           <div className="w-full  mt-10 pb-8">
             {/* Stats Cards Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-6 mb-8">
@@ -224,6 +235,9 @@ const DashBoard = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Total
                       </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -260,6 +274,14 @@ const DashBoard = () => {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <button
+                            onClick={() => handleSetView(order._id)}
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            View
+                          </button>
                         </td>
                       </tr>
                     ))}

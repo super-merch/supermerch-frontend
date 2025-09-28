@@ -1,11 +1,9 @@
-
-
-import React, { useState, useEffect, useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-import { IoMdArrowRoundBack } from 'react-icons/io';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect, useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UserProducts = () => {
   const {
@@ -32,52 +30,51 @@ const UserProducts = () => {
 
   useEffect(() => {
     fetchOrdersData();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [newId, userOrder]);
 
   const handleReOrder = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      navigate('/signup');
-      return toast.error('Please login to re-order.');
+      navigate("/signup");
+      return toast.error("Please login to re-order.");
     }
 
- 
     const batchPromises = async (promises, batchSize = 10) => {
-  const results = [];
-  
-  for (let i = 0; i < promises.length; i += batchSize) {
-    const batch = promises.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch);
-    results.push(...batchResults);
-  }
-  
-  return results;
-};
+      const results = [];
+
+      for (let i = 0; i < promises.length; i += batchSize) {
+        const batch = promises.slice(i, i + batchSize);
+        const batchResults = await Promise.all(batch);
+        results.push(...batchResults);
+      }
+
+      return results;
+    };
 
     const getDiscount = async () => {
-     try {
-    const discountPromises = checkoutData.products.map((item) =>
-      fetchProductDiscount(item.id)
-    );
-    
-    // Process in batches of 10 concurrent requests
-    const discountResults = await batchPromises(discountPromises, 10);
-    
-    return discountResults.map(result => result.discount || 0);
-  } catch (error) {
-    console.error('Error fetching discounts:', error);
-    return checkoutData.products.map(() => 0);
-  }
-};
+      try {
+        const discountPromises = checkoutData.products.map((item) =>
+          fetchProductDiscount(item.id)
+        );
+
+        // Process in batches of 10 concurrent requests
+        const discountResults = await batchPromises(discountPromises, 10);
+
+        return discountResults.map((result) => result.discount || 0);
+      } catch (error) {
+        console.error("Error fetching discounts:", error);
+        return checkoutData.products.map(() => 0);
+      }
+    };
 
     const discountsArray = await getDiscount();
-    console.log(discountsArray, 'discountsArray');
+    console.log(discountsArray, "discountsArray");
 
     // 2) Populate context.totalDiscount as { [id]: pct }
     const discountMap = {};
     checkoutData.products.forEach((p, i) => {
-      discountMap[p.id] =  discountsArray[i];
+      discountMap[p.id] = discountsArray[i];
     });
     setTotalDiscount(discountMap);
 
@@ -141,13 +138,11 @@ const UserProducts = () => {
 
     // Step 4: Final total
     const total = discountedAmount + gstAmount;
-    
 
-
-    console.log(netAmount, 'netAmount Re‑Order'); // ~148.09
-    console.log(totalDiscountPct, 'discountedAmount Re‑Order');
-    console.log(gstAmount, 'gstAmount Re‑Order'); // ~14.81
-    console.log(total, 'total Re‑Order'); // ~162.90
+    console.log(netAmount, "netAmount Re‑Order"); // ~148.09
+    console.log(totalDiscountPct, "discountedAmount Re‑Order");
+    console.log(gstAmount, "gstAmount Re‑Order"); // ~14.81
+    console.log(total, "total Re‑Order"); // ~162.90
 
     // 5) Build your payload
     const reOrderData = {
@@ -173,7 +168,7 @@ const UserProducts = () => {
       total: total,
     };
 
-    console.log(reOrderData, 'reOrderData');
+    console.log(reOrderData, "reOrderData");
 
     try {
       const res = await axios.post(
@@ -181,11 +176,11 @@ const UserProducts = () => {
         reOrderData,
         { headers: { token } }
       );
-      toast.success('Order placed successfully!');
-      navigate('/');
+      toast.success("Order placed successfully!");
+      navigate("/");
     } catch (err) {
-      console.error('Re-order failed:', err.response?.data || err.message);
-      toast.error('Re-order failed. Try again.');
+      console.error("Re-order failed:", err.response?.data || err.message);
+      toast.error("Re-order failed. Try again.");
     }
   };
 
@@ -309,13 +304,12 @@ const UserProducts = () => {
   //   //   toast.error('Re-order failed. Try again.');
   //   // }
   // };
-  
-  
+
   if (loading) {
     return (
-      <div className='flex items-center justify-center'>
-        <div className='w-12 h-12 border-t-2 border-blue-500 rounded-full animate-spin'></div>
-        <p className='ml-4 text-lg font-semibold'>Loading checkout data...</p>
+      <div className="flex items-center justify-center">
+        <div className="w-12 h-12 border-t-2 border-blue-500 rounded-full animate-spin"></div>
+        <p className="ml-4 text-lg font-semibold">Loading checkout data...</p>
       </div>
     );
   }
@@ -325,19 +319,19 @@ const UserProducts = () => {
   }
 
   return (
-    <div className='w-full px-2 lg:px-8 md:px-8'>
-      <div className='flex items-center justify-between'>
+    <div className="w-full px-2 lg:px-8 md:px-8">
+      <div className="flex items-center justify-between">
         <button
-          onClick={() => setActiveTab('orders')}
-          className='bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase'
+          onClick={() => setActiveTab("dashboard")}
+          className="bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase"
         >
           <IoMdArrowRoundBack />
           Back
         </button>
-        <div className='mt-6'>
+        <div className="mt-6">
           <button
             onClick={handleReOrder}
-            className='px-4 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700'
+            className="px-4 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700"
           >
             Re-order
           </button>
@@ -345,22 +339,22 @@ const UserProducts = () => {
       </div>
 
       {/* Order Summary */}
-      <div className='my-8'>
-        <p className='flex flex-wrap items-center gap-2 font-medium text-gray-800'>
-          Order{' '}
-          <span className='px-2 font-semibold text-black bg-yellow'>
+      <div className="my-8">
+        <p className="flex flex-wrap items-center gap-2 font-medium text-gray-800">
+          Order{" "}
+          <span className="px-2 font-semibold text-black bg-yellow">
             {checkoutData.orderId}
-          </span>{' '}
-          was placed on{' '}
-          <span className='px-2 font-semibold text-black bg-yellow'>
+          </span>{" "}
+          was placed on{" "}
+          <span className="px-2 font-semibold text-black bg-yellow">
             {new Date(checkoutData.orderDate).toLocaleDateString()}
-          </span>{' '}
-          and is currently{' '}
+          </span>{" "}
+          and is currently{" "}
           <span
             className={`${
-              checkoutData.status === 'Cancelled'
-                ? 'text-red-600'
-                : 'bg-yellow text-black'
+              checkoutData.status === "Cancelled"
+                ? "text-red-600"
+                : "bg-yellow text-black"
             } font-semibold px-2`}
           >
             {checkoutData.status}
@@ -369,29 +363,29 @@ const UserProducts = () => {
       </div>
 
       {/* Order Details Table */}
-      <div className='px-3 py-3 border rounded shadow lg:px-6 md:px-6 '>
-        <div className='overflow-x-auto '>
-          <h2 className='mb-4 text-lg font-semibold'>Order Details</h2>
-          <table className='w-full border-gray-300'>
-            <thead className='text-left '>
+      <div className="px-3 py-3 border rounded shadow lg:px-6 md:px-6 ">
+        <div className="overflow-x-auto ">
+          <h2 className="mb-4 text-lg font-semibold">Order Details</h2>
+          <table className="w-full border-gray-300">
+            <thead className="text-left ">
               <tr>
-                <th className='border-gray-300 '>Product</th>
-                <th className='text-right border-gray-300 '>Total</th>
+                <th className="border-gray-300 ">Product</th>
+                <th className="text-right border-gray-300 ">Total</th>
               </tr>
             </thead>
-            <tbody className='text-sm'>
+            <tbody className="text-sm">
               {checkoutData?.products?.map((product, index) => (
                 <tr key={index}>
                   <td>
-                    <span className='text-blue-500'>{product?.name}</span>{' '}
-                    <span className='font-medium text-gray-800'>
+                    <span className="text-blue-500">{product?.name}</span>{" "}
+                    <span className="font-medium text-gray-800">
                       x {product?.quantity}
                     </span>
-                    <span className='' >
-                      <img src={product.image} className='w-20' alt="" />
+                    <span className="">
+                      <img src={product.image} className="w-20" alt="" />
                     </span>
                   </td>
-                  <td className='py-2 text-right border-gray-300'>
+                  <td className="py-2 text-right border-gray-300">
                     <p>${product?.subTotal.toFixed(2)}</p>
                   </td>
                 </tr>
@@ -401,36 +395,36 @@ const UserProducts = () => {
         </div>
 
         {/* Totals */}
-        <div className='mt-4'>
-          <table className='w-full text-sm'>
+        <div className="mt-4">
+          <table className="w-full text-sm">
             <tbody>
               <tr>
-                <td className='py-2 text-gray-600'>Sub Total:</td>
-                <td className='py-2 font-medium text-right'>
+                <td className="py-2 text-gray-600">Sub Total:</td>
+                <td className="py-2 font-medium text-right">
                   ${checkoutData?.total.toFixed(2)}
                 </td>
               </tr>
               <tr>
-                <td className='py-2 text-gray-600'>Shipping:</td>
-                <td className='py-2 font-medium text-right'>
+                <td className="py-2 text-gray-600">Shipping:</td>
+                <td className="py-2 font-medium text-right">
                   ${checkoutData?.shipping}
                 </td>
               </tr>
               <tr>
-                <td className='py-2 text-gray-600'>Tax:</td>
-                <td className='py-2 font-medium text-right'>
+                <td className="py-2 text-gray-600">Tax:</td>
+                <td className="py-2 font-medium text-right">
                   ${checkoutData?.gst}
                 </td>
               </tr>
               <tr>
-                <td className='py-2 text-gray-600'>Discount:</td>
-                <td className='py-2 font-medium text-right'>
+                <td className="py-2 text-gray-600">Discount:</td>
+                <td className="py-2 font-medium text-right">
                   ${checkoutData?.discount}
                 </td>
               </tr>
               <tr>
-                <td className='py-2 text-gray-600'>Total:</td>
-                <td className='py-2 text-lg font-bold text-right'>
+                <td className="py-2 text-gray-600">Total:</td>
+                <td className="py-2 text-lg font-bold text-right">
                   ${checkoutData?.total.toFixed(2)}
                 </td>
               </tr>
@@ -442,40 +436,40 @@ const UserProducts = () => {
       </div>
 
       {/* Address Section */}
-      <div className='flex flex-wrap justify-between gap-8 px-2 mt-6 mb-8 lg:justify-around md:justify-around sm:justify-around'>
+      <div className="flex flex-wrap justify-between gap-8 px-2 mt-6 mb-8 lg:justify-around md:justify-around sm:justify-around">
         {/* Billing Address */}
         <div>
-          <h2 className='mb-2 font-semibold'>Billing Address</h2>
-          <p className='pb-1'>
+          <h2 className="mb-2 font-semibold">Billing Address</h2>
+          <p className="pb-1">
             {checkoutData?.user?.firstName} {checkoutData?.user?.lastName}
           </p>
-          <p className='pb-1'>{checkoutData.billingAddress?.companyName}</p>
-          <p className='pb-1'>{checkoutData.billingAddress?.addressLine}</p>
-          <p className='pb-1'>
-            {checkoutData.billingAddress?.city},{' '}
+          <p className="pb-1">{checkoutData.billingAddress?.companyName}</p>
+          <p className="pb-1">{checkoutData.billingAddress?.addressLine}</p>
+          <p className="pb-1">
+            {checkoutData.billingAddress?.city},{" "}
             {checkoutData.billingAddress?.state}
           </p>
-          <p className='pb-1'>{checkoutData.billingAddress?.country}</p>
-          <p className='pb-1'>{checkoutData.billingAddress?.postalCode}</p>
-          <p className='pb-1'>{checkoutData.user?.email}</p>
+          <p className="pb-1">{checkoutData.billingAddress?.country}</p>
+          <p className="pb-1">{checkoutData.billingAddress?.postalCode}</p>
+          <p className="pb-1">{checkoutData.user?.email}</p>
           <p>{checkoutData.user?.phone}</p>
         </div>
 
         {/* Shipping Address */}
         <div>
-          <h2 className='mb-2 font-semibold'>Shipping Address</h2>
-          <p className='pb-1'>
+          <h2 className="mb-2 font-semibold">Shipping Address</h2>
+          <p className="pb-1">
             {checkoutData.user.firstName} {checkoutData.user.lastName}
           </p>
-          <p className='pb-1'>{checkoutData.shippingAddress?.companyName}</p>
-          <p className='pb-1'>{checkoutData.shippingAddress?.addressLine}</p>
-          <p className='pb-1'>
-            {checkoutData.shippingAddress?.city},{' '}
+          <p className="pb-1">{checkoutData.shippingAddress?.companyName}</p>
+          <p className="pb-1">{checkoutData.shippingAddress?.addressLine}</p>
+          <p className="pb-1">
+            {checkoutData.shippingAddress?.city},{" "}
             {checkoutData.shippingAddress?.state}
           </p>
-          <p className='pb-1'>{checkoutData.shippingAddress?.country}</p>
-          <p className='pb-1'>{checkoutData.shippingAddress?.postalCode}</p>
-          <p className='pb-1'>{checkoutData.user?.email}</p>
+          <p className="pb-1">{checkoutData.shippingAddress?.country}</p>
+          <p className="pb-1">{checkoutData.shippingAddress?.postalCode}</p>
+          <p className="pb-1">{checkoutData.user?.email}</p>
           <p>{checkoutData.user?.phone}</p>
         </div>
       </div>
