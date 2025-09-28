@@ -48,19 +48,11 @@ const CardsWithFiltering = () => {
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   // Use the reusable product filtering hook
-  const {
-    isLoading,
-    error,
-    currentProducts,
-    totalPages,
-    urlCategoryName,
-    filterInfo,
-    resetFilters,
-    isPriceFilterActive,
-  } = useProductFiltering({
-    autoFetch: true,
-    pageType: pageType === "SALE" ? "SALE" : pageType === "24HOUR" ? "24HOUR" : pageType === "AUSTRALIA" ? "AUSTRALIA" : null,
-  });
+  const { isLoading, error, currentProducts, totalPages, urlCategoryName, filterInfo, resetFilters, isPriceFilterActive } =
+    useProductFiltering({
+      autoFetch: true,
+      pageType: pageType === "SALE" ? "SALE" : pageType === "24HOUR" ? "24HOUR" : pageType === "AUSTRALIA" ? "AUSTRALIA" : null,
+    });
 
   // Create a set of favorite product IDs for quick lookup
   const favSet = new Set(favouriteItems.map((item) => item.meta.id));

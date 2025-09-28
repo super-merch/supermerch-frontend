@@ -15,7 +15,11 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const { selectedCategory } = useSelector((state) => state.filters);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(null);
+  
+  // Separate state for expansion and highlighting
+  const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
+  const [activeSub, setActiveSub] = useState(null);       // which sub item is highlighted
+  
   const [searchParams] = useSearchParams();
   const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
 
@@ -52,7 +56,8 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
       );
 
       if (categoryWithSubcategory) {
-        setActiveCategory(categoryWithSubcategory.id);
+        setOpenCategory(categoryWithSubcategory.id);
+        setActiveSub(urlSubCategory);
       }
     }
   }, [urlSubCategory, urlCategoryName, categories]);
@@ -61,12 +66,16 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const handleCategoryClick = (categoryName) => {
+  const handleCategoryClick = (categoryId, categoryName) => {
+    // Toggle expansion: if clicking the same category, collapse it; otherwise expand the new one
+    setOpenCategory(categoryId === openCategory ? null : categoryId);
+    setActiveSub(null); // Reset any active sub when switching groups
     dispatch(setSelectedCategory(categoryName));
     dispatch(applyFilters());
   };
 
   const handleSubCategoryClick = (subCategory, categoryId, categoryName) => {
+    setActiveSub(subCategory); // Set the active subcategory
     const encodedTitleName = encodeURIComponent(categoryName);
     const encodedSubCategory = encodeURIComponent(subCategory);
     dispatch(setMinPrice(0));
@@ -121,22 +130,20 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                 <div key={category.id} className="lg:min-w-[180px] max-lg:min-w-[140px]">
                   <div
                     className={`py-2 px-3 rounded cursor-pointer transition-colors ${
-                      activeCategory === category.id ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
+                      openCategory === category.id ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
                     }`}
-                    onClick={() => {
-                      setActiveCategory(activeCategory === category.id ? null : category.id);
-                      handleCategoryClick(category.name);
-                    }}
+                    onClick={() => handleCategoryClick(category.id, category.name)}
                   >
                     <p className="text-lg font-semibold text-blue-500 cursor-pointer">{category.name}</p>
                   </div>
 
                   {/* Subcategories */}
-                  {activeCategory === category.id && category.subTypes && (
+                  {openCategory === category.id && category.subTypes && (
                     <div className="ml-4 mt-2 space-y-1">
                       {category.subTypes.map((subType) => {
-                        // Check if this subcategory is active based on URL parameters
-                        const isActive = urlSubCategory === subType.name && urlCategoryName === category.name;
+                        // Check if this subcategory is active based on URL parameters or local state
+                        const isActive = (urlSubCategory === subType.name && urlCategoryName === category.name) || 
+                                        (activeSub === subType.name && openCategory === category.id);
 
                         return (
                           <button
