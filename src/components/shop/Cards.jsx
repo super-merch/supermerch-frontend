@@ -114,6 +114,7 @@ const Cards = () => {
     fetchMultipleParamPages,
     productionIds,
     australiaIds,
+    allProductsCacheRef
   } = useContext(AppContext);
     // track in-flight requests for all-products to dedupe network calls
   const pendingAllRequests = useRef({});
@@ -634,20 +635,35 @@ const Cards = () => {
     await p;
   };
 
-
-  // Function to fetch products in batches of 100 (for all products) - original logic
-    // Function to fetch products in batches of 100 (deduped)
   const fetchProductsBatch = async (apiPage = 1, sortOption = "") => {
     if (isPriceFilterActive) return; // Skip if price filter is active
 
     const key = `all_${apiPage}_${String(sortOption)}`;
 
-    // If there's already a pending request for same key, reuse it
+    const cached = allProductsCacheRef.current[key];
+    if (cached) {
+      if (cached.item_count !== undefined) setCount(cached.item_count);
+
+      if (apiPage === 1) {
+        setAllProducts(cached.data);
+      } else {
+        setAllProducts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.meta?.id));
+          const newProducts = cached.data.filter(
+            (product) => !existingIds.has(product.meta?.id)
+          );
+          return [...prev, ...newProducts];
+        });
+      }
+      return;
+    }
+
+    // 2) If there's already a pending request for same key, await it and then return
     if (pendingAllRequests.current[key]) {
       try {
         await pendingAllRequests.current[key];
       } catch (e) {
-        // swallow, original request handles error state
+        // swallow; original request will handle error state
       }
       return;
     }
@@ -658,7 +674,7 @@ const Cards = () => {
     // create the request promise and store it in the ref
     const promise = (async () => {
       try {
-        const limit = 10;
+        const limit = 10; // keep same as your current code
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/client-products?page=${apiPage}&limit=${limit}&sort=${sortOption}&filter=true`
         );
@@ -669,11 +685,14 @@ const Cards = () => {
         if (!data || !data.data) {
           throw new Error("Unexpected API response structure");
         }
+
+        // persist item count
         setCount(data.item_count);
 
         const validProducts = data.data.filter((product) => {
           const priceGroups = product.product?.prices?.price_groups || [];
-          const basePrice = priceGroups.find((group) => group?.base_price) || {};
+          const basePrice =
+            priceGroups.find((group) => group?.base_price) || {};
           const priceBreaks = basePrice.base_price?.price_breaks || [];
           return (
             priceBreaks.length > 0 &&
@@ -682,6 +701,13 @@ const Cards = () => {
           );
         });
 
+        // store the page into in-memory cache
+        allProductsCacheRef.current[key] = {
+          data: validProducts,
+          item_count: data.item_count,
+        };
+
+        // apply to state exactly as before
         if (apiPage === 1) {
           setAllProducts(validProducts);
         } else {
@@ -696,6 +722,8 @@ const Cards = () => {
       } catch (error) {
         console.error("Error fetching products:", error);
         setError("Error fetching products. Please try again.");
+        // rethrow so awaiting callers know it failed (the wrapper will remove pending)
+        throw error;
       } finally {
         // leave isLoading false to callers after awaiting; keep it consistent
         setIsLoading(false);
@@ -711,6 +739,7 @@ const Cards = () => {
       delete pendingAllRequests.current[key];
     }
   };
+
 
 
   // Get the current active products based on mode and price filter
@@ -802,7 +831,7 @@ const Cards = () => {
 
   // Initial fetch when component mounts (only if no category is selected and no price filter)
   useEffect(() => {
-    if (!selectedCategory && allProducts.length === 0 && !isPriceFilterActive) {
+    if (!selectedCategory && allProducts.length === 0 && !isPriceFilterActive ) {
       fetchProductsBatch(1, sortOption);
     }
   }, []);
@@ -1136,8 +1165,8 @@ const Cards = () => {
                       ? marginEntry.marginFlat
                       : 0;
 
-                  minPrice += marginFlat;
-                  maxPrice += marginFlat;
+                  minPrice += (marginFlat * minPrice) / 100;
+                  maxPrice += (marginFlat * maxPrice) / 100;
 
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =

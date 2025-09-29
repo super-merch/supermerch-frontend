@@ -8,7 +8,7 @@ import {
   clearFavourites,
   loadFavouritesFromDB,
 } from "@/redux/slices/favouriteSlice";
-import { clearCart } from "@/redux/slices/cartSlice";
+import { clearCart, initializeCartFromStorage, selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
 
 export const AppContext = createContext();
@@ -25,7 +25,8 @@ const AppContextProvider = (props) => {
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
   const pendingParamMultiRequestsRef = useRef({});
-
+  const searchCacheRef = useRef({});
+  const pendingSearchRequestsRef = useRef({});
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
 
   const [token, setToken] = useState(
@@ -57,6 +58,7 @@ const AppContextProvider = (props) => {
     dispatch(clearCurrentUser());
     setToken("");
     googleLogout();
+    dispatch(selectCurrentUserCartItems());
     if (window.google && window.google.accounts) {
       window.google.accounts.id.disableAutoSelect();
     }
@@ -98,11 +100,28 @@ const AppContextProvider = (props) => {
   const [userData, setUserData] = useState(null);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
 
   const [totalApiPages, setTotalApiPages] = useState(0);
   const [selectedParamCategoryId, setSelectedParamCategoryId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [shopCategory, setShopCategory] = useState(null);
+  // Best sellers
+  const allProductsCacheRef = useRef({});
+  const bestSellerCacheRef = useRef({});
+  const pendingBestSellerRef = useRef({});
+
+  // Discounted products
+  const discountedCacheRef = useRef({});
+  const pendingDiscountedRef = useRef({});
+
+  // Trending products
+  const trendingCacheRef = useRef({});
+  const pendingTrendingRef = useRef({});
+
+  // New arrivals
+  const arrivalCacheRef = useRef({});
+  const pendingArrivalRef = useRef({});
 
   const options = { day: "2-digit", month: "short", year: "numeric" };
 
@@ -128,9 +147,11 @@ const AppContextProvider = (props) => {
         headers: { token },
       });
       if (data.success) {
+        setUserEmail(data.user.email);
         if (data.user.defaultAddress) {
           setAddressData(data.user.defaultAddress);
         }
+        console.log(data)
         if (data.user.defaultShippingAddress) {
           setShippingAddressData(data.user.defaultShippingAddress);
         }
@@ -271,30 +292,70 @@ const AppContextProvider = (props) => {
   const fetchSearchedProducts = async (search, page = 1, sort = "") => {
     setSearchLoading(true);
     try {
-      const limit = 9; // Changed from 100 to 9 to match itemsPerPage
-      const response = await fetch(
-        `${backednUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
-      );
+      const limit = 9;
+      const key = `${search}_${page}_${sort}`;
 
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
+      // 1) Return cached result if exists
+      const cachedPage =
+        searchCacheRef.current?.[search]?.[sort]?.pages?.[page];
+      if (cachedPage) {
+        setSearchedProducts(cachedPage);
         setSearchLoading(false);
-        throw new Error("Unexpected API response structure");
+        return cachedPage;
       }
 
-      setSearchedProducts(data); // Store the full response object, not just data.data
-      setSearchLoading(false);
+      // 2) Await in-flight request if one exists
+      if (pendingSearchRequestsRef.current[key]) {
+        const result = await pendingSearchRequestsRef.current[key];
+        setSearchedProducts(result);
+        setSearchLoading(false);
+        return result;
+      }
 
-      // Return the full response so the component can access total_pages
-      return data;
+      // 3) Create and store promise
+      const promise = (async () => {
+        const response = await fetch(
+          `${backednUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
+        );
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data = await response.json();
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        // Save to cache
+        searchCacheRef.current[search] = {
+          ...(searchCacheRef.current[search] || {}),
+          [sort]: {
+            ...(searchCacheRef.current[search]?.[sort] || { pages: {} }),
+            pages: {
+              ...(searchCacheRef.current[search]?.[sort]?.pages || {}),
+              [page]: data,
+            },
+            total_pages:
+              data.total_pages ??
+              searchCacheRef.current[search]?.[sort]?.total_pages,
+          },
+        };
+
+        setSearchedProducts(data);
+        return data;
+      })();
+
+      pendingSearchRequestsRef.current[key] = promise;
+
+      try {
+        const res = await promise;
+        return res;
+      } finally {
+        delete pendingSearchRequestsRef.current[key];
+        setSearchLoading(false);
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Error fetching search results");
       setSearchLoading(false);
-      throw err; // Re-throw so the component can handle it
+      throw err;
     }
   };
 
@@ -341,51 +402,93 @@ const AppContextProvider = (props) => {
 
   const fetchTrendingProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      if (!limit) limit = 100;
+      const key = `${page}_${sort}_${limit}`;
 
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        throw new Error("Unexpected API response structure");
+      if (trendingCacheRef.current[key]) {
+        setTrendingProducts(trendingCacheRef.current[key]);
+        return;
       }
 
-      setTrendingProducts(data.data);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
+      if (pendingTrendingRef.current[key]) {
+        await pendingTrendingRef.current[key];
+        return;
+      }
+
+      const p = (async () => {
+        const response = await fetch(
+          `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        trendingCacheRef.current[key] = data.data;
+        setTrendingProducts(data.data);
+      })();
+
+      pendingTrendingRef.current[key] = p;
+
+      try {
+        await p;
+      } finally {
+        delete pendingTrendingRef.current[key];
+      }
     } catch (err) {
       setError(err.message);
     }
   };
+
   const [arrivalProducts, setArrivalProducts] = useState([]);
   const fetchNewArrivalProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      if (!limit) limit = 100;
+      const key = `${page}_${sort}_${limit}`;
 
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        throw new Error("Unexpected API response structure");
+      if (arrivalCacheRef.current[key]) {
+        setArrivalProducts(arrivalCacheRef.current[key]);
+        return;
       }
 
-      setArrivalProducts(data.data);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
+      if (pendingArrivalRef.current[key]) {
+        await pendingArrivalRef.current[key];
+        return;
+      }
+
+      const p = (async () => {
+        const response = await fetch(
+          `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        arrivalCacheRef.current[key] = data.data;
+        setArrivalProducts(data.data);
+      })();
+
+      pendingArrivalRef.current[key] = p;
+
+      try {
+        await p;
+      } finally {
+        delete pendingArrivalRef.current[key];
+      }
     } catch (err) {
       setError(err.message);
     }
   };
+
   const fetchMultipleArrivalPages = async (
     maxPages = 1,
     limit = 100,
@@ -469,27 +572,48 @@ const AppContextProvider = (props) => {
   const [discountedProducts, setDiscountedProducts] = useState([]);
   const fetchDiscountedProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      if (!limit) limit = 100;
+      const key = `${page}_${sort}_${limit}`;
 
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        throw new Error("Unexpected API response structure");
+      if (discountedCacheRef.current[key]) {
+        setDiscountedProducts(discountedCacheRef.current[key]);
+        return;
       }
 
-      setDiscountedProducts(data.data);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
+      if (pendingDiscountedRef.current[key]) {
+        await pendingDiscountedRef.current[key];
+        return;
+      }
+
+      const p = (async () => {
+        const response = await fetch(
+          `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        discountedCacheRef.current[key] = data.data;
+        setDiscountedProducts(data.data);
+      })();
+
+      pendingDiscountedRef.current[key] = p;
+
+      try {
+        await p;
+      } finally {
+        delete pendingDiscountedRef.current[key];
+      }
     } catch (err) {
       setError(err.message);
     }
   };
+
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   const fetchMultipleBestSellerPages = async (
     maxPages = 1,
@@ -533,22 +657,48 @@ const AppContextProvider = (props) => {
   const fetchBestSellerProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(
-        `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
+      const key = `${page}_${sort}_${limit}`;
 
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        throw new Error("Unexpected API response structure");
+      // Return cached result if present
+      if (bestSellerCacheRef.current[key]) {
+        setBestSellerProducts(bestSellerCacheRef.current[key]);
+        return;
       }
 
-      setBestSellerProducts(data.data);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
+      // Await in-flight request if exists
+      if (pendingBestSellerRef.current[key]) {
+        await pendingBestSellerRef.current[key];
+        return;
+      }
+
+      // Create promise and store in pending map (dedupe)
+      const p = (async () => {
+        const response = await fetch(
+          `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        // store array in cache (same shape your component expects)
+        bestSellerCacheRef.current[key] = data.data;
+
+        // keep original behavior
+        setBestSellerProducts(data.data);
+      })();
+
+      pendingBestSellerRef.current[key] = p;
+
+      try {
+        await p;
+      } finally {
+        delete pendingBestSellerRef.current[key];
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -566,7 +716,6 @@ const AppContextProvider = (props) => {
     try {
       const endPage = startPage + maxPages - 1;
 
-      // Try to short-circuit if ALL requested pages are cached
       const categoryCache = paramProductsCacheRef.current[categoryId];
       let allCached = true;
       const cachedProducts = [];
@@ -640,7 +789,7 @@ const AppContextProvider = (props) => {
       return [];
     }
   };
-  
+
   const fetchParamProducts = async (categoryId, page) => {
     try {
       setSkeletonLoading(true);
@@ -764,8 +913,13 @@ const AppContextProvider = (props) => {
     //   setSkeletonLoading(false);
     // }
   };
+  // States for storing data
   const [australia, setAustralia] = useState([]);
   const [totalAustraliaPages, setTotalAustraliaPages] = useState(0);
+
+  // 🗄️ Caches
+  const [australiaCache, setAustraliaCache] = useState({});
+  const [allAustraliaCache, setAllAustraliaCache] = useState({});
 
   // Function to fetch Australia products with pagination
   const fetchAustraliaProducts = async (
@@ -774,6 +928,17 @@ const AppContextProvider = (props) => {
     sortOption = ""
   ) => {
     try {
+      const cacheKey = `${page}-${limit}-${sortOption}`;
+
+      // ✅ Check cache first
+      if (australiaCache[cacheKey]) {
+        const cachedData = australiaCache[cacheKey];
+        setAustralia(cachedData.data || []);
+        setTotalAustraliaPages(cachedData.totalPages || 0);
+        return cachedData;
+      }
+
+      // Fetch from API if not in cache
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
@@ -794,13 +959,19 @@ const AppContextProvider = (props) => {
         throw new Error("Unexpected API response structure");
       }
 
-      setAustralia(data);
-      setTotalAustraliaPages(data.totalPages);
+      // Save in state
+      setAustralia(data.data || []);
+      setTotalAustraliaPages(data.totalPages || 0);
+
+      // ✅ Store in cache
+      setAustraliaCache((prev) => ({
+        ...prev,
+        [cacheKey]: data,
+      }));
 
       return data;
     } catch (error) {
       console.error("Error fetching Australia products:", error);
-
       throw error;
     }
   };
@@ -808,6 +979,14 @@ const AppContextProvider = (props) => {
   // Function to fetch all Australia products (for price filtering)
   const fetchAllAustraliaProducts = async (sortOption = "") => {
     try {
+      const cacheKey = `all-${sortOption}`;
+
+      // ✅ Check cache first
+      if (allAustraliaCache[cacheKey]) {
+        return allAustraliaCache[cacheKey];
+      }
+
+      // Fetch from API if not cached
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
@@ -824,6 +1003,13 @@ const AppContextProvider = (props) => {
         throw new Error("Failed to fetch all Australia products");
 
       const data = await response.json();
+
+      // ✅ Store in cache
+      setAllAustraliaCache((prev) => ({
+        ...prev,
+        [cacheKey]: data,
+      }));
+
       return data;
     } catch (error) {
       console.error("Error fetching all Australia products:", error);
@@ -831,41 +1017,34 @@ const AppContextProvider = (props) => {
     }
   };
 
-  // Legacy function (keep for backward compatibility)
-  const fetchAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await response.json();
-      setAustralia(data);
-      return data;
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
   const [hourProd, setHourProd] = useState([]);
   const [totalHourPages, setTotalHourPages] = useState(0);
 
-  // Function to fetch Australia products with pagination
+  // 🗄️ Caches
+  const [hourCache, setHourCache] = useState({});
+  const [allHourCache, setAllHourCache] = useState({});
+
+  // Function to fetch 24 Hour products with pagination
   const fetchHourProducts = async (page = 1, limit = 9, sortOption = "") => {
     try {
+      const cacheKey = `${page}-${limit}-${sortOption}`;
+
+      // ✅ Check cache first
+      if (hourCache[cacheKey]) {
+        const cachedData = hourCache[cacheKey];
+        setHourProd(cachedData.data || []);
+        setTotalHourPages(cachedData.totalPages || 0);
+        return cachedData;
+      }
+
+      // Fetch from API if not in cache
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
         }/api/24hour/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -877,38 +1056,57 @@ const AppContextProvider = (props) => {
         throw new Error("Unexpected API response structure");
       }
 
-      setHourProd(data);
-      setTotalHourPages(data.totalPages);
+      // Save in state
+      setHourProd(data.data || []);
+      setTotalHourPages(data.totalPages || 0);
+
+      // ✅ Store in cache
+      setHourCache((prev) => ({
+        ...prev,
+        [cacheKey]: data,
+      }));
 
       return data;
     } catch (error) {
-      console.error("Error fetching Australia products:", error);
-
+      console.error("Error fetching 24 Hour products:", error);
       throw error;
     }
   };
 
-  // Function to fetch all Australia products (for price filtering)
+  // Function to fetch all 24 Hour products (for price filtering)
   const fetchAllHourProducts = async (sortOption = "") => {
     try {
+      const cacheKey = `all-${sortOption}`;
+
+      // ✅ Check cache first
+      if (allHourCache[cacheKey]) {
+        return allHourCache[cacheKey];
+      }
+
+      // Fetch from API if not cached
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
         }/api/24hour/get-products?all=true&sort=${sortOption}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch all 24 hour products");
+      if (!response.ok) throw new Error("Failed to fetch all 24 Hour products");
 
       const data = await response.json();
+
+      // ✅ Store in cache
+      setAllHourCache((prev) => ({
+        ...prev,
+        [cacheKey]: data,
+      }));
+
       return data;
     } catch (error) {
-      console.error("Error fetching all 24 hour products:", error);
+      console.error("Error fetching all 24 Hour products:", error);
       throw error;
     }
   };
@@ -1023,7 +1221,8 @@ const AppContextProvider = (props) => {
   const fetchBlogs = async () => {
     try {
       const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs`);
-      setBlogs(data);
+      setBlogs(data.blogs);
+      console.log(data.blogs)
     } catch (error) {
       toast.error(error.message);
       toast.error(error.message);
@@ -1149,6 +1348,7 @@ const AppContextProvider = (props) => {
     loadUserOrder,
     loading,
     setLoading,
+    userEmail,
     fetchWebUser,
     addressData,
     setAddressData,
@@ -1179,7 +1379,6 @@ const AppContextProvider = (props) => {
     hourProd,
     totalHourPages,
     setTotalHourPages,
-    fetchAustralia,
     backednUrl,
     totalDiscount,
     setTotalDiscount,
@@ -1191,6 +1390,7 @@ const AppContextProvider = (props) => {
     setProducts,
     handleLogout,
     fetchV1Categories,
+    allProductsCacheRef,
     blogs,
     setBlogs,
     options,

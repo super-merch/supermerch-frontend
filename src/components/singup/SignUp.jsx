@@ -84,7 +84,6 @@ const SignUp = () => {
 
         if (response.data.success) {
           const { user } = response.data;
-          console.log(user, "user");
 
           if (user.email !== email) {
             setError("Email not found.");
@@ -94,9 +93,7 @@ const SignUp = () => {
           } else {
             setError("");
             const { token } = response.data;
-            console.log(response.data, "login");
             setToken(token);
-            console.log(token, "token");
 
             toast.success("Login successful!");
 
@@ -143,7 +140,6 @@ const SignUp = () => {
         );
         
         const userInfo = await userInfoResponse.json();
-        console.log(userInfo);
         
         setGoogleData({
           email: userInfo.email,
@@ -188,7 +184,6 @@ const SignUp = () => {
         // For Google login
         if (response.data.success) {
           const { user } = response.data;
-          console.log(user, "Google user login");
 
           if (user.email !== googleData.email) {
             setGoogleError("Email not found.");
@@ -198,9 +193,7 @@ const SignUp = () => {
           } else {
             setGoogleError("");
             const { token } = response.data;
-            console.log(response.data, "Google login");
             setToken(token);
-            console.log(token, "token");
             dispatch(initializeCartFromStorage({ email: user.email }));
             toast.success("Google Login successful!");
 

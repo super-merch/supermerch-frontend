@@ -20,11 +20,8 @@ const CartInitializer = ({ children }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (data.success) {
           // Initialize cart from storage for this user
-          dispatch(initializeCartFromStorage({ email: data.email }));
-        }
+          dispatch(initializeCartFromStorage({ email: data.email ||"guest@gmail.com" }));
       } catch (error) {
         console.error("Error initializing cart:", error);
       }

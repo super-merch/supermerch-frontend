@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
@@ -22,8 +22,9 @@ const Clothing = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi,productionIds,
-    australiaIds, } = useContext(AppContext);
+  const { marginApi, productionIds, australiaIds } = useContext(AppContext);
+  const productsCacheRef = useRef({});
+  const pendingClothingRequestsRef = useRef({});
 
   const dispatch = useDispatch();
 
@@ -42,26 +43,69 @@ const Clothing = ({ activeTab }) => {
   const fetchClothingProducts = async () => {
     setLoading(true);
     setError(null);
+
+    const category = "dress"; // same as your original URL
+    const page = 1;
+    const limit = 8;
+    const key = `${category}_${page}_${limit}`;
+
     try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/client-products/category?category=dress&page=1&limit=8&filter=true`
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      const data = await response.json();
-
-      if (!data || !data.data) {
-        throw new Error("Unexpected API response structure");
+      // 1) return cached page if present
+      const cachedPage = productsCacheRef.current?.[category]?.pages?.[page];
+      if (cachedPage) {
+        // cachedPage is the full API response (same shape as `data`)
+        setProducts((cachedPage.data || []).slice(0, limit));
+        setLoading(false);
+        return cachedPage;
       }
 
-      setProducts(data.data.slice(0, 8)); // Ensure only 8 products
+      // 2) if an identical request is already in-flight, await and reuse it
+      if (pendingClothingRequestsRef.current[key]) {
+        const inFlight = await pendingClothingRequestsRef.current[key];
+        setProducts((inFlight.data || []).slice(0, limit));
+        setLoading(false);
+        return inFlight;
+      }
+
+      // 3) create & store promise so concurrent calls reuse it
+      const promise = (async () => {
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/client-products/category?category=${category}&page=${page}&limit=${limit}&filter=true`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+
+        // store full response in cache under category -> pages -> page
+        productsCacheRef.current[category] = {
+          ...(productsCacheRef.current[category] || { pages: {} }),
+          pages: {
+            ...(productsCacheRef.current[category]?.pages || {}),
+            [page]: data,
+          },
+        };
+
+        return data;
+      })();
+
+      pendingClothingRequestsRef.current[key] = promise;
+
+      // await the promise, update UI
+      const result = await promise;
+      setProducts((result.data || []).slice(0, limit));
+      return result;
     } catch (err) {
       console.error("Error fetching clothing products:", err);
-      setError(err.message);
+      setError(err.message || "Error fetching products");
     } finally {
+      // clean up pending marker and loading state
+      delete pendingClothingRequestsRef.current[key];
       setLoading(false);
     }
   };

@@ -106,7 +106,6 @@ export const addToFavourite = (product ) => async (dispatch, getState) => {
     const exists = favouriteItems.find(item => item.meta.id === product.meta.id);
     
     if (exists) {
-      console.log('Product already in favourites');
       return;
     }
 

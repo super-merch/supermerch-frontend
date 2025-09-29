@@ -51,6 +51,7 @@ const ProductDetails = () => {
     error,
     marginApi,
     totalDiscount,
+    userEmail:newUserEmail
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -66,17 +67,16 @@ const ProductDetails = () => {
           return;
         }
 
-        const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // });
 
-        if (data.success) {
-          setUserEmail(data.email);
+          console.log("Fetched user email:", newUserEmail);
+          setUserEmail(newUserEmail);
           // Set current user in Redux cart
-          dispatch(initializeCartFromStorage({ email: data.email }));
-        }
+          dispatch(initializeCartFromStorage({ email: newUserEmail }));
       } catch (error) {
         console.error(
           "Error fetching user email:",
@@ -212,7 +212,6 @@ const ProductDetails = () => {
       );
 
       const data = await response.json();
-      console.log("Shipping Charges Data:", data);
       setFreightFee(data.shipping || 0);
 
       if (!response.ok) {
@@ -263,7 +262,7 @@ const ProductDetails = () => {
   );
 
   const marginEntry = marginApi[productId] || { marginFlat: 0 };
-  const perUnitWithMargin = unitPrice + marginEntry.marginFlat;
+  const perUnitWithMargin = unitPrice + (unitPrice * marginEntry.marginFlat) / 100;
 
   const discountPct = totalDiscount[productId] || 0;
   const discountMultiplier = 1 - discountPct / 100;
@@ -309,7 +308,6 @@ const ProductDetails = () => {
       if (hasColors) {
         const firstColor = product.colours.list[0].colours[0];
         setSelectedColor(firstColor);
-        console.log("Colors:",product.colours.list);
         setActiveImage(
           colorImages[firstColor] || product.images?.[0] || noimage
         );
@@ -361,7 +359,7 @@ const ProductDetails = () => {
 
     // Calculate pricing with margin and discount
     const marginEntry = marginApi[productId] || { marginFlat: 0 };
-    const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
+    const rawPerUnit = finalUnitPrice + (finalUnitPrice * marginEntry.marginFlat) / 100;
     const discountedPerUnit = rawPerUnit * (1 - discountPct / 100);
 
     // Calculate total: (discounted per-unit × qty) + setup + freight
@@ -619,7 +617,6 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         return;
       }
-      console.log("product:", single_product);
 
       formData1.append("name", formData.name);
       formData1.append("email", formData.email);
@@ -657,7 +654,6 @@ const ProductDetails = () => {
       );
       if (data.success) {
         toast.success("Quote sent successfully");
-        console.log(data);
         setFormData({
           name: "",
           email: "",
@@ -672,7 +668,6 @@ const ProductDetails = () => {
       } else {
         toast.error(data.message || "Something went wrong");
         setQuoteLoading(false);
-        console.log(data.message);
       }
     } catch (error) {
       setQuoteLoading(false);
@@ -713,7 +708,7 @@ const ProductDetails = () => {
   })();
 
   // Calculate final per unit price with margin and discount
-  const rawPerUnit = unitPrice + marginEntry.marginFlat;
+  const rawPerUnit = unitPrice + (marginEntry.marginFlat * unitPrice) / 100;
   const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
 
   const handleAddToCart = (e) => {
@@ -760,7 +755,7 @@ const ProductDetails = () => {
           }
 
           // Add margin and apply discount
-          const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
+          const rawPerUnit = finalUnitPrice + (marginEntry.marginFlat * finalUnitPrice) / 100;
           return rawPerUnit * (1 - discountPct / 100);
         })(),
         marginFlat: marginEntry.marginFlat,
@@ -946,10 +941,6 @@ const ProductDetails = () => {
                     setSelectedPrintMethod(selected);
                     // Reset quantity to first price break of new selection
                     if (selected?.price_breaks?.length > 0) {
-                      console.log(
-                        "Selected price breaks:",
-                        selected.price_breaks[0].qty
-                      );
                       setCurrentQuantity(selected.price_breaks[0].qty);
                     }
                   }}
@@ -1039,7 +1030,7 @@ const ProductDetails = () => {
                   }
 
                   const rawTierPrice = marginEntry
-                    ? finalUnitPrice + marginEntry.marginFlat
+                    ? finalUnitPrice + (marginEntry.marginFlat *finalUnitPrice)/100
                     : finalUnitPrice;
 
                   const discountedTierPrice = rawTierPrice * discountMultiplier;

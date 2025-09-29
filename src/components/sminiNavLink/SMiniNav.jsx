@@ -61,6 +61,7 @@ const SMiniNav = () => {
     fetchV1Categories,
     setSidebarActiveCategory,
     setSidebarActiveLabel,
+    userEmail
   } = useContext(AppContext);
 
   const getNav = async () => {
@@ -132,7 +133,14 @@ const SMiniNav = () => {
 
   const dispatch = useDispatch();
   const [navbarLogout, setNavbarLogout] = useState(false);
-  const totalQuantity = useSelector((state) => state.cart.items.length);
+
+  let totalQuantity = useSelector((state) => state.cart.items.length);
+  const myItems = useSelector((state) => state.cart.items);
+  if(!userEmail){
+    const guest = myItems.filter(item => item.userEmail === "guest@gmail.com");
+    totalQuantity = guest.length
+    console.log(totalQuantity)
+  }
   const { favouriteQuantity } = useSelector((state) => state.favouriteProducts);
   const [isOpen, setIsOpen] = useState(false);
   const [dropDown, setDropDown] = useState(false);

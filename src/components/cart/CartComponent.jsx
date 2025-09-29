@@ -24,7 +24,6 @@ const CartComponent = () => {
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const { totalQuantity } = useSelector((state) => state.cart);
-  console.log(items);
   const [value, setValue] = useState("");
 
   // Coupon states
@@ -79,7 +78,6 @@ const CartComponent = () => {
       );
 
       const data = await response.json();
-      console.log("Shipping Charges Data:", data);
       setShippingCharges(data.shipping || 0);
 
       if (!response.ok) {
@@ -227,7 +225,7 @@ const CartComponent = () => {
     setOpenModel(true);
     setId(id);
   };
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const slugify = (s) =>
   String(s || "")
     .trim()
@@ -242,7 +240,6 @@ const CartComponent = () => {
   const slug = slugify(name);
   navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
 };
-  console.log(items)
 
   return (
     <div className="flex flex-wrap justify-between gap-4 Mycontainer md:flex-wrap lg:flex-nowrap">

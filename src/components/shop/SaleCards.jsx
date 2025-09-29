@@ -670,8 +670,8 @@ const SaleCards = () => {
                         : 0;
 
                     // 3) apply the flat margin to both ends of the range
-                    minPrice += marginFlat;
-                    maxPrice += marginFlat;
+                    minPrice += (minPrice * marginFlat) / 100;
+                    maxPrice += (maxPrice * marginFlat) / 100;a
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;

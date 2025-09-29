@@ -20,7 +20,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
-  console.log(items, "items");
 
   const { token, addressData, backednUrl,shippingAddressData, totalDiscount } =
     useContext(AppContext);

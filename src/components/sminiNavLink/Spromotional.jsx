@@ -173,29 +173,6 @@ const Spromotional = () => {
   const filteredProducts = useSelector(
     (state) => state.promotionals.filteredPromotionalProducts
   );
-  const [prioritizedData, setPrioritizedData] = useState([]);
-
-  // Replace your existing useEffect with this updated one
-  useEffect(() => {
-    const getPrioritize = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/prioritized`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const result = await response.json();
-      } catch (error) {
-        console.error("Error occurred:", error);
-      }
-    };
-
-    getPrioritize();
-  }, []);
 
   const matchedProducts = filteredProducts.filter((product) => {
     const typeId =

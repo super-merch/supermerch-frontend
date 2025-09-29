@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -22,13 +22,14 @@ const Bags = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi,productionIds,
-    australiaIds, } = useContext(AppContext);
+  const { marginApi, productionIds, australiaIds } = useContext(AppContext);
+  const productsCacheRef = useRef({});
+  const pendingClothingRequestsRef = useRef({});
 
-    // useEffect(() => {
-    //   getAll24HourProduction();
-    //   getAllAustralia();
-    // }, []);
+  // useEffect(() => {
+  //   getAll24HourProduction();
+  //   getAllAustralia();
+  // }, []);
 
   const dispatch = useDispatch();
 
@@ -40,38 +41,81 @@ const Bags = ({ activeTab }) => {
   }, [activeTab]);
 
   const fetchClothingProducts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  setLoading(true);
+  setError(null);
+
+  const category = "bag"; // same as your original URL
+  const page = 1;
+  const limit = 8;
+  const key = `${category}_${page}_${limit}`;
+
+  try {
+    // 1) return cached page if present
+    const cachedPage = productsCacheRef.current?.[category]?.pages?.[page];
+    if (cachedPage) {
+      // cachedPage is the full API response (same shape as `data`)
+      setProducts((cachedPage.data || []).slice(0, limit));
+      setLoading(false);
+      return cachedPage;
+    }
+
+    // 2) if an identical request is already in-flight, await and reuse it
+    if (pendingClothingRequestsRef.current[key]) {
+      const inFlight = await pendingClothingRequestsRef.current[key];
+      setProducts((inFlight.data || []).slice(0, limit));
+      setLoading(false);
+      return inFlight;
+    }
+
+    // 3) create & store promise so concurrent calls reuse it
+    const promise = (async () => {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/client-products/category?category=bag&page=1&limit=8&filter=true`
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products/category?category=${category}&page=${page}&limit=${limit}&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
-
       const data = await response.json();
 
       if (!data || !data.data) {
         throw new Error("Unexpected API response structure");
       }
 
-      setProducts(data.data.slice(0, 8)); // Ensure only 8 products
-    } catch (err) {
-      console.error("Error fetching clothing products:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      // store full response in cache under category -> pages -> page
+      productsCacheRef.current[category] = {
+        ...(productsCacheRef.current[category] || { pages: {} }),
+        pages: {
+          ...(productsCacheRef.current[category]?.pages || {}),
+          [page]: data,
+        },
+      };
+
+      return data;
+    })();
+
+    pendingClothingRequestsRef.current[key] = promise;
+
+    // await the promise, update UI
+    const result = await promise;
+    setProducts((result.data || []).slice(0, limit));
+    return result;
+  } catch (err) {
+    console.error("Error fetching clothing products:", err);
+    setError(err.message || "Error fetching products");
+  } finally {
+    // clean up pending marker and loading state
+    delete pendingClothingRequestsRef.current[key];
+    setLoading(false);
+  }
+};
+
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
-    
-      favouriteItems.map((item) => {
-        favSet.add(item.meta.id)
-      })
+  const [cardHover, setCardHover] = useState(null);
+  const favSet = new Set();
+
+  favouriteItems.map((item) => {
+    favSet.add(item.meta.id);
+  });
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -96,19 +140,19 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
   }, [isModalOpen]);
 
   const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  };
 
   if (error) {
     return (
@@ -246,9 +290,14 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
-                        onMouseEnter={()=>setCardHover(product.meta.id)}
-                        onMouseLeave={()=>setCardHover(null)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
+                        onMouseEnter={() => setCardHover(product.meta.id)}
+                        onMouseLeave={() => setCardHover(null)}
                       >
                         {/* Show discount badge */}
                         {discountPct > 0 && (
@@ -358,7 +407,7 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                         </div>
 
                         {/* Color swatches */}
-                        
+
                         {/* Reduced content area */}
                         <div className="p-2 ">
                           <div className=" flex justify-center mb-1 gap-1  z-10">
@@ -457,11 +506,19 @@ const [cardHover, setCardHover] = useState(null);      const favSet = new Set()
                               })()}
                           </div>
                           <div className="text-center">
-                            <h2 className={`text-sm transition-all duration-300 ${cardHover===product.meta.id && product.overview.name.length > 20  ? "sm:text-[18px]" : "sm:text-lg"} font-semibold text-brand sm:leading-[18px] `}>
-                              {product.overview.name &&
-                              // product.overview.name.length > 20 && cardHover!==product.meta.id
-                              //   ? product.overview.name.slice(0, 20) + "..."
-                                 product.overview.name || "No Name"}
+                            <h2
+                              className={`text-sm transition-all duration-300 ${
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
+                              } font-semibold text-brand sm:leading-[18px] `}
+                            >
+                              {(product.overview.name &&
+                                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                //   ? product.overview.name.slice(0, 20) + "..."
+                                product.overview.name) ||
+                                "No Name"}
                             </h2>
 
                             {/* Minimum quantity */}

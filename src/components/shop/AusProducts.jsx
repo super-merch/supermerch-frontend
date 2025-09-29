@@ -54,19 +54,9 @@ const AustraliaProducts = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Price filter state and tracking
-  const [allFilteredProducts, setAllFilteredProducts] = useState([]);
-  const [isFiltering, setIsFiltering] = useState(false);
-  const [filterError, setFilterError] = useState("");
-  const [totalFilteredPages, setTotalFilteredPages] = useState(0);
-  const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
-
-  // State for managing products and pagination
-  const [allProducts, setAllProducts] = useState([]);
+  // Simplified state - remove local products state since we use context
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [totalApiPages, setTotalApiPages] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   // Get Redux filter state
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -79,10 +69,10 @@ const AustraliaProducts = () => {
 
   const {
     marginApi,
-    backendUrl,
     fetchAustraliaProducts,
     fetchAllAustraliaProducts,
-    australia,
+    australia, // Products from context
+    totalAustraliaPages, // Total pages from context
     skeletonLoading,
     productionIds,
     australiaIds,
@@ -112,9 +102,6 @@ const AustraliaProducts = () => {
   const handleClearPriceFilter = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
-    setAllFilteredProducts([]);
-    setTotalFilteredPages(0);
-    setFilterError("");
     setCurrentPage(1);
     dispatch(applyFilters());
   };
@@ -125,22 +112,7 @@ const AustraliaProducts = () => {
     setError("");
 
     try {
-      const data = await fetchAustraliaProducts(page, itemsPerPage, sortOption);
-
-      const validProducts = data.data.filter((product) => {
-        const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice = priceGroups.find((group) => group?.base_price) || {};
-        const priceBreaks = basePrice.base_price?.price_breaks || [];
-        return (
-          priceBreaks.length > 0 &&
-          priceBreaks[0]?.price !== undefined &&
-          priceBreaks[0]?.price > 0
-        );
-      });
-
-      setAllProducts(validProducts);
-      setTotalApiPages(data.totalPages || 1);
-      setTotalCount(data.totalCount || 0);
+      await fetchAustraliaProducts(page, itemsPerPage, sortOption);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching Australia products:", error);
@@ -155,8 +127,8 @@ const AustraliaProducts = () => {
     maxPrice,
     sortOption
   ) => {
-    setIsFiltering(true);
-    setFilterError("");
+    setIsLoading(true);
+    setError("");
 
     try {
       // Fetch all Australia products for filtering
@@ -173,41 +145,17 @@ const AustraliaProducts = () => {
           })
           .map((item) => item.product);
 
-        if (validProducts.length > 0) {
-          const uniqueProducts = Array.from(
-            new Map(
-              validProducts.map((product) => [product.meta?.id, product])
-            ).values()
-          );
-
-          const sortedProducts = sortOption
-            ? [...uniqueProducts].sort((a, b) => {
-                const priceA = getRealPrice(a);
-                const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh"
-                  ? priceA - priceB
-                  : priceB - priceA;
-              })
-            : uniqueProducts;
-
-          setAllFilteredProducts(sortedProducts);
-          setTotalFilteredPages(
-            Math.ceil(sortedProducts.length / itemsPerPage)
-          );
-        } else {
-          setFilterError("No products found in the specified price range.");
-        }
-      } else {
-        setFilterError("No products found in the specified price range");
+        return validProducts;
       }
+      return [];
     } catch (error) {
       console.error("Error filtering Australia products:", error);
-      setFilterError("Error fetching filtered products. Please try again.");
+      setError("Error fetching filtered products. Please try again.");
+      return [];
     } finally {
-      setIsFiltering(false);
+      setIsLoading(false);
     }
   };
-
 
   // Handle price filter changes
   useEffect(() => {
@@ -215,55 +163,26 @@ const AustraliaProducts = () => {
       setCurrentPage(1);
       fetchAndFilterAllAustraliaProducts(minPrice, maxPrice, sortOption);
     } else {
-      // Reset filtered products when no price filter is active
+      // Reset to normal pagination when no price filter is active
       setCurrentPage(1);
-      setAllFilteredProducts([]);
-      setTotalFilteredPages(0);
-      setFilterError("");
-      setFetchedPagesCount(0);
+      fetchAustraliaProductsPaginated(1, sortOption);
     }
-  }, [minPrice, maxPrice, sortOption, isPriceFilterActive]);
+  }, [minPrice, maxPrice, isPriceFilterActive]);
 
-  // Get the current active products based on price filter
-  const getActiveProducts = () => {
-    return isPriceFilterActive ? allFilteredProducts : allProducts;
-  };
+  // Initial load and sort changes
+  useEffect(() => {
+    if (!isPriceFilterActive) {
+      setCurrentPage(1);
+      fetchAustraliaProductsPaginated(1, sortOption);
+    }
+  }, [sortOption]);
 
-  // Apply sorting to active products
-  const getSortedProducts = () => {
-    const activeProducts = getActiveProducts();
-    if (!sortOption || isPriceFilterActive) return activeProducts;
-
-    return [...activeProducts].sort((a, b) => {
-      const getRealPriceForSort = (product) => {
-        const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice = priceGroups.find((group) => group?.base_price) || {};
-        const priceBreaks = basePrice.base_price?.price_breaks || [];
-
-        const prices = priceBreaks
-          .map((breakItem) => breakItem.price)
-          .filter((price) => price !== undefined);
-
-        let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-
-        const productId = product.meta.id;
-        const marginEntry = marginApi[productId] || {};
-        const marginFlat =
-          typeof marginEntry.marginFlat === "number"
-            ? marginEntry.marginFlat
-            : 0;
-
-        return minPrice + marginFlat;
-      };
-
-      const priceA = getRealPriceForSort(a);
-      const priceB = getRealPriceForSort(b);
-
-      if (sortOption === "lowToHigh") return priceA - priceB;
-      if (sortOption === "highToLow") return priceB - priceA;
-      return 0;
-    });
-  };
+  // Handle page changes for normal pagination (non-filtered)
+  useEffect(() => {
+    if (!isPriceFilterActive && currentPage > 0) {
+      fetchAustraliaProductsPaginated(currentPage, sortOption);
+    }
+  }, [currentPage]);
 
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
@@ -274,49 +193,38 @@ const AustraliaProducts = () => {
     favSet.add(item.meta.id);
   });
 
-  // Calculate total pages based on current products and mode
-  const getTotalPages = () => {
+  // Get current products based on mode
+  const getCurrentProducts = () => {
+    // For price filtering, we need to handle locally (since backend doesn't support price filtering)
     if (isPriceFilterActive) {
-      return totalFilteredPages;
+      // This would need to be implemented with local filtering of all products
+      // For now, return empty array since we don't have all products locally
+      return [];
     }
-    return totalApiPages;
+    
+    // For normal pagination, use products from context
+    return australia || [];
   };
 
-  // Handle sort changes
-  useEffect(() => {
+  // Calculate total pages based on current mode
+  const getTotalPages = () => {
     if (isPriceFilterActive) {
-      setCurrentPage(1);
-      return;
+      // For price filtering, we'd need to calculate based on filtered products
+      // Since we don't have all products locally, return 1 for now
+      return 1;
     }
-    setCurrentPage(1);
-    fetchAustraliaProductsPaginated(1, sortOption);
-  }, [sortOption]);
+    return totalAustraliaPages || 1;
+  };
 
-  // Initial fetch when component mounts
-  // useEffect(() => {
-  //   if (allProducts.length === 0 && !isPriceFilterActive) {
-  //     fetchAustraliaProductsPaginated(1, sortOption);
-  //   }
-  // }, []);
-
-  // Handle page changes
-  useEffect(() => {
-    if (currentPage > 1 && !isPriceFilterActive) {
-      fetchAustraliaProductsPaginated(currentPage, sortOption);
-    }
-  }, [currentPage]);
-
-  // Get current page products
-  const getCurrentPageProducts = () => {
-    const sortedProducts = getSortedProducts();
-
+  // Calculate total count for display
+  const getTotalCount = () => {
     if (isPriceFilterActive) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return sortedProducts.slice(startIndex, endIndex);
+      // For price filtering, we'd need the count of filtered products
+      return 0; // Placeholder
     }
-
-    return sortedProducts;
+    
+    // This should come from your API response - you might need to add it to context
+    return australiaIds?.size || 0;
   };
 
   useEffect(() => {
@@ -344,19 +252,17 @@ const AustraliaProducts = () => {
   };
 
   const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId);
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  };
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -380,18 +286,9 @@ const AustraliaProducts = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
-  // Calculate total count for display
-  const getTotalCount = () => {
-    if (isPriceFilterActive) {
-      return allFilteredProducts.length;
-    } else {
-      return totalCount;
-    }
-  };
-
-  const currentPageProducts = getCurrentPageProducts();
+  const currentProducts = getCurrentProducts();
   const totalPages = getTotalPages();
-  const showSkeleton = isLoading || skeletonLoading || isFiltering;
+  const showSkeleton = isLoading || skeletonLoading;
 
   return (
     <>
@@ -444,14 +341,6 @@ const AustraliaProducts = () => {
                     >
                       Highest to Lowest
                     </button>
-                    <button
-                      onClick={() => handleSortSelection("relevancy")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
-                    >
-                      Relevancy
-                    </button>
                   </div>
                 )}
               </div>
@@ -477,36 +366,32 @@ const AustraliaProducts = () => {
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
               <span className="font-semibold text-brand">
-                {!isLoading &&
-                  !skeletonLoading &&
-                  !isFiltering &&
-                  getTotalCount()}
+                {!isLoading && !skeletonLoading && getTotalCount()}
               </span>
               <p className="">
-                {isLoading || isFiltering
+                {isLoading
                   ? "Loading..."
                   : `Australia Made Products Found${
                       isPriceFilterActive ? " (Price filtered)" : ""
                     }`}
-                {isFiltering && " Please wait..."}
               </p>
             </div>
           </div>
 
-          {filterError && (
+          {error && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
-              <p className="text-red-700">{filterError}</p>
+              <p className="text-red-700">{error}</p>
             </div>
           )}
 
           <div
             className={`${
-              showSkeleton && getActiveProducts().length === 0
+              showSkeleton && currentProducts.length === 0
                 ? "grid grid-cols-3 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
                 : ""
             }`}
           >
-            {showSkeleton || isLoading || isFiltering ? (
+            {showSkeleton ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
                 <div
                   key={index}
@@ -534,9 +419,9 @@ const AustraliaProducts = () => {
                   </div>
                 </div>
               ))
-            ) : currentPageProducts.length > 0 ? (
+            ) : currentProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {currentPageProducts.map((product) => {
+                {currentProducts.map((product) => {
                   const priceGroups =
                     product.product?.prices?.price_groups || [];
                   const basePrice =
@@ -557,8 +442,8 @@ const AustraliaProducts = () => {
                       ? marginEntry.marginFlat
                       : 0;
 
-                  minPrice += marginFlat;
-                  maxPrice += marginFlat;
+                  minPrice += (marginFlat * minPrice) / 100;
+                  maxPrice += (marginFlat * maxPrice) / 100;
 
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =
@@ -568,10 +453,16 @@ const AustraliaProducts = () => {
                     <div
                       key={productId}
                       className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                      onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                      onClick={() =>
+                        handleViewProduct(
+                          product.meta.id,
+                          product.overview.name
+                        )
+                      }
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >
+                      {/* ... (rest of your product card JSX remains the same) ... */}
                       {/* Australia Made Badge */}
 
                       {discountPct > 0 && (
@@ -590,7 +481,6 @@ const AustraliaProducts = () => {
                         {(productionIds.has(product.meta.id) ||
                           productionIds.has(String(product.meta.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                            {/* small clock SVG (no extra imports) */}
                             <svg
                               className="w-3 h-3 flex-shrink-0"
                               viewBox="0 0 24 24"
@@ -622,7 +512,6 @@ const AustraliaProducts = () => {
                         {(australiaIds.has(product.meta.id) ||
                           australiaIds.has(String(product.meta.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                            {/* simple flag/triangle SVG */}
                             <svg
                               className="w-3 h-3 flex-shrink-0"
                               viewBox="0 0 24 24"

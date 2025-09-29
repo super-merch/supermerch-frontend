@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from 'react-router-dom';
 
 const Navigate = () => {
+  const [location, setLocation] = useState("")
   //get url 
   useEffect(()=>{
     const location = window.location.pathname
-    console.log(location)
+    setLocation(location)
   },[location])
   
   return (
@@ -20,7 +21,7 @@ const Navigate = () => {
           <p>Category</p>
           <MdKeyboardArrowRight className="text-xl" />
         </Link>
-        <p>{location === "/australia-made" ? "Australia Made" : "Shop"}</p>
+        <p>{location === "/australia-made" ? "Australia Made" : location === "/hour-production" ?"24 Hour Production": "Shop"}</p>
       </div>
     </div>
   );

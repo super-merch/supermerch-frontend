@@ -15,6 +15,7 @@ const Home = () => {
   const [emailModal, setEmailModal] = useState(false);
   const [discountModal, setDiscountModal] = useState(false);
   const [emailInput, setEmailInput] = useState("");
+  
   // useEffect(() => {
   //   setDiscountModal(true)
   // }, [])
@@ -38,7 +39,6 @@ const Home = () => {
   }, []);
   const [error, setError] = useState("");
   const handleSubmit = async (coupon, discount) => {
-    console.log(coupon, discount);
     setLoading(true);
     if (!emailInput) {
       setError("Email is required");
@@ -152,7 +152,9 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchCurrentCoupon();
+    if (!coupons.length) {
+      fetchCurrentCoupon();
+    }
   }, []);
 
   return (
@@ -203,14 +205,18 @@ const Home = () => {
                     <p className="mt-1 text-slate-600">Your reward is ready</p>
                     <div
                       className={`mt-5 ${
-                        coupenLoading ||!selectedCoupon?.discount
+                        coupenLoading || !selectedCoupon?.discount
                           ? "text-xl font-semibold"
-                          :  "text-5xl font-extrabold"
+                          : "text-5xl font-extrabold"
                       }  text-slate-900`}
                     >
                       {coupenLoading
                         ? "Loading..."
-                        : `${selectedCoupon?.discount ? selectedCoupon.discount+ ' % OFF':'No discount available' } `}
+                        : `${
+                            selectedCoupon?.discount
+                              ? selectedCoupon.discount + " % OFF"
+                              : "No discount available"
+                          } `}
                     </div>
                     {/* <div className="mt-5 rounded-xl text-2xl bg-slate-50 px-5 py-4 text-slate-900 ring-1 ring-slate-200">
              CODE:{" "}
@@ -221,7 +227,15 @@ const Home = () => {
                     <button
                       onClick={() => setEmailModal(true)}
                       disabled={!selectedCoupon?.discount}
-                      className={`mt-6 inline-flex w-max items-center justify-center rounded-xl ${selectedCoupon?.discount ? "bg-blue-600":"bg-gray-600 cursor-not-allowed"} bg-blue-600 px-5 py-3 text-white font-semibold ${selectedCoupon?.discount ? "hover:bg-blue-800":"hover:bg-gray-800"}`}
+                      className={`mt-6 inline-flex w-max items-center justify-center rounded-xl ${
+                        selectedCoupon?.discount
+                          ? "bg-blue-600"
+                          : "bg-gray-600 cursor-not-allowed"
+                      } bg-blue-600 px-5 py-3 text-white font-semibold ${
+                        selectedCoupon?.discount
+                          ? "hover:bg-blue-800"
+                          : "hover:bg-gray-800"
+                      }`}
                     >
                       Subscribe & Redeem
                     </button>

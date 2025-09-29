@@ -72,7 +72,6 @@ const UserProducts = () => {
 };
 
     const discountsArray = await getDiscount();
-    console.log(discountsArray, 'discountsArray');
 
     // 2) Populate context.totalDiscount as { [id]: pct }
     const discountMap = {};
@@ -144,11 +143,6 @@ const UserProducts = () => {
     
 
 
-    console.log(netAmount, 'netAmount Re‑Order'); // ~148.09
-    console.log(totalDiscountPct, 'discountedAmount Re‑Order');
-    console.log(gstAmount, 'gstAmount Re‑Order'); // ~14.81
-    console.log(total, 'total Re‑Order'); // ~162.90
-
     // 5) Build your payload
     const reOrderData = {
       user: checkoutData.user,
@@ -173,7 +167,6 @@ const UserProducts = () => {
       total: total,
     };
 
-    console.log(reOrderData, 'reOrderData');
 
     try {
       const res = await axios.post(

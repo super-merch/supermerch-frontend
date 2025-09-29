@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { AppContext } from '../context/AppContext';
+import { Helmet } from "react-helmet-async";
 
 const BlogDetails = () => {
     const { id } = useParams();
@@ -68,6 +69,15 @@ const BlogDetails = () => {
     };
 
     return (
+        <>
+        <Helmet>
+        <title>{blogData?.metaTitle || blogData?.title}</title>
+        <meta
+          name="description"
+          content={blogData?.metaDescription || blogData?.content?.slice(0, 150)}
+        />
+        <meta property="og:title" content={blogData?.metaTitle || blogData?.title} />
+      </Helmet>
         <div className="max-w-screen-xl flex justify-center gap-5 items-start max-sm2:flex-col mx-auto p-5 sm:p-8 md:p-12">
             {/* Smaller main image */}
             <div className="max-w-[40%] max-sm2:max-w-[100%] sm2:top-0 sm2:sticky w-full">
@@ -96,6 +106,7 @@ const BlogDetails = () => {
                 </div>
             </div>
         </div>
+        </>
     )
 }
 
