@@ -16,6 +16,8 @@ import {
   FaCapsules,
   FaCar,
   FaHeadset,
+  FaChevronUp,
+  FaChevronDown,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -61,6 +63,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
   const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState(false); // Categories section collapse state
   const [searchParams] = useSearchParams();
   const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
 
@@ -164,14 +167,32 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Header */}
           <div className="pb-6 border-b border-gray-200">
-            <div className="mb-2">
+            <div className="flex items-center justify-between mb-2">
               <h1 className="text-lg font-semibold text-gray-800 tracking-wide">{config.title}</h1>
+              <button
+                onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-600 transition-colors duration-200"
+                title={isCategoriesCollapsed ? "Show categories" : "Hide categories"}
+              >
+                {isCategoriesCollapsed ? (
+                  <>
+                    <span>Show</span>
+                    <FaChevronDown size={10} />
+                  </>
+                ) : (
+                  <>
+                    <span>Hide</span>
+                    <FaChevronUp size={10} />
+                  </>
+                )}
+              </button>
             </div>
             {config.description && <p className="text-xs text-gray-500 mb-6 leading-relaxed">{config.description}</p>}
 
             {/* Categories List */}
-            <div className="space-y-1">
-              {categories.map((category) => {
+            {!isCategoriesCollapsed && (
+              <div className="space-y-1 animate-fade-in">
+                {categories.map((category) => {
                 const IconComponent = getCategoryIcon(category.name);
                 return (
                   <div key={category.id} className="w-full">
@@ -229,7 +250,8 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Filters */}
