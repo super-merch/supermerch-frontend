@@ -185,19 +185,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                       onClick={() => handleMainCategoryClick(category.id, category.name)}
                     >
                       <div className="flex items-center gap-3 flex-1">
-                        <div
-                          className={`transition-colors duration-200 ${
-                            category.name === "Writing"
-                              ? "text-blue-600"
-                              : category.name === "Bags"
-                              ? "text-emerald-600"
-                              : category.name === "Drinkware"
-                              ? "text-cyan-600"
-                              : category.name === "Fun & Games"
-                              ? "text-purple-600"
-                              : "text-gray-500"
-                          }`}
-                        >
+                        <div className="transition-colors duration-200 text-gray-600">
                           <IconComponent size={16} />
                         </div>
                         <span className="text-sm font-medium tracking-wide">{category.name}</span>
