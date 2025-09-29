@@ -1,6 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { IoMenu, IoClose } from "react-icons/io5";
+import { 
+  FaShoppingBag, FaWater, FaPrint, FaGamepad, FaHeart, 
+  FaHome, FaUsb, FaUserTie, FaUtensils, FaCaretDown,
+  FaPen, FaCapsules, FaCar, FaHeadset
+} from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
@@ -9,6 +14,35 @@ import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../
 import PriceFilter from "../shop/PriceFilter";
 import BrandCheckboxes from "../shop/BrandFilter";
 import PopularTags from "../shop/PopularTags";
+
+// Category icon mapping
+const getCategoryIcon = (categoryName) => {
+  const iconMap = {
+    "Writing": FaPen,
+    "Pens & Pencils": FaPen,
+    "Bags": FaShoppingBag,
+    "Drinkware": FaWater,
+    "Print": FaPrint,
+    "Printing and Magnets": FaPrint,
+    "Fun & Games": FaGamepad,
+    "Leisure & Outdoors": FaGamepad,
+    "Health & Personal": FaHeart,
+    "Home & Office": FaHome,
+    "Home & Living": FaHome,
+    "USB & Tech": FaUsb,
+    "Tech": FaUsb,
+    "Office Stationery": FaUserTie,
+    "Food": FaUtensils,
+    "Food & Drink": FaUtensils,
+    "Keyrings & Tools": FaCar,
+    "Exhibitions & Events": FaHeadset,
+    "Clothing": FaUserTie,
+    "Headwear": FaCapsules,
+    "Capital Equipment": FaUsb,
+  };
+  
+  return iconMap[categoryName] || FaShoppingBag;
+};
 
 const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const dispatch = useDispatch();
@@ -66,7 +100,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
 
   const handleMainCategoryClick = (categoryId, categoryName) => {
     // Toggle expansion: if clicking the same category, collapse it; otherwise expand the new one
-    setOpenCategory((prev) => prev === categoryId ? null : categoryId);
+    setOpenCategory((prev) => (prev === categoryId ? null : categoryId));
     setActiveSub(null); // reset subcategory highlight when switching groups
     dispatch(setSelectedCategory(categoryName));
     dispatch(setMinPrice(0));
@@ -112,34 +146,62 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
 
       {/* Sidebar */}
       <div
-        className={`transition-all ${
+        className={`transition-all duration-300 ease-in-out ${
           isSidebarOpen
-            ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-96 w-[90vw] absolute h-screen md:shadow-lg shadow-lg bg-white lg:shadow-none px-6 lg:px-0 py-4"
+            ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-80 w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-4 lg:px-0 py-6"
             : "hidden"
         }`}
       >
-        <div className="h-full pr-3 overflow-y-auto">
+        <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Header */}
-          <div className="pb-6 border-b-2">
-            <h1 className="mb-1 text-base font-medium uppercase text-brand">{config.title}</h1>
-            {config.description && <p className="text-sm text-gray-600 mb-4">{config.description}</p>}
+          <div className="pb-6 border-b border-gray-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-brand rounded-full"></div>
+              <h1 className="text-lg font-semibold text-gray-800 tracking-wide">{config.title}</h1>
+            </div>
+            {config.description && (
+              <p className="text-xs text-gray-500 mb-6 leading-relaxed">{config.description}</p>
+            )}
 
             {/* Categories List */}
-            <div className="space-y-2">
-              {categories.map((category) => (
-                  <div key={category.id} className="lg:min-w-[180px] max-lg:min-w-[140px]">
+            <div className="space-y-1">
+              {categories.map((category) => {
+                const IconComponent = getCategoryIcon(category.name);
+                return (
+                  <div key={category.id} className="w-full">
+                    {/* Main Category */}
                     <div
-                      className={`py-2 px-3 rounded cursor-pointer transition-colors ${
-                        openCategory === category.id ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
+                      className={`group flex items-center justify-between py-3 px-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        openCategory === category.id 
+                          ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100" 
+                          : "hover:bg-gray-50 hover:text-gray-800 text-gray-600"
                       }`}
                       onClick={() => handleMainCategoryClick(category.id, category.name)}
                     >
-                      <p className="text-lg font-semibold text-blue-500 cursor-pointer">{category.name}</p>
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className={`transition-colors duration-200 ${
+                          category.name === "Writing" ? "text-blue-600" : 
+                          category.name === "Bags" ? "text-emerald-600" :
+                          category.name === "Drinkware" ? "text-cyan-600" :
+                          category.name === "Fun & Games" ? "text-purple-600" :
+                          "text-gray-500"
+                        }`}>
+                          <IconComponent size={16} />
+                        </div>
+                        <span className="text-sm font-medium tracking-wide">{category.name}</span>
+                      </div>
+                      
+                      {/* Expand/Collapse Icon */}
+                      <div className={`transition-transform duration-200 ${
+                        openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                      }`}>
+                        <FaCaretDown size={12} />
+                      </div>
                     </div>
 
                     {/* Subcategories */}
                     {openCategory === category.id && category.subTypes && (
-                      <div className="ml-4 mt-2 space-y-1">
+                      <div className="ml-6 mt-2 space-y-1 animate-fade-in">
                         {category.subTypes.map((subType) => {
                           // Check if this subcategory is active based on URL parameters or local state
                           const isActive =
@@ -150,20 +212,21 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                             <button
                               key={subType.id}
                               onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                              className={`font-semibold text-[13px] block text-start w-full text-left py-1 px-2 rounded transition-colors ${
+                              className={`w-full text-left py-2.5 px-3 rounded-md transition-all duration-200 font-medium ${
                                 isActive || selectedCategory === subType.name
-                                  ? "text-blue-500 bg-blue-50"
-                                  : "text-gray-700 hover:text-blue-500 hover:bg-gray-50"
+                                  ? "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 shadow-sm border border-blue-200"
+                                  : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                               }`}
                             >
-                              {subType.name}
+                              <span className="text-xs tracking-wide">{subType.name}</span>
                             </button>
                           );
                         })}
                       </div>
                     )}
                   </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
