@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
+import PropTypes from "prop-types";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -15,11 +16,8 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const { selectedCategory } = useSelector((state) => state.filters);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  
-  // Separate state for expansion and highlighting
   const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
-  const [activeSub, setActiveSub] = useState(null);       // which sub item is highlighted
-  
+  const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
   const [searchParams] = useSearchParams();
   const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
 
@@ -49,7 +47,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
 
   // Auto-expand category that contains the active subcategory
   useEffect(() => {
-    if (urlSubCategory && urlCategoryName) {
+    if (urlSubCategory && urlCategoryName && categories.length > 0) {
       // Find the category that contains this subcategory
       const categoryWithSubcategory = categories.find(
         (category) => category.name === urlCategoryName && category.subTypes?.some((subType) => subType.name === urlSubCategory)
@@ -60,17 +58,19 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
         setActiveSub(urlSubCategory);
       }
     }
-  }, [urlSubCategory, urlCategoryName, categories]);
+  }, [urlSubCategory, urlCategoryName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const handleCategoryClick = (categoryId, categoryName) => {
+  const handleMainCategoryClick = (categoryId, categoryName) => {
     // Toggle expansion: if clicking the same category, collapse it; otherwise expand the new one
-    setOpenCategory(categoryId === openCategory ? null : categoryId);
-    setActiveSub(null); // Reset any active sub when switching groups
+    setOpenCategory((prev) => prev === categoryId ? null : categoryId);
+    setActiveSub(null); // reset subcategory highlight when switching groups
     dispatch(setSelectedCategory(categoryName));
+    dispatch(setMinPrice(0));
+    dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
   };
 
@@ -127,41 +127,42 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
             {/* Categories List */}
             <div className="space-y-2">
               {categories.map((category) => (
-                <div key={category.id} className="lg:min-w-[180px] max-lg:min-w-[140px]">
-                  <div
-                    className={`py-2 px-3 rounded cursor-pointer transition-colors ${
-                      openCategory === category.id ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
-                    }`}
-                    onClick={() => handleCategoryClick(category.id, category.name)}
-                  >
-                    <p className="text-lg font-semibold text-blue-500 cursor-pointer">{category.name}</p>
-                  </div>
-
-                  {/* Subcategories */}
-                  {openCategory === category.id && category.subTypes && (
-                    <div className="ml-4 mt-2 space-y-1">
-                      {category.subTypes.map((subType) => {
-                        // Check if this subcategory is active based on URL parameters or local state
-                        const isActive = (urlSubCategory === subType.name && urlCategoryName === category.name) || 
-                                        (activeSub === subType.name && openCategory === category.id);
-
-                        return (
-                          <button
-                            key={subType.id}
-                            onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                            className={`font-semibold text-[13px] block text-start w-full text-left py-1 px-2 rounded transition-colors ${
-                              isActive || selectedCategory === subType.name
-                                ? "text-blue-500 bg-blue-50"
-                                : "text-gray-700 hover:text-blue-500 hover:bg-gray-50"
-                            }`}
-                          >
-                            {subType.name}
-                          </button>
-                        );
-                      })}
+                  <div key={category.id} className="lg:min-w-[180px] max-lg:min-w-[140px]">
+                    <div
+                      className={`py-2 px-3 rounded cursor-pointer transition-colors ${
+                        openCategory === category.id ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
+                      }`}
+                      onClick={() => handleMainCategoryClick(category.id, category.name)}
+                    >
+                      <p className="text-lg font-semibold text-blue-500 cursor-pointer">{category.name}</p>
                     </div>
-                  )}
-                </div>
+
+                    {/* Subcategories */}
+                    {openCategory === category.id && category.subTypes && (
+                      <div className="ml-4 mt-2 space-y-1">
+                        {category.subTypes.map((subType) => {
+                          // Check if this subcategory is active based on URL parameters or local state
+                          const isActive =
+                            (urlSubCategory === subType.name && urlCategoryName === category.name) ||
+                            (activeSub === subType.name && openCategory == category.id);
+
+                          return (
+                            <button
+                              key={subType.id}
+                              onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
+                              className={`font-semibold text-[13px] block text-start w-full text-left py-1 px-2 rounded transition-colors ${
+                                isActive || selectedCategory === subType.name
+                                  ? "text-blue-500 bg-blue-50"
+                                  : "text-gray-700 hover:text-blue-500 hover:bg-gray-50"
+                              }`}
+                            >
+                              {subType.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
               ))}
             </div>
           </div>
@@ -176,6 +177,11 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
       </div>
     </div>
   );
+};
+
+UnifiedSidebar.propTypes = {
+  pageType: PropTypes.string,
+  customConfig: PropTypes.object,
 };
 
 export default UnifiedSidebar;
