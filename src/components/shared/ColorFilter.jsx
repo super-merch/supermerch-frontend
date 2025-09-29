@@ -6,7 +6,7 @@ const ColorFilter = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
-  
+
   // Available colors with their display names and hex values matching the image
   const availableColors = [
     { name: "Red", hex: "#ef4444" },
@@ -24,9 +24,7 @@ const ColorFilter = () => {
   ];
 
   // Filter colors based on search term
-  const filteredColors = availableColors.filter((color) => 
-    color.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredColors = availableColors.filter((color) => color.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   // Selected colors state
   const [selectedColors, setSelectedColors] = useState([]);
@@ -46,9 +44,9 @@ const ColorFilter = () => {
       toast.info("Please select at least one color to filter");
       return;
     }
-    
+
     setIsApplying(true);
-    
+
     // Simulate API call or filter application
     setTimeout(() => {
       toast.success(`Applied filter for colors: ${selectedColors.join(", ")}`);
@@ -65,7 +63,7 @@ const ColorFilter = () => {
   return (
     <div className="mb-4">
       {/* Header Section */}
-      <div 
+      <div
         className="flex items-center justify-between py-2 px-3 bg-gray-200 cursor-pointer rounded-t-md"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -113,11 +111,9 @@ const ColorFilter = () => {
                 </button>
               ))}
             </div>
-            
+
             {filteredColors.length === 0 && (
-              <p className="text-xs text-gray-500 text-center py-2">
-                No colors found matching &ldquo;{searchTerm}&rdquo;
-              </p>
+              <p className="text-xs text-gray-500 text-center py-2">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
             )}
           </div>
 
@@ -142,10 +138,7 @@ const ColorFilter = () => {
 
           {/* Clear All Colors Link */}
           <div className="text-center">
-            <button
-              onClick={handleClearAllColors}
-              className="text-blue-600 hover:text-blue-800 text-xs underline"
-            >
+            <button onClick={handleClearAllColors} className="text-blue-600 hover:text-blue-800 text-xs underline">
               Clear All Colors
             </button>
           </div>
