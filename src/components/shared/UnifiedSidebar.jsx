@@ -25,6 +25,7 @@ import { AppContext } from "../../context/AppContext";
 import { getSidebarConfig, getCategoriesForConfig } from "../../config/sidebarConfig";
 import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
+import ColorFilter from "./ColorFilter";
 
 // Category icon mapping
 const getCategoryIcon = (categoryName) => {
@@ -193,69 +194,70 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
             {!isCategoriesCollapsed && (
               <div className="space-y-1 animate-fade-in">
                 {categories.map((category) => {
-                const IconComponent = getCategoryIcon(category.name);
-                return (
-                  <div key={category.id} className="w-full">
-                    {/* Main Category */}
-                    <div
-                      className={`group flex items-center justify-between py-3 px-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                        openCategory === category.id
-                          ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100"
-                          : "hover:bg-gray-50 hover:text-gray-800 text-gray-600"
-                      }`}
-                      onClick={() => handleMainCategoryClick(category.id, category.name)}
-                    >
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="transition-colors duration-200 text-gray-600">
-                          <IconComponent size={16} />
-                        </div>
-                        <span className="text-sm font-medium tracking-wide">{category.name}</span>
-                      </div>
-
-                      {/* Expand/Collapse Icon */}
+                  const IconComponent = getCategoryIcon(category.name);
+                  return (
+                    <div key={category.id} className="w-full">
+                      {/* Main Category */}
                       <div
-                        className={`transition-transform duration-200 ${
-                          openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                        className={`group flex items-center justify-between py-3 px-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                          openCategory === category.id
+                            ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100"
+                            : "hover:bg-gray-50 hover:text-gray-800 text-gray-600"
                         }`}
+                        onClick={() => handleMainCategoryClick(category.id, category.name)}
                       >
-                        <FaCaretDown size={12} />
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className="transition-colors duration-200 text-gray-600">
+                            <IconComponent size={16} />
+                          </div>
+                          <span className="text-sm font-medium tracking-wide">{category.name}</span>
+                        </div>
+
+                        {/* Expand/Collapse Icon */}
+                        <div
+                          className={`transition-transform duration-200 ${
+                            openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                          }`}
+                        >
+                          <FaCaretDown size={12} />
+                        </div>
                       </div>
+
+                      {/* Subcategories */}
+                      {openCategory === category.id && category.subTypes && (
+                        <div className="ml-6 mt-2 space-y-1 animate-fade-in">
+                          {category.subTypes.map((subType) => {
+                            // Check if this subcategory is active based on URL parameters or local state
+                            const isActive =
+                              (urlSubCategory === subType.name && urlCategoryName === category.name) ||
+                              (activeSub === subType.name && openCategory == category.id);
+
+                            return (
+                              <button
+                                key={subType.id}
+                                onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
+                                className={`w-full text-left py-2.5 px-3 rounded-md transition-all duration-200 font-medium ${
+                                  isActive || selectedCategory === subType.name
+                                    ? "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 shadow-sm border border-blue-200"
+                                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                                }`}
+                              >
+                                <span className="text-xs tracking-wide">{subType.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Subcategories */}
-                    {openCategory === category.id && category.subTypes && (
-                      <div className="ml-6 mt-2 space-y-1 animate-fade-in">
-                        {category.subTypes.map((subType) => {
-                          // Check if this subcategory is active based on URL parameters or local state
-                          const isActive =
-                            (urlSubCategory === subType.name && urlCategoryName === category.name) ||
-                            (activeSub === subType.name && openCategory == category.id);
-
-                          return (
-                            <button
-                              key={subType.id}
-                              onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                              className={`w-full text-left py-2.5 px-3 rounded-md transition-all duration-200 font-medium ${
-                                isActive || selectedCategory === subType.name
-                                  ? "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 shadow-sm border border-blue-200"
-                                  : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                              }`}
-                            >
-                              <span className="text-xs tracking-wide">{subType.name}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
               </div>
             )}
           </div>
 
           {/* Filters */}
-          <div className="mt-4">
+          <div className="mt-4 space-y-6">
+            <ColorFilter />
             <PriceFilter />
           </div>
         </div>
