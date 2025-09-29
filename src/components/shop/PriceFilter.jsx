@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setMinPrice,
-  setMaxPrice,
-  applyFilters,
-} from "../../redux/slices/filterSlice";
-import { Range } from "react-range"; 
+import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
+import { Range } from "react-range";
 import { toast } from "react-toastify";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -28,7 +24,7 @@ const PriceFilter = () => {
     dispatch(setMinPrice(min));
     dispatch(setMaxPrice(max));
     dispatch(applyFilters());
-    
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
   };
@@ -38,39 +34,40 @@ const PriceFilter = () => {
     // { label: "Under $10", min: 0, max: 10 },
     // { label: "$10 to $50", min: 10, max: 50 },
     // { label: "$50 to $100", min: 50, max: 100 },
-    
+
     // { label: "$100 to $150", min: 100, max: 150 },
     // { label: "$150 to $200", min: 150, max: 200 },
     // { label: "$200 to $250", min: 200, max: 250 },
   ];
 
   const handleApplyCustomRange = () => {
-  const minValue = Number(localMin);
-  const maxValue = Number(localMax);
-  
-  if (!localMin || !localMax || isNaN(minValue) || isNaN(maxValue)) {
-    toast.error("Please enter valid numbers for Min and Max Price");
-    return;
-  }
-  if (maxValue < 0 || minValue <=-1) { // Only check if max is negative since min can be 0
-    toast.error("Price cannot be negative");
-    return;
-  }
-  if (minValue >= maxValue) {
-    toast.error("Min Price should be less than Max Price");
-    return;
-  }
-  
-  setIsApplying(true);
-  dispatch(setMinPrice(minValue));
-  dispatch(setMaxPrice(maxValue));
-  dispatch(applyFilters());
-  setLocalMin("");
-  setLocalMax("");
-  
-  // Reset applying state after a short delay
-  setTimeout(() => setIsApplying(false), 1000);
-};
+    const minValue = Number(localMin);
+    const maxValue = Number(localMax);
+
+    if (!localMin || !localMax || isNaN(minValue) || isNaN(maxValue)) {
+      toast.error("Please enter valid numbers for Min and Max Price");
+      return;
+    }
+    if (maxValue < 0 || minValue <= -1) {
+      // Only check if max is negative since min can be 0
+      toast.error("Price cannot be negative");
+      return;
+    }
+    if (minValue >= maxValue) {
+      toast.error("Min Price should be less than Max Price");
+      return;
+    }
+
+    setIsApplying(true);
+    dispatch(setMinPrice(minValue));
+    dispatch(setMaxPrice(maxValue));
+    dispatch(applyFilters());
+    setLocalMin("");
+    setLocalMax("");
+
+    // Reset applying state after a short delay
+    setTimeout(() => setIsApplying(false), 1000);
+  };
 
   const handlePresetRangeClick = (range) => {
     setIsApplying(true);
@@ -78,17 +75,15 @@ const PriceFilter = () => {
     dispatch(setMinPrice(range.min));
     dispatch(setMaxPrice(range.max));
     dispatch(applyFilters());
-    
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
-    
-
   };
 
   return (
     <div className="mb-4">
       {/* Header Section */}
-      <div 
+      <div
         className="flex items-center justify-between py-2 px-3 bg-gray-200 cursor-pointer rounded-t-md"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -104,18 +99,18 @@ const PriceFilter = () => {
           {/* Price Input Fields */}
           <div className="mb-3">
             <div className="flex gap-2">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="0"
-                value={localMin} 
-                className="w-20 px-2 py-1 text-xs border border-gray-300 rounded text-center focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none" 
+                value={localMin}
+                className="w-20 px-2 py-1 text-xs border border-gray-300 rounded text-center focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 onChange={(e) => setLocalMin(e.target.value)}
               />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="1000"
-                value={localMax} 
-                className="w-20 px-2 py-1 text-xs border border-gray-300 rounded text-center focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none" 
+                value={localMax}
+                className="w-20 px-2 py-1 text-xs border border-gray-300 rounded text-center focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 onChange={(e) => setLocalMax(e.target.value)}
               />
             </div>

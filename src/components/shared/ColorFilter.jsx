@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -73,7 +73,7 @@ const ColorFilter = () => {
         <div className={`transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}>
           <FaChevronDown size={12} className="text-gray-600" />
         </div>
-      );
+      </div>
 
       {/* Expanded Content */}
       {isExpanded && (
@@ -115,9 +115,9 @@ const ColorFilter = () => {
             </div>
             
             {filteredColors.length === 0 && (
-              <p className="text-xs text-gray-500 text-center py-2">
-                No colors found matching "{searchTerm}"
-              </p>
+            <p className="text-xs text-gray-500 text-center py-2">
+              No colors found matching &ldquo;{searchTerm}&rdquo;
+            </p>
             )}
           </div>
 
