@@ -164,8 +164,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Header */}
           <div className="pb-6 border-b border-gray-200">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-brand rounded-full"></div>
+            <div className="mb-2">
               <h1 className="text-lg font-semibold text-gray-800 tracking-wide">{config.title}</h1>
             </div>
             {config.description && <p className="text-xs text-gray-500 mb-6 leading-relaxed">{config.description}</p>}
