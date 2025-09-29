@@ -94,11 +94,9 @@ const ColorFilter = () => {
               </button>
             ))}
           </div>
-          
+
           {filteredColors.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-3">
-              No colors found matching &ldquo;{searchTerm}&rdquo;
-            </p>
+            <p className="text-sm text-gray-500 text-center py-3">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
           )}
         </div>
 
@@ -124,10 +122,7 @@ const ColorFilter = () => {
 
         {/* Clear All Colors Link */}
         <div className="text-center">
-          <button
-            onClick={handleClearAllColors}
-            className="text-blue-600 hover:text-blue-800 text-sm"
-          >
+          <button onClick={handleClearAllColors} className="text-blue-600 hover:text-blue-800 text-sm">
             Clear All Colors
           </button>
         </div>

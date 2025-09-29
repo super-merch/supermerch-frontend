@@ -16,8 +16,6 @@ import {
   FaCapsules,
   FaCar,
   FaHeadset,
-  FaChevronUp,
-  FaChevronDown,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -64,7 +62,6 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
   const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState(false); // Categories section collapse state
   const [searchParams] = useSearchParams();
   const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
 
@@ -161,56 +158,38 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
       <div
         className={`transition-all duration-300 ease-in-out ${
           isSidebarOpen
-            ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-80 w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-4 lg:px-0 py-6"
+            ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-80 w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 lg:px-0 py-4"
             : "hidden"
         }`}
       >
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Header */}
-          <div className="pb-6 border-b border-gray-200">
-            <div className="flex items-center justify-between mb-2">
-              <h1 className="text-lg font-semibold text-gray-800 tracking-wide">{config.title}</h1>
-              <button
-                onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-600 transition-colors duration-200"
-                title={isCategoriesCollapsed ? "Show categories" : "Hide categories"}
-              >
-                {isCategoriesCollapsed ? (
-                  <>
-                    <span>Show</span>
-                    <FaChevronDown size={10} />
-                  </>
-                ) : (
-                  <>
-                    <span>Hide</span>
-                    <FaChevronUp size={10} />
-                  </>
-                )}
-              </button>
+          <div className="pb-4 border-b border-gray-200">
+            <div className="mb-2">
+              <h1 className="text-base font-semibold text-gray-800">{config.title}</h1>
             </div>
-            {config.description && <p className="text-xs text-gray-500 mb-6 leading-relaxed">{config.description}</p>}
+            {config.description && <p className="text-xs text-gray-500 mb-3 leading-relaxed">{config.description}</p>}
 
             {/* Categories List */}
-            {!isCategoriesCollapsed && (
-              <div className="space-y-1 animate-fade-in">
+            <div className="space-y-0.5">
                 {categories.map((category) => {
                   const IconComponent = getCategoryIcon(category.name);
                   return (
                     <div key={category.id} className="w-full">
                       {/* Main Category */}
                       <div
-                        className={`group flex items-center justify-between py-3 px-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                        className={`group flex items-center justify-between py-1.5 px-2 cursor-pointer transition-all duration-200 ${
                           openCategory === category.id
-                            ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100"
-                            : "hover:bg-gray-50 hover:text-gray-800 text-gray-600"
+                            ? "bg-gray-100 text-gray-800"
+                            : "hover:bg-gray-50 text-gray-600"
                         }`}
                         onClick={() => handleMainCategoryClick(category.id, category.name)}
                       >
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className="transition-colors duration-200 text-gray-600">
-                            <IconComponent size={16} />
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className="transition-colors duration-200 text-gray-500">
+                            <IconComponent size={14} />
                           </div>
-                          <span className="text-sm font-medium tracking-wide">{category.name}</span>
+                          <span className="text-sm font-medium">{category.name}</span>
                         </div>
 
                         {/* Expand/Collapse Icon */}
@@ -225,7 +204,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
 
                       {/* Subcategories */}
                       {openCategory === category.id && category.subTypes && (
-                        <div className="ml-6 mt-2 space-y-1 animate-fade-in">
+                        <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
                           {category.subTypes.map((subType) => {
                             // Check if this subcategory is active based on URL parameters or local state
                             const isActive =
@@ -236,13 +215,13 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                               <button
                                 key={subType.id}
                                 onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                                className={`w-full text-left py-2.5 px-3 rounded-md transition-all duration-200 font-medium ${
+                                className={`w-full text-left py-1 px-2 transition-all duration-200 ${
                                   isActive || selectedCategory === subType.name
-                                    ? "bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 shadow-sm border border-blue-200"
-                                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                                    ? "bg-gray-100 text-gray-800 font-medium"
+                                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                                 }`}
                               >
-                                <span className="text-xs tracking-wide">{subType.name}</span>
+                                <span className="text-xs">{subType.name}</span>
                               </button>
                             );
                           })}
@@ -251,12 +230,11 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                     </div>
                   );
                 })}
-              </div>
-            )}
+            </div>
           </div>
 
           {/* Filters */}
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 space-y-4">
             <PriceFilter />
             <ColorFilter />
           </div>

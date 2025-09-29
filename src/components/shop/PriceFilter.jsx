@@ -100,10 +100,7 @@ const PriceFilter = () => {
 
         {/* All Prices Link */}
         <div className="text-center">
-          <button
-            onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
-            className="text-blue-600 hover:text-blue-800 text-sm"
-          >
+          <button onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })} className="text-blue-600 hover:text-blue-800 text-sm">
             All Prices
           </button>
         </div>
