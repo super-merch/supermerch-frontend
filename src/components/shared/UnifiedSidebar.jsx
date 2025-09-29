@@ -62,6 +62,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
   const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState(false); // Categories section collapse state
   const [searchParams] = useSearchParams();
   const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
 
@@ -165,72 +166,89 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Header */}
           <div className="pb-4 border-b border-gray-200">
-            <div className="mb-2">
+            <div className="flex items-center justify-between mb-2">
               <h1 className="text-base font-semibold text-gray-800">{config.title}</h1>
+              <button
+                onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-600 transition-colors duration-200"
+                title={isCategoriesCollapsed ? "Show categories" : "Hide categories"}
+              >
+                {isCategoriesCollapsed ? (
+                  <>
+                    <span>Show</span>
+                    <FaCaretDown size={10} />
+                  </>
+                ) : (
+                  <>
+                    <span>Hide</span>
+                    <FaCaretDown size={10} />
+                  </>
+                )}
+              </button>
             </div>
             {config.description && <p className="text-xs text-gray-500 mb-3 leading-relaxed">{config.description}</p>}
 
             {/* Categories List */}
-            <div className="space-y-0.5">
-                {categories.map((category) => {
-                  const IconComponent = getCategoryIcon(category.name);
-                  return (
-                    <div key={category.id} className="w-full">
-                      {/* Main Category */}
-                      <div
-                        className={`group flex items-center justify-between py-1.5 px-2 cursor-pointer transition-all duration-200 ${
-                          openCategory === category.id
-                            ? "bg-gray-100 text-gray-800"
-                            : "hover:bg-gray-50 text-gray-600"
-                        }`}
-                        onClick={() => handleMainCategoryClick(category.id, category.name)}
-                      >
-                        <div className="flex items-center gap-2 flex-1">
-                          <div className="transition-colors duration-200 text-gray-500">
-                            <IconComponent size={14} />
-                          </div>
-                          <span className="text-sm font-medium">{category.name}</span>
+            {!isCategoriesCollapsed && (
+              <div className="space-y-0.5 animate-fade-in">
+              {categories.map((category) => {
+                const IconComponent = getCategoryIcon(category.name);
+                return (
+                  <div key={category.id} className="w-full">
+                    {/* Main Category */}
+                    <div
+                      className={`group flex items-center justify-between py-1.5 px-2 cursor-pointer transition-all duration-200 ${
+                        openCategory === category.id ? "bg-gray-100 text-gray-800" : "hover:bg-gray-50 text-gray-600"
+                      }`}
+                      onClick={() => handleMainCategoryClick(category.id, category.name)}
+                    >
+                      <div className="flex items-center gap-2 flex-1">
+                        <div className="transition-colors duration-200 text-gray-500">
+                          <IconComponent size={14} />
                         </div>
-
-                        {/* Expand/Collapse Icon */}
-                        <div
-                          className={`transition-transform duration-200 ${
-                            openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
-                          }`}
-                        >
-                          <FaCaretDown size={12} />
-                        </div>
+                        <span className="text-sm font-medium">{category.name}</span>
                       </div>
 
-                      {/* Subcategories */}
-                      {openCategory === category.id && category.subTypes && (
-                        <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
-                          {category.subTypes.map((subType) => {
-                            // Check if this subcategory is active based on URL parameters or local state
-                            const isActive =
-                              (urlSubCategory === subType.name && urlCategoryName === category.name) ||
-                              (activeSub === subType.name && openCategory == category.id);
-
-                            return (
-                              <button
-                                key={subType.id}
-                                onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                                className={`w-full text-left py-1 px-2 transition-all duration-200 ${
-                                  isActive || selectedCategory === subType.name
-                                    ? "bg-gray-100 text-gray-800 font-medium"
-                                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-                                }`}
-                              >
-                                <span className="text-xs">{subType.name}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
+                      {/* Expand/Collapse Icon */}
+                      <div
+                        className={`transition-transform duration-200 ${
+                          openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                        }`}
+                      >
+                        <FaCaretDown size={12} />
+                      </div>
                     </div>
-                  );
-                })}
-            </div>
+
+                    {/* Subcategories */}
+                    {openCategory === category.id && category.subTypes && (
+                      <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
+                        {category.subTypes.map((subType) => {
+                          // Check if this subcategory is active based on URL parameters or local state
+                          const isActive =
+                            (urlSubCategory === subType.name && urlCategoryName === category.name) ||
+                            (activeSub === subType.name && openCategory == category.id);
+
+                          return (
+                            <button
+                              key={subType.id}
+                              onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
+                              className={`w-full text-left py-1 px-2 transition-all duration-200 ${
+                                isActive || selectedCategory === subType.name
+                                  ? "bg-gray-100 text-gray-800 font-medium"
+                                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                              }`}
+                            >
+                              <span className="text-xs">{subType.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              </div>
+            )}
           </div>
 
           {/* Filters */}
