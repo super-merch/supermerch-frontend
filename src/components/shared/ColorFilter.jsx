@@ -1,10 +1,8 @@
 import { useState, useCallback } from "react";
-import { FaChevronDown } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const ColorFilter = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
 
   // Available colors with their display names and hex values matching the image
@@ -61,89 +59,79 @@ const ColorFilter = () => {
   }, []);
 
   return (
-    <div className="mb-4">
-      {/* Header Section */}
-      <div
-        className="flex items-center justify-between py-2 px-3 bg-gray-200 cursor-pointer rounded-t-md"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <h2 className="text-sm font-bold text-gray-800">Filter by Color</h2>
-        <div className={`transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}>
-          <FaChevronDown size={12} className="text-gray-600" />
+    <div className="mb-6">
+      <h2 className="mb-4 text-base font-semibold text-gray-800">Filter by Color</h2>
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        {/* Search Colors */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Search Colors</label>
+          <input
+            type="text"
+            placeholder="Search for colors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          />
+        </div>
+
+        {/* Color Swatches Grid */}
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">Select Colors</h3>
+          <div className="grid grid-cols-4 gap-2">
+            {filteredColors.map((color) => (
+              <button
+                key={color.name}
+                onClick={() => handleColorToggle(color.name)}
+                className="flex flex-col items-center gap-2 p-2 rounded hover:bg-gray-50"
+              >
+                <div
+                  className={`w-10 h-10 rounded-full border transition-transform duration-200 hover:scale-110 ${
+                    color.name.toLowerCase() === "white" ? "border-gray-300" : "border-gray-200"
+                  } ${selectedColors.includes(color.name) ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
+                  style={{ backgroundColor: color.hex }}
+                />
+                <span className="text-sm text-gray-700">{color.name}</span>
+              </button>
+            ))}
+          </div>
+          
+          {filteredColors.length === 0 && (
+            <p className="text-sm text-gray-500 text-center py-3">
+              No colors found matching &ldquo;{searchTerm}&rdquo;
+            </p>
+          )}
+        </div>
+
+        {/* Apply Button - Using same color as Price Filter */}
+        <button
+          onClick={handleApplyColorFilter}
+          disabled={selectedColors.length === 0 || isApplying}
+          className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
+            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+          }`}
+        >
+          {isApplying ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+              <span>Applying...</span>
+            </>
+          ) : (
+            <>
+              <span>Apply Color Filter</span>
+            </>
+          )}
+        </button>
+
+        {/* Clear All Colors Link */}
+        <div className="text-center">
+          <button
+            onClick={handleClearAllColors}
+            className="text-blue-600 hover:text-blue-800 text-sm"
+          >
+            Clear All Colors
+          </button>
         </div>
       </div>
-
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="bg-white border-x border-b border-gray-300 rounded-b-md p-3">
-          {/* Search Colors */}
-          <div className="mb-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Search Colors</label>
-            <input
-              type="text"
-              placeholder="Search for colors..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-
-          {/* Color Swatches Grid */}
-          <div className="mb-3">
-            <h3 className="text-xs font-medium text-gray-700 mb-2">Select Colors</h3>
-            <div className="grid grid-cols-4 gap-1">
-              {filteredColors.map((color) => (
-                <button
-                  key={color.name}
-                  onClick={() => handleColorToggle(color.name)}
-                  className={`flex flex-col items-center gap-1 p-1 rounded ${
-                    selectedColors.includes(color.name) ? "bg-blue-50" : "hover:bg-gray-50"
-                  }`}
-                  title={color.name}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full border transition-transform duration-200 hover:scale-110 ${
-                      color.name.toLowerCase() === "white" ? "border-gray-300" : "border-gray-200"
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                  />
-                  <span className="text-xs text-gray-600">{color.name}</span>
-                </button>
-              ))}
-            </div>
-
-            {filteredColors.length === 0 && (
-              <p className="text-xs text-gray-500 text-center py-2">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
-            )}
-          </div>
-
-          {/* Apply Button */}
-          <button
-            onClick={handleApplyColorFilter}
-            disabled={selectedColors.length === 0 || isApplying}
-            className="w-full flex items-center justify-center gap-1 py-1 px-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-medium rounded transition-colors duration-200 mb-2"
-          >
-            {isApplying ? (
-              <>
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Applying...</span>
-              </>
-            ) : (
-              <>
-                <span>Apply Color Filter</span>
-                <FaChevronDown size={8} />
-              </>
-            )}
-          </button>
-
-          {/* Clear All Colors Link */}
-          <div className="text-center">
-            <button onClick={handleClearAllColors} className="text-blue-600 hover:text-blue-800 text-xs underline">
-              Clear All Colors
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
