@@ -1,10 +1,21 @@
 import { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { IoMenu, IoClose } from "react-icons/io5";
-import { 
-  FaShoppingBag, FaWater, FaPrint, FaGamepad, FaHeart, 
-  FaHome, FaUsb, FaUserTie, FaUtensils, FaCaretDown,
-  FaPen, FaCapsules, FaCar, FaHeadset
+import {
+  FaShoppingBag,
+  FaWater,
+  FaPrint,
+  FaGamepad,
+  FaHeart,
+  FaHome,
+  FaUsb,
+  FaUserTie,
+  FaUtensils,
+  FaCaretDown,
+  FaPen,
+  FaCapsules,
+  FaCar,
+  FaHeadset,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -12,17 +23,15 @@ import { AppContext } from "../../context/AppContext";
 import { getSidebarConfig, getCategoriesForConfig } from "../../config/sidebarConfig";
 import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
-import BrandCheckboxes from "../shop/BrandFilter";
-import PopularTags from "../shop/PopularTags";
 
 // Category icon mapping
 const getCategoryIcon = (categoryName) => {
   const iconMap = {
-    "Writing": FaPen,
+    Writing: FaPen,
     "Pens & Pencils": FaPen,
-    "Bags": FaShoppingBag,
-    "Drinkware": FaWater,
-    "Print": FaPrint,
+    Bags: FaShoppingBag,
+    Drinkware: FaWater,
+    Print: FaPrint,
     "Printing and Magnets": FaPrint,
     "Fun & Games": FaGamepad,
     "Leisure & Outdoors": FaGamepad,
@@ -30,17 +39,17 @@ const getCategoryIcon = (categoryName) => {
     "Home & Office": FaHome,
     "Home & Living": FaHome,
     "USB & Tech": FaUsb,
-    "Tech": FaUsb,
+    Tech: FaUsb,
     "Office Stationery": FaUserTie,
-    "Food": FaUtensils,
+    Food: FaUtensils,
     "Food & Drink": FaUtensils,
     "Keyrings & Tools": FaCar,
     "Exhibitions & Events": FaHeadset,
-    "Clothing": FaUserTie,
-    "Headwear": FaCapsules,
+    Clothing: FaUserTie,
+    Headwear: FaCapsules,
     "Capital Equipment": FaUsb,
   };
-  
+
   return iconMap[categoryName] || FaShoppingBag;
 };
 
@@ -159,9 +168,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
               <div className="w-2 h-2 bg-brand rounded-full"></div>
               <h1 className="text-lg font-semibold text-gray-800 tracking-wide">{config.title}</h1>
             </div>
-            {config.description && (
-              <p className="text-xs text-gray-500 mb-6 leading-relaxed">{config.description}</p>
-            )}
+            {config.description && <p className="text-xs text-gray-500 mb-6 leading-relaxed">{config.description}</p>}
 
             {/* Categories List */}
             <div className="space-y-1">
@@ -172,29 +179,37 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                     {/* Main Category */}
                     <div
                       className={`group flex items-center justify-between py-3 px-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                        openCategory === category.id 
-                          ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100" 
+                        openCategory === category.id
+                          ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100"
                           : "hover:bg-gray-50 hover:text-gray-800 text-gray-600"
                       }`}
                       onClick={() => handleMainCategoryClick(category.id, category.name)}
                     >
                       <div className="flex items-center gap-3 flex-1">
-                        <div className={`transition-colors duration-200 ${
-                          category.name === "Writing" ? "text-blue-600" : 
-                          category.name === "Bags" ? "text-emerald-600" :
-                          category.name === "Drinkware" ? "text-cyan-600" :
-                          category.name === "Fun & Games" ? "text-purple-600" :
-                          "text-gray-500"
-                        }`}>
+                        <div
+                          className={`transition-colors duration-200 ${
+                            category.name === "Writing"
+                              ? "text-blue-600"
+                              : category.name === "Bags"
+                              ? "text-emerald-600"
+                              : category.name === "Drinkware"
+                              ? "text-cyan-600"
+                              : category.name === "Fun & Games"
+                              ? "text-purple-600"
+                              : "text-gray-500"
+                          }`}
+                        >
                           <IconComponent size={16} />
                         </div>
                         <span className="text-sm font-medium tracking-wide">{category.name}</span>
                       </div>
-                      
+
                       {/* Expand/Collapse Icon */}
-                      <div className={`transition-transform duration-200 ${
-                        openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
-                      }`}>
+                      <div
+                        className={`transition-transform duration-200 ${
+                          openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                        }`}
+                      >
                         <FaCaretDown size={12} />
                       </div>
                     </div>
@@ -233,8 +248,6 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
           {/* Filters */}
           <div className="mt-4">
             <PriceFilter />
-            <BrandCheckboxes />
-            <PopularTags />
           </div>
         </div>
       </div>
