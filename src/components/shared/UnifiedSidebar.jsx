@@ -25,7 +25,6 @@ import { AppContext } from "../../context/AppContext";
 import { getSidebarConfig, getCategoriesForConfig } from "../../config/sidebarConfig";
 import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
-import ColorFilter from "./ColorFilter";
 
 // Category icon mapping
 const getCategoryIcon = (categoryName) => {
@@ -256,9 +255,8 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
           </div>
 
           {/* Filters */}
-          <div className="mt-6 space-y-4">
+          <div className="mt-4">
             <PriceFilter />
-            <ColorFilter />
           </div>
         </div>
       </div>

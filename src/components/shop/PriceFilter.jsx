@@ -3,16 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
 import { Range } from "react-range";
 import { toast } from "react-toastify";
-import { FaChevronDown } from "react-icons/fa";
 
 const PriceFilter = () => {
   const dispatch = useDispatch();
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
-  const [localMin, setLocalMin] = useState(minPrice.toString());
-  const [localMax, setLocalMax] = useState(maxPrice.toString());
+  const [localMin, setLocalMin] = useState("");
+  const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleRangeChange = (values) => {
     setPriceRange(values);
@@ -81,71 +79,68 @@ const PriceFilter = () => {
   };
 
   return (
-    <div className="mb-4">
-      {/* Header Section */}
-      <div
-        className="flex items-center justify-between py-2 px-3 bg-gray-200 cursor-pointer rounded-t-md"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <h1 className="text-sm font-bold text-gray-800">Price Range</h1>
-        <div className={`transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}>
-          <FaChevronDown size={12} className="text-gray-600" />
-        </div>
-      </div>
+    <>
+      <h1 className="mb-2 text-base font-medium uppercase text-brand">Unit Price ($)</h1>
 
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="bg-white border-x border-b border-gray-300 rounded-b-md p-3">
-          {/* Price Input Fields */}
-          <div className="mb-3">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="0"
-                value={localMin}
-                className="w-20 px-2 py-1 text-xs border border-gray-300 rounded text-center focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                onChange={(e) => setLocalMin(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="1000"
-                value={localMax}
-                className="w-20 px-2 py-1 text-xs border border-gray-300 rounded text-center focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                onChange={(e) => setLocalMax(e.target.value)}
-              />
-            </div>
-          </div>
-          {/* Apply Button */}
-          <button
-            onClick={handleApplyCustomRange}
-            disabled={isApplying}
-            className="w-full flex items-center justify-center gap-1 py-1 px-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-medium rounded transition-colors duration-200 mb-2"
-          >
-            {isApplying ? (
-              <>
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Applying...</span>
-              </>
-            ) : (
-              <>
-                <span>Apply Filter</span>
-                <FaChevronDown size={8} />
-              </>
-            )}
-          </button>
-
-          {/* All Prices Link */}
-          <div className="text-center">
-            <button
-              onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
-              className="text-blue-600 hover:text-blue-800 text-xs underline"
-            >
-              All Prices
-            </button>
-          </div>
+      {/* Show current filter status */}
+      {(minPrice !== 0 || maxPrice !== 1000) && (
+        <div className="mb-4 p-2 bg-blue-100 border border-blue-300 rounded text-sm">
+          <p className="text-blue-800">
+            Active Filter: ${minPrice} - ${maxPrice}
+            {isApplying && <span className="ml-2 text-blue-600">(Applying...)</span>}
+          </p>
         </div>
       )}
-    </div>
+
+      <div className="flex flex-col gap-4 pb-6 mt-4 border-b-2">
+        <div className="flex gap-4 ">
+          <input
+            type="text"
+            placeholder="From"
+            value={localMin}
+            className="border-[2px] max-w-20 text-center p-1"
+            onChange={(e) => setLocalMin(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="To"
+            value={localMax}
+            className="border-[2px] p-1 max-w-20 text-center"
+            onChange={(e) => setLocalMax(e.target.value)}
+          />
+        </div>
+        <button
+          onClick={handleApplyCustomRange}
+          disabled={isApplying}
+          className={`px-4 max-w-44 py-2 text-white rounded ${
+            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+          }`}
+        >
+          {isApplying ? "Applying..." : "Apply"}
+        </button>
+      </div>
+
+      <div className="mt-4">
+        <div className="flex flex-col gap-2">
+          {priceRanges.map((range, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 mt-1 transition duration-300 transform cursor-pointer group hover:scale-x-95"
+            >
+              <p
+                onClick={() => handlePresetRangeClick(range)}
+                className={`hover:underline ${
+                  minPrice === range.min && maxPrice === range.max ? "underline text-smallHeader font-semibold" : ""
+                } ${isApplying ? "pointer-events-none opacity-50" : ""}`}
+              >
+                {range.label}
+                {isApplying && minPrice === range.min && maxPrice === range.max && <span className="ml-2 text-xs">(Applying...)</span>}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 
