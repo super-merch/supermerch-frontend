@@ -22,6 +22,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { getSidebarConfig, getCategoriesForConfig } from "../../config/sidebarConfig";
 import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
+import { filterCategoriesByProductAvailability, shouldShowCategory } from "../../utils/categoryFilter";
 import PriceFilter from "../shop/PriceFilter";
 import ColorFilter from "./ColorFilter";
 import ClothingGenderToggle from "./ClothingGenderToggle";
@@ -65,11 +66,44 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
   const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState(false); // Categories section collapse state
   const [searchParams] = useSearchParams();
-  const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
+  const {
+    setSelectedParamCategoryId,
+    setCurrentPage,
+    setSidebarActiveCategory,
+    setActiveFilterCategory,
+    discountedProducts,
+    australia,
+    hourProd,
+    products,
+  } = useContext(AppContext);
 
   // Get configuration for this page type
   const config = customConfig || getSidebarConfig(pageType);
-  const categories = getCategoriesForConfig(config);
+  const allCategories = getCategoriesForConfig(config);
+
+  // Get products based on page type for dynamic filtering
+  const getProductsForPageType = () => {
+    switch (pageType) {
+      case "SALE":
+        return discountedProducts || [];
+      case "AUSTRALIA_MADE":
+        return australia?.data || [];
+      case "HOUR_PRODUCTION":
+        return hourProd?.data || [];
+      case "RETURN_GIFTS":
+        return products || [];
+      default:
+        return [];
+    }
+  };
+
+  // Filter categories based on product availability for special pages
+  const shouldFilterCategories = ["SALE", "AUSTRALIA_MADE", "HOUR_PRODUCTION", "RETURN_GIFTS"].includes(pageType);
+  const pageProducts = getProductsForPageType();
+
+  const categories = shouldFilterCategories
+    ? allCategories.filter((category) => shouldShowCategory(category, pageProducts))
+    : allCategories;
 
   // Get URL parameters for active state
   const urlSubCategory = searchParams.get("subCategory");

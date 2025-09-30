@@ -27,6 +27,38 @@ export const SIDEBAR_CONFIGS = {
     description: "Browse headwear products including caps, hats, and more",
   },
 
+  SALE: {
+    type: "sale",
+    title: "Sale",
+    showAllCategories: true,
+    allowedCategories: [], // Empty means show all categories, but will be filtered by product availability
+    description: "Browse discounted products across all categories",
+  },
+
+  AUSTRALIA_MADE: {
+    type: "australia_made",
+    title: "Australia Made",
+    showAllCategories: true,
+    allowedCategories: [], // Empty means show all categories, but will be filtered by product availability
+    description: "Browse Australia Made products across all categories",
+  },
+
+  HOUR_PRODUCTION: {
+    type: "hour_production",
+    title: "24 Hour Production",
+    showAllCategories: true,
+    allowedCategories: [], // Empty means show all categories, but will be filtered by product availability
+    description: "Browse 24 Hour Production products across all categories",
+  },
+
+  RETURN_GIFTS: {
+    type: "return_gifts",
+    title: "Return Gifts",
+    showAllCategories: true,
+    allowedCategories: [], // Empty means show all categories, but will be filtered by product availability
+    description: "Browse return gift products across all categories",
+  },
+
   GENERAL: {
     type: "general",
     title: "Categories",
@@ -69,10 +101,10 @@ export const PAGE_TYPES = {
   PROMOTIONAL: "PROMOTIONAL",
   CLOTHING: "CLOTHING",
   HEADWEAR: "HEADWEAR",
-  RETURN_GIFTS: "GENERAL",
-  HOUR_PRODUCTION: "GENERAL",
-  SALE: "GENERAL",
-  AUSTRALIA_MADE: "GENERAL",
+  RETURN_GIFTS: "RETURN_GIFTS",
+  HOUR_PRODUCTION: "HOUR_PRODUCTION",
+  SALE: "SALE",
+  AUSTRALIA_MADE: "AUSTRALIA_MADE",
 };
 
 // Helper function to determine page type from route
