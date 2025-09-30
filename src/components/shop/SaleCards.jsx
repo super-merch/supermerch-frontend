@@ -433,26 +433,19 @@ const SaleCards = () => {
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[25%]">
-          <SideBar2 />
+        <div className="lg:w-[280px]">
+          <UnifiedSidebar pageType="SALE" />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            {/* <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              {!isPriceFilterActive && (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Search for discounted products..."
-                    className="w-full border-none outline-none"
-                    value={searchProductName}
-                    onChange={setSearchTextChanger}
-                  />
-                  <IoSearchOutline className="text-2xl" />
-                </>
-              )}
-            </div> */}
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Product Count - Left Side */}
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-brand">{getCurrentPageProducts().length}</span>
+              <p className="">{skeletonLoading ? "Loading..." : `Sale products found`}</p>
+            </div>
+
+            {/* Sort Dropdown - Right Side */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>

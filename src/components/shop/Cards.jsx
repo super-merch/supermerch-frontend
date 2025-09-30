@@ -8,6 +8,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
+import { IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 import { AppContext } from "../../context/AppContext";
@@ -68,6 +69,7 @@ const Cards = () => {
   const [categoryPageCache, setCategoryPageCache] = useState({});
 
   const selectedCategory = useSelector((state) => state.filters.categoryId);
+  const clothingGender = useSelector((state) => state.filters.clothingGender);
 
   // Get Redux filter state
   const { activeFilters, minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -574,10 +576,32 @@ const Cards = () => {
 
   // Get the current active products based on mode and price filter
   const getActiveProducts = () => {
+    let products = [];
     if (isPriceFilterActive) {
-      return selectedCategory ? categoryFilteredProducts : allFilteredProducts;
+      products = selectedCategory ? categoryFilteredProducts : allFilteredProducts;
+    } else {
+      products = selectedCategory ? categoryProducts : allProducts;
     }
-    return selectedCategory ? categoryProducts : allProducts;
+
+    // Apply gender filter for clothing products
+    if (pageType === "CLOTHING" && clothingGender !== "all") {
+      products = products.filter((product) => {
+        const productName = product?.overview?.name?.toLowerCase() || "";
+        const productDescription = product?.overview?.description?.toLowerCase() || "";
+        const searchText = `${productName} ${productDescription}`;
+
+        if (clothingGender === "men") {
+          return searchText.includes("men") || searchText.includes("male") || searchText.includes("man");
+        } else if (clothingGender === "women") {
+          return (
+            searchText.includes("women") || searchText.includes("female") || searchText.includes("woman") || searchText.includes("ladies")
+          );
+        }
+        return true;
+      });
+    }
+
+    return products;
   };
 
   // Apply sorting to active products
@@ -790,11 +814,11 @@ const Cards = () => {
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[25%]">
+        <div className="lg:w-[280px]">
           <UnifiedSidebar pageType={pageType} />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
           <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Product Count - Left Side */}
             <div className="flex items-center gap-1">
