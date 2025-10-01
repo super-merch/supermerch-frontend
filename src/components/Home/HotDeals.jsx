@@ -3,6 +3,7 @@ import { FaFire } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import noimage from "/noimage.png";
+import { getProductPrice, slugify } from "@/utils/utils";
 
 const HotDeals = () => {
   const navigate = useNavigate();
@@ -11,45 +12,31 @@ const HotDeals = () => {
     discountedProducts,
     fetchProducts,
     products,
+    marginApi,
     skeletonLoading,
   } = useContext(AppContext);
 
   useEffect(() => {
-    fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
-    // Fallback: also fetch regular products in case discounted products are empty
-    fetchProducts(1, "", 6);
+    if (discountedProducts.length === 0 && products.length === 0) {
+      fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
+      // Fallback: also fetch regular products in case discounted products are empty
+      fetchProducts(1, "", 6);
+    }
   }, []);
 
-  // Use discounted products if available, otherwise fall back to regular products
+  // Use discounted products ifp available, otherwise fall back to regular products
   const displayProducts =
     discountedProducts && discountedProducts.length > 0
-      ? discountedProducts
+      ? discountedProducts?.filter((product) => {
+          const price = getProductPrice(product);
+          return price > 0; // Only show products with valid prices
+        })
       : products || [];
-
-  // Handle product click
-  const slugify = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      // replace any sequence of non-alphanumeric chars with a single hyphen
-      .replace(/[^a-z0-9]+/g, "-")
-      // remove leading/trailing hyphens
-      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-  };
-
-  // Get price from product data and convert to USD
-  const getProductPrice = (product) => {
-    const priceGroups = product.product?.prices?.price_groups || [];
-    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-    const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const price = priceBreaks.length > 0 ? parseFloat(priceBreaks[0].price) : 0;
-    // Convert to USD (assuming the price is in AUD, using approximate conversion rate)
-    return price * 0.65; // Approximate AUD to USD conversion
   };
 
   return (
@@ -84,23 +71,7 @@ const HotDeals = () => {
             })
           : // Real products
             (() => {
-              // Ensure we always show 4 products, even if we need to repeat some
-              const filteredProducts = displayProducts.filter((product) => {
-                const price = getProductPrice(product);
-                return price > 0; // Only show products with valid prices
-              });
-
-              // If we have fewer than 4 products, repeat them to fill the space
-              const productsToShow = filteredProducts;
-              // for (let i = 0; i < 4; i++) {
-              //   if (filteredProducts.length > 0) {
-              //     productsToShow.push(
-              //       filteredProducts[i % filteredProducts.length]
-              //     );
-              //   }
-              // }
-
-              if (productsToShow.length === 0) {
+              if (displayProducts.length === 0) {
                 return (
                   <div className="flex items-center justify-center h-32">
                     <p className="text-gray-500">No products available</p>
@@ -108,9 +79,9 @@ const HotDeals = () => {
                 );
               }
 
-              return productsToShow.map((product, index) => {
+              return displayProducts.map((product, index) => {
                 const price = getProductPrice(product);
-                const isLastItem = index === productsToShow.length - 1;
+                const isLastItem = index === displayProducts.length - 1;
 
                 return (
                   <div

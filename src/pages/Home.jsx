@@ -57,11 +57,6 @@ const Home = () => {
     }
   }, [discountModalShown, openDiscountModal]);
 
-  // Fetch coupons on mount
-  useEffect(() => {
-    fetchCurrentCoupon();
-  }, [fetchCurrentCoupon]);
-
   return (
     <div>
       <HomeContent />

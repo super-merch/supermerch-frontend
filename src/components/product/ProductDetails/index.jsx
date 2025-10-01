@@ -1,42 +1,37 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { getProductPrice } from "@/utils/utils";
+import axios from "axios";
+import { colornames } from "color-name-list";
+import { CheckCheck } from "lucide-react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { FaCheck } from "react-icons/fa6";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoArrowBackOutline } from "react-icons/io5";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { IoCartOutline } from "react-icons/io5";
-import { FaCheck } from "react-icons/fa6";
-import {
-  addToCart,
-  initializeCartFromStorage,
-} from "../../../redux/slices/cartSlice";
-import {
-  setCurrentUser,
-  selectCurrentUserCartItems,
-} from "../../../redux/slices/cartSlice";
-import { useSelector } from "react-redux";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
-import { useDispatch } from "react-redux";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { AppContext } from "../../../context/AppContext";
-import noimage from "/noimage.png";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
-import { colornames } from "color-name-list";
+import {
+  addToCart,
+  initializeCartFromStorage,
+  selectCurrentUserCartItems,
+} from "../../../redux/slices/cartSlice";
+import ProductNotFound from "../ProductNotFound";
+import QuoteFormModal from "../QuoteFormModal";
 import Services from "../Services";
 import SizeGuideModal from "../SizeGuideModal";
-import QuoteFormModal from "../QuoteFormModal";
-import { Button } from "../../ui/button";
-import { CheckCheck } from "lucide-react";
 import DecorationTab from "./DecorationTab";
-import ShippingTab from "./ShippingTab";
 import FeaturesTab from "./FeaturesTab";
 import PricingTab from "./PricingTab";
-import ProductNotFound from "../ProductNotFound";
+import ShippingTab from "./ShippingTab";
+import noimage from "/noimage.png";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -104,84 +99,86 @@ const ProductDetails = () => {
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
 
-  const fetchSingleProduct = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axios.get(
-        `${backednUrl}/api/single-product/${id}`
-      );
-      if (data) {
-        setSingle_Product(data.data, "fetchSingleProduct");
-        setLoading(false);
-        setErrorFetching(false);
-      }
-
-      // First, try to find sizes in details array
-      const details = data.data?.product.details.filter((item) => {
-        return (
-          item.name.toLowerCase() === "sizing" ||
-          item.name.toLowerCase() === "sizes" ||
-          item.name.toLowerCase() === "size"
+  useEffect(() => {
+    if (!id) return;
+    const fetchSingleProduct = async () => {
+      setLoading(true);
+      try {
+        const { data } = await axios.get(
+          `${backednUrl}/api/single-product/${id}`
         );
-      });
+        if (data) {
+          setSingle_Product(data.data, "fetchSingleProduct");
+          setLoading(false);
+          setErrorFetching(false);
+        }
 
-      let extractedSizes = [];
+        // First, try to find sizes in details array
+        const details = data.data?.product.details.filter((item) => {
+          return (
+            item.name.toLowerCase() === "sizing" ||
+            item.name.toLowerCase() === "sizes" ||
+            item.name.toLowerCase() === "size"
+          );
+        });
 
-      if (details && details.length > 0) {
-        // If sizes found in details array, use them
-        extractedSizes = details[0].detail
-          .split(",")
-          .map((size) => size.trim());
-      } else {
-        // If no sizes in details, check description for sizes
-        const description = data.data?.product.description || "";
-        const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
+        let extractedSizes = [];
 
-        if (sizesMatch) {
-          const sizesString = sizesMatch[1].trim();
-          // Handle different formats like "XS - 2XL" or "72, 77, 82, ..."
-          if (sizesString.includes(" - ")) {
-            // Handle range format like "XS - 2XL"
-            const [start, end] = sizesString.split(" - ");
-            const sizeOrder = [
-              "XS",
-              "S",
-              "M",
-              "L",
-              "XL",
-              "2XL",
-              "3XL",
-              "4XL",
-              "5XL",
-            ];
-            const startIndex = sizeOrder.indexOf(start.trim());
-            const endIndex = sizeOrder.indexOf(end.trim());
+        if (details && details.length > 0) {
+          // If sizes found in details array, use them
+          extractedSizes = details[0].detail
+            .split(",")
+            .map((size) => size.trim());
+        } else {
+          // If no sizes in details, check description for sizes
+          const description = data.data?.product.description || "";
+          const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
 
-            if (startIndex !== -1 && endIndex !== -1) {
-              extractedSizes = sizeOrder.slice(startIndex, endIndex + 1);
+          if (sizesMatch) {
+            const sizesString = sizesMatch[1].trim();
+            // Handle different formats like "XS - 2XL" or "72, 77, 82, ..."
+            if (sizesString.includes(" - ")) {
+              // Handle range format like "XS - 2XL"
+              const [start, end] = sizesString.split(" - ");
+              const sizeOrder = [
+                "XS",
+                "S",
+                "M",
+                "L",
+                "XL",
+                "2XL",
+                "3XL",
+                "4XL",
+                "5XL",
+              ];
+              const startIndex = sizeOrder.indexOf(start.trim());
+              const endIndex = sizeOrder.indexOf(end.trim());
+
+              if (startIndex !== -1 && endIndex !== -1) {
+                extractedSizes = sizeOrder.slice(startIndex, endIndex + 1);
+              } else {
+                // If not standard size format, just use as is
+                extractedSizes = [sizesString];
+              }
             } else {
-              // If not standard size format, just use as is
-              extractedSizes = [sizesString];
+              // Handle comma-separated format
+              extractedSizes = sizesString
+                .split(",")
+                .map((size) => size.trim());
             }
-          } else {
-            // Handle comma-separated format
-            extractedSizes = sizesString.split(",").map((size) => size.trim());
           }
         }
+
+        setSizes(extractedSizes);
+        setSelectedSize(extractedSizes[0] || extractedSizes[1]);
+
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setErrorFetching(true);
+        console.log(error);
       }
-
-      setSizes(extractedSizes);
-      setSelectedSize(extractedSizes[0] || extractedSizes[1]);
-
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setErrorFetching(true);
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
+    };
     fetchSingleProduct();
   }, [id]);
 
@@ -833,23 +830,23 @@ const ProductDetails = () => {
     return { sizes, result };
   };
 
-  const minimumPrice = () => {
-    const marginEntry = marginApi[productId];
+  // const minimumPrice = () => {
+  //   const marginEntry = marginApi[productId];
 
-    const priceGroups = product?.prices?.price_groups || [];
-    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-    const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const prices = priceBreaks
-      .map((breakItem) => breakItem.price)
-      .filter((price) => price !== undefined);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const finalPrice =
-      minPrice === maxPrice
-        ? Number(minPrice) + Number(marginEntry?.marginFlat ?? 0)
-        : Number(minPrice) + Number(marginEntry?.marginFlat ?? 0);
-    return finalPrice?.toFixed(2) || 0;
-  };
+  //   const priceGroups = product?.prices?.price_groups || [];
+  //   const basePrice = priceGroups.find((group) => group?.base_price) || {};
+  //   const priceBreaks = basePrice.base_price?.price_breaks || [];
+  //   const prices = priceBreaks
+  //     .map((breakItem) => breakItem.price)
+  //     .filter((price) => price !== undefined);
+  //   const minPrice = Math.min(...prices);
+  //   const maxPrice = Math.max(...prices);
+  //   const finalPrice =
+  //     minPrice === maxPrice
+  //       ? Number(minPrice) + Number(marginEntry?.marginFlat ?? 0)
+  //       : Number(minPrice) + Number(marginEntry?.marginFlat ?? 0);
+  //   return finalPrice?.toFixed(2) || 0;
+  // };
 
   if (error)
     return (
@@ -1059,7 +1056,7 @@ const ProductDetails = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-extrabold text-green-600">
-                        ${minimumPrice() ?? 0}{" "}
+                        ${getProductPrice(single_product, productId) ?? 0}{" "}
                         <span className="text-xs text-gray-500">per unit</span>
                       </span>
                     </div>

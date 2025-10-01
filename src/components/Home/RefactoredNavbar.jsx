@@ -21,6 +21,7 @@ import {
   setMinPrice,
 } from "../../redux/slices/filterSlice";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
+import { useCoupons } from "@/hooks/useCoupons";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const {
@@ -33,7 +34,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setCurrentPage,
     setParamProducts,
     v1categories,
-    fetchV1Categories,
     setSidebarActiveCategory,
     setSidebarActiveLabel,
   } = useContext(AppContext);
@@ -48,14 +48,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [navbarLogout, setNavbarLogout] = useState(false);
   const [coupenModel, setCoupenModel] = useState(false);
-  const [coupons, setCoupons] = useState([]);
-  const [coupenLoading, setCoupenLoading] = useState(false);
-
-  // Fetch categories and coupons
-  useEffect(() => {
-    fetchV1Categories();
-    fetchCurrentCoupon();
-  }, []);
+  const { coupons, coupenLoading } = useCoupons();
 
   // Create menu items from categories
   const createMenuItems = () => {
@@ -274,27 +267,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(clearCurrentUser());
     dispatch(clearFavourites());
     navigate("/login");
-  };
-
-  const fetchCurrentCoupon = async () => {
-    try {
-      setCoupenLoading(true);
-      const API_BASE =
-        import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-      const response = await fetch(`${API_BASE}/api/coupen/get`);
-      const data = await response.json();
-      if (response.ok && data.length > 0) {
-        setCoupons(data);
-        setCoupenLoading(false);
-      } else {
-        setCoupons([]);
-        setCoupenLoading(false);
-      }
-    } catch (error) {
-      setCoupenLoading(false);
-      setCoupons([]);
-      console.error("Error fetching current coupon:", error);
-    }
   };
 
   useEffect(() => {

@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AiOutlineEye } from "react-icons/ai";
-import { IoIosHeart } from "react-icons/io";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { useContext, useEffect, useState } from "react";
 import { CiHeart } from "react-icons/ci";
-import { IoCartOutline, IoClose } from "react-icons/io5";
+import { IoIosHeart } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
-import { useDispatch, useSelector } from "react-redux";
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
-import { toast } from "react-toastify";
-import axios from "axios";
+import ProductCard from "./ProductCard";
 
 const AllProducts = ({ activeTab }) => {
   const navigate = useNavigate();
@@ -33,12 +31,6 @@ const AllProducts = ({ activeTab }) => {
   // State for modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // useEffect(() => {
-
-  //   getAll24HourProduction();
-  //   getAllAustralia();
-  // }, []);
 
   // Local fetch function for AllProducts
   const fetchAllProducts = async () => {
@@ -67,8 +59,8 @@ const AllProducts = ({ activeTab }) => {
 
   useEffect(() => {
     // Only fetch if activeTab is "All Product" to avoid unnecessary calls
-    if (activeTab === "All Product") {
-      fetchProducts(1, "", 8);
+    if (activeTab === "All Product" && products.length === 0) {
+      // fetchProducts(1, "", 8);
       fetchAllProducts();
     }
   }, [activeTab]); // Changed dependency to activeTab instead of empty array
@@ -261,263 +253,30 @@ const AllProducts = ({ activeTab }) => {
                       product.discountInfo?.isGlobal || false;
 
                     return (
-                      <div
+                      <ProductCard
                         key={productId}
-                        className="relative bg-white border border-border2 rounded-xl shadow-lg hover:shadow-xl hover:border-blue-500 transition-all duration-300 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group overflow-hidden"
-                        onClick={() =>
+                        product={product}
+                        minPrice={minPrice}
+                        maxPrice={maxPrice}
+                        discountPct={discountPct}
+                        isGlobalDiscount={isGlobalDiscount}
+                        productionIds={productionIds}
+                        australiaIds={australiaIds}
+                        favSet={favSet}
+                        isHovered={cardHover === product.meta.id}
+                        onClickView={() =>
                           handleViewProduct(
                             product.meta.id,
                             product.overview.name
                           )
                         }
+                        onAddFavourite={() => {
+                          dispatch(addToFavourite(product));
+                          toast.success("Product added to favourites");
+                        }}
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
-                      >
-                        <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                          {(productionIds.has(product.meta.id) ||
-                            productionIds.has(String(product.meta.id))) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                              {/* small clock SVG (no extra imports) */}
-                              <svg
-                                className="w-3 h-3 flex-shrink-0"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                aria-hidden
-                              >
-                                <path
-                                  d="M12 7v5l3 1"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <circle
-                                  cx="12"
-                                  cy="12"
-                                  r="8"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                              <span>24Hr Production</span>
-                            </span>
-                          )}
-
-                          {(australiaIds.has(product.meta.id) ||
-                            australiaIds.has(String(product.meta.id))) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                              {/* simple flag/triangle SVG */}
-                              <svg
-                                className="w-3 h-3 flex-shrink-0"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                aria-hidden
-                              >
-                                <path
-                                  d="M3 6h10l-2 3 2 3H3V6z"
-                                  fill="currentColor"
-                                />
-                                <rect
-                                  x="3"
-                                  y="4"
-                                  width="1"
-                                  height="16"
-                                  rx="0.5"
-                                  fill="currentColor"
-                                  opacity="0.9"
-                                />
-                              </svg>
-                              <span>Australia Made</span>
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Favourite button - moved to top-right of image */}
-                        <div className="absolute top-2 right-2 z-20">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent card click
-                              dispatch(addToFavourite(product));
-                              toast.success("Product added to favourites");
-                            }}
-                            className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md cursor-pointer hover:bg-opacity-100"
-                          >
-                            {favSet.has(productId) ? (
-                              <IoIosHeart className="text-lg text-red-500" />
-                            ) : (
-                              <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Enlarged image section */}
-                        <div className="max-h-[65%] sm:max-h-[70%] h-full border-b overflow-hidden relative rounded-t-xl">
-                          <img
-                            src={
-                              product.overview.hero_image
-                                ? product.overview.hero_image
-                                : noimage
-                            }
-                            alt=""
-                            className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-110"
-                          />
-                        </div>
-
-                        {/* Color swatches */}
-
-                        {/* Reduced content area */}
-                        <div className="p-4 rounded-b-xl">
-                          <div className=" flex justify-center mb-1 gap-1  z-10">
-                            {product?.product?.colours?.list.length > 1 &&
-                              (() => {
-                                // Extract unique colors and filter out colors with spaces/multiple words
-                                const uniqueColors = [
-                                  ...new Set(
-                                    product?.product?.colours?.list
-                                      .flatMap((colorObj) => colorObj.colours)
-                                      .filter((color) => !color.includes(" ")) // Remove colors with spaces
-                                  ),
-                                ];
-
-                                return uniqueColors
-                                  .slice(0, 12)
-                                  .map((color, index) => (
-                                    <div
-                                      key={index}
-                                      style={{
-                                        backgroundColor:
-                                          color
-                                            .toLowerCase()
-                                            // Blues
-
-                                            .replace("navy", "#1e40af")
-
-                                            // Greys/Neutrals
-
-                                            .replace("grey", "#6b7280")
-                                            .replace("gray", "#6b7280")
-                                            .replace("charcoal", "#374151")
-                                            .replace("carbon", "#1f2937")
-                                            .replace("gunmetal", "#2a3439")
-                                            .replace("slate", "#64748b")
-                                            .replace("stone", "#78716c")
-                                            .replace("zinc", "#71717a")
-                                            .replace("neutral", "#737373")
-                                            .replace("taupe", "#b8860b")
-
-                                            // Greens
-
-                                            .replace("mint", "#10b981")
-                                            .replace("sage", "#9ca3af")
-                                            .replace("kiwi", "#8fbc8f")
-                                            .replace("khaki", "#bdb76b")
-                                            .replace("teal", "#0d9488")
-                                            .replace("emerald", "#10b981")
-
-                                            // Reds/Pinks
-
-                                            .replace("burgundy", "#7f1d1d")
-                                            .replace("red", "#ef4444")
-                                            .replace("pink", "#ec4899")
-                                            .replace("coral", "#ff7f7f")
-                                            .replace("berry", "#8b0000")
-                                            .replace("maroon", "#7f1d1d")
-                                            .replace("rose", "#f43f5e")
-                                            .replace("fuchsia", "#d946ef")
-
-                                            // Oranges/Yellows
-                                            .replace("orange", "#f97316")
-                                            .replace("yellow", "#eab308")
-                                            .replace("mustard", "#ffdb58")
-                                            .replace("rust", "#b7410e")
-                                            .replace("amber", "#f59e0b")
-
-                                            // Purples
-                                            .replace("lavender", "#c084fc")
-                                            .replace("violet", "#8b5cf6")
-                                            .replace("indigo", "#6366f1")
-                                            .replace("purple", "#a855f7")
-                                            .replace("mauve", "#dda0dd")
-
-                                            // Browns/Beiges
-                                            .replace("cream", "#fef3c7")
-                                            .replace("beige", "#f5f5dc")
-                                            .replace("ecru", "#c2b280")
-                                            .replace("tan", "#d2b48c")
-                                            .replace("brown", "#92400e")
-
-                                            // Other colors
-                                            .replace("turquoise", "#06b6d4")
-                                            .replace("aqua", "#22d3ee")
-                                            .replace("cyan", "#06b6d4")
-                                            .replace("lime", "#84cc16")
-                                            .replace("white", "#ffffff")
-                                            .replace("black", "#000000")
-
-                                            .replace(" ", "") || // remove remaining spaces
-                                          color.toLowerCase(),
-                                      }}
-                                      className="w-4 h-4 rounded-full border border-slate-900"
-                                    />
-                                  ));
-                              })()}
-                          </div>
-                          <div className="text-left">
-                            <div className="flex items-center justify-between">
-                              <h2
-                                className={`text-sm transition-all duration-300 ${
-                                  cardHover === product.meta.id &&
-                                  product.overview.name.length > 20
-                                    ? "sm:text-[18px]"
-                                    : "sm:text-lg"
-                                } font-semibold text-brand group-hover:text-blue-600 sm:leading-[19px] flex-1`}
-                              >
-                                {(product.overview.name &&
-                                  // product.overview.name.length > 20 && cardHover!==product.meta.id && cardHover!==product.meta.id
-                                  //   ? product.overview.name.slice(0, 20) + "..."
-                                  product.overview.name) ||
-                                  "No Name"}
-                              </h2>
-                              {/* Discount badge on the right side */}
-                              {discountPct > 0 && (
-                                <div className="ml-2 flex flex-col gap-1">
-                                  <span className="px-1.5 py-0.5 text-xs font-bold text-white bg-red-500 rounded">
-                                    {discountPct}%
-                                  </span>
-                                  {isGlobalDiscount && (
-                                    <span className="px-1.5 py-0.5 text-xs font-bold text-white bg-orange-500 rounded">
-                                      Sale
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Minimum quantity */}
-                            <p className="text-xs text-gray-500 pt-1">
-                              Min Qty:{" "}
-                              {product.product?.prices?.price_groups[0]
-                                ?.base_price?.price_breaks[0]?.qty || 1}
-                            </p>
-
-                            {/* Updated Price display with better font */}
-                            <div className="">
-                              <h2 className="text-base sm:text-lg font-bold text-blue-600 group-hover:text-blue-700 transition-colors duration-300">
-                                From $
-                                {minPrice === maxPrice ? (
-                                  <span>{minPrice.toFixed(2)}</span>
-                                ) : (
-                                  <span>{minPrice.toFixed(2)}</span>
-                                )}
-                              </h2>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      />
                     );
                   })}
           </div>

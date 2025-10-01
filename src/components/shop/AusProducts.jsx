@@ -1,33 +1,26 @@
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
-import { IoSearchOutline } from "react-icons/io5";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import {
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoIosHeart,
+  IoMdArrowBack,
+  IoMdArrowForward,
+} from "react-icons/io";
+import { IoClose } from "react-icons/io5";
+import Skeleton from "react-loading-skeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
-import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
-import { IoCartOutline, IoClose } from "react-icons/io5";
-import Skeleton from "react-loading-skeleton";
-import noimage from "/noimage.png";
+import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import {
-  setMinPrice,
-  setMaxPrice,
   applyFilters,
+  setMaxPrice,
+  setMinPrice,
 } from "../../redux/slices/filterSlice";
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
-import { toast } from "react-toastify";
 import Sidebar from "./Sidebar";
+import noimage from "/noimage.png";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {

@@ -26,6 +26,7 @@ import { AppContext } from "../../context/AppContext";
 import SideBar2 from "./SideBar2";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
+import { slugify } from "@/utils/utils";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -298,22 +299,13 @@ const SaleCards = () => {
     if (!isPriceFilterActive) {
       fetchDiscountedProducts(currentPage, sortOption);
     }
-  }, [currentPage, sortOption, isPriceFilterActive]);
+  }, []);
 
   const handleSortSelection = (option) => {
     setSortOption(option);
     setIsDropdownOpen(false);
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
-
-  const slugify = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      // replace any sequence of non-alphanumeric chars with a single hyphen
-      .replace(/[^a-z0-9]+/g, "-")
-      // remove leading/trailing hyphens
-      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
@@ -453,21 +445,8 @@ const SaleCards = () => {
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            {/* <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              {!isPriceFilterActive && (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Search for discounted products..."
-                    className="w-full border-none outline-none"
-                    value={searchProductName}
-                    onChange={setSearchTextChanger}
-                  />
-                  <IoSearchOutline className="text-2xl" />
-                </>
-              )}
-            </div> */}
+          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-end">
+            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full"></div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>

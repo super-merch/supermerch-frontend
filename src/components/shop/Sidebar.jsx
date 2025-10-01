@@ -37,11 +37,11 @@ const Sidebar = (props) => {
   };
   const filter = props.filter ? props.filter : false;
 
-  useEffect(() => {
-    if (!filter) {
-      fetchCategories();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!filter) {
+  //     fetchCategories();
+  //   }
+  // }, []);
 
   const handleCategoryClick = (category) => {
     // category is string in some places and object elsewhere in your code.
