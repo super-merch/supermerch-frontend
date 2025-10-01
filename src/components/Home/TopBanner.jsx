@@ -13,7 +13,7 @@ const TopBanner = ({ onCouponClick }) => {
   };
 
   return (
-    <div className="w-full py-2 bg-gray-900">
+    <div className="w-full py-2 pt-3 sm:pt-2 bg-gray-900">
       <div className="Mycontainer flex flex-wrap md:flex-nowrap items-center justify-between gap-2 md:gap-0 px-3 md:px-0">
         {/* Left side - Super Merch Logo */}
         <div className="flex items-center order-1 min-w-0 md:min-w-fit">
@@ -21,24 +21,21 @@ const TopBanner = ({ onCouponClick }) => {
         </div>
 
         {/* Center - Promotion text */}
-        <div className="order-3 md:order-2 w-full md:w-auto flex items-center md:justify-center md:text-center gap-2 sm:gap-3 px-1 md:flex-1">
+        <div className="order-3 md:order-2 w-full md:w-auto flex items-center justify-center md:text-center gap-1 sm:gap-2 md:gap-3 px-1 md:flex-1">
           <span
-            className="text-white text-sm sm:text-base md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity truncate"
+            className="text-white text-xs sm:text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
             onClick={handleCouponClick}
           >
             50% Promotion is going on
           </span>
 
           {/* Vertical separator */}
-          <div className="hidden md:block w-px h-5 bg-white opacity-60"></div>
+          <div className="w-px h-3 sm:h-4 md:h-5 bg-white opacity-60"></div>
 
           {/* Coupon section with icon */}
-          <div
-            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={handleCouponClick}
-          >
-            <FaTag className="text-white text-base sm:text-lg" />
-            <span className="text-white text-sm sm:text-base md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity truncate">
+          <div className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={handleCouponClick}>
+            <FaTag className="hidden sm:block text-white text-xs sm:text-sm md:text-lg" />
+            <span className="text-white text-xs sm:text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap">
               Get Discount Using Coupon
             </span>
           </div>

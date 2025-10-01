@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,8 @@ const NavigationMenu = ({
 }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [clickedItem, setClickedItem] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const sizeClasses = {
     small: {
@@ -34,38 +36,66 @@ const NavigationMenu = ({
 
   const currentSize = sizeClasses[size] || sizeClasses.default;
 
+  // Detect if device is desktop (≥ 1024px)
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+    return () => window.removeEventListener("resize", checkIsDesktop);
+  }, []);
+
   const handleItemClick = (item) => {
-    if (item.onClick) {
-      item.onClick();
-    } else if (onItemClick) {
-      onItemClick(item);
+    if (item.hasSubmenu) {
+      // On mobile/tablet, toggle submenu on click
+      if (!isDesktop) {
+        setClickedItem(clickedItem === item.id ? null : item.id);
+        setActiveItem(clickedItem === item.id ? null : item.id);
+      }
+    } else {
+      // Navigate to page if no submenu
+      if (item.onClick) {
+        item.onClick();
+      } else if (onItemClick) {
+        onItemClick(item);
+      }
     }
   };
 
   const handleMouseEnter = (item) => {
-    if (item.hasSubmenu) {
+    // Only handle hover on desktop
+    if (isDesktop && item.hasSubmenu) {
       setHoveredItem(item.id);
       setActiveItem(item.id);
     }
   };
 
   const handleMouseLeave = () => {
-    setHoveredItem(null);
+    // Only handle mouse leave on desktop
+    if (isDesktop) {
+      setHoveredItem(null);
+    }
   };
 
   const renderSubmenu = (item) => {
     if (!item.hasSubmenu || !item.submenu) return null;
 
+    // Determine if submenu should be visible
+    const isVisible = isDesktop ? hoveredItem === item.id : clickedItem === item.id;
+
+    // On mobile, don't render submenu at all if not visible
+    if (!isDesktop && !isVisible) return null;
+
     return (
       <div
-        className={`absolute left-0 top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
-          hoveredItem === item.id ? "group-hover:flex" : "hidden"
-        }`}
+        className={`absolute left-0 top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 ${
+          isDesktop ? "hidden xl:block" : "block"
+        } ${isVisible ? "opacity-100 visible" : "opacity-0 invisible"}`}
       >
         <div className="container mx-auto">
-          <div
-            className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}
-          >
+          <div className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}>
             {item.megaMenu ? (
               // Mega menu layout
               <div className="grid grid-cols-[1fr_3fr]">
@@ -76,9 +106,7 @@ const NavigationMenu = ({
                         key={subItem.id}
                         className={cn(
                           "flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted",
-                          activeItem === subItem.id
-                            ? "bg-muted font-medium text-primary"
-                            : "text-white"
+                          activeItem === subItem.id ? "bg-muted font-medium text-primary" : "text-white"
                         )}
                         onMouseEnter={() => setActiveItem(subItem.id)}
                         onClick={() => handleItemClick(subItem)}
@@ -108,9 +136,7 @@ const NavigationMenu = ({
             ) : (
               // Regular submenu layout
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-blue-500 mb-4">
-                  {item.name}
-                </h3>
+                <h3 className="text-lg font-semibold text-blue-500 mb-4">{item.name}</h3>
                 <div className="grid grid-cols-3 gap-4">
                   {item.submenu.map((subItem, index) => (
                     <button
@@ -133,62 +159,70 @@ const NavigationMenu = ({
   if (variant === "vertical") {
     return (
       <nav className={`space-y-2 ${className}`}>
-        {menuItems.map((item) => (
-          <div key={item.id} className="space-y-1">
-            <div
-              className={`flex items-center justify-between ${currentSize.item} cursor-pointer hover:bg-gray-100 rounded`}
-              onClick={() => handleItemClick(item)}
-            >
-              <span className="text-customBlue capitalize">{item.name}</span>
-              {item.hasSubmenu && (
-                <RiArrowDropDownLine className="text-xl transition-all duration-300" />
+        {menuItems.map((item) => {
+          const isSubmenuVisible = clickedItem === item.id;
+
+          return (
+            <div key={item.id} className="space-y-1">
+              <div
+                className={`flex items-center justify-between ${currentSize.item} cursor-pointer hover:bg-gray-100 rounded-lg p-3 transition-colors`}
+                onClick={() => handleItemClick(item)}
+              >
+                <span className="text-customBlue capitalize font-medium">{item.name}</span>
+                {item.hasSubmenu && (
+                  <RiArrowDropDownLine
+                    className={`text-xl transition-all duration-300 text-gray-500 ${isSubmenuVisible ? "rotate-180" : "rotate-0"}`}
+                  />
+                )}
+              </div>
+              {item.hasSubmenu && item.submenu && isSubmenuVisible && (
+                <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-4">
+                  {item.submenu.map((subItem) => (
+                    <div
+                      key={subItem.id}
+                      className={`${currentSize.submenu} cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors`}
+                      onClick={() => handleItemClick(subItem)}
+                    >
+                      <span className="text-gray-700">{subItem.name}</span>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-            {item.hasSubmenu && item.submenu && (
-              <div className="ml-4 space-y-1">
-                {item.submenu.map((subItem) => (
-                  <div
-                    key={subItem.id}
-                    className={`${currentSize.submenu} cursor-pointer hover:bg-gray-50 rounded`}
-                    onClick={() => handleItemClick(subItem)}
-                  >
-                    {subItem.name}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </nav>
     );
   }
 
   return (
     <nav className={`${className}`}>
-      <ul className="space-y-3 lg:space-y-0 lg:flex lg:space-x-2">
-        {menuItems.map((item) => (
-          <li
-            key={item.id}
-            onMouseLeave={handleMouseLeave}
-            className={`cursor-pointer ${
-              item.hasSubmenu ? "group relative" : ""
-            }`}
-          >
-            <div className="text-customBlue">
-              <span
-                className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg  hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
-                onMouseEnter={() => handleMouseEnter(item)}
-                onClick={() => handleItemClick(item)}
-              >
-                {item.name}
-                {item.hasSubmenu && (
-                  <RiArrowDropDownLine className="-rotate-90 group-hover:rotate-[52px] text-2xl transition-all duration-300" />
-                )}
-              </span>
-              {renderSubmenu(item)}
-            </div>
-          </li>
-        ))}
+      <ul className="space-y-3 xl:space-y-0 xl:flex xl:space-x-2">
+        {menuItems.map((item) => {
+          const isSubmenuVisible = isDesktop ? hoveredItem === item.id : clickedItem === item.id;
+
+          return (
+            <li key={item.id} onMouseLeave={handleMouseLeave} className={`cursor-pointer ${item.hasSubmenu ? "group relative" : ""}`}>
+              <div className="text-customBlue">
+                <span
+                  className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
+                  onMouseEnter={() => handleMouseEnter(item)}
+                  onClick={() => handleItemClick(item)}
+                >
+                  {item.name}
+                  {item.hasSubmenu && (
+                    <RiArrowDropDownLine
+                      className={`text-2xl transition-all duration-300 ${
+                        isDesktop ? `-rotate-90 ${isSubmenuVisible ? "rotate-0" : ""}` : `${isSubmenuVisible ? "rotate-180" : "rotate-0"}`
+                      }`}
+                    />
+                  )}
+                </span>
+                {renderSubmenu(item)}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

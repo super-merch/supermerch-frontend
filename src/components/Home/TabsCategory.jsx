@@ -81,16 +81,16 @@ const TabsCategory = () => {
             align="center"
             size="default"
             titleClassName="uppercase"
-            containerClassName="lg:pt-8 md:pt-8 sm:pt-8 pt-4"
+            containerClassName="xl:pt-8 md:pt-8 sm:pt-8 pt-4"
           />
           {/* <div className="TabsCategory"> */}
           {/* Main Category Tabs */}
-          <div className="lg:mt-6 md:mt-6 mt-4 flex justify-between lg:grid md:grid sm:grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center lg:gap-6 md:gap-6 sm:gap-4 gap-1 border-b-4 border-blue-300">
+          <div className="xl:mt-6 md:mt-6 mt-4 flex flex-col sm:flex-row xl:grid md:grid sm:grid xl:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center xl:gap-6 md:gap-6 sm:gap-4 gap-2 sm:gap-1 border-b-4 border-blue-300">
             {megaMenu.slice(0, 4).map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category.id)}
-                className={`py-4 max-sm:pb-1 text-start focus:outline-none text-xs sm:text-sm lg:text-xl md:text-xl font-medium transition-colors duration-300 ${
+                className={`py-3 sm:py-4 max-sm:pb-1 text-start focus:outline-none text-xs sm:text-sm xl:text-xl md:text-xl font-medium transition-colors duration-300 min-h-[44px] w-full sm:w-auto ${
                   category.id === activeTab
                     ? "border-b-2 max-sm:border-b-[2px] border-blue-600 text-blue-600 px-2"
                     : "text-gray-600 hover:text-blue-500"
@@ -103,7 +103,7 @@ const TabsCategory = () => {
 
           {/* Subcategories for the active main category */}
           <div
-            className={`mt-6 grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 text-center lg:gap-6 md:gap-6 gap-4 transition-all duration-300 ${
+            className={`mt-4 sm:mt-6 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 md:grid-cols-3 text-center xl:gap-6 md:gap-6 gap-3 sm:gap-4 transition-all duration-300 ${
               isAnimating ? "opacity-0 transform translate-y-4" : "opacity-100 transform translate-y-0"
             }`}
           >
@@ -112,7 +112,7 @@ const TabsCategory = () => {
                 <div
                   key={`${activeTab}-${subCategory.label}`}
                   onClick={() => handleSubCategoryClick(subCategory)}
-                  className="bg-white rounded-xl lg:p-5 md:p-5 p-3 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+                  className="bg-white rounded-xl lg:p-5 md:p-5 p-3 sm:p-4 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group min-h-[44px]"
                   style={{
                     animation: isAnimating ? "none" : `fadeInUp 0.4s ease-out ${index * 50}ms both`,
                   }}
@@ -142,7 +142,7 @@ const TabsCategory = () => {
                       className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
-                  <h3 className="text-blue-800 lg:pt-3 md:pt-3 sm:pt-3 pt-2 lg:text-lg md:text-lg sm:text-lg text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">
+                  <h3 className="text-blue-800 xl:pt-3 md:pt-3 sm:pt-3 pt-2 xl:text-lg md:text-lg sm:text-lg text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">
                     {subCategory.label}
                   </h3>
                 </div>
