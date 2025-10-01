@@ -146,8 +146,9 @@ const AppContextProvider = (props) => {
     }
   };
   const [productsCategory, setProductsCategory] = useState([]);
+  const [productsCategoryLoading, setProductsCategoryLoading] = useState(false);
   const fetchProductsCategory = async (category, page = 1, sort = "") => {
-    setSkeletonLoading(true);
+    setProductsCategoryLoading(true);
     try {
       const limit = 10;
       // Fixed: Removed duplicate ? and properly formatted query string
@@ -165,12 +166,12 @@ const AppContextProvider = (props) => {
       }
 
       setProductsCategory(data.data);
-      setSkeletonLoading;
+      setProductsCategoryLoading(false);
       // Uncomment if total_pages is needed
       // setTotalPages(data.total_pages);
     } catch (err) {
       console.error("Error fetching category products:", err);
-      setSkeletonLoading(false);
+      setProductsCategoryLoading(false);
       setError(err.message);
     }
   };
@@ -300,13 +301,14 @@ const AppContextProvider = (props) => {
   };
 
   const [trendingProducts, setTrendingProducts] = useState([]);
-
+  const [trendingProductsLoading, setTrendingProductsLoading] = useState(false);
   const fetchMultipleTrendingPages = async (
     maxPages = 1,
     limit = 100,
     sortOption = "",
     startPage = 1
   ) => {
+    setTrendingProductsLoading(true);
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -318,6 +320,7 @@ const AppContextProvider = (props) => {
         );
 
         if (!response.ok) break;
+        setTrendingProductsLoading(false);
 
         const data = await response.json();
 
@@ -336,31 +339,31 @@ const AppContextProvider = (props) => {
       return allProducts;
     } catch (error) {
       console.error("Error fetching multiple trending pages:", error);
+      setTrendingProductsLoading(false);
       return allProducts; // Return what we have so far
+    } finally {
+      setTrendingProductsLoading(false);
     }
   };
 
   const fetchTrendingProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 100; // Default to 100 if limit is not provided
+      setTrendingProductsLoading(true);
       const response = await fetch(
-        `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}/?filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
 
       const data = await response.json();
-
-      // Validate response structure if needed
-      if (!data || !data.data) {
-        throw new Error("Unexpected API response structure");
-      }
-
+      setTrendingProductsLoading(false);
       setTrendingProducts(data.data);
-      // Uncomment if total_pages is needed
-      // setTotalPages(data.total_pages);
     } catch (err) {
       setError(err.message);
+      setTrendingProductsLoading(false);
+    } finally {
+      setTrendingProductsLoading(false);
     }
   };
   const [arrivalProducts, setArrivalProducts] = useState([]);
@@ -1034,10 +1037,17 @@ const AppContextProvider = (props) => {
     }
   };
 
+  useEffect(() => {
+    fetchDiscountedProducts(1, "", 6);
+    fetchProducts(1, "", 6);
+    fetchTrendingProducts(1, "", 16);
+  }, []);
+
   // console.log(products, "api productss");
 
   useEffect(() => {
     fetchBlogs();
+    fetchV1Categories();
     // listDiscount();
   }, []);
 
@@ -1164,6 +1174,7 @@ const AppContextProvider = (props) => {
     clearProductsCache,
     fetchTrendingProducts,
     trendingProducts,
+    trendingProductsLoading,
     fetchProductDiscount,
     fetchSearchedProducts,
     fetchProductsCategory,
@@ -1245,6 +1256,9 @@ const AppContextProvider = (props) => {
 
     openLoginModal,
     setOpenLoginModal,
+    productsCategoryLoading,
+    setProductsCategory,
+    setProducts,
   };
 
   return (

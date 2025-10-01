@@ -52,13 +52,13 @@ const SMiniNav = () => {
     setSidebarActiveLabel,
   } = useContext(AppContext);
 
-  const getNav = async () => {
-    await fetchV1Categories();
-  };
+  // const getNav = async () => {
+  //   await fetchV1Categories();
+  // };
 
-  useEffect(() => {
-    getNav();
-  }, []);
+  // useEffect(() => {
+  //   getNav();
+  // }, []);
 
   // Close category dropdown when clicking outside
   useEffect(() => {

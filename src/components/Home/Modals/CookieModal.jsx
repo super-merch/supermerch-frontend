@@ -29,7 +29,7 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
       <div className="fixed bg-black/30 z-40"></div>
 
       {/* Modal */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-4xl">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-gray-700 !text-white backdrop-blur-md border-t border-gray-200 shadow-4xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             {/* Content */}
@@ -44,10 +44,10 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-gray-900 text-lg font-semibold mb-2">
+                <h3 className="text-white text-lg font-semibold mb-2">
                   Cookie Preferences
                 </h3>
-                <p className="text-gray-700 text-base leading-relaxed mb-3">
+                <p className="text-white text-base leading-relaxed mb-3">
                   We use cookies to enhance your browsing experience, provide
                   personalized content, and analyze our traffic. By continuing
                   to use our site, you consent to our use of cookies.
@@ -62,7 +62,7 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
                   onDecline();
                   setTimeout(() => setDiscountModal(true), 500);
                 }}
-                className="px-6 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors duration-200 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-6 py-3 text-white hover:text-white text-base font-medium transition-colors duration-200 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 Decline All
               </button>

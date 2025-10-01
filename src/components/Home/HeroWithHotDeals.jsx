@@ -162,11 +162,6 @@ const HeroWithHotDeals = () => {
         </div>
       </div>
 
-      {/* Image Carousel Section */}
-      <div className="mt-8">
-        <ImageCarousel />
-      </div>
-
       {/* Help Me Pick Modal */}
       <HelpMePickModal
         isOpen={isHelpModalOpen}
