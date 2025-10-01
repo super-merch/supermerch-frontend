@@ -11,17 +11,19 @@ import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 // Import reusable components
+import { AppContext } from "../../context/AppContext";
+import { NavigationMenu, SearchBar, UserActions } from "../Common";
+
+import { useCoupons } from "@/hooks/useCoupons";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import { AppContext } from "../../context/AppContext";
 import {
   applyFilters,
   setMaxPrice,
   setMinPrice,
 } from "../../redux/slices/filterSlice";
-import { NavigationMenu, SearchBar, UserActions } from "../Common";
-import { useCoupons } from "@/hooks/useCoupons";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const {
@@ -54,8 +56,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const createMenuItems = () => {
     const baseMenuItems = [
       { name: "Promotional", path: "/Spromotional", hasSubmenu: true },
-      { name: "Clothing", path: "/Spromotional", hasSubmenu: true },
-      { name: "Headwear", path: "/Spromotional", hasSubmenu: true },
+      { name: "Clothing", path: "/Clothing", hasSubmenu: true },
+      { name: "Headwear", path: "/Headwear", hasSubmenu: true },
       { name: "Return Gifts", path: "/shop" },
       { name: "24 Hour production", path: "/production" },
       { name: "Sale", path: "/sales" },
@@ -251,8 +253,21 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
+
+    // Determine the correct route based on the category name
+    let targetRoute = "/Spromotional"; // Default fallback
+
+    if (titleName === "Clothing") {
+      targetRoute = "/Clothing";
+    } else if (titleName === "Headwear") {
+      targetRoute = "/Headwear";
+    } else if (titleName === "Capital Equipment") {
+      targetRoute = "/Spromotional"; // Keep as promotional for now
+    }
+    // For all other categories, use /Spromotional
+
     navigate(
-      `/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
     );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
@@ -283,6 +298,66 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   return (
     <>
+      {/* Coupon Modal */}
+      {coupenModel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl font-semibold text-gray-800">
+              🎁 Exclusive Offers!
+            </h2>
+
+            {coupenLoading ? (
+              <div className="space-y-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="text-gray-600">Loading...</p>
+              </div>
+            ) : coupons.length > 0 ? (
+              <div className="space-y-3">
+                {coupons.map((coupon) => (
+                  <div
+                    key={coupon._id}
+                    className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
+                  >
+                    <p className="text-lg font-bold text-blue-600">
+                      {coupon.coupen}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Get <strong>{coupon.discount}% OFF</strong> on your order
+                    </p>
+                    <p
+                      className="text-blue-600 text-sm cursor-pointer hover:underline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(coupon.coupen);
+                        toast.success(`${coupon.coupen} copied!`);
+                      }}
+                    >
+                      📋 Copy Coupon
+                    </p>
+                  </div>
+                ))}
+                <p className="text-xs text-gray-500 mt-3">
+                  Use any code at checkout • Valid on all products
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-lg text-gray-600">No Coupons Available</p>
+                <p className="text-sm text-gray-500">
+                  Check back soon for deals!
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={() => setCoupenModel(false)}
+              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
+            >
+              Got It
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Navbar */}
       <div className="bg-line shadow-xl py-3 sticky top-0 z-50">
         <div className="flex items-center justify-between gap-4 text-white Mycontainer">
@@ -374,6 +449,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           </div>
         </div>
       </div>
+
       {/* Logout Confirmation Modal */}
       {navbarLogout && (
         <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">
@@ -410,65 +486,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             </div>
           </motion.div>
         </motion.div>
-      )}{" "}
-      {/* Coupon Modal */}
-      {coupenModel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-semibold text-gray-800">
-              🎁 Exclusive Offers!
-            </h2>
-
-            {coupenLoading ? (
-              <div className="space-y-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-gray-600">Loading...</p>
-              </div>
-            ) : coupons.length > 0 ? (
-              <div className="space-y-3">
-                {coupons.map((coupon) => (
-                  <div
-                    key={coupon._id}
-                    className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
-                  >
-                    <p className="text-lg font-bold text-blue-600">
-                      {coupon.coupen}
-                    </p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Get <strong>{coupon.discount}% OFF</strong> on your order
-                    </p>
-                    <p
-                      className="text-blue-600 text-sm cursor-pointer hover:underline"
-                      onClick={() => {
-                        navigator.clipboard.writeText(coupon.coupen);
-                        toast.success(`${coupon.coupen} copied!`);
-                      }}
-                    >
-                      📋 Copy Coupon
-                    </p>
-                  </div>
-                ))}
-                <p className="text-xs text-gray-500 mt-3">
-                  Use any code at checkout • Valid on all products
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-lg text-gray-600">No Coupons Available</p>
-                <p className="text-sm text-gray-500">
-                  Check back soon for deals!
-                </p>
-              </div>
-            )}
-
-            <button
-              onClick={() => setCoupenModel(false)}
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
-            >
-              Got It
-            </button>
-          </div>
-        </div>
       )}
     </>
   );

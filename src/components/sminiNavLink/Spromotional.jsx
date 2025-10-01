@@ -1,36 +1,47 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { CiHeart } from "react-icons/ci";
-import {
-  IoIosArrowDown,
-  IoIosArrowUp,
-  IoIosHeart,
-  IoMdArrowBack,
-  IoMdArrowForward,
-} from "react-icons/io";
-import { IoClose, IoMenu } from "react-icons/io5";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { IoClose, IoMenu, IoSearchOutline } from "react-icons/io5";
+import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { applyFilters } from "../../redux/slices/filterSlice";
+import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
+import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowUp } from "react-icons/io";
+import { IoCartOutline } from "react-icons/io5";
+import { TbTruckDelivery } from "react-icons/tb";
+import { AiOutlineEye } from "react-icons/ai";
+import { BsCursor } from "react-icons/bs";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";
 
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 
-import { megaMenuClothing } from "@/assets/asset";
-import { headWear, megaMenu } from "@/assets/assets";
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import {
+  setSelectedBrands,
+  setMinPrice,
+  setMaxPrice,
+  setSelectedCategory,
+} from "../../redux/slices/filterSlice";
+import { AppContext } from "../../context/AppContext";
+import { matchProduct } from "@/redux/slices/categorySlice";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
 import {
   matchPromotionalProduct,
   setAllProducts,
 } from "@/redux/slices/promotionalSlice";
-import { toast } from "react-toastify";
-import { AppContext } from "../../context/AppContext";
-import {
-  setMaxPrice,
-  setMinPrice,
-  setSelectedBrands,
-  setSelectedCategory,
-} from "../../redux/slices/filterSlice";
 import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/PromotionalPriceFilter";
+import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
+import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
+import { toast } from "react-toastify";
+import { megaMenu, headWear } from "@/assets/assets";
+import { megaMenuClothing } from "@/assets/asset";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -145,12 +156,67 @@ const Spromotional = () => {
     sidebarActiveLabel,
     setSidebarActiveLabel,
     fetchMultipleParamPages, // We'll need to create this function
-    productionIds,
-    australiaIds,
   } = useContext(AppContext);
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
     useSelector((state) => state.filters);
+
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
@@ -158,25 +224,29 @@ const Spromotional = () => {
   const filteredProducts = useSelector(
     (state) => state.promotionals.filteredPromotionalProducts
   );
+  const [prioritizedData, setPrioritizedData] = useState([]);
 
-  // // Replace your existing useEffect with this updated one
-  // useEffect(() => {
-  //   const getPrioritize = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `${import.meta.env.VITE_BACKEND_URL}/api/prioritized`,
-  //         {
-  //           method: "GET",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //       const result = await response.json();
-  //     } catch (error) {
-  //       console.error("Error occurred:", error);
-  //     }
-  //   };
+  // Replace your existing useEffect with this updated one
+  useEffect(() => {
+    const getPrioritize = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/prioritized`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const result = await response.json();
+
+        console.log(result);
+      } catch (error) {
+        console.error("Error occurred:", error);
+      }
+    };
+  }, []);
 
   //   getPrioritize();
   // }, []);
@@ -418,19 +488,8 @@ const Spromotional = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const slugify = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      // replace any sequence of non-alphanumeric chars with a single hyphen
-      .replace(/[^a-z0-9]+/g, "-")
-      // remove leading/trailing hyphens
-      .replace(/(^-|-$)/g, "");
-
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(`/product/${name}`, { state: productId });
   };
 
   const [searchProductName, setSearchProductName] = useState("");
@@ -495,25 +554,6 @@ const Spromotional = () => {
 
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  const handleSubCategories = (
-    subCategory,
-    categoryId,
-    titleName,
-    labelName
-  ) => {
-    const encodedTitleName = encodeURIComponent(titleName);
-    const encodedlabelName = encodeURIComponent(labelName);
-    setSearchParams({
-      categoryName: encodedTitleName,
-      category: categoryId,
-      label: encodedlabelName,
-    });
-    setSelectedParamCategoryId(categoryId);
-    setActiveFilterCategory(subCategory);
-    setCurrentPage(1);
-    setSidebarActiveCategory(titleName);
-  };
 
   useEffect(() => {
     const urlCategory = searchParams.get("category");
@@ -584,16 +624,12 @@ const Spromotional = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-  const [searchParam] = useSearchParams();
-  const queryCategory = searchParam.get("categoryName");
-
   const currentMenuArray = getMenuArrayByCategoryName(sidebarActiveCategory);
-  const filteredCategories = currentMenuArray.filter(
-    (category) => category.name === (sidebarActiveCategory || queryCategory)
-  );
+  const filteredCategories = sidebarActiveCategory
+    ? currentMenuArray.filter(
+        (category) => category.name === sidebarActiveCategory
+      )
+    : currentMenuArray;
 
   // Get current page products based on whether price filter is active
   // Get current page products based on whether price filter is active
@@ -679,117 +715,11 @@ const Spromotional = () => {
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[22%]">
-          <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
-            {isMobile && (
-              <button
-                onClick={toggleSidebar}
-                className="absolute px-2 py-1 text-white rounded top-4 bg-smallHeader"
-              >
-                {isSidebarOpen ? (
-                  <IoClose className="text-xl" />
-                ) : (
-                  <IoMenu className="text-xl" />
-                )}
-              </button>
-            )}
-
-            <div
-              className={`transition-all ${
-                isSidebarOpen
-                  ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-96 w-[90vw] absolute h-screen md:shadow-lg shadow-lg bg-white lg:shadow-none px-6 lg:px-0 py-4"
-                  : "hidden"
-              }`}
-            >
-              <div className="h-full pr-3 overflow-y-auto">
-                {!filteredCategories.length > 0 && (
-                  <p className="text-lg font-semibold text-blue-500">
-                    Clothing
-                  </p>
-                )}
-                <div className="pb-6 border-b-2">
-                  {filteredCategories.length > 0
-                    ? filteredCategories.map((category) => (
-                        <div key={category.id}>
-                          <p className="text-lg font-semibold text-blue-500">
-                            {category.name}
-                          </p>
-                          <ul>
-                            {category.subTypes
-                              .filter(
-                                (group) =>
-                                  !sidebarActiveLabel ||
-                                  group.label === sidebarActiveLabel
-                              )
-                              .map((group) => (
-                                <li key={group.label}>
-                                  {/* <p className="mt-2 ml-2 text-base font-semibold">
-                                {group.label}
-                              </p> */}
-                                  <ul>
-                                    {group?.items?.map((item) => (
-                                      <li
-                                        key={item.id}
-                                        className="hover:underline ml-4"
-                                      >
-                                        <button
-                                          onClick={() =>
-                                            handleSubCategories(
-                                              item.name,
-                                              item.id,
-                                              category.name,
-                                              group.label
-                                            )
-                                          }
-                                          className={`font-medium text-[13px] block ${
-                                            activeFilterCategory === item.name
-                                              ? "text-blue-500"
-                                              : ""
-                                          }`}
-                                        >
-                                          {item.name}
-                                        </button>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </li>
-                              ))}
-                          </ul>
-                        </div>
-                      ))
-                    : clothing.map((category) => (
-                        <div className="pl-4" key={category.id}>
-                          <ul>
-                            <button
-                              onClick={() =>
-                                handleSubCategories(
-                                  category.name,
-                                  category.id,
-                                  "Clothing",
-                                  category.name
-                                )
-                              }
-                              className={`font-medium text-[13px] block ${
-                                activeFilterCategory === category.name
-                                  ? "text-blue-500"
-                                  : ""
-                              }`}
-                            >
-                              {category.name}
-                            </button>
-                          </ul>
-                        </div>
-                      ))}
-                </div>
-                <div className="mt-4">
-                  <PromotionalPriceFilter />
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="lg:w-[280px]">
+          <UnifiedSidebar pageType="PROMOTIONAL" />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
             <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {/* {!isPriceFilterActive && (
@@ -1075,8 +1005,8 @@ const Spromotional = () => {
                             </span>
                           )}
 
-                          {(australiaIds?.has(product.meta.id) ||
-                            australiaIds?.has(String(product.meta.id))) && (
+                          {(australiaIds.has(product.meta.id) ||
+                            australiaIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                               {/* simple flag/triangle SVG */}
                               <svg

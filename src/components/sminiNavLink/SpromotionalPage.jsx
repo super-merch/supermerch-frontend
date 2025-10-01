@@ -1,18 +1,15 @@
-import React from 'react'
-import SpromotionalNavigate from './SpromotionalNavigate'
-import Spromotional from './Spromotional'
+import React from "react";
+import Breadcrumb from "../shared/Breadcrumb";
+import Spromotional from "./Spromotional";
 
 const SpromotionalPage = () => {
-    return (
-        <div>
-            <SpromotionalNavigate />
-            <Spromotional />
-            <div className='mt-10'>
+  return (
+    <div>
+      <Breadcrumb />
+      <Spromotional />
+      <div className="mt-10">{/* <TabsBtns /> */}</div>
+    </div>
+  );
+};
 
-                {/* <TabsBtns /> */}
-            </div>
-        </div>
-    )
-}
-
-export default SpromotionalPage
+export default SpromotionalPage;

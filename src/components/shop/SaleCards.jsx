@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import { useNavigate, useLocation } from "react-router-dom";
 import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
@@ -23,7 +22,8 @@ import {
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
-import SideBar2 from "./SideBar2";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
+import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import { slugify } from "@/utils/utils";
@@ -74,9 +74,64 @@ const SaleCards = () => {
     marginApi,
     totalDiscount,
     backendUrl,
-    productionIds,
-    australiaIds,
   } = useContext(AppContext);
+
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   // Get Redux filter state
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
@@ -308,10 +363,9 @@ const SaleCards = () => {
   };
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(`/product/${name}`, { state: productId });
   };
+
   const setSearchTextChanger = (e) => {
     setSearchProductName(e.target.value);
   };
@@ -440,13 +494,23 @@ const SaleCards = () => {
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[25%]">
-          <SideBar2 />
+        <div className="lg:w-[280px]">
+          <UnifiedSidebar pageType="SALE" />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-end">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full"></div>
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Product Count - Left Side */}
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-brand">
+                {getCurrentPageProducts().length}
+              </span>
+              <p className="">
+                {skeletonLoading ? "Loading..." : `Sale products found`}
+              </p>
+            </div>
+
+            {/* Sort Dropdown - Right Side */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>

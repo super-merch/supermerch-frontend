@@ -8,10 +8,12 @@ const initialState = {
   searchText: "",
   minPrice: 0,
   maxPrice: 1000,
+  clothingGender: "all",
   activeFilters: {
     category: null,
     brands: [],
     price: [],
+    gender: null,
   },
   categoryId: null,
 };
@@ -26,7 +28,6 @@ const filterSlice = createSlice({
       if (state.filteredProducts.length === 0) {
         state.filteredProducts = action.payload;
       }
-
     },
     setSearchText: (state, action) => {
       state.searchText = action.payload;
@@ -43,48 +44,32 @@ const filterSlice = createSlice({
     setSelectedBrands: (state, action) => {
       state.selectedBrands = action.payload;
     },
-    setCategoryId:(state, action) => {
+    setCategoryId: (state, action) => {
       state.categoryId = action.payload;
     },
+    setClothingGender: (state, action) => {
+      state.clothingGender = action.payload;
+    },
     applyFilters: (state) => {
-      const {
-        products = [],
-        selectedCategory,
-        selectedBrands,
-        searchText,
-        minPrice,
-        maxPrice,
-      } = state;
+      const { products = [], selectedCategory, selectedBrands, searchText, minPrice, maxPrice } = state;
       const isCategoryMatch = (product) =>
         product?.product.categorisation.supplier_category === selectedCategory || selectedCategory === "all";
-      const isBrandMatch = (product) =>
-        selectedBrands.length === 0 || selectedBrands.includes(product?.brand);
+      const isBrandMatch = (product) => selectedBrands.length === 0 || selectedBrands.includes(product?.brand);
 
-      const isSearchMatch = (product) =>
-        product?.overview?.name?.toLowerCase()?.includes(searchText.toLowerCase()) ||
-        false;
+      const isSearchMatch = (product) => product?.overview?.name?.toLowerCase()?.includes(searchText.toLowerCase()) || false;
       const getRealPrice = (product) => {
         const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice =
-          priceGroups.find((group) => group?.base_price) || {};
+        const basePrice = priceGroups.find((group) => group?.base_price) || {};
         const priceBreaks = basePrice.base_price?.price_breaks || [];
-        return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
-          ? priceBreaks[0].price
-          : 0;
+        return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
       };
       const isPriceMatch = (product) => {
         const realPrice = getRealPrice(product);
         return realPrice >= minPrice && realPrice <= maxPrice;
       };
 
-
-
       const filtered = products.filter(
-        (product) =>
-          isCategoryMatch(product) &&
-          isBrandMatch(product) &&
-          isSearchMatch(product) &&
-          isPriceMatch(product)
+        (product) => isCategoryMatch(product) && isBrandMatch(product) && isSearchMatch(product) && isPriceMatch(product)
       );
 
       // If no products match, return an empty array
@@ -107,7 +92,8 @@ export const {
   setMaxPrice,
   setSelectedBrands,
   applyFilters,
-  setCategoryId
+  setCategoryId,
+  setClothingGender,
 } = filterSlice.actions;
 
 export const selectActiveFilters = (state) => state.filters.activeFilters;
@@ -115,7 +101,6 @@ export const selectProducts = (state) => state.filters.products;
 
 export const selectFilteredCount = (state) => {
   state.filters.filteredProducts.length;
-}
-
+};
 
 export default filterSlice.reducer;
