@@ -2,16 +2,14 @@ import React, { useContext, useEffect, useRef, useState, useCallback } from "rea
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import { useNavigate, useLocation } from "react-router-dom";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
+import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
-import { IoCartOutline, IoClose } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 import { AppContext } from "../../context/AppContext";
@@ -72,6 +70,7 @@ const Cards = () => {
   const [categoryPageCache, setCategoryPageCache] = useState({});
 
   const selectedCategory = useSelector((state) => state.filters.categoryId);
+  const clothingGender = useSelector((state) => state.filters.clothingGender);
 
   // Get Redux filter state
   const { activeFilters, minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -86,21 +85,60 @@ const Cards = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const pageType = getPageTypeFromRoute(location.pathname);
   const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
   const [count, setCount] = useState(0);
 
-  const {
-    marginApi,
-    backendUrl,
-    fetchParamProducts,
-    paramProducts,
-    skeletonLoading,
-    fetchMultipleParamPages,
-    productionIds,
-    australiaIds,
-  } = useContext(AppContext);
-  // track in-flight requests for all-products to dedupe network calls
-  const pendingAllRequests = useRef({});
+  const { marginApi, backendUrl, fetchParamProducts, paramProducts, skeletonLoading, fetchMultipleParamPages } = useContext(AppContext);
+
+  const [productionIds, setProductionIds] = useState(new Set());
+  const getAll24HourProduction = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const productIds = data.map((item) => Number(item.id));
+        setProductionIds(new Set(productIds));
+        console.log("Fetched 24 Hour Production products:", productionIds);
+      } else {
+        console.error("Failed to fetch 24 Hour Production products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching 24 Hour Production products:", error);
+    }
+  };
+  const [australiaIds, setAustraliaIds] = useState(new Set());
+  const getAllAustralia = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure consistent data types (convert to strings)
+        const productIds = data.map((item) => Number(item.id));
+        setAustraliaIds(new Set(productIds));
+        console.log("Fetched Australia products:", data);
+      } else {
+        console.error("Failed to fetch Australia products:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
+  useEffect(() => {
+    getAll24HourProduction();
+    getAllAustralia();
+  }, []);
 
   // Helper function to get real price with caching
   const priceCache = useRef(new Map());
@@ -366,10 +404,12 @@ const Cards = () => {
       setFilterError("");
       setFetchedPagesCount(0);
     }
-  }, [minPrice, maxPrice, sortOption, isPriceFilterActive, isSwitchingCategory, isResettingPriceFilter]);
+  }, [minPrice, maxPrice, sortOption, selectedCategory, isPriceFilterActive, isSwitchingCategory, isResettingPriceFilter]);
 
   // Handle category selection - fetch category-specific products
   useEffect(() => {
+    console.log("Selected Category ID:", selectedCategory);
+
     // Reset visible products and pagination immediately (UI)
     setCategoryProducts([]);
     setCategoryFilteredProducts([]);
@@ -429,110 +469,68 @@ const Cards = () => {
     // Fetch category products
     fetchCategoryProducts(selectedCategory, 1, requestId);
     setIsSwitchingCategory(false);
-  }, [isResettingPriceFilter, sortOption]);
-  const pendingCategoryRequests = useRef({});
+  }, [isResettingPriceFilter, selectedCategory, sortOption]);
 
   // Function to fetch category-specific products (original logic)
-  // Function to fetch category-specific products (deduped)
   const fetchCategoryProducts = async (categoryId, page = 1, requestId = null) => {
     if (isPriceFilterActive) return; // Skip if price filter is active
 
-    const key = `${categoryId}_${page}`;
-
-    // Return cached page if available
     const categoryCache = cacheRef.current[categoryId];
     if (categoryCache && categoryCache[page]) {
       setCategoryProducts(categoryCache[page]);
       return;
     }
 
-    // If there's already a pending request for same category+page, await it and use the cache
-    if (pendingCategoryRequests.current[key]) {
-      try {
-        await pendingCategoryRequests.current[key];
-        const cachedAfter = cacheRef.current[categoryId]?.[page];
-        if (cachedAfter) setCategoryProducts(cachedAfter);
-      } catch (e) {
-        // ignore — error will be handled by original caller
-      }
-      return;
-    }
-
     setError("");
-    setIsLoading(true);
+    try {
+      const response = await fetchParamProducts(categoryId, page);
 
-    // store the promise so concurrent calls reuse it
-    const p = (async () => {
-      try {
-        const response = await fetchParamProducts(categoryId, page);
-
-        // if requestId no longer current, bail out (keeps previous behavior)
-        if (requestId && requestId !== categoryRequestIdRef.current) {
-          return;
-        }
-
-        if (!response || !response.data) {
-          throw new Error("Unexpected response");
-        }
-
-        const validProducts = response.data.filter((product) => {
-          const priceGroups = product.product?.prices?.price_groups || [];
-          const basePrice = priceGroups.find((g) => g?.base_price) || {};
-          const priceBreaks = basePrice.base_price?.price_breaks || [];
-          return priceBreaks.length > 0 && priceBreaks[0]?.price > 0;
-        });
-
-        cacheRef.current[categoryId] = {
-          ...(cacheRef.current[categoryId] || {}),
-          [page]: validProducts,
-        };
-
-        setCategoryPageCache((prev) => ({
-          ...(prev || {}),
-          [categoryId]: {
-            ...(prev[categoryId] || {}),
-            [page]: validProducts,
-          },
-        }));
-
-        setCategoryProducts(validProducts);
-
-        if (response.total_pages) {
-          setTotalApiPages(response.total_pages);
-        }
-      } catch (err) {
-        console.error("Error fetching category products:", err);
-        setError("Error fetching category products. Please try again.");
-      } finally {
-        // only stop loading if this request is still relevant
-        if (!requestId || requestId === categoryRequestIdRef.current) {
-          setIsLoading(false);
-        }
-        // remove pending marker
-        delete pendingCategoryRequests.current[key];
+      if (requestId && requestId !== categoryRequestIdRef.current) {
+        return;
       }
-    })();
 
-    pendingCategoryRequests.current[key] = p;
-    await p;
+      if (!response || !response.data) {
+        throw new Error("Unexpected response");
+      }
+
+      const validProducts = response.data.filter((product) => {
+        const priceGroups = product.product?.prices?.price_groups || [];
+        const basePrice = priceGroups.find((g) => g?.base_price) || {};
+        const priceBreaks = basePrice.base_price?.price_breaks || [];
+        return priceBreaks.length > 0 && priceBreaks[0]?.price > 0;
+      });
+
+      cacheRef.current[categoryId] = {
+        ...(cacheRef.current[categoryId] || {}),
+        [page]: validProducts,
+      };
+
+      setCategoryPageCache((prev) => ({
+        ...(prev || {}),
+        [categoryId]: {
+          ...(prev[categoryId] || {}),
+          [page]: validProducts,
+        },
+      }));
+
+      setCategoryProducts(validProducts);
+
+      if (response.total_pages) {
+        setTotalApiPages(response.total_pages);
+      }
+    } catch (err) {
+      console.error("Error fetching category products:", err);
+      setError("Error fetching category products. Please try again.");
+    } finally {
+      if (!requestId || requestId === categoryRequestIdRef.current) {
+        setIsLoading(false);
+      }
+    }
   };
 
   // Function to fetch products in batches of 100 (for all products) - original logic
-  // Function to fetch products in batches of 100 (deduped)
   const fetchProductsBatch = async (apiPage = 1, sortOption = "") => {
     if (isPriceFilterActive) return; // Skip if price filter is active
-
-    const key = `all_${apiPage}_${String(sortOption)}`;
-
-    // If there's already a pending request for same key, reuse it
-    if (pendingAllRequests.current[key]) {
-      try {
-        await pendingAllRequests.current[key];
-      } catch (e) {
-        // swallow, original request handles error state
-      }
-      return;
-    }
 
     setIsLoading(true);
     setError("");
@@ -579,21 +577,74 @@ const Cards = () => {
     })();
 
     pendingAllRequests.current[key] = promise;
-
     try {
-      await promise;
-    } finally {
-      // remove pending marker regardless of success/failure
-      delete pendingAllRequests.current[key];
+      const limit = 100;
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/client-products?page=${apiPage}&limit=${limit}&sort=${sortOption}&filter=true`
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+
+      if (!data || !data.data) {
+        setIsLoading(false);
+        throw new Error("Unexpected API response structure");
+      }
+      setCount(data.item_count);
+
+      const validProducts = data.data.filter((product) => {
+        const priceGroups = product.product?.prices?.price_groups || [];
+        const basePrice = priceGroups.find((group) => group?.base_price) || {};
+        const priceBreaks = basePrice.base_price?.price_breaks || [];
+        return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined && priceBreaks[0]?.price > 0;
+      });
+
+      if (apiPage === 1) {
+        setAllProducts(validProducts);
+      } else {
+        setAllProducts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.meta?.id));
+          const newProducts = validProducts.filter((product) => !existingIds.has(product.meta?.id));
+          return [...prev, ...newProducts];
+        });
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setError("Error fetching products. Please try again.");
+      setIsLoading(false);
     }
   };
 
   // Get the current active products based on mode and price filter
   const getActiveProducts = () => {
+    let products = [];
     if (isPriceFilterActive) {
-      return selectedCategory ? categoryFilteredProducts : allFilteredProducts;
+      products = selectedCategory ? categoryFilteredProducts : allFilteredProducts;
+    } else {
+      products = selectedCategory ? categoryProducts : allProducts;
     }
-    return selectedCategory ? categoryProducts : allProducts;
+
+    // Apply gender filter for clothing products
+    if (pageType === "CLOTHING" && clothingGender !== "all") {
+      products = products.filter((product) => {
+        const productName = product?.overview?.name?.toLowerCase() || "";
+        const productDescription = product?.overview?.description?.toLowerCase() || "";
+        const searchText = `${productName} ${productDescription}`;
+
+        if (clothingGender === "men") {
+          return searchText.includes("men") || searchText.includes("male") || searchText.includes("man");
+        } else if (clothingGender === "women") {
+          return (
+            searchText.includes("women") || searchText.includes("female") || searchText.includes("woman") || searchText.includes("ladies")
+          );
+        }
+        return true;
+      });
+    }
+
+    return products;
   };
 
   // Apply sorting to active products
@@ -665,7 +716,7 @@ const Cards = () => {
       setCurrentPage(1);
       fetchCategoryProducts(selectedCategory, 1);
     } else {
-      // fetchProductsBatch(1, sortOption);
+      fetchProductsBatch(1, sortOption);
       setCurrentPage(1);
     }
   }, [sortOption, isSwitchingCategory]);
@@ -682,7 +733,7 @@ const Cards = () => {
     if (selectedCategory && currentPage > 0 && !isPriceFilterActive) {
       fetchCategoryProducts(selectedCategory, currentPage);
     }
-  }, [currentPage]);
+  }, [currentPage, selectedCategory]);
 
   // Get current page products
   const getCurrentPageProducts = () => {
@@ -730,7 +781,7 @@ const Cards = () => {
         fetchMoreProducts();
       }
     }
-  }, [currentPage]);
+  }, [currentPage, allProducts.length, selectedCategory, isLoading, isPriceFilterActive]);
 
   // Rest of the useEffects remain the same...
   useEffect(() => {
@@ -763,19 +814,8 @@ const Cards = () => {
     setIsDropdownOpen(false);
   };
 
-  const slugify = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      // replace any sequence of non-alphanumeric chars with a single hyphen
-      .replace(/[^a-z0-9]+/g, "-")
-      // remove leading/trailing hyphens
-      .replace(/(^-|-$)/g, "");
-
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(`/product/${name}`, { state: productId });
   };
 
   const handleOpenModal = (product) => {
@@ -817,15 +857,24 @@ const Cards = () => {
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[25%]">
-          <Sidebar />
+        <div className="lg:w-[280px]">
+          <UnifiedSidebar pageType={pageType} />
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-            <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-              {/* Search input removed as per requirements */}
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Product Count - Left Side */}
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-brand">{!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}</span>
+              <p className="">
+                {isLoading || isFiltering
+                  ? "Loading..."
+                  : `Results found ${selectedCategory ? "(Category)" : "(All Products)"}${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                {isFiltering && " Please wait a while..."}
+              </p>
             </div>
+
+            {/* Sort Dropdown - Right Side */}
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
               <div className="relative" ref={dropdownRef}>
@@ -864,8 +913,13 @@ const Cards = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
+          {/* Active Filters - Only show if there are active filters */}
+          {(categoryName ||
+            (activeFilters.brands && activeFilters.brands.length > 0) ||
+            (activeFilters.price &&
+              activeFilters.price.length === 2 &&
+              (activeFilters.price[0] !== 0 || activeFilters.price[1] !== 1000))) && (
+            <div className="flex flex-wrap items-center gap-4 mt-4 px-2">
               {categoryName && (
                 <div className="filter-item">
                   <span className="text-md font-semibold">{categoryName}</span>
@@ -893,6 +947,7 @@ const Cards = () => {
                   </div>
                 )}
             </div>
+<<<<<<< HEAD
 
             <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
               <span className="font-semibold text-brand">{!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}</span>
@@ -901,6 +956,13 @@ const Cards = () => {
                   ? "Loading..."
                   : `Results found ${selectedCategory ? "(Category)" : "(All Products)"}${isPriceFilterActive ? " (Price filtered)" : ""}`}
                 {isFiltering && " Please wait a while..."}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
+              <span className="font-semibold text-brand">{!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}</span>
+              <p className="text-sm text-gray-500">
+                {isLoading || skeletonLoading || isFiltering ? "Loading..." : "products found"}
               </p>
             </div>
           </div>
