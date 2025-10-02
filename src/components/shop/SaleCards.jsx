@@ -363,7 +363,11 @@ const SaleCards = () => {
   };
 
   const handleViewProduct = (productId, name) => {
-    navigate(`/product/${name}`, { state: productId });
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+      state: productId,
+    });
   };
 
   const setSearchTextChanger = (e) => {
