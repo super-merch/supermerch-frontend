@@ -42,6 +42,7 @@ import { toast } from "react-toastify";
 import { megaMenu, headWear } from "@/assets/assets";
 import { megaMenuClothing } from "@/assets/asset";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { slugify } from "@/utils/utils";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -489,7 +490,11 @@ const Spromotional = () => {
   };
 
   const handleViewProduct = (productId, name) => {
-    navigate(`/product/${name}`, { state: productId });
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+      state: productId,
+    });
   };
 
   const [searchProductName, setSearchProductName] = useState("");
