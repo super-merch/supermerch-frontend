@@ -83,11 +83,6 @@ const TabsButtons = ({ changeBg = false }) => {
             </Link>
           </div>
         </div>
-              Browse All Product
-              <FaArrowRight className="text-sm sm:text-lg" />
-            </Link>
-          </div>
-        </div>
       </div>
       <div>
         <CategoryGrid activeTab={activeTab} handleTabChange={handleTabChange} />

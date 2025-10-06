@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { googleLogout } from "@react-oauth/google";
-import { motion } from "framer-motion";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronRight } from "lucide-react";
-import { RiArrowDropDownLine } from "react-icons/ri";
-=======
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -21,7 +11,9 @@ import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
->>>>>>> origin/main
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronRight } from "lucide-react";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 
 // Import reusable components
@@ -374,18 +366,13 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       <div className="bg-line shadow-xl py-3 sticky top-0 z-50">
         <div className="flex items-center justify-between gap-4 text-white Mycontainer">
           {/* Navigation Menu - Left side */}
-<<<<<<< HEAD
           <div className="hidden xl:block">
-            <NavigationMenu menuItems={menuItems} onItemClick={handleMenuClick} size="default" className="justify-start" />
-=======
-          <div className="hidden lg:block">
             <NavigationMenu
               menuItems={menuItems}
               onItemClick={handleMenuClick}
               size="default"
               className="justify-start"
             />
->>>>>>> origin/main
           </div>
 
           {/* Search Bar and User Actions on the right */}
@@ -416,40 +403,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         <div className="xl:hidden">
           <div className="flex items-center justify-between px-2 sm:px-4 py-2">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-<<<<<<< HEAD
               <SheetTrigger className="text-black focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-=======
-              <SheetTrigger>
-                <div className="text-black focus:outline-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                </div>
->>>>>>> origin/main
               </SheetTrigger>
               <SheetContent className="overflow-y-auto w-[85vw] sm:w-[400px]" side="left">
                 <SheetHeader>
-<<<<<<< HEAD
                   <SheetTitle className="mb-6 text-2xl text-smallHeader font-bold">SuperMerch</SheetTitle>
-=======
-                  <SheetTitle className="mb-3 text-2xl text-smallHeader">
-                    SuperMerch
-                  </SheetTitle>
->>>>>>> origin/main
                 </SheetHeader>
                 <NavigationMenu
                   menuItems={menuItems}

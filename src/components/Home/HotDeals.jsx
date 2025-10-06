@@ -7,14 +7,7 @@ import { getProductPrice, slugify } from "@/utils/utils";
 
 const HotDeals = () => {
   const navigate = useNavigate();
-  const {
-    fetchDiscountedProducts,
-    discountedProducts,
-    fetchProducts,
-    products,
-    marginApi,
-    skeletonLoading,
-  } = useContext(AppContext);
+  const { fetchDiscountedProducts, discountedProducts, fetchProducts, products, skeletonLoading } = useContext(AppContext);
 
   useEffect(() => {
     if (discountedProducts.length === 0 && products.length === 0) {
@@ -22,7 +15,7 @@ const HotDeals = () => {
       // Fallback: also fetch regular products in case discounted products are empty
       fetchProducts(1, "", 6);
     }
-  }, []);
+  }, [discountedProducts.length, products.length, fetchDiscountedProducts, fetchProducts]);
 
   // Use discounted products if available, otherwise fall back to regular products
   const displayProducts =
@@ -73,7 +66,7 @@ const HotDeals = () => {
                 );
               }
 
-              return productsToShow.slice(0, 4).map((product, index) => {
+              return displayProducts.slice(0, 4).map((product, index) => {
                 const price = getProductPrice(product);
                 const isLastItem = index === 3;
 

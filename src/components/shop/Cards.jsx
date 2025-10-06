@@ -1487,7 +1487,6 @@ const Cards = () => {
             )}
           </div>
 
-<<<<<<< HEAD
           {(totalPages > 1 || (currentPageProducts.length <= itemsPerPage && hasMoreProducts)) && currentPageProducts.length > 0 && (
             <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination">
               <button
@@ -1507,11 +1506,6 @@ const Cards = () => {
               >
                 1
               </button>
-=======
-          {(totalPages > 1 ||
-            (currentPageProducts.length <= itemsPerPage && hasMoreProducts)) &&
-            currentPageProducts.length > 0 && (
-              <div className="flex items-center justify-center mt-16 space-x-2 pagination">
                 <button
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(prev - 1, 1))
@@ -1568,7 +1562,6 @@ const Cards = () => {
                         {page}
                       </button>
                     ))}
->>>>>>> origin/main
 
                 <button
                   onClick={() => {
@@ -1582,57 +1575,11 @@ const Cards = () => {
                       }
                     }
                   }}
-<<<<<<< HEAD
-                  className="w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base hover:bg-gray-200 transition-colors"
-=======
-                  disabled={currentPage === totalPages && !hasMoreProducts}
-                  className="flex items-center justify-center w-10 h-10 border rounded-full"
->>>>>>> origin/main
                 >
                   <IoMdArrowForward className="text-xl" />
                 </button>
-<<<<<<< HEAD
-              )}
-
-              {/* Show normal pagination when there are multiple pages */}
-              {totalPages > 1 &&
-                getPaginationButtons(currentPage, totalPages, maxVisiblePages)
-                  .filter((page) => page > 1) // Skip page 1 since we always show it
-                  .map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base transition-colors ${
-                        currentPage === page ? "bg-blue-600 text-white" : "hover:bg-gray-200"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-
-              <button
-                onClick={() => {
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                  // Fetch more products if we're at the end
-                  if (currentPage === totalPages && hasMoreProducts) {
-                    if (isPriceFilterActive) {
-                      fetchMoreFilteredProducts();
-                    } else if (!selectedCategory) {
-                      fetchMoreProducts();
-                    }
-                  }
-                }}
-                disabled={currentPage === totalPages && !hasMoreProducts}
-                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <IoMdArrowForward className="text-lg sm:text-xl" />
-              </button>
-            </div>
-          )}
-=======
               </div>
             )}
->>>>>>> origin/main
         </div>
       </div>
 
@@ -1660,21 +1607,6 @@ const Cards = () => {
               />
 
               <div className="mt-4 text-center">
-<<<<<<< HEAD
-                <h2 className="text-xl sm:text-2xl font-bold text-brand mb-2">{selectedProduct.overview.name || "No Name"}</h2>
-                {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">{selectedProduct.overview.description}</p>
-=======
-                <h2 className="text-2xl font-bold text-brand mb-2">
-                  {selectedProduct.overview.name || "No Name"}
-                </h2>
-                {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {selectedProduct.overview.description}
-                  </p>
->>>>>>> origin/main
-                )}
-              </div>
             </div>
           </div>
         </div>

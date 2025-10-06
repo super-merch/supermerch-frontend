@@ -1258,7 +1258,6 @@ const AppContextProvider = (props) => {
     setOpenLoginModal,
     productsCategoryLoading,
     setProductsCategory,
-    setProducts,
   };
 
   return (
