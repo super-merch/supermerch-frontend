@@ -168,7 +168,7 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
           {/* Header */}
           <div className="pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
-              <h1 className="text-base font-semibold text-gray-800">{config.title}</h1>
+              <h1 className="text-xl font-semibold text-gray-800">{config.title}</h1>
               <button
                 onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
                 className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-600 transition-colors duration-200"
