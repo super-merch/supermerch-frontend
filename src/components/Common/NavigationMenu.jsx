@@ -59,7 +59,7 @@ const NavigationMenu = ({
   const handleArrowClick = (item, e) => {
     // Prevent the main item click from firing
     e.stopPropagation();
-    
+
     if (item.hasSubmenu) {
       // Toggle submenu on arrow click
       if (!isDesktop) {
@@ -180,7 +180,9 @@ const NavigationMenu = ({
                 <span className="text-customBlue capitalize font-medium">{item.name}</span>
                 {item.hasSubmenu && (
                   <RiArrowDropDownLine
-                    className={`text-xl transition-all duration-300 text-gray-500 cursor-pointer ${isSubmenuVisible ? "rotate-180" : "rotate-0"}`}
+                    className={`text-xl transition-all duration-300 text-gray-500 cursor-pointer ${
+                      isSubmenuVisible ? "rotate-180" : "rotate-0"
+                    }`}
                     onClick={(e) => handleArrowClick(item, e)}
                   />
                 )}
