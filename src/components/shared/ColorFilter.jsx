@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 const ColorFilter = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const [showAllColors, setShowAllColors] = useState(false);
 
   // Available colors with their display names and hex values matching the image
   const availableColors = [
@@ -26,6 +27,9 @@ const ColorFilter = () => {
 
   // Selected colors state
   const [selectedColors, setSelectedColors] = useState([]);
+
+  // Determine which colors to display
+  const colorsToShow = searchTerm ? filteredColors : (showAllColors ? availableColors : availableColors.slice(0, 10));
 
   const handleColorToggle = useCallback((colorName) => {
     setSelectedColors((prev) => {
@@ -75,8 +79,8 @@ const ColorFilter = () => {
       {/* Color Swatches Grid */}
       <div className="mb-4">
         <h3 className="text-sm font-medium text-gray-700 mb-3">Select Colors</h3>
-        <div className="grid grid-cols-6 gap-1">
-          {filteredColors.map((color) => (
+        <div className="grid grid-cols-5 gap-1">
+          {colorsToShow.map((color) => (
             <button
               key={color.name}
               onClick={() => handleColorToggle(color.name)}
@@ -93,7 +97,31 @@ const ColorFilter = () => {
           ))}
         </div>
 
-        {filteredColors.length === 0 && (
+        {/* View More Colors Button - only show when not searching and not showing all */}
+        {!searchTerm && !showAllColors && availableColors.length > 10 && (
+          <div className="mt-3 text-center">
+            <button
+              onClick={() => setShowAllColors(true)}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              View More Colors ({availableColors.length - 10} more)
+            </button>
+          </div>
+        )}
+
+        {/* Show Less Button - only show when showing all colors */}
+        {!searchTerm && showAllColors && (
+          <div className="mt-3 text-center">
+            <button
+              onClick={() => setShowAllColors(false)}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              Show Less
+            </button>
+          </div>
+        )}
+
+        {colorsToShow.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-3">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
         )}
       </div>
