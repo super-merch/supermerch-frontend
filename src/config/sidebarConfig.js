@@ -8,7 +8,6 @@ export const SIDEBAR_CONFIGS = {
     title: "Promotional",
     showAllCategories: true,
     allowedCategories: [], // Empty means show all categories
-    description: "Browse all promotional products across all categories",
   },
 
   CLOTHING: {
@@ -16,7 +15,6 @@ export const SIDEBAR_CONFIGS = {
     title: "Clothing",
     showAllCategories: false,
     allowedCategories: ["Clothing"],
-    description: "Browse clothing products and accessories",
   },
 
   HEADWEAR: {
@@ -24,7 +22,6 @@ export const SIDEBAR_CONFIGS = {
     title: "Headwear",
     showAllCategories: false,
     allowedCategories: ["Headwear"],
-    description: "Browse headwear products including caps, hats, and more",
   },
 
   GENERAL: {
@@ -50,7 +47,6 @@ export const SIDEBAR_CONFIGS = {
       "Tech",
       "Capital Equipment",
     ],
-    description: "Browse products across all categories",
   },
 };
 
