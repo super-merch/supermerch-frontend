@@ -1,11 +1,4 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { googleLogout } from "@react-oauth/google";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
@@ -23,11 +16,7 @@ import { NavigationMenu, SearchBar, UserActions } from "../Common";
 import { useCoupons } from "@/hooks/useCoupons";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import {
-  applyFilters,
-  setMaxPrice,
-  setMinPrice,
-} from "../../redux/slices/filterSlice";
+import { applyFilters, setMaxPrice, setMinPrice } from "../../redux/slices/filterSlice";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const {
@@ -72,12 +61,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       if (item.name === "Promotional") {
         const megaMenu =
           v1categories
-            ?.filter(
-              (category) =>
-                category.name !== "Clothing" &&
-                category.name !== "Headwear" &&
-                category.name !== "Capital Equipment"
-            )
+            ?.filter((category) => category.name !== "Clothing" && category.name !== "Headwear" && category.name !== "Capital Equipment")
             .map((category) => ({
               id: category.id,
               name: category.name,
@@ -85,12 +69,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                 category.subTypes?.map((subType) => ({
                   id: subType.id,
                   name: subType.name,
-                  onClick: () =>
-                    handleSubCategories(
-                      subType.name,
-                      subType.id,
-                      category.name
-                    ),
+                  onClick: () => handleSubCategories(subType.name, subType.id, category.name),
                 })) || [],
             })) || [];
 
@@ -103,9 +82,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       }
 
       if (item.name === "Clothing") {
-        const clothingCategory = v1categories?.find(
-          (cat) => cat.name === "Clothing"
-        );
+        const clothingCategory = v1categories?.find((cat) => cat.name === "Clothing");
         return {
           ...item,
           id: "clothing",
@@ -113,20 +90,13 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             clothingCategory?.subTypes?.map((subType) => ({
               id: subType.id,
               name: subType.name,
-              onClick: () =>
-                handleSubCategories(
-                  subType.name,
-                  subType.id,
-                  clothingCategory.name
-                ),
+              onClick: () => handleSubCategories(subType.name, subType.id, clothingCategory.name),
             })) || [],
         };
       }
 
       if (item.name === "Headwear") {
-        const headwearCategory = v1categories?.find(
-          (cat) => cat.name === "Headwear"
-        );
+        const headwearCategory = v1categories?.find((cat) => cat.name === "Headwear");
         return {
           ...item,
           id: "headwear",
@@ -134,12 +104,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             headwearCategory?.subTypes?.map((subType) => ({
               id: subType.id,
               name: subType.name,
-              onClick: () =>
-                handleSubCategories(
-                  subType.name,
-                  subType.id,
-                  headwearCategory.name
-                ),
+              onClick: () => handleSubCategories(subType.name, subType.id, headwearCategory.name),
             })) || [],
         };
       }
@@ -242,9 +207,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
-    navigate(
-      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
-    );
+    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`);
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -270,9 +233,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     }
     // For all other categories, use /Spromotional
 
-    navigate(
-      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
-    );
+    navigate(`${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
     setCurrentPage(1);
@@ -306,9 +267,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       {coupenModel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-semibold text-gray-800">
-              🎁 Exclusive Offers!
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800">🎁 Exclusive Offers!</h2>
 
             {coupenLoading ? (
               <div className="space-y-3">
@@ -318,13 +277,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             ) : coupons.length > 0 ? (
               <div className="space-y-3">
                 {coupons.map((coupon) => (
-                  <div
-                    key={coupon._id}
-                    className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
-                  >
-                    <p className="text-lg font-bold text-blue-600">
-                      {coupon.coupen}
-                    </p>
+                  <div key={coupon._id} className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3">
+                    <p className="text-lg font-bold text-blue-600">{coupon.coupen}</p>
                     <p className="text-sm text-gray-600 mb-2">
                       Get <strong>{coupon.discount}% OFF</strong> on your order
                     </p>
@@ -339,16 +293,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     </p>
                   </div>
                 ))}
-                <p className="text-xs text-gray-500 mt-3">
-                  Use any code at checkout • Valid on all products
-                </p>
+                <p className="text-xs text-gray-500 mt-3">Use any code at checkout • Valid on all products</p>
               </div>
             ) : (
               <div className="space-y-3">
                 <p className="text-lg text-gray-600">No Coupons Available</p>
-                <p className="text-sm text-gray-500">
-                  Check back soon for deals!
-                </p>
+                <p className="text-sm text-gray-500">Check back soon for deals!</p>
               </div>
             )}
 
@@ -367,12 +317,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         <div className="flex items-center justify-between gap-4 text-white Mycontainer">
           {/* Navigation Menu - Left side */}
           <div className="hidden xl:block">
-            <NavigationMenu
-              menuItems={menuItems}
-              onItemClick={handleMenuClick}
-              size="default"
-              className="justify-start"
-            />
+            <NavigationMenu menuItems={menuItems} onItemClick={handleMenuClick} size="default" className="justify-start" />
           </div>
 
           {/* Search Bar and User Actions on the right */}
@@ -449,13 +394,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             viewport={{ once: true }}
             className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
           >
-            <p className="text-sm font-semibold">
-              Are you sure you want to logout?
-            </p>
-            <p className="text-sm text-gray-500">
-              You can login back at any time. All the changes you've been made
-              will not be lost.
-            </p>
+            <p className="text-sm font-semibold">Are you sure you want to logout?</p>
+            <p className="text-sm text-gray-500">You can login back at any time. All the changes you've been made will not be lost.</p>
             <div className="flex justify-end gap-2">
               <button
                 className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"

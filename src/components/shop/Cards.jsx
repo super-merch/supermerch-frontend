@@ -1607,6 +1607,15 @@ const Cards = () => {
               />
 
               <div className="mt-4 text-center">
+                <h2 className="text-xl font-bold text-gray-800 mb-2">
+                  {selectedProduct.overview.name}
+                </h2>
+                {selectedProduct.overview.description && (
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {selectedProduct.overview.description}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
