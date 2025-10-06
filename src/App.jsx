@@ -43,6 +43,7 @@ import Australia from "./pages/Australia";
 import HourProduction24 from "./pages/HourProduction24";
 import UploadArtwork from "./pages/UploadArtwork";
 import { useModals } from "./hooks/useModals";
+import HotDeals from "./pages/HotDeals";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -88,7 +89,7 @@ const App = () => {
           <Route path="/Spromotional" element={<SpromotionalPage />} />
           <Route path="/success" element={<Success />} />
           <Route path="/cancel" element={<Cancel />} />
-
+          <Route path="hot-deals" element={<HotDeals />} />
           <Route path="/favourites" element={<FavouritePage />} />
           <Route path="/Clothing" element={<ShopPage />} />
           <Route path="/Headwear" element={<ShopPage />} />

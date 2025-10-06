@@ -17,7 +17,9 @@ export const useCoupons = () => {
         setCoupons(data);
 
         // Strategy 1: Show the coupon with highest discount
-        const bestCoupon = data.reduce((best, current) => (current.discount > best.discount ? current : best));
+        const bestCoupon = data.reduce((best, current) =>
+          current.discount > best.discount ? current : best
+        );
 
         setSelectedCoupon(bestCoupon);
         setCoupenLoading(false);
@@ -35,8 +37,10 @@ export const useCoupons = () => {
   }, [API_BASE]);
 
   useEffect(() => {
-    fetchCurrentCoupon();
-  }, [fetchCurrentCoupon]);
+    if (coupons.length === 0) {
+      fetchCurrentCoupon();
+    }
+  }, []);
 
   return {
     coupons,

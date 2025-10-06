@@ -1,25 +1,18 @@
-import React, { useState } from "react";
-import { IoMdArrowDropright } from "react-icons/io";
-import { FaArrowRight } from "react-icons/fa6";
-import twitter from "../../assets/twitter.png";
-import facebook from "../../assets/facebook.png";
-import p from "../../assets/p.png";
-import reddit from "../../assets/reddit.png";
-import youtube from "../../assets/youtube.png";
-import insta from "../../assets/insta.png";
-import visa from "../../assets/visa.png";
-import paypal from "../../assets/paypal.png";
-import amex from "../../assets/amex.png";
-import gpay from "../../assets/gpay.png";
-import discover from "../../assets/discover.png";
-import colors from "../../assets/colors.png";
-import apple from "../../assets/apple.png";
-import pay from "../../assets/pay.png";
-import { Link, useNavigate } from "react-router-dom";
-import PopUps from "./PopUps";
-import supermerch from "../../assets/supermerch.png";
 import { IoMail } from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import amex from "../../assets/amex.png";
+import apple from "../../assets/apple.png";
+import colors from "../../assets/colors.png";
+import discover from "../../assets/discover.png";
+import facebook from "../../assets/facebook.png";
+import gpay from "../../assets/gpay.png";
+import insta from "../../assets/insta.png";
+import pay from "../../assets/pay.png";
+import paypal from "../../assets/paypal.png";
+import supermerch from "../../assets/supermerch.png";
+import visa from "../../assets/visa.png";
+import PopUps from "./PopUps";
 
 const Footer = () => {
   const miniNav = [

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import AllProducts from "./AllProducts";
@@ -6,11 +6,19 @@ import Clothing from "./Clothing";
 import Headwear from "./Headwear";
 import Bags from "./Bags";
 import Stationery from "./Stationery";
+import CategoryGrid from "./CategoryGrid";
 import { Heading } from "../../Common";
+import { AppContext } from "../../../context/AppContext";
 // import Promotional from './Promotional';
 
 const TabsButtons = ({ changeBg = false }) => {
   const [activeTab, setActiveTab] = useState("All Product");
+  const { setProducts, setProductsCategory } = useContext(AppContext);
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setProducts([]);
+    setProductsCategory([]);
+  };
 
   return (
     <div className={`${changeBg && "bg-gray-100  py-5"}`}>
@@ -75,13 +83,14 @@ const TabsButtons = ({ changeBg = false }) => {
             </Link>
           </div>
         </div>
+              Browse All Product
+              <FaArrowRight className="text-sm sm:text-lg" />
+            </Link>
+          </div>
+        </div>
       </div>
       <div>
-        <AllProducts activeTab={activeTab} />
-        <Clothing activeTab={activeTab} />
-        <Headwear activeTab={activeTab} />
-        <Bags activeTab={activeTab} />
-        <Stationery activeTab={activeTab} />
+        <CategoryGrid activeTab={activeTab} handleTabChange={handleTabChange} />
       </div>
     </div>
   );

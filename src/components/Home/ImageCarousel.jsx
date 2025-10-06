@@ -6,25 +6,18 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import noimage from "/noimage.png";
+import { slugify } from "@/utils/utils";
 
 const ImageCarousel = () => {
   const navigate = useNavigate();
-  const { fetchTrendingProducts, trendingProducts } = useContext(AppContext);
-  const [loading, setLoading] = useState(true);
+  const { fetchTrendingProducts, trendingProducts, trendingProductsLoading } =
+    useContext(AppContext);
 
   // Fetch trending products on component mount
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        await fetchTrendingProducts(1, "", 16); // Fetch 16 products (4 per slide × 4 slides)
-      } catch (error) {
-        console.error("Error fetching trending products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
+    if (trendingProducts.length === 0) {
+      fetchTrendingProducts(1, "", 16);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // fetchTrendingProducts is intentionally excluded to prevent infinite re-renders
 
@@ -71,22 +64,13 @@ const ImageCarousel = () => {
     [productSlides.length]
   );
 
-  const slugify = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      // replace any sequence of non-alphanumeric chars with a single hyphen
-      .replace(/[^a-z0-9]+/g, "-")
-      // remove leading/trailing hyphens
-      .replace(/(^-|-$)/g, "");
-
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
-  if (loading) {
+  if (trendingProductsLoading) {
     return (
       <div className="w-full py-2">
         <div className="Mycontainer">
