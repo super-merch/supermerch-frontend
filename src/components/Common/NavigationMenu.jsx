@@ -48,25 +48,27 @@ const NavigationMenu = ({
   }, []);
 
   const handleItemClick = (item) => {
+    // Always navigate to the main page when clicking the main item
+    if (item.onClick) {
+      item.onClick();
+    } else if (onItemClick) {
+      onItemClick(item);
+    }
+  };
+
+  const handleArrowClick = (item, e) => {
+    // Prevent the main item click from firing
+    e.stopPropagation();
+    
     if (item.hasSubmenu) {
-      // On mobile/tablet, toggle submenu on click
+      // Toggle submenu on arrow click
       if (!isDesktop) {
         setClickedItem(clickedItem === item.id ? null : item.id);
         setActiveItem(clickedItem === item.id ? null : item.id);
       } else {
-        // On desktop, navigate to the main page when clicking the main item
-        if (item.onClick) {
-          item.onClick();
-        } else if (onItemClick) {
-          onItemClick(item);
-        }
-      }
-    } else {
-      // Navigate to page if no submenu
-      if (item.onClick) {
-        item.onClick();
-      } else if (onItemClick) {
-        onItemClick(item);
+        // On desktop, show submenu on arrow click (same as hover)
+        setHoveredItem(hoveredItem === item.id ? null : item.id);
+        setActiveItem(hoveredItem === item.id ? null : item.id);
       }
     }
   };
@@ -178,7 +180,8 @@ const NavigationMenu = ({
                 <span className="text-customBlue capitalize font-medium">{item.name}</span>
                 {item.hasSubmenu && (
                   <RiArrowDropDownLine
-                    className={`text-xl transition-all duration-300 text-gray-500 ${isSubmenuVisible ? "rotate-180" : "rotate-0"}`}
+                    className={`text-xl transition-all duration-300 text-gray-500 cursor-pointer ${isSubmenuVisible ? "rotate-180" : "rotate-0"}`}
+                    onClick={(e) => handleArrowClick(item, e)}
                   />
                 )}
               </div>
@@ -219,9 +222,10 @@ const NavigationMenu = ({
                   {item.name}
                   {item.hasSubmenu && (
                     <RiArrowDropDownLine
-                      className={`text-2xl transition-all duration-300 ${
+                      className={`text-2xl transition-all duration-300 cursor-pointer ${
                         isDesktop ? `-rotate-90 ${isSubmenuVisible ? "rotate-0" : ""}` : `${isSubmenuVisible ? "rotate-180" : "rotate-0"}`
                       }`}
+                      onClick={(e) => handleArrowClick(item, e)}
                     />
                   )}
                 </span>
