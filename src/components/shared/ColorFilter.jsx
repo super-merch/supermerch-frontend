@@ -59,9 +59,7 @@ const ColorFilter = () => {
   }, []);
 
   return (
-    <div className="mb-6">
-      <h2 className="mb-4 text-base font-semibold text-gray-800">Filter by Color</h2>
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-white border border-gray-200 rounded-lg p-4">
         {/* Search Colors */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">Search Colors</label>
@@ -127,7 +125,6 @@ const ColorFilter = () => {
           </button>
         </div>
       </div>
-    </div>
   );
 };
 

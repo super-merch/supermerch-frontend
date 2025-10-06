@@ -49,9 +49,7 @@ const PriceFilter = () => {
   };
 
   return (
-    <div className="mb-6">
-      <h1 className="mb-4 text-base font-semibold text-gray-800">Price Range</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-white border border-gray-200 rounded-lg p-4">
         {/* Price Input Fields */}
         <div className="mb-4">
           <div className="flex gap-3">
@@ -105,7 +103,6 @@ const PriceFilter = () => {
           </button>
         </div>
       </div>
-    </div>
   );
 };
 

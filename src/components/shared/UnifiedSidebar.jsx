@@ -235,11 +235,11 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
                 <ClothingGenderToggle />
               </CollapsibleSection>
             )}
-            
+
             <CollapsibleSection title="Price Range" defaultExpanded={true}>
               <PriceFilter />
             </CollapsibleSection>
-            
+
             <CollapsibleSection title="Filter by Colour" defaultExpanded={true}>
               <ColorFilter />
             </CollapsibleSection>

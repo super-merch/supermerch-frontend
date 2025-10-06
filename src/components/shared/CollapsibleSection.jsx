@@ -27,11 +27,7 @@ const CollapsibleSection = ({ title, children, defaultExpanded = true, className
           )}
         </button>
       </div>
-      {isExpanded && (
-        <div className="animate-fade-in">
-          {children}
-        </div>
-      )}
+      {isExpanded && <div className="animate-fade-in">{children}</div>}
     </div>
   );
 };
