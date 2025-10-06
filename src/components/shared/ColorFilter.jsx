@@ -60,71 +60,71 @@ const ColorFilter = () => {
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
-        {/* Search Colors */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Search Colors</label>
-          <input
-            type="text"
-            placeholder="Search for colors..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-          />
-        </div>
-
-        {/* Color Swatches Grid */}
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Select Colors</h3>
-          <div className="grid grid-cols-4 gap-2">
-            {filteredColors.map((color) => (
-              <button
-                key={color.name}
-                onClick={() => handleColorToggle(color.name)}
-                className="flex flex-col items-center gap-2 p-2 rounded hover:bg-gray-50"
-              >
-                <div
-                  className={`w-10 h-10 rounded-full border transition-transform duration-200 hover:scale-110 ${
-                    color.name.toLowerCase() === "white" ? "border-gray-300" : "border-gray-200"
-                  } ${selectedColors.includes(color.name) ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
-                  style={{ backgroundColor: color.hex }}
-                />
-                <span className="text-sm text-gray-700">{color.name}</span>
-              </button>
-            ))}
-          </div>
-
-          {filteredColors.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-3">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
-          )}
-        </div>
-
-        {/* Apply Button - Using same color as Price Filter */}
-        <button
-          onClick={handleApplyColorFilter}
-          disabled={selectedColors.length === 0 || isApplying}
-          className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
-            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
-          }`}
-        >
-          {isApplying ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
-              <span>Applying...</span>
-            </>
-          ) : (
-            <>
-              <span>Apply Color Filter</span>
-            </>
-          )}
-        </button>
-
-        {/* Clear All Colors Link */}
-        <div className="text-center">
-          <button onClick={handleClearAllColors} className="text-blue-600 hover:text-blue-800 text-sm">
-            Clear All Colors
-          </button>
-        </div>
+      {/* Search Colors */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Search Colors</label>
+        <input
+          type="text"
+          placeholder="Search for colors..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        />
       </div>
+
+      {/* Color Swatches Grid */}
+      <div className="mb-4">
+        <h3 className="text-sm font-medium text-gray-700 mb-3">Select Colors</h3>
+        <div className="grid grid-cols-6 gap-1">
+          {filteredColors.map((color) => (
+            <button
+              key={color.name}
+              onClick={() => handleColorToggle(color.name)}
+              className="flex flex-col items-center gap-1 p-1 rounded hover:bg-gray-50"
+            >
+              <div
+                className={`w-6 h-6 rounded-full border transition-transform duration-200 hover:scale-110 ${
+                  color.name.toLowerCase() === "white" ? "border-gray-300" : "border-gray-200"
+                } ${selectedColors.includes(color.name) ? "ring-2 ring-blue-500 ring-offset-1" : ""}`}
+                style={{ backgroundColor: color.hex }}
+              />
+              <span className="text-xs text-gray-700">{color.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {filteredColors.length === 0 && (
+          <p className="text-sm text-gray-500 text-center py-3">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
+        )}
+      </div>
+
+      {/* Apply Button - Using same color as Price Filter */}
+      <button
+        onClick={handleApplyColorFilter}
+        disabled={selectedColors.length === 0 || isApplying}
+        className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
+          isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+        }`}
+      >
+        {isApplying ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+            <span>Applying...</span>
+          </>
+        ) : (
+          <>
+            <span>Apply Color Filter</span>
+          </>
+        )}
+      </button>
+
+      {/* Clear All Colors Link */}
+      <div className="text-center">
+        <button onClick={handleClearAllColors} className="text-blue-600 hover:text-blue-800 text-sm">
+          Clear All Colors
+        </button>
+      </div>
+    </div>
   );
 };
 

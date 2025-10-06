@@ -50,59 +50,59 @@ const PriceFilter = () => {
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
-        {/* Price Input Fields */}
-        <div className="mb-4">
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
-              <input
-                type="text"
-                placeholder="0"
-                value={localMin}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                onChange={(e) => setLocalMin(e.target.value)}
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
-              <input
-                type="text"
-                placeholder="1000"
-                value={localMax}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                onChange={(e) => setLocalMax(e.target.value)}
-              />
-            </div>
+      {/* Price Input Fields */}
+      <div className="mb-4">
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+            <input
+              type="text"
+              placeholder="0"
+              value={localMin}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              onChange={(e) => setLocalMin(e.target.value)}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+            <input
+              type="text"
+              placeholder="1000"
+              value={localMax}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              onChange={(e) => setLocalMax(e.target.value)}
+            />
           </div>
         </div>
-
-        {/* Apply Button - Keeping original color */}
-        <button
-          onClick={handleApplyCustomRange}
-          disabled={isApplying}
-          className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
-            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
-          }`}
-        >
-          {isApplying ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
-              <span>Applying...</span>
-            </>
-          ) : (
-            <>
-              <span>Apply Filter</span>
-            </>
-          )}
-        </button>
-
-        {/* All Prices Link */}
-        <div className="text-center">
-          <button onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })} className="text-blue-600 hover:text-blue-800 text-sm">
-            All Prices
-          </button>
-        </div>
       </div>
+
+      {/* Apply Button - Keeping original color */}
+      <button
+        onClick={handleApplyCustomRange}
+        disabled={isApplying}
+        className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
+          isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+        }`}
+      >
+        {isApplying ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+            <span>Applying...</span>
+          </>
+        ) : (
+          <>
+            <span>Apply Filter</span>
+          </>
+        )}
+      </button>
+
+      {/* All Prices Link */}
+      <div className="text-center">
+        <button onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })} className="text-blue-600 hover:text-blue-800 text-sm">
+          All Prices
+        </button>
+      </div>
+    </div>
   );
 };
 
