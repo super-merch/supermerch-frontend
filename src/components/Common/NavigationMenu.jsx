@@ -53,6 +53,13 @@ const NavigationMenu = ({
       if (!isDesktop) {
         setClickedItem(clickedItem === item.id ? null : item.id);
         setActiveItem(clickedItem === item.id ? null : item.id);
+      } else {
+        // On desktop, navigate to the main page when clicking the main item
+        if (item.onClick) {
+          item.onClick();
+        } else if (onItemClick) {
+          onItemClick(item);
+        }
       }
     } else {
       // Navigate to page if no submenu

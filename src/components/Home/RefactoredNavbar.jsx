@@ -78,6 +78,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           id: "promotional",
           submenu: megaMenu,
           megaMenu: true,
+          onClick: () => handleMenuClick(item),
         };
       }
 
@@ -92,6 +93,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               name: subType.name,
               onClick: () => handleSubCategories(subType.name, subType.id, clothingCategory.name),
             })) || [],
+          onClick: () => handleMenuClick(item),
         };
       }
 
@@ -106,6 +108,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               name: subType.name,
               onClick: () => handleSubCategories(subType.name, subType.id, headwearCategory.name),
             })) || [],
+          onClick: () => handleMenuClick(item),
         };
       }
 
