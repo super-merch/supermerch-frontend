@@ -83,7 +83,7 @@ const ColorFilter = () => {
               className="flex flex-col items-center gap-1 p-1 rounded hover:bg-gray-50"
             >
               <div
-                className={`w-6 h-6 rounded-full border transition-transform duration-200 hover:scale-110 ${
+                className={`w-8 h-8 rounded-full border transition-transform duration-200 hover:scale-110 ${
                   color.name.toLowerCase() === "white" ? "border-gray-300" : "border-gray-200"
                 } ${selectedColors.includes(color.name) ? "ring-2 ring-blue-500 ring-offset-1" : ""}`}
                 style={{ backgroundColor: color.hex }}
