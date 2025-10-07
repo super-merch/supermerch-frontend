@@ -541,16 +541,6 @@ const BestSellerCards = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">{!skeletonLoading && !isFiltering && getTotalCount()}</span>
-              <p className="">
-                {skeletonLoading || isFiltering
-                  ? "Loading..."
-                  : `Best Seller Results found${
-                      isPriceFilterActive ? ` (Price filtered)` : hasActiveFilters ? ` on page ${currentPage}` : ""
-                    }`}
-              </p>
-            </div>
           </div>
 
           {filterError && (

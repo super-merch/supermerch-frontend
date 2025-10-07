@@ -44,7 +44,6 @@ const ColorFilter = () => {
     });
   }, []);
 
-
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       {/* Search Colors */}
@@ -102,7 +101,6 @@ const ColorFilter = () => {
           <p className="text-sm text-gray-500 text-center py-3">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
         )}
       </div>
-
     </div>
   );
 };
