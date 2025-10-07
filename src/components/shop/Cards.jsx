@@ -918,35 +918,6 @@ const Cards = () => {
             </div>
           </div>
 
-          {/* Active Filters - Only show if there are active filters */}
-          {((activeFilters.brands && activeFilters.brands.length > 0) ||
-            (activeFilters.price &&
-              activeFilters.price.length === 2 &&
-              (activeFilters.price[0] !== 0 || activeFilters.price[1] !== 1000))) && (
-            <div className="flex flex-wrap items-center gap-4 mt-4 px-2">
-
-              {activeFilters.brands && activeFilters.brands.length > 0 && (
-                <div className="filter-item">
-                  <span className="text-sm">{activeFilters.brands.join(", ")}</span>
-                  <button className="px-2 text-lg" onClick={() => handleClearFilter("brand")}>
-                    x
-                  </button>
-                </div>
-              )}
-              {activeFilters.price &&
-                activeFilters.price.length === 2 &&
-                (activeFilters.price[0] !== 0 || activeFilters.price[1] !== 1000) && (
-                  <div className="filter-item">
-                    <span className="text-sm">
-                      ${activeFilters.price[0]} - ${activeFilters.price[1]}
-                    </span>
-                    <button className="px-2 text-lg" onClick={() => handleClearFilter("price")}>
-                      x
-                    </button>
-                  </div>
-                )}
-            </div>
-          )}
 
           {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
