@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 
 const ColorFilter = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isApplying, setIsApplying] = useState(false);
   const [showAllColors, setShowAllColors] = useState(false);
 
   // Available colors with their display names and hex values matching the image
@@ -29,38 +28,22 @@ const ColorFilter = () => {
   const [selectedColors, setSelectedColors] = useState([]);
 
   // Determine which colors to display
-  const colorsToShow = searchTerm ? filteredColors : (showAllColors ? availableColors : availableColors.slice(0, 10));
+  const colorsToShow = searchTerm ? filteredColors : showAllColors ? availableColors : availableColors.slice(0, 10);
 
   const handleColorToggle = useCallback((colorName) => {
     setSelectedColors((prev) => {
+      let newColors;
       if (prev.includes(colorName)) {
-        return prev.filter((name) => name !== colorName);
+        newColors = prev.filter((name) => name !== colorName);
+        toast.info(`${colorName} filter removed`);
       } else {
-        return [...prev, colorName];
+        newColors = [...prev, colorName];
+        toast.success(`${colorName} filter applied`);
       }
+      return newColors;
     });
   }, []);
 
-  const handleApplyColorFilter = useCallback(() => {
-    if (selectedColors.length === 0) {
-      toast.info("Please select at least one color to filter");
-      return;
-    }
-
-    setIsApplying(true);
-
-    // Simulate API call or filter application
-    setTimeout(() => {
-      toast.success(`Applied filter for colors: ${selectedColors.join(", ")}`);
-      setIsApplying(false);
-    }, 1000);
-  }, [selectedColors]);
-
-  const handleClearAllColors = useCallback(() => {
-    setSelectedColors([]);
-    setSearchTerm("");
-    toast.info("All color filters cleared");
-  }, []);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -100,10 +83,7 @@ const ColorFilter = () => {
         {/* View More Colors Button - only show when not searching and not showing all */}
         {!searchTerm && !showAllColors && availableColors.length > 10 && (
           <div className="mt-3 text-center">
-            <button
-              onClick={() => setShowAllColors(true)}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            >
+            <button onClick={() => setShowAllColors(true)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
               View More Colors ({availableColors.length - 10} more)
             </button>
           </div>
@@ -112,10 +92,7 @@ const ColorFilter = () => {
         {/* Show Less Button - only show when showing all colors */}
         {!searchTerm && showAllColors && (
           <div className="mt-3 text-center">
-            <button
-              onClick={() => setShowAllColors(false)}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            >
+            <button onClick={() => setShowAllColors(false)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
               Show Less
             </button>
           </div>
@@ -126,32 +103,6 @@ const ColorFilter = () => {
         )}
       </div>
 
-      {/* Apply Button - Using same color as Price Filter */}
-      <button
-        onClick={handleApplyColorFilter}
-        disabled={selectedColors.length === 0 || isApplying}
-        className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
-          isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
-        }`}
-      >
-        {isApplying ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
-            <span>Applying...</span>
-          </>
-        ) : (
-          <>
-            <span>Apply Color Filter</span>
-          </>
-        )}
-      </button>
-
-      {/* Clear All Colors Link */}
-      <div className="text-center">
-        <button onClick={handleClearAllColors} className="text-blue-600 hover:text-blue-800 text-sm">
-          Clear All Colors
-        </button>
-      </div>
     </div>
   );
 };
