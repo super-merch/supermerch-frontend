@@ -645,9 +645,7 @@ const Spromotional = () => {
             <div className="flex items-center gap-1">
               <span className="font-semibold text-brand">{!skeletonLoading && !isFiltering && getTotalCount()}</span>
               <p className="">
-                {skeletonLoading || isFiltering
-                  ? "Loading..."
-                  : `Results found ${isPriceFilterActive ? "(Price filtered)" : ""}`}
+                {skeletonLoading || isFiltering ? "Loading..." : `Results found ${isPriceFilterActive ? "(Price filtered)" : ""}`}
                 {isFiltering && " Please wait a while..."}
               </p>
             </div>
@@ -693,14 +691,6 @@ const Spromotional = () => {
 
           <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
             <div className="flex flex-wrap items-center gap-4">
-              {activeFilters.category && activeFilters.category !== "all" && (
-                <div className="filter-item">
-                  <span className="text-sm">{activeFilters.category}</span>
-                  <button className="px-2 text-lg" onClick={() => handleClearFilter("category")}>
-                    x
-                  </button>
-                </div>
-              )}
 
               {activeFilters.brands && activeFilters.brands.length > 0 && (
                 <div className="filter-item">
