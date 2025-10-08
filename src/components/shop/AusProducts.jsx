@@ -329,14 +329,14 @@ const AustraliaProducts = () => {
   };
 
   // Handle sort changes
-  useEffect(() => {
-    if (isPriceFilterActive) {
-      setCurrentPage(1);
-      return;
-    }
-    setCurrentPage(1);
-    fetchAustraliaProductsPaginated(1, sortOption);
-  }, [sortOption]);
+  // useEffect(() => {
+  //   if (isPriceFilterActive) {
+  //     setCurrentPage(1);
+  //     return;
+  //   }
+  //   setCurrentPage(1);
+  //   fetchAustraliaProductsPaginated(1, sortOption);
+  // }, [sortOption]);
 
   // Initial fetch when component mounts
   useEffect(() => {

@@ -125,7 +125,6 @@ const Cards = () => {
         const data = await response.json();
         const productIds = data.map((item) => Number(item.id));
         setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
       } else {
         console.error(
           "Failed to fetch 24 Hour Production products:",
@@ -153,7 +152,6 @@ const Cards = () => {
         // Ensure consistent data types (convert to strings)
         const productIds = data.map((item) => Number(item.id));
         setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
       } else {
         console.error("Failed to fetch Australia products:", response.status);
       }
@@ -340,7 +338,7 @@ const Cards = () => {
   // Helper function to fetch multiple pages for all products
   const fetchMultipleAllProductsPages = async (
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -393,14 +391,14 @@ const Cards = () => {
         additionalProducts = await fetchMultipleParamPages(
           selectedCategory,
           pagesToFetch,
-          100,
+          10,
           sortOption,
           startPage
         );
       } else {
         additionalProducts = await fetchMultipleAllProductsPages(
           pagesToFetch,
-          100,
+          10,
           sortOption,
           startPage
         );
@@ -661,7 +659,7 @@ const Cards = () => {
     setError("");
 
     try {
-      const limit = 100;
+      const limit = 10;
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL

@@ -187,7 +187,7 @@ const AppContextProvider = (props) => {
 
     setSkeletonLoading(true);
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -228,7 +228,7 @@ const AppContextProvider = (props) => {
   const fetchMultipleSearchPages = async (
     searchTerm,
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -304,7 +304,7 @@ const AppContextProvider = (props) => {
   const [trendingProductsLoading, setTrendingProductsLoading] = useState(false);
   const fetchMultipleTrendingPages = async (
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -348,7 +348,7 @@ const AppContextProvider = (props) => {
 
   const fetchTrendingProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
       setTrendingProductsLoading(true);
       const response = await fetch(
         `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}/?filter=true`
@@ -369,7 +369,7 @@ const AppContextProvider = (props) => {
   const [arrivalProducts, setArrivalProducts] = useState([]);
   const fetchNewArrivalProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -392,7 +392,7 @@ const AppContextProvider = (props) => {
   };
   const fetchMultipleArrivalPages = async (
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -432,7 +432,7 @@ const AppContextProvider = (props) => {
   };
   const fetchMultipleDiscountedPages = async (
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -473,7 +473,7 @@ const AppContextProvider = (props) => {
   const [discountedProducts, setDiscountedProducts] = useState([]);
   const fetchDiscountedProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -497,7 +497,7 @@ const AppContextProvider = (props) => {
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   const fetchMultipleBestSellerPages = async (
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -536,7 +536,7 @@ const AppContextProvider = (props) => {
   };
   const fetchBestSellerProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
       const response = await fetch(
         `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
@@ -563,7 +563,7 @@ const AppContextProvider = (props) => {
   const fetchMultipleParamPages = async (
     categoryId,
     maxPages = 1,
-    limit = 100,
+    limit = 10,
     sortOption = "",
     startPage = 1
   ) => {
@@ -1258,7 +1258,6 @@ const AppContextProvider = (props) => {
     setOpenLoginModal,
     productsCategoryLoading,
     setProductsCategory,
-    setProducts,
   };
 
   return (

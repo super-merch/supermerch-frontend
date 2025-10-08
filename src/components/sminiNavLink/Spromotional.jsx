@@ -1,48 +1,37 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { IoClose, IoMenu, IoSearchOutline } from "react-icons/io5";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import {
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoIosHeart,
+  IoMdArrowBack,
+  IoMdArrowForward,
+} from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import { IoCartOutline } from "react-icons/io5";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
-import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
+import { applyFilters } from "../../redux/slices/filterSlice";
 
 import Skeleton from "react-loading-skeleton";
 import noimage from "/noimage.png";
 
-import {
-  setSelectedBrands,
-  setMinPrice,
-  setMaxPrice,
-  setSelectedCategory,
-} from "../../redux/slices/filterSlice";
-import { AppContext } from "../../context/AppContext";
-import { matchProduct } from "@/redux/slices/categorySlice";
-import UnifiedSidebar from "../shared/UnifiedSidebar";
+import { megaMenuClothing } from "@/assets/asset";
+import { headWear, megaMenu } from "@/assets/assets";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import {
   matchPromotionalProduct,
   setAllProducts,
 } from "@/redux/slices/promotionalSlice";
-import PromotionalPriceFilter from "../miniNavLinks/promotionalComps/PromotionalPriceFilter";
-import PromotionalBrandFilter from "../miniNavLinks/promotionalComps/PromotionalBrandFilter";
-import PromotionalPopularTags from "../miniNavLinks/promotionalComps/PromotionalPopularTags";
-import { toast } from "react-toastify";
-import { megaMenu, headWear } from "@/assets/assets";
-import { megaMenuClothing } from "@/assets/asset";
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { slugify } from "@/utils/utils";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
+import {
+  setMaxPrice,
+  setMinPrice,
+  setSelectedBrands,
+  setSelectedCategory,
+} from "../../redux/slices/filterSlice";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -157,67 +146,12 @@ const Spromotional = () => {
     sidebarActiveLabel,
     setSidebarActiveLabel,
     fetchMultipleParamPages, // We'll need to create this function
+    australiaIds,
+    productionIds,
   } = useContext(AppContext);
 
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
     useSelector((state) => state.filters);
-
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
@@ -598,6 +532,11 @@ const Spromotional = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (selectedParamCategoryId && !isPriceFilterActive) {
+        console.log(
+          selectedParamCategoryId,
+          currentPage,
+          "selectedParamCategoryId, currentPage"
+        );
         try {
           await fetchParamProducts(selectedParamCategoryId, currentPage);
         } catch (error) {

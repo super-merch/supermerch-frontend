@@ -32,6 +32,7 @@ import FeaturesTab from "./FeaturesTab";
 import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
+import { LoadingBar } from "@/components/Common";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -58,7 +59,7 @@ const ProductDetails = () => {
     totalDiscount,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [errorFetching, setErrorFetching] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState("features");
 
@@ -830,24 +831,6 @@ const ProductDetails = () => {
     return { sizes, result };
   };
 
-  // const minimumPrice = () => {
-  //   const marginEntry = marginApi[productId];
-
-  //   const priceGroups = product?.prices?.price_groups || [];
-  //   const basePrice = priceGroups.find((group) => group?.base_price) || {};
-  //   const priceBreaks = basePrice.base_price?.price_breaks || [];
-  //   const prices = priceBreaks
-  //     .map((breakItem) => breakItem.price)
-  //     .filter((price) => price !== undefined);
-  //   const minPrice = Math.min(...prices);
-  //   const maxPrice = Math.max(...prices);
-  //   const finalPrice =
-  //     minPrice === maxPrice
-  //       ? Number(minPrice) + Number(marginEntry?.marginFlat ?? 0)
-  //       : Number(minPrice) + Number(marginEntry?.marginFlat ?? 0);
-  //   return finalPrice?.toFixed(2) || 0;
-  // };
-
   if (error)
     return (
       <div className="flex items-center justify-center">
@@ -856,24 +839,59 @@ const ProductDetails = () => {
     );
 
   if (errorFetching) return <ProductNotFound />;
+  console.log(loading);
+  if (loading)
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
+        <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Loading Spinner */}
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
+            </div>
+
+            {/* Loading Text */}
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Loading Product Details
+              </h3>
+              <p className="text-sm text-gray-600">
+                Please wait while we fetch the latest information...
+              </p>
+            </div>
+
+            {/* Progress Dots */}
+            <div className="flex space-x-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+              <div
+                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                style={{ animationDelay: "0.1s" }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                style={{ animationDelay: "0.2s" }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <>
       <div className="Mycontainer ">
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-2">
           {/* 1st culmn  */}
-
-          {loading && (
+          {/* {loading && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
               <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
                 <div className="flex flex-col items-center space-y-6">
-                  {/* Loading Spinner */}
                   <div className="relative">
                     <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
                     <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
                   </div>
 
-                  {/* Loading Text */}
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       Loading Product Details
@@ -883,7 +901,6 @@ const ProductDetails = () => {
                     </p>
                   </div>
 
-                  {/* Progress Dots */}
                   <div className="flex space-x-2">
                     <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
                     <div
@@ -898,8 +915,8 @@ const ProductDetails = () => {
                 </div>
               </div>
             </div>
-          )}
-
+          )} */}
+          {/* 
           {loading ? (
             Array.from({ length: 1 }).map((_, index) => (
               <div
@@ -915,64 +932,64 @@ const ProductDetails = () => {
                 </div>
               </div>
             ))
-          ) : (
-            <div>
-              <div className="mb-4 border border-border2">
-                <img src={activeImage} alt={product?.name} className="w-full" />
+          ) : ( */}
+          <div>
+            <div className="mb-4 border border-border2">
+              <img src={activeImage} alt={product?.name} className="w-full" />
+            </div>
+
+            <Swiper
+              navigation={{
+                prevEl: ".custom-prev",
+                nextEl: ".custom-next",
+              }}
+              modules={[Navigation]}
+              className="mySwiper"
+              breakpoints={{
+                0: { slidesPerView: 2, spaceBetween: 5 },
+                580: { slidesPerView: 3, spaceBetween: 10 },
+                1024: { slidesPerView: 4, spaceBetween: 10 },
+              }}
+            >
+              <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
+                <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-1 sm:p-1">
+                  <IoArrowBackOutline className="text-base text-md" />
+                </button>
               </div>
 
-              <Swiper
-                navigation={{
-                  prevEl: ".custom-prev",
-                  nextEl: ".custom-next",
-                }}
-                modules={[Navigation]}
-                className="mySwiper"
-                breakpoints={{
-                  0: { slidesPerView: 2, spaceBetween: 5 },
-                  580: { slidesPerView: 3, spaceBetween: 10 },
-                  1024: { slidesPerView: 4, spaceBetween: 10 },
-                }}
-              >
-                <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-1 sm:p-1">
-                    <IoArrowBackOutline className="text-base text-md" />
-                  </button>
-                </div>
+              <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
+                <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-1 sm:p-1">
+                  <IoMdArrowForward className="text-base text-md" />
+                </button>
+              </div>
 
-                <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-1 sm:p-1">
-                    <IoMdArrowForward className="text-base text-md" />
-                  </button>
-                </div>
-
-                {product?.images?.map((item, index) => (
-                  <SwiperSlide key={index}>
-                    <div
-                      className="flex justify-center px-2 py-3 cursor-pointer bg-line lg:px-0 md:px-0 sm:px-0"
-                      onClick={() => {
-                        setActiveImage(item);
-                        // setSelectedColor('')
-                      }}
-                    >
-                      <img
-                        src={item}
-                        alt={`Thumbnail ${index}`}
-                        className={`w-full border-2  ${
-                          activeImage === item
-                            ? "border-smallHeader"
-                            : "border-transparent"
-                        }`}
-                      />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          )}
+              {product?.images?.map((item, index) => (
+                <SwiperSlide key={index}>
+                  <div
+                    className="flex justify-center px-2 py-3 cursor-pointer bg-line lg:px-0 md:px-0 sm:px-0"
+                    onClick={() => {
+                      setActiveImage(item);
+                      // setSelectedColor('')
+                    }}
+                  >
+                    <img
+                      src={item}
+                      alt={`Thumbnail ${index}`}
+                      className={`w-full border-2  ${
+                        activeImage === item
+                          ? "border-smallHeader"
+                          : "border-transparent"
+                      }`}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+          {/* // )} */}
           {/* 2nd column  */}
           <div>
-            <div className="flex justify-between">
+            <div className="flex justify-between md:flex-row flex-col">
               <div className="w-2/3">
                 <h2
                   className={`text-2xl ${
@@ -1041,7 +1058,7 @@ const ProductDetails = () => {
               </p>
             </div> */}
               {/* Starting Price */}
-              <div className="w-1/3 flex justify-center items-center flex-wrap gap-2 p-1 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+              <div className="md:w-1/3 flex justify-center items-center flex-wrap gap-2 p-1 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
                 {/* Decorative elements */}
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-200 to-emerald-200 rounded-full -translate-y-8 translate-x-8 opacity-30"></div>
                 <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-tr from-teal-200 to-green-200 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
@@ -1137,7 +1154,6 @@ const ProductDetails = () => {
             </div>
           </div>
           {/* 3rd column  */}
-
           <div className="">
             {/* Consolidated Order Summary */}
             <div className="bg-white rounded-none border border-gray-200 shadow-sm lg:sticky lg:top-4">

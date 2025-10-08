@@ -9,7 +9,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import App from "./App.jsx";
 import { AppContextProvider } from "./context/AppContext";
-import CartInitializer from './pages/cartInitializer.jsx';
+import CartInitializer from "./pages/cartInitializer.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -17,18 +17,18 @@ createRoot(document.getElementById("root")).render(
       {/* delay rendering until persisted state is restored */}
       <PersistGate loading={null} persistor={persistor}>
         <CartInitializer>
-        <AppContextProvider>
-          <GoogleOAuthProvider
-            clientId="918141329490-1hgf0gjluv6150suapo736b0tsln63u5.apps.googleusercontent.com"
-            onScriptLoadSuccess={() => {
-              if (window.google && window.google.accounts) {
-                window.google.accounts.id.disableAutoSelect();
-              }
-            }}
-          >
-            <App />
-          </GoogleOAuthProvider>
-        </AppContextProvider>
+          <AppContextProvider>
+            <GoogleOAuthProvider
+              clientId="918141329490-1hgf0gjluv6150suapo736b0tsln63u5.apps.googleusercontent.com"
+              onScriptLoadSuccess={() => {
+                if (window.google && window.google.accounts) {
+                  window.google.accounts.id.disableAutoSelect();
+                }
+              }}
+            >
+              <App />
+            </GoogleOAuthProvider>
+          </AppContextProvider>
         </CartInitializer>
       </PersistGate>
     </Provider>
