@@ -510,22 +510,6 @@ const AustraliaProducts = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">
-                {!isLoading &&
-                  !skeletonLoading &&
-                  !isFiltering &&
-                  getTotalCount()}
-              </span>
-              <p className="">
-                {isLoading || isFiltering
-                  ? "Loading..."
-                  : `Australia Made Products Found${
-                      isPriceFilterActive ? " (Price filtered)" : ""
-                    }`}
-                {isFiltering && " Please wait..."}
-              </p>
-            </div>
           </div>
 
           {filterError && (

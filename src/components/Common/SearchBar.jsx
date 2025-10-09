@@ -24,17 +24,17 @@ const SearchBar = ({
 
   const sizeClasses = {
     small: {
-      container: "w-56",
+      container: "w-56 sm:w-64",
       input: "text-sm",
       button: "text-sm px-2 py-1",
     },
     default: {
-      container: "w-72",
+      container: "w-72 sm:w-80",
       input: "text-base",
       button: "text-sm px-3 py-1",
     },
     large: {
-      container: "w-96",
+      container: "w-96 sm:w-[28rem]",
       input: "text-lg",
       button: "text-base px-4 py-2",
     },
@@ -149,7 +149,7 @@ const SearchBar = ({
 
         {/* Category Dropdown */}
         {isCategoryDropdownOpen && showCategoryDropdown && (
-          <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
             <div className="p-2">
               <div className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" onClick={() => handleCategorySelect("All")}>
                 <span className="text-gray-700 font-medium">All Categories</span>
@@ -242,7 +242,7 @@ const SearchBar = ({
 
       {/* Category Dropdown */}
       {isCategoryDropdownOpen && showCategoryDropdown && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-blue-200 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto animate-in slide-in-from-top-2 fade-in-0">
+        <div className="absolute top-full left-0 mt-2 w-72 sm:w-80 bg-white border border-blue-200 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto animate-in slide-in-from-top-2 fade-in-0">
           <div className="p-3">
             <div
               className="px-4 py-3 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors duration-200"
