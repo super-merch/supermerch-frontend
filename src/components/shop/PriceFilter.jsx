@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ const PriceFilter = () => {
   const [localMin, setLocalMin] = useState("");
   const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const debounceTimer = useRef(null);
 
   const handleApplyCustomRange = () => {
     const minValue = Number(localMin);
@@ -48,6 +49,45 @@ const PriceFilter = () => {
     setTimeout(() => setIsApplying(false), 1000);
   };
 
+  // Auto-apply filter when both fields are filled with valid numbers
+  useEffect(() => {
+    // Clear existing timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    // Only auto-apply if both fields have values and are valid numbers
+    if (localMin && localMax) {
+      const minValue = Number(localMin);
+      const maxValue = Number(localMax);
+
+      // Check if both are valid numbers and meet criteria
+      if (!isNaN(minValue) && !isNaN(maxValue) && maxValue >= 0 && minValue >= 0 && minValue < maxValue) {
+        // Set debounce timer
+        debounceTimer.current = setTimeout(() => {
+          setIsApplying(true);
+          dispatch(setMinPrice(minValue));
+          dispatch(setMaxPrice(maxValue));
+          dispatch(applyFilters());
+
+          // Clear the input fields after successful auto-apply
+          setLocalMin("");
+          setLocalMax("");
+
+          // Reset applying state after a short delay
+          setTimeout(() => setIsApplying(false), 1000);
+        }, 700); // 700ms debounce delay
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [localMin, localMax, dispatch]);
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       {/* Price Input Fields */}
@@ -76,8 +116,8 @@ const PriceFilter = () => {
         </div>
       </div>
 
-      {/* Apply Button - Keeping original color */}
-      <button
+      {/* Apply Button - Hidden since auto-apply is now active */}
+      {/* <button
         onClick={handleApplyCustomRange}
         disabled={isApplying}
         className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
@@ -94,7 +134,7 @@ const PriceFilter = () => {
             <span>Apply Filter</span>
           </>
         )}
-      </button>
+      </button> */}
 
       {/* All Prices Link */}
       <div className="text-center">

@@ -639,56 +639,130 @@ const Spromotional = () => {
           <UnifiedSidebar pageType="PROMOTIONAL" />
         </div>
 
-        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            {/* Product Count - Left Side */}
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-brand">{!skeletonLoading && !isFiltering && getTotalCount()}</span>
-              <p className="">
-                {skeletonLoading || isFiltering ? "Loading..." : `Results found ${isPriceFilterActive ? "(Price filtered)" : ""}`}
-                {isFiltering && " Please wait a while..."}
-              </p>
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-4">
+          {/* Mobile Layout */}
+          <div className="lg:hidden px-4 py-3">
+            {/* Hamburger Menu and Sort By - Properly aligned */}
+            <div className="flex items-center justify-between w-full mb-4">
+              {/* Hamburger Menu Button */}
+              <button
+                onClick={() => {
+                  const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
+                  if (sidebarToggle) sidebarToggle.click();
+                }}
+                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-smallHeader shadow-sm hover:bg-smallHeader-dark transition-colors"
+              >
+                <IoMenu className="text-xl" />
+              </button>
+
+              {/* Sort By - Positioned to the right */}
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-medium text-gray-700">Sort by:</p>
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 transition-colors"
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  >
+                    {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevency"}
+                    <span className="">
+                      {isDropdownOpen ? <IoIosArrowUp className="text-gray-600" /> : <IoIosArrowDown className="text-gray-600" />}
+                    </span>
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
+                      <button
+                        onClick={() => handleSortSelection("lowToHigh")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-t-lg ${
+                          sortOption === "lowToHigh" ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        Lowest to Highest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("highToLow")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 ${sortOption === "highToLow" ? "bg-gray-50" : ""}`}
+                      >
+                        Highest to Lowest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("relevency")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-b-lg ${
+                          sortOption === "relevency" ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        Relevency
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Sort Dropdown - Right Side */}
-            <div className="flex items-center gap-3">
-              <p>Sort by:</p>
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
-                  onClick={() => setIsDropdownOpen((prev) => !prev)}
-                >
-                  {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevency"}
-                  <span className="">
-                    {isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}
-                  </span>
-                </button>
-                {isDropdownOpen && (
-                  <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
-                    <button
-                      onClick={() => handleSortSelection("lowToHigh")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
-                    >
-                      Lowest to Highest
-                    </button>
-                    <button
-                      onClick={() => handleSortSelection("highToLow")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
-                    >
-                      Highest to Lowest
-                    </button>
-                    <button
-                      onClick={() => handleSortSelection("relevency")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
-                    >
-                      Relenency
-                    </button>
-                  </div>
-                )}
+            {/* Results Count - Below Sort By */}
+            <div className="mb-6 px-2">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-brand text-base">{!skeletonLoading && !isFiltering && getTotalCount()}</span>
+                <p className="text-sm text-gray-600">
+                  {skeletonLoading || isFiltering
+                    ? "Loading..."
+                    : `Results found (Promotional Products)${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  {isFiltering && " Please wait a while..."}
+                </p>
               </div>
             </div>
           </div>
 
+          {/* Desktop Layout */}
+          <div className="hidden lg:block">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Product Count - Left Side */}
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-brand">{!skeletonLoading && !isFiltering && getTotalCount()}</span>
+                <p className="">
+                  {skeletonLoading || isFiltering ? "Loading..." : `Results found ${isPriceFilterActive ? "(Price filtered)" : ""}`}
+                  {isFiltering && " Please wait a while..."}
+                </p>
+              </div>
+
+              {/* Sort Dropdown - Right Side */}
+              <div className="flex items-center gap-3">
+                <p>Sort by:</p>
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  >
+                    {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevency"}
+                    <span className="">
+                      {isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}
+                    </span>
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
+                      <button
+                        onClick={() => handleSortSelection("lowToHigh")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
+                      >
+                        Lowest to Highest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("highToLow")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                      >
+                        Highest to Lowest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("relevency")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                      >
+                        Relenency
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">

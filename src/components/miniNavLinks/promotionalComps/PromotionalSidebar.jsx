@@ -33,7 +33,6 @@
 
 //     ];
 
-
 //     const promotionalCategories = [
 //         [
 //             { title: "PENS", path: '/promotional' },
@@ -153,7 +152,7 @@
 //     //     if (checkcatPro.length > 0) { // ✅ Ensure data is available
 //     //       productCategory();
 //     //     }
-//     //   }, [checkcatPro]); 
+//     //   }, [checkcatPro]);
 
 //     const filteredProducts = useSelector(state => state.categoryProduct.filteredProducts);
 //     const handleSubCategories = (subCategory) => {
@@ -165,13 +164,12 @@
 //         setProducts(subFilterProducts)
 //         console.log(subFilterProducts, "subfilters");
 //         console.log(subCategory);
-        
+
 //       }
 
 //       useEffect(() => {
 //         fetchcategoryProduct()
 //       }, [dispatch, products])
-      
 
 //     return (
 //         <div className=" z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
@@ -267,13 +265,6 @@
 //                             </div>
 //                         ))} */}
 
-
-
-
-
-
-
-
 //                         {promotionalCategories.map((category, categoryIndex) => (
 //                             <div key={categoryIndex} className="lg:min-w-[180px] max-lg:min-w-[140px]">
 //                                 <ul>
@@ -302,55 +293,6 @@
 // };
 
 // export default PromotionalSidebar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import React, { useState, useEffect, useContext } from "react";
 import { IoMenu, IoClose } from "react-icons/io5";
@@ -414,6 +356,28 @@ const PromotionalSidebar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Add click outside functionality to close sidebar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobile && isSidebarOpen) {
+        const sidebar = document.querySelector("[data-sidebar-content]");
+        const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
+
+        if (sidebar && !sidebar.contains(event.target) && hamburgerButton && !hamburgerButton.contains(event.target)) {
+          setIsSidebarOpen(false);
+        }
+      }
+    };
+
+    if (isMobile && isSidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobile, isSidebarOpen]);
+
   // Fetch the category products if they are not already loaded.
   useEffect(() => {
     dispatch(fetchcategoryProduct());
@@ -425,20 +389,15 @@ const PromotionalSidebar = () => {
 
   return (
     <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
-      {isMobile && (
-        <button
-          onClick={toggleSidebar}
-          className="absolute top-4 bg-smallHeader text-white px-2 py-1 rounded"
-        >
-          {isSidebarOpen ? <IoClose className="text-xl" /> : <IoMenu className="text-xl" />}
-        </button>
-      )}
+      {/* Hidden toggle button for external control */}
+      <button data-sidebar-toggle onClick={toggleSidebar} className="hidden" aria-hidden="true" />
 
       {/* Sidebar */}
       <div
+        data-sidebar-content
         className={`transition-all ${
           isSidebarOpen
-            ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-96 w-[90vw] absolute h-screen md:shadow-lg shadow-lg bg-white lg:shadow-none px-6 lg:px-0 py-4"
+            ? "lg:w-[100%] z-10 lg:mt-0 md:w-96 w-[90vw] absolute h-screen md:shadow-lg shadow-lg bg-white lg:shadow-none px-6 lg:px-0 py-4"
             : "hidden"
         }`}
       >
@@ -451,11 +410,7 @@ const PromotionalSidebar = () => {
                   {category.map((item, index) => (
                     <li key={index} className="max-lg:border-b py-1 hover:underline rounded">
                       <p className="text-lg font-semibold text-blue-500 cursor-pointer">{item?.title}</p>
-                      <Link
-                        onClick={() => handleSubCategories(item.label)}
-                        className="font-semibold text-[13px] block"
-                        to={item.path}
-                      >
+                      <Link onClick={() => handleSubCategories(item.label)} className="font-semibold text-[13px] block" to={item.path}>
                         {item.label}
                       </Link>
                     </li>
