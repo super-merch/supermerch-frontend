@@ -576,7 +576,7 @@ const SearchCard = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
+            <div className="flex items-center gap-1 lg:pt-0 md:pt-0 sm:pt-0">
               <span className="font-semibold text-brand">
                 {!searchLoading && !isFiltering && getTotalCount()}
               </span>

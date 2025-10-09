@@ -42,7 +42,7 @@ const DashBoard = () => {
     <>
       <div className="w-full px-4 pt-2 pb-4 text-xl lg:px-8 md:px-8 lg:pt-6 md:pt-6 ">
         { userEmail ? (
-          <h1>
+          <h1 className="max-sm:text-[17px]" >
             Welcome{" "}
             <span className="font-semibold text-black ">{userEmail}</span> (not{" "}
             <span className="font-semibold text-black">{userEmail}? </span>{" "}

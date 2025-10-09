@@ -43,7 +43,7 @@ const Blogs = () => {
               1024: { slidesPerView: 4, spaceBetween: 10 },
             }}
           >
-            {blogs?.map((blog, index) => (
+            {blogs.length > 0 ?blogs?.map((blog, index) => (
               <SwiperSlide key={blog._id || index}>
                 <div
                   onClick={() => navigate(`/blogs/${blog?._id}`, {state: blog})}
@@ -74,7 +74,11 @@ const Blogs = () => {
                   </div>
                 </div>
               </SwiperSlide>
-            ))}
+            )):(
+                <div className="flex justify-center" >
+                  <h1 className="mx-auto" >No blogs found</h1>
+                </div>
+            )}
           </Swiper>
         </div>
         <div className="flex justify-center items-center gap-2">

@@ -10,6 +10,9 @@ import Blogs from "../components/Home/Blogs";
 import { motion } from "framer-motion";
 import bgImg from "/bg-img.png";
 import { toast } from "react-toastify";
+import WhyUs from "@/components/Home/WhyUs";
+import HowItWorks from "@/components/Home/HowItWorks";
+import RecentProducts from "@/components/Home/RecentProducts";
 
 const Home = () => {
   const [emailModal, setEmailModal] = useState(false);
@@ -169,6 +172,8 @@ const Home = () => {
         <TabsButtons />
       </div>
       <TabsCategory />
+      <RecentProducts />
+
       <div className="">
         <Sale />
       </div>
@@ -177,6 +182,8 @@ const Home = () => {
         <Promotional />
       </div> */}
       <Blogs />
+      <WhyUs />
+      <HowItWorks />
 
       {discountModal && (
         <motion.div className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-4">

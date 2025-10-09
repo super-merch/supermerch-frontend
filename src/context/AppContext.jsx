@@ -161,7 +161,7 @@ const AppContextProvider = (props) => {
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
-      toast.error("An error occurred while fetching the address.");
+      toast.error("User Logged out");
       handleLogout();
     }
   };

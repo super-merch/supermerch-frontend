@@ -34,7 +34,7 @@ const ProductDetails = () => {
   //get id from navigate's state
 
   // const { id } = useParams();
-    const { name } = useParams();
+  const { name } = useParams();
   const [searchParams] = useSearchParams();
 
   const encodedId = searchParams.get("ref");
@@ -51,7 +51,7 @@ const ProductDetails = () => {
     error,
     marginApi,
     totalDiscount,
-    userEmail:newUserEmail
+    userEmail: newUserEmail,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -73,10 +73,10 @@ const ProductDetails = () => {
         //   },
         // });
 
-          console.log("Fetched user email:", newUserEmail);
-          setUserEmail(newUserEmail);
-          // Set current user in Redux cart
-          dispatch(initializeCartFromStorage({ email: newUserEmail }));
+        console.log("Fetched user email:", newUserEmail);
+        setUserEmail(newUserEmail);
+        // Set current user in Redux cart
+        dispatch(initializeCartFromStorage({ email: newUserEmail }));
       } catch (error) {
         console.error(
           "Error fetching user email:",
@@ -92,6 +92,33 @@ const ProductDetails = () => {
   }, [dispatch, backednUrl]);
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
+  const saveRecentlyViewed = (item) => {
+    try {
+      if (!item) return;
+      const key = "recentlyViewed";
+      const raw = localStorage.getItem(key);
+      const list = raw ? JSON.parse(raw) : [];
+
+      // Identify ID (use meta.id if available)
+      const itemId = item?.meta?.id ?? item?.product?.id ?? null;
+      if (!itemId) return;
+
+      // Remove any existing occurrence of the same product
+      const filtered = list.filter(
+        (i) => (i?.meta?.id ?? i?.product?.id ?? null) !== itemId
+      );
+
+      // Add newest to start
+      filtered.unshift(item);
+
+      // Limit to 4 items
+      const limited = filtered.slice(0, 4);
+
+      localStorage.setItem(key, JSON.stringify(limited));
+    } catch (err) {
+      console.error("saveRecentlyViewed error:", err);
+    }
+  };
   const fetchSingleProduct = async () => {
     setLoading(true);
     try {
@@ -100,9 +127,10 @@ const ProductDetails = () => {
       );
       if (data) {
         setSingle_Product(data.data, "fetchSingleProduct");
+        saveRecentlyViewed(data.data);
         setLoading(false);
       }
-      
+
       // First, try to find sizes in details array
       const details = data.data?.product.details.filter((item) => {
         return (
@@ -111,27 +139,39 @@ const ProductDetails = () => {
           item.name.toLowerCase() === "size"
         );
       });
-      
+
       let extractedSizes = [];
-      
+
       if (details && details.length > 0) {
         // If sizes found in details array, use them
-        extractedSizes = details[0].detail.split(",").map(size => size.trim());
+        extractedSizes = details[0].detail
+          .split(",")
+          .map((size) => size.trim());
       } else {
         // If no sizes in details, check description for sizes
         const description = data.data?.product.description || "";
         const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
-        
+
         if (sizesMatch) {
           const sizesString = sizesMatch[1].trim();
           // Handle different formats like "XS - 2XL" or "72, 77, 82, ..."
           if (sizesString.includes(" - ")) {
             // Handle range format like "XS - 2XL"
             const [start, end] = sizesString.split(" - ");
-            const sizeOrder = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
+            const sizeOrder = [
+              "XS",
+              "S",
+              "M",
+              "L",
+              "XL",
+              "2XL",
+              "3XL",
+              "4XL",
+              "5XL",
+            ];
             const startIndex = sizeOrder.indexOf(start.trim());
             const endIndex = sizeOrder.indexOf(end.trim());
-            
+
             if (startIndex !== -1 && endIndex !== -1) {
               extractedSizes = sizeOrder.slice(startIndex, endIndex + 1);
             } else {
@@ -140,11 +180,11 @@ const ProductDetails = () => {
             }
           } else {
             // Handle comma-separated format
-            extractedSizes = sizesString.split(",").map(size => size.trim());
+            extractedSizes = sizesString.split(",").map((size) => size.trim());
           }
         }
       }
-      
+
       setSizes(extractedSizes);
       setSelectedSize(extractedSizes[0] || extractedSizes[1]);
 
@@ -262,7 +302,8 @@ const ProductDetails = () => {
   );
 
   const marginEntry = marginApi[productId] || { marginFlat: 0 };
-  const perUnitWithMargin = unitPrice + (unitPrice * marginEntry.marginFlat) / 100;
+  const perUnitWithMargin =
+    unitPrice + (unitPrice * marginEntry.marginFlat) / 100;
 
   const discountPct = totalDiscount[productId] || 0;
   const discountMultiplier = 1 - discountPct / 100;
@@ -359,7 +400,8 @@ const ProductDetails = () => {
 
     // Calculate pricing with margin and discount
     const marginEntry = marginApi[productId] || { marginFlat: 0 };
-    const rawPerUnit = finalUnitPrice + (finalUnitPrice * marginEntry.marginFlat) / 100;
+    const rawPerUnit =
+      finalUnitPrice + (finalUnitPrice * marginEntry.marginFlat) / 100;
     const discountedPerUnit = rawPerUnit * (1 - discountPct / 100);
 
     // Calculate total: (discounted per-unit × qty) + setup + freight
@@ -755,7 +797,8 @@ const ProductDetails = () => {
           }
 
           // Add margin and apply discount
-          const rawPerUnit = finalUnitPrice + (marginEntry.marginFlat * finalUnitPrice) / 100;
+          const rawPerUnit =
+            finalUnitPrice + (marginEntry.marginFlat * finalUnitPrice) / 100;
           return rawPerUnit * (1 - discountPct / 100);
         })(),
         marginFlat: marginEntry.marginFlat,
@@ -774,7 +817,7 @@ const ProductDetails = () => {
         priceBreaks: selectedPrintMethod.price_breaks,
         printMethodKey: selectedPrintMethod.key,
         userEmail: userEmail || "guest@gmail.com",
-        supplierName: single_product.overview.supplier
+        supplierName: single_product.overview.supplier,
       })
     );
     navigate("/cart");
@@ -870,16 +913,17 @@ const ProductDetails = () => {
                 product?.name ? "font-bold" : "font-medium"
               }`}
             >
-              {product?.name ? product?.name : "Loading ..."}
+              {single_product?.overview?.name
+                ? single_product?.overview?.name
+                : "Loading ..."}
             </h2>
-            {/* <div className="flex flex-wrap items-center ">
-              <span className="text-2xl text-smallHeader">★★★★★</span>
-              <p className="ml-2 text-gray-600">
-                4.7 Star Rating (1767 User Feedback)
-              </p>
-            </div> */}
             <div className="flex items-center justify-between py-2 border-b-2">
-              {!loading &&<p className="text-black">SM-{single_product?.supplier.supplier_id}-{single_product?.meta.id}</p>}
+              {!loading && (
+                <p className="text-black">
+                  SM-{single_product?.supplier.supplier_id}-
+                  {single_product?.meta.id}
+                </p>
+              )}
               <p className="font-bold text-smallHeader">
                 <span className="font-normal text-stock"> Availability:</span>{" "}
                 In Stock
@@ -1030,7 +1074,8 @@ const ProductDetails = () => {
                   }
 
                   const rawTierPrice = marginEntry
-                    ? finalUnitPrice + (marginEntry.marginFlat *finalUnitPrice)/100
+                    ? finalUnitPrice +
+                      (marginEntry.marginFlat * finalUnitPrice) / 100
                     : finalUnitPrice;
 
                   const discountedTierPrice = rawTierPrice * discountMultiplier;
@@ -1396,7 +1441,7 @@ const ProductDetails = () => {
                     <FaCheck />
                   </p>
                   <p className="text-sm">
-                    Selected SIze:{" "}&nbsp;
+                    Selected SIze: &nbsp;
                     {selectedSize || "Not selected"}
                   </p>
                 </div>

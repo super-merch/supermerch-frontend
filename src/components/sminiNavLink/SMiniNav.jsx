@@ -139,7 +139,6 @@ const SMiniNav = () => {
   if(!userEmail){
     const guest = myItems.filter(item => item.userEmail === "guest@gmail.com");
     totalQuantity = guest.length
-    console.log(totalQuantity)
   }
   const { favouriteQuantity } = useSelector((state) => state.favouriteProducts);
   const [isOpen, setIsOpen] = useState(false);

@@ -31,7 +31,7 @@ const AllProducts = ({ activeTab }) => {
   // State for modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   // useEffect(() => {
 
   //   getAll24HourProduction();
@@ -47,19 +47,19 @@ const AllProducts = ({ activeTab }) => {
 
   const dispatch = useDispatch();
   const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  };
 
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
@@ -104,7 +104,9 @@ const AllProducts = ({ activeTab }) => {
   if (error)
     return (
       <div className="flex items-center justify-center">
-        <div className="text-center">Issue getting products reload your page. Or come back later.</div>
+        <div className="text-center">
+          Issue getting products reload your page. Or come back later.
+        </div>
       </div>
     );
   return (
@@ -222,8 +224,8 @@ const AllProducts = ({ activeTab }) => {
                         : 0;
 
                     // 3) apply the flat margin to both ends of the range
-                    minPrice += (minPrice * marginFlat/100);
-                    maxPrice += (maxPrice * marginFlat/100);
+                    minPrice += (minPrice * marginFlat) / 100;
+                    maxPrice += (maxPrice * marginFlat) / 100;
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
@@ -233,8 +235,13 @@ const AllProducts = ({ activeTab }) => {
                     return (
                       <div
                         key={productId}
-                        className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[300px] sm:max-h-[400px] h-full group"
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >
@@ -349,7 +356,7 @@ const AllProducts = ({ activeTab }) => {
                         {/* Color swatches */}
 
                         {/* Reduced content area */}
-                        <div className="p-2 ">
+                        <div className="sm:p-2  p-1">
                           <div className=" flex justify-center mb-1 gap-1  z-10">
                             {product?.product?.colours?.list.length > 1 &&
                               (() => {

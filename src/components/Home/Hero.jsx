@@ -52,7 +52,7 @@ const Hero = () => {
         pagination={{ dynamicBullets: true, el: ".custom-pagination", clickable: true }}
         autoplay={{ delay: 2000, disableOnInteraction: false }}
         modules={[Pagination, Autoplay]}
-        className="mySwiper"
+        // className="mySwiper"
       >
         {slider.map((slide) => {
           // decide inline style only if imageUrl is present
