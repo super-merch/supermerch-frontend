@@ -21,9 +21,14 @@ const Checkout = () => {
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
 
-  const { token, addressData, backednUrl,shippingAddressData, totalDiscount } =
-    useContext(AppContext);
-
+  const {
+    token,
+    addressData,
+    backednUrl,
+    shippingAddressData,
+    totalDiscount,
+    userData,
+  } = useContext(AppContext);
   const [checkoutTab, setCheckoutTab] = useState("billing");
   const dispatch = useDispatch();
 
@@ -89,6 +94,7 @@ const Checkout = () => {
       // Clear the stored data
       localStorage.removeItem("pendingCheckoutData");
 
+      console.log(checkoutData);
       // Success actions
       dispatch(clearCart());
       toast.success("Order placed successfully!");
@@ -112,22 +118,22 @@ const Checkout = () => {
         region: addressData?.state || "",
         city: addressData?.city || "",
         zip: addressData?.postalCode || "",
-        email: addressData?.email || "",
-        phone: addressData?.phone || "",
+        // email: addressData?.email || "",
+        // phone: addressData?.phone || "",
       },
       shipping: {
-      // Update these to use shippingAddressData
-      firstName: shippingAddressData?.firstName || "",
-      lastName: shippingAddressData?.lastName || "",
-      companyName: shippingAddressData?.companyName || "",
-      address: shippingAddressData?.addressLine || "",
-      country: shippingAddressData?.country || "",
-      region: shippingAddressData?.state || "",
-      city: shippingAddressData?.city || "",
-      zip: shippingAddressData?.postalCode || "",
-      email: shippingAddressData?.email || "",
-      phone: shippingAddressData?.phone || "",
-    },
+        // Update these to use shippingAddressData
+        firstName: shippingAddressData?.firstName || "",
+        lastName: shippingAddressData?.lastName || "",
+        companyName: shippingAddressData?.companyName || "",
+        address: shippingAddressData?.addressLine || "",
+        country: shippingAddressData?.country || "",
+        region: shippingAddressData?.state || "",
+        city: shippingAddressData?.city || "",
+        zip: shippingAddressData?.postalCode || "",
+        email: shippingAddressData?.email || "",
+        phone: shippingAddressData?.phone || "",
+      },
       paymentMethod: "card",
     },
   });
@@ -165,16 +171,16 @@ const Checkout = () => {
       return;
     }
     const resolvedEmail =
-  (data?.billing?.email && data.billing.email.trim()) ||
-  (data?.shipping?.email && data.shipping.email.trim()) ||
-  addressData?.email ||
-  "";
+      userData?.email ||
+      data?.shipping?.email ||
+      addressData?.email ||
+      "guest@gmail.com";
 
-const resolvedPhone =
-  (data?.billing?.phone && data.billing.phone.trim()) ||
-  (data?.shipping?.phone && data.shipping.phone.trim()) ||
-  addressData?.phone ||
-  "";
+    const resolvedPhone =
+      userData?.phone ||
+      data?.shipping?.phone ||
+      addressData?.phone ||
+      "1234567890";
     const checkoutData = {
       //orderId in format of "SM-(DATE)-(Random 5 digits)"
       orderId: `SM-${new Date()
@@ -183,8 +189,11 @@ const resolvedPhone =
         .replace(/-/g, "")
         .slice(2)}-${Math.floor(Math.random() * 100000)}`,
       user: {
-        firstName: data.billing.firstName || addressData.firstName,
-        lastName: data.billing.lastName || addressData.lastName,
+        firstName:
+          userData?.name || data.billing.firstName || addressData.firstName,
+        lastName: userData?.name
+          ? ""
+          : data.billing.lastName || addressData.lastName,
         email: resolvedEmail || addressData.email,
         phone: resolvedPhone || addressData.phone,
       },
@@ -336,7 +345,7 @@ const resolvedPhone =
       billing.country &&
       billing.region &&
       billing.city &&
-      billing.zip 
+      billing.zip
       // billing.email &&
       // billing.phone
     );

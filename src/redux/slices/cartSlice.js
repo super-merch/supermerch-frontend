@@ -54,6 +54,7 @@ const cartSlice = createSlice({
         marginFlat = 0,
         discountPct = 0,
         userEmail,
+        dragdrop = null,
         ...rest
       } = action.payload;
 
@@ -77,6 +78,9 @@ const cartSlice = createSlice({
         const priceWithMargin = newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
         existing.price = priceWithMargin * (1 - existing.discountPct / 100);
         existing.totalPrice = existing.price * existing.quantity;
+        if (dragdrop) {
+      existing.dragdrop = dragdrop;
+    }
       } else {
         // Calculate initial price with margin and discount
         const unitPrice = getPriceForQuantity(quantity, basePrices);
@@ -95,6 +99,7 @@ const cartSlice = createSlice({
           quantity,
           userEmail: effectiveUserEmail,
           size, // Use the effective email
+          dragdrop,
           ...rest,
         });
       }

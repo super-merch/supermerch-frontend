@@ -209,7 +209,8 @@ const ProductDetails = () => {
   const product = single_product?.product || {};
   const productId = single_product?.meta?.id || "";
 
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null); // This will store base64 string
+  const [selectedFileName, setSelectedFileName] = useState(null);
   const [selectedFile2, setSelectedFile2] = useState(null);
   const [previewImage2, setPreviewImage2] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -469,15 +470,61 @@ const ProductDetails = () => {
     e.stopPropagation();
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    //file less than 5mb
+    if(file.size > 5 * 1024 * 1024){
+      toast.error("Please upload a file less than 5MB");
+      return
+    }
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        ".ai",
+        ".eps",
+        ".svg",
+        ".pdf",
+        ".jpg",
+        ".jpeg",
+        ".png",
+      ];
+      const fileExtension = "." + file.name.split(".").pop().toLowerCase();
+
+      if (!allowedTypes.includes(fileExtension)) {
+        toast.error(
+          "Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG"
+        );
+        return;
+      }
+
+      // Store filename for display
+      setSelectedFileName(file.name);
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setSelectedFile(base64String); // Now this has the actual base64 data
+        console.log("Base64 stored:", base64String.substring(0, 50) + "..."); // Debug log
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 3. Fix drag and drop handler
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
 
     const files = e.dataTransfer.files;
+    // files less then 5 mb
+    if (files && files[0]?.size > 5 * 1024 * 1024) {
+      toast.error("Please upload a file less than 5MB");
+      return;
+    }
     if (files && files[0]) {
       const file = files[0];
-      // Check file type
       const allowedTypes = [
         ".ai",
         ".eps",
@@ -490,9 +537,13 @@ const ProductDetails = () => {
       const fileExtension = "." + file.name.split(".").pop().toLowerCase();
 
       if (allowedTypes.includes(fileExtension)) {
+        setSelectedFileName(file.name);
+
         const reader = new FileReader();
         reader.onloadend = () => {
-          setSelectedFile(reader.result);
+          const base64String = reader.result;
+          setSelectedFile(base64String);
+          console.log("Base64 stored:", base64String.substring(0, 50) + "..."); // Debug log
         };
         reader.readAsDataURL(file);
       } else {
@@ -500,17 +551,6 @@ const ProductDetails = () => {
           "Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG"
         );
       }
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedFile(reader.result);
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -1152,22 +1192,41 @@ const ProductDetails = () => {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
             >
-              <img
-                src={selectedFile || "/drag.png"}
-                alt="Uploaded File"
-                className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-              />
-              <p className=" text-lg font-medium text-smallHeader">
-                {selectedFile
-                  ? "Logo image Uploaded"
-                  : isDragging
-                  ? "Drop files here"
-                  : "Click or Drag your Artwork/Logo to upload"}
-              </p>
-              {/* <p className="mb-1 text-xl font-semibold text-smallHeader">
-                Upload artwork or logo
-              </p> */}
-              <p className="text-smallHeader  m-auto text-sm">
+              {selectedFile ? (
+                <>
+                  {/* Show preview for images */}
+                  {selectedFileName?.match(/\.(jpg|jpeg|png)$/i) ? (
+                    <img
+                      src={selectedFile}
+                      alt="Logo preview"
+                      className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
+                    />
+                  ) : (
+                    <img
+                      src="/drag.png"
+                      alt="File uploaded"
+                      className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
+                    />
+                  )}
+                  <p className="text-lg font-medium text-green-600 mt-2">
+                    ✓ {selectedFileName} uploaded
+                  </p>
+                </>
+              ) : (
+                <>
+                  <img
+                    src="/drag.png"
+                    alt="Upload"
+                    className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
+                  />
+                  <p className="text-lg font-medium text-smallHeader">
+                    {isDragging
+                      ? "Drop files here"
+                      : "Click or Drag your Artwork/Logo to upload"}
+                  </p>
+                </>
+              )}
+              <p className="text-smallHeader m-auto text-sm mt-2">
                 Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG. Max file
                 size: 16 MB
               </p>
