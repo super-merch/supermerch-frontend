@@ -91,6 +91,28 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Add click outside functionality to close sidebar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobile && isSidebarOpen) {
+        const sidebar = document.querySelector("[data-sidebar-content]");
+        const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
+
+        if (sidebar && !sidebar.contains(event.target) && hamburgerButton && !hamburgerButton.contains(event.target)) {
+          setIsSidebarOpen(false);
+        }
+      }
+    };
+
+    if (isMobile && isSidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobile, isSidebarOpen]);
+
   // Auto-expand category that contains the active subcategory
   useEffect(() => {
     if (urlSubCategory && urlCategoryName && categories.length > 0) {
@@ -149,18 +171,15 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
 
   return (
     <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
-      {/* Mobile toggle button */}
-      {isMobile && (
-        <button onClick={toggleSidebar} className="absolute px-2 py-1 text-white rounded top-4 bg-smallHeader z-20">
-          {isSidebarOpen ? <IoClose className="text-xl" /> : <IoMenu className="text-xl" />}
-        </button>
-      )}
+      {/* Hidden toggle button for external control */}
+      <button data-sidebar-toggle onClick={toggleSidebar} className="hidden" aria-hidden="true" />
 
       {/* Sidebar */}
       <div
+        data-sidebar-content
         className={`transition-all duration-300 ease-in-out ${
           isSidebarOpen
-            ? "lg:w-[100%] z-10 mt-14 lg:mt-0 md:w-[280px] w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 lg:px-0 py-4"
+            ? "lg:w-[100%] z-10 lg:mt-0 md:w-[280px] w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 lg:px-0 py-4"
             : "hidden"
         }`}
       >
