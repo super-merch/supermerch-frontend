@@ -54,16 +54,17 @@ const UserActions = ({
   }, []);
 
   return (
-    <div
-      className={`relative z-20 flex items-center gap-4 lg:gap-6 md:gap-6 sm:gap-4 ${className} `}
-    >
+    <div className={`relative z-20 flex items-center gap-2 ${className} `}>
       {/* Cart */}
-      <Link to="/cart" className="relative">
+      <Link
+        to="/cart"
+        className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+      >
         {cartQuantity > 0 && (
           <span
-            className={`absolute -top-1.5 -right-2 bg-primary text-white rounded-full ${currentSize.badge} flex items-center justify-center px-2 min-w-[20px] max-w-[40px]`}
+            className={`absolute -top-1 -right-1 bg-primary text-white rounded-full ${currentSize.badge} flex items-center justify-center px-1.5 min-w-[18px] max-w-[36px]`}
           >
-            <span className="text-xs">
+            <span className="text-xs font-semibold">
               {cartQuantity > 999 ? "999+" : cartQuantity}
             </span>
           </span>
@@ -74,10 +75,13 @@ const UserActions = ({
       </Link>
 
       {/* Favourites */}
-      <Link to="/favourites" className="relative">
+      <Link
+        to="/favourites"
+        className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+      >
         {favouriteQuantity > 0 && (
           <span
-            className={`absolute -top-1.5 -right-2 bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center px-1.5 min-w-[20px] max-w-[40px]`}
+            className={`absolute -top-1 -right-1 bg-white border border-red-500 text-red-500 rounded-full ${currentSize.badge} flex items-center justify-center px-1.5 min-w-[18px] max-w-[36px]`}
           >
             <span className="text-xs font-bold truncate">
               {favouriteQuantity > 999 ? "999+" : favouriteQuantity}
@@ -91,7 +95,10 @@ const UserActions = ({
 
       {/* User Account */}
       {!isAuthenticated ? (
-        <Link to="/login">
+        <Link
+          to="/login"
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
           <HiOutlineUser
             className={`${currentSize.icon} text-customBlue hover:text-blue-600 transition-colors`}
           />
@@ -100,15 +107,15 @@ const UserActions = ({
         <div className="relative" ref={dropdownRef}>
           <HiOutlineUser
             onClick={toggleLogout}
-            className={`${currentSize.icon} cursor-pointer text-customBlue hover:text-blue-600 transition-colors`}
+            className={`${currentSize.icon} cursor-pointer text-customBlue hover:text-blue-600 transition-colors p-2 hover:bg-gray-100 rounded-lg`}
           />
           {isDropdownOpen && (
-            <div className="absolute right-0 w-48 mt-2 bg-white border rounded shadow-lg z-50">
+            <div className="absolute right-0 w-48 mt-2 bg-white border rounded-lg shadow-lg z-50">
               <ul>
                 <Link
                   onClick={() => setIsDropdownOpen(false)}
                   to="/admin"
-                  className="px-4 py-2 block text-black cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-3 block text-black cursor-pointer hover:bg-gray-100 transition-colors rounded-t-lg"
                 >
                   Manage Orders
                 </Link>
@@ -117,7 +124,7 @@ const UserActions = ({
                     setIsDropdownOpen(false);
                     onLogout?.();
                   }}
-                  className="px-4 py-2 text-black cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-3 text-black cursor-pointer hover:bg-gray-100 transition-colors rounded-b-lg"
                 >
                   Log Out
                 </li>

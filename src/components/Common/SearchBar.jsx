@@ -24,17 +24,17 @@ const SearchBar = ({
 
   const sizeClasses = {
     small: {
-      container: "w-56",
+      container: "w-56 sm:w-full",
       input: "text-sm",
       button: "text-sm px-2 py-1",
     },
     default: {
-      container: "w-72",
+      container: "w-72 sm:w-full",
       input: "text-base",
       button: "text-sm px-3 py-1",
     },
     large: {
-      container: "w-96",
+      container: "w-96 sm:w-[28rem]",
       input: "text-lg",
       button: "text-base px-4 py-2",
     },
@@ -112,7 +112,7 @@ const SearchBar = ({
   if (collapsible && isOpen) {
     return (
       <div
-        className={`relative z-20 flex items-center w-full search-container ${className}`}
+        className={`w-full relative z-20 flex items-center search-container ${className}`}
         ref={categoryDropdownRef}
       >
         <div className="flex items-center bg-white border-2 border-blue-200 rounded-xl px-3 py-1.5 hover:border-blue-300 shadow-lg transition-all duration-300 w-full animate-in slide-in-from-right-2 fade-in-0">
@@ -167,7 +167,7 @@ const SearchBar = ({
 
         {/* Category Dropdown */}
         {isCategoryDropdownOpen && showCategoryDropdown && (
-          <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
             <div className="p-2">
               <div
                 className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
@@ -214,19 +214,19 @@ const SearchBar = ({
 
   return (
     <div
-      className={`relative z-20 flex items-center ${
+      className={`w-full relative z-20 flex items-center ${
         collapsible ? "w-full" : currentSize.container
       } ${className}`}
       ref={categoryDropdownRef}
     >
       <div
-        className={`flex items-center bg-white border-2 border-blue-100 rounded-lg px-3 py-2 hover:border-blue-200 transition-all duration-300 w-full ${
+        className={`flex items-center bg-white border-2 border-blue-100 rounded-lg px-1 lg:px-3 py-1 lg:py-2 hover:border-blue-200 transition-all duration-300 w-full ${
           collapsible ? "animate-in slide-in-from-right-2 fade-in-0" : ""
         }`}
       >
         {showCategoryDropdown && (
           <div
-            className="flex items-center gap-2 bg-gray-100 rounded-md mr-3 cursor-pointer hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-2  rounded-md mr-3 cursor-pointer transition-colors"
             onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
           >
             <span className="text-blue-600 font-semibold text-sm">
@@ -280,7 +280,7 @@ const SearchBar = ({
 
       {/* Category Dropdown */}
       {isCategoryDropdownOpen && showCategoryDropdown && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-blue-200 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto animate-in slide-in-from-top-2 fade-in-0">
+        <div className="absolute top-full left-0 mt-2 w-72 sm:w-80 bg-white border border-blue-200 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto animate-in slide-in-from-top-2 fade-in-0">
           <div className="p-3">
             <div
               className="px-4 py-3 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors duration-200"

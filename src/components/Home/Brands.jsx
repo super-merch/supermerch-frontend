@@ -48,24 +48,20 @@ const Brands = () => {
       />
 
       {/* Navigation buttons */}
-      <div className="absolute flex justify-between w-full h-32 md:h-36 lg:h-40 items-center">
-        <div className="absolute lg:-left-4 md:-left-3 -left-2 top-1/2 transform -translate-y-1/2 z-20">
-          <button
-            onClick={() => scroll("left")}
-            className="bg-gray-600 hover:bg-gray-700 text-white p-1.5 rounded-md shadow-sm transition-colors duration-200"
-          >
-            <IoArrowBackOutline className="text-lg" />
-          </button>
-        </div>
+      <div className="absolute flex justify-between w-full h-32 md:h-36 xl:h-40 items-center pointer-events-none">
+        <button
+          onClick={() => scroll("left")}
+          className="absolute -left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center pointer-events-auto"
+        >
+          <IoArrowBackOutline className="text-lg" />
+        </button>
 
-        <div className="absolute lg:-right-4 md:-right-3 -right-2 top-1/2 transform -translate-y-1/2 z-20">
-          <button
-            onClick={() => scroll("right")}
-            className="bg-gray-600 hover:bg-gray-700 text-white p-1.5 rounded-md shadow-sm transition-colors duration-200"
-          >
-            <IoMdArrowForward className="text-lg" />
-          </button>
-        </div>
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center pointer-events-auto"
+        >
+          <IoMdArrowForward className="text-lg" />
+        </button>
       </div>
 
       {/* Scrollable container */}
@@ -78,12 +74,17 @@ const Brands = () => {
           <motion.div
             key={item.id}
             ref={index === 0 ? itemRef : null} // measure only first item
-            className="min-w-[45%] sm:min-w-[40%] md:min-w-[25%] lg:min-w-[15%] flex-shrink-0"
+            className="min-w-[50%] xs:min-w-[45%] sm:min-w-[40%] md:min-w-[25%] xl:min-w-[15%] flex-shrink-0"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 200 }}
           >
-            <div className="w-full h-32 md:h-36 lg:h-40 flex items-center justify-center bg-white px-4 py-4 rounded-xl border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
-              <img src={item.img} alt={`brand-${item.id}`} className="max-h-full max-w-full object-contain" draggable="false" />
+            <div className="w-full h-32 sm:h-28 md:h-32 lg:h-36 flex items-center justify-center bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-2">
+              <img
+                src={item.img}
+                alt={`brand-${item.id}`}
+                className="max-h-full max-w-full object-contain transition-all duration-300"
+                draggable="false"
+              />
             </div>
           </motion.div>
         ))}

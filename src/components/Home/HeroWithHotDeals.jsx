@@ -75,14 +75,14 @@ const HeroWithHotDeals = () => {
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
       <div className="Mycontainer">
-        <div className="flex flex-col lg:flex-row gap-4 h-auto md:h-[420px] lg:h-[500px]">
+        <div className="flex flex-col xl:flex-row gap-4 h-auto sm:h-80 ">
           {/* Image Slider - 75% width */}
-          <div className="w-full lg:w-3/4 h-64 md:h-full relative">
+          <div className="w-full xl:w-3/4 h-64 sm:h-80 md:h-full relative">
             {/* Navigation Arrow - Right Only */}
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10">
-              <button className="swiper-button-next-custom p-2 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110">
+            <div className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
+              <button className="swiper-button-next-custom p-2 sm:p-3 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -121,30 +121,34 @@ const HeroWithHotDeals = () => {
                       } bg-cover bg-center w-full h-full`}
                       style={style}
                     >
-                      <div className="pt-6 pb-6 text-line px-6 lg:pt-12 md:pt-12 lg:pb-12 md:pb-12">
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="w-5 bg-line h-[2px]" />
+                      <div className="pt-4 pb-4 sm:pt-6 sm:pb-6 text-line px-4 sm:px-6 xl:pt-12 md:pt-12 xl:pb-12 md:pb-12">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                          <span className="w-4 sm:w-5 bg-line h-[2px]" />
                           <h3 className="uppercase">{slide.span}</h3>
                         </div>
-                        <h2 className="lg:text-4xl md:text-4xl text-2xl max-w-[400px] pt-3 text-heading">
+                        <h2 className="text-lg sm:text-xl md:text-2xl xl:text-4xl max-w-[280px] sm:max-w-[350px] md:max-w-[400px] pt-2 sm:pt-3 text-heading leading-tight">
                           {slide.title}
                         </h2>
-                        <p className="text-base max-w-[300px] pt-3 font-normal text-line">
+                        <p className="text-sm sm:text-base max-w-[250px] sm:max-w-[300px] pt-2 sm:pt-3 font-normal text-line leading-relaxed">
                           {slide.description}
                         </p>
-                        <div className="flex gap-3 mt-4">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-3 sm:mt-4">
                           <div
                             onClick={() => navigate("/shop")}
-                            className="flex items-center justify-center w-40 gap-2 font-bold text-white cursor-pointer bg-heading h-12 rounded-lg"
+                            className="flex items-center justify-center w-full sm:w-40 gap-2 font-bold text-white cursor-pointer bg-heading h-11 sm:h-12 rounded-lg min-h-[44px] transition-all duration-300 hover:bg-heading/90"
                           >
-                            <button>{slide.buttonText}</button>
-                            <IoMdArrowForward />
+                            <button className="text-sm sm:text-base">
+                              {slide.buttonText}
+                            </button>
+                            <IoMdArrowForward className="text-sm sm:text-base" />
                           </div>
                           <div
                             onClick={() => setIsHelpModalOpen(true)}
-                            className="flex items-center justify-center w-40 font-bold text-heading cursor-pointer border-2 border-heading h-12 rounded-lg hover:bg-heading hover:text-white transition-all duration-300"
+                            className="flex items-center justify-center w-full sm:w-40 font-bold text-heading cursor-pointer border-2 border-heading h-11 sm:h-12 rounded-lg hover:bg-heading hover:text-white transition-all duration-300 min-h-[44px]"
                           >
-                            <button>Help me Pick</button>
+                            <button className="text-sm sm:text-base">
+                              Help me Pick
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -156,7 +160,7 @@ const HeroWithHotDeals = () => {
           </div>
 
           {/* Hot Deals Section - 25% width */}
-          <div className="w-full lg:w-1/4 h-auto md:h-full">
+          <div className="w-full xl:w-1/4 h-auto md:h-full">
             <HotDeals />
           </div>
         </div>

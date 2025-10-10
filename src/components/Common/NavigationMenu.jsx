@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PropTypes from "prop-types";
 
@@ -12,407 +13,249 @@ const NavigationMenu = ({
 }) => {
   const [activeItem, setActiveItem] = useState(null);
   const [hoveredItem, setHoveredItem] = useState(null);
-  const [focusedItem, setFocusedItem] = useState(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const timeoutRef = useRef(null);
-  const menuRef = useRef(null);
+  const [clickedItem, setClickedItem] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const sizeClasses = {
     small: {
-      item: "text-sm px-3 py-2",
-      submenu: "text-xs px-3 py-2",
+      item: "text-base px-2 py-1",
+      submenu: "text-sm px-2 py-1",
       megaMenu: "w-80",
-      spacing: "space-x-1",
     },
     default: {
-      item: "text-base px-4 py-3",
-      submenu: "text-sm px-4 py-3",
-      megaMenu: "w-[800px]",
-      spacing: "space-x-2",
+      item: "text-lg px-3 py-2",
+      submenu: "text-base px-3 py-1",
+      megaMenu: "w-[900px]",
     },
     large: {
-      item: "text-lg px-5 py-4",
-      submenu: "text-base px-5 py-3",
+      item: "text-xl px-4 py-3",
+      submenu: "text-lg px-4 py-2",
       megaMenu: "w-[1000px]",
-      spacing: "space-x-3",
     },
   };
 
   const currentSize = sizeClasses[size] || sizeClasses.default;
 
-  // Cleanup timeout on unmount
+  // Detect if device is desktop (≥ 1024px)
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Handle clicks outside to close menus
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setHoveredItem(null);
-        setActiveItem(null);
-        setFocusedItem(null);
-      }
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+    return () => window.removeEventListener("resize", checkIsDesktop);
   }, []);
 
-  const handleItemClick = useCallback(
-    (item) => {
-      if (item.onClick) {
-        item.onClick();
-      } else if (onItemClick) {
-        onItemClick(item);
-      }
-
-      // Close mobile menu after click
-      if (variant === "vertical" || isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-      }
-    },
-    [onItemClick, variant, isMobileMenuOpen]
-  );
-
-  const handleMouseEnter = useCallback((item) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+  const handleItemClick = (item) => {
+    // Always navigate to the main page when clicking the main item
+    if (item.onClick) {
+      item.onClick();
+    } else if (onItemClick) {
+      onItemClick(item);
     }
+  };
+
+  const handleArrowClick = (item, e) => {
+    // Prevent the main item click from firing
+    e.stopPropagation();
 
     if (item.hasSubmenu) {
+      // Toggle submenu on arrow click
+      if (!isDesktop) {
+        setClickedItem(clickedItem === item.id ? null : item.id);
+        setActiveItem(clickedItem === item.id ? null : item.id);
+      } else {
+        // On desktop, show submenu on arrow click (same as hover)
+        setHoveredItem(hoveredItem === item.id ? null : item.id);
+        setActiveItem(hoveredItem === item.id ? null : item.id);
+      }
+    }
+  };
+
+  const handleMouseEnter = (item) => {
+    // Only handle hover on desktop
+    if (isDesktop && item.hasSubmenu) {
       setHoveredItem(item.id);
       setActiveItem(item.id);
     }
-  }, []);
+  };
 
-  const handleMouseLeave = useCallback(() => {
-    timeoutRef.current = setTimeout(() => {
+  const handleMouseLeave = () => {
+    // Only handle mouse leave on desktop
+    if (isDesktop) {
       setHoveredItem(null);
-      setActiveItem(null);
-    }, 150);
-  }, []);
+    }
+  };
 
-  const handleKeyDown = useCallback(
-    (event, item) => {
-      switch (event.key) {
-        case "Enter":
-        case " ":
-          event.preventDefault();
-          handleItemClick(item);
-          break;
-        case "ArrowRight":
-          if (variant === "horizontal") {
-            event.preventDefault();
-            const currentIndex = menuItems.findIndex(
-              (menuItem) => menuItem.id === item.id
-            );
-            const nextIndex = (currentIndex + 1) % menuItems.length;
-            setFocusedItem(menuItems[nextIndex].id);
-          }
-          break;
-        case "ArrowLeft":
-          if (variant === "horizontal") {
-            event.preventDefault();
-            const currentIndex = menuItems.findIndex(
-              (menuItem) => menuItem.id === item.id
-            );
-            const prevIndex =
-              currentIndex === 0 ? menuItems.length - 1 : currentIndex - 1;
-            setFocusedItem(menuItems[prevIndex].id);
-          }
-          break;
-        case "ArrowDown":
-          if (variant === "vertical") {
-            event.preventDefault();
-            const currentIndex = menuItems.findIndex(
-              (menuItem) => menuItem.id === item.id
-            );
-            const nextIndex = (currentIndex + 1) % menuItems.length;
-            setFocusedItem(menuItems[nextIndex].id);
-          } else if (item.hasSubmenu) {
-            event.preventDefault();
-            setActiveItem(item.id);
-          }
-          break;
-        case "ArrowUp":
-          if (variant === "vertical") {
-            event.preventDefault();
-            const currentIndex = menuItems.findIndex(
-              (menuItem) => menuItem.id === item.id
-            );
-            const prevIndex =
-              currentIndex === 0 ? menuItems.length - 1 : currentIndex - 1;
-            setFocusedItem(menuItems[prevIndex].id);
-          }
-          break;
-        case "Escape":
-          setActiveItem(null);
-          setHoveredItem(null);
-          setFocusedItem(null);
-          break;
-        default:
-          break;
-      }
-    },
-    [menuItems, variant, handleItemClick]
-  );
+  const renderSubmenu = (item) => {
+    if (!item.hasSubmenu || !item.submenu) return null;
 
-  const renderSubmenu = useCallback(
-    (item) => {
-      if (!item.hasSubmenu || !item.submenu) return null;
+    // Determine if submenu should be visible
+    const isVisible = isDesktop
+      ? hoveredItem === item.id
+      : clickedItem === item.id;
 
-      const isVisible = hoveredItem === item.id || activeItem === item.id;
+    // On mobile, don't render submenu at all if not visible
+    if (!isDesktop && !isVisible) return null;
 
-      return (
-        <div
-          className={cn(
-            "absolute left-0 top-full z-50 mt-2 transition-all duration-300 ease-in-out",
-            "transform origin-top",
-            isVisible
-              ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 scale-y-95 translate-y-2 pointer-events-none",
-            variant === "horizontal" ? "max-sm:hidden" : "sm:hidden"
-          )}
-          role="menu"
-          aria-label={`${item.name} submenu`}
-        >
-          <div className="container mx-auto">
-            <div
-              className={cn(
-                "overflow-hidden rounded-xl bg-white",
-                "ring-1 ring-black/10 shadow-xl",
-                currentSize.megaMenu
-              )}
-            >
-              {item.megaMenu ? (
-                // Enhanced mega menu layout
-                <div className="grid grid-cols-[280px_1fr] min-h-[400px]">
-                  <div className="border-r border-gray-200/20 bg-gray-50/50">
-                    <nav className="flex flex-col py-4" role="menubar">
-                      {item.submenu.map((subItem, index) => (
-                        <button
-                          key={subItem.id}
-                          className={cn(
-                            "flex items-center justify-between gap-3 px-6 py-3 text-sm font-medium transition-all duration-200",
-                            "hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none",
-                            activeItem === subItem.id
-                              ? "bg-blue-100 text-blue-700 border-r-2 border-blue-500"
-                              : "text-gray-700"
-                          )}
-                          onMouseEnter={() => setActiveItem(subItem.id)}
-                          onClick={() => handleItemClick(subItem)}
-                          onKeyDown={(e) => handleKeyDown(e, subItem)}
-                          role="menuitem"
-                          tabIndex={-1}
-                        >
-                          <span className="truncate">{subItem.name}</span>
-                          <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                        </button>
-                      ))}
-                    </nav>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                      {item.submenu
-                        .find((subItem) => subItem.id === activeItem)
-                        ?.subItems?.map((subSubItem, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleItemClick(subSubItem)}
-                            onKeyDown={(e) => handleKeyDown(e, subSubItem)}
-                            className={cn(
-                              "text-left p-3 rounded-lg transition-all duration-200",
-                              "hover:bg-gray-100 hover:shadow-sm focus:bg-gray-100 focus:shadow-sm focus:outline-none",
-                              "text-sm font-medium text-gray-700 hover:text-gray-900"
-                            )}
-                            role="menuitem"
-                            tabIndex={-1}
-                          >
-                            {subSubItem.name}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // Enhanced regular submenu layout
-                <div className="p-6">
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                    {item.submenu.map((subItem, index) => (
+    return (
+      <div
+        className={`absolute left-0 top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 ${
+          isDesktop ? "hidden xl:block" : "block"
+        } ${isVisible ? "opacity-100 visible" : "opacity-0 invisible"}`}
+      >
+        <div className="container mx-auto">
+          <div
+            className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}
+          >
+            {item.megaMenu ? (
+              // Mega menu layout
+              <div className="grid grid-cols-[1fr_3fr]">
+                <div className="border-r backdrop-blur-sm">
+                  <nav className="flex flex-col py-2">
+                    {item.submenu.map((subItem) => (
                       <button
-                        key={index}
-                        onClick={() => handleItemClick(subItem)}
-                        onKeyDown={(e) => handleKeyDown(e, subItem)}
+                        key={subItem.id}
                         className={cn(
-                          "text-left p-4 rounded-lg transition-all duration-200",
-                          "hover:bg-gray-100 hover:shadow-sm focus:bg-gray-100 focus:shadow-sm focus:outline-none",
-                          "text-sm font-medium text-gray-700 hover:text-gray-900",
-                          "border border-transparent hover:border-gray-200"
+                          "flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted",
+                          activeItem === subItem.id
+                            ? "bg-muted font-medium text-primary"
+                            : "text-white"
                         )}
-                        role="menuitem"
-                        tabIndex={-1}
+                        onMouseEnter={() => setActiveItem(subItem.id)}
+                        onClick={() => handleItemClick(subItem)}
                       >
                         {subItem.name}
+                        <ChevronRight className="w-4 h-4" />
                       </button>
                     ))}
+                  </nav>
+                </div>
+                <div className="w-full p-5">
+                  <div className="grid grid-cols-3 gap-4">
+                    {item.submenu
+                      .find((subItem) => subItem.id === activeItem)
+                      ?.subItems?.map((subSubItem, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleItemClick(subSubItem)}
+                          className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                        >
+                          {subSubItem.name}
+                        </button>
+                      ))}
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              // Regular submenu layout
+              <div className="p-5">
+                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                  {item.name}
+                </h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {item.submenu.map((subItem, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleItemClick(subItem)}
+                      className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
+                    >
+                      {subItem.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      );
-    },
-    [
-      hoveredItem,
-      activeItem,
-      currentSize.megaMenu,
-      variant,
-      handleItemClick,
-      handleKeyDown,
-    ]
-  );
-
-  // Mobile menu toggle
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+      </div>
+    );
   };
 
   if (variant === "vertical") {
     return (
-      <nav
-        ref={menuRef}
-        className={cn("space-y-1", className)}
-        role="navigation"
-        aria-label="Main navigation"
-      >
-        {menuItems.map((item) => (
-          <div key={item.id} className="space-y-1">
-            <button
-              className={cn(
-                "flex items-center justify-between w-full text-left transition-all duration-200",
-                "hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset",
-                "rounded-lg",
-                currentSize.item,
-                focusedItem === item.id
-                  ? "bg-gray-100 ring-2 ring-blue-500"
-                  : "",
-                "text-gray-700 hover:text-gray-900"
-              )}
-              onClick={() => handleItemClick(item)}
-              onKeyDown={(e) => handleKeyDown(e, item)}
-              onFocus={() => setFocusedItem(item.id)}
-              onBlur={() => setFocusedItem(null)}
-              role="menuitem"
-              tabIndex={0}
-              aria-expanded={item.hasSubmenu && activeItem === item.id}
-              aria-haspopup={item.hasSubmenu ? "menu" : undefined}
-            >
-              <span className="capitalize font-medium">{item.name}</span>
-              {item.hasSubmenu && (
-                <ChevronDown
-                  className={cn(
-                    "w-5 h-5 transition-transform duration-200",
-                    activeItem === item.id ? "rotate-180" : ""
-                  )}
-                />
-              )}
-            </button>
-            {item.hasSubmenu && item.submenu && (
+      <nav className={`space-y-2 ${className}`}>
+        {menuItems.map((item) => {
+          const isSubmenuVisible = clickedItem === item.id;
+
+          return (
+            <div key={item.id} className="space-y-1">
               <div
-                className={cn(
-                  "ml-4 space-y-1 transition-all duration-300 ease-in-out",
-                  "transform origin-top",
-                  activeItem === item.id
-                    ? "opacity-100 max-h-96"
-                    : "opacity-0 max-h-0 overflow-hidden"
-                )}
-                role="menu"
-                aria-label={`${item.name} submenu`}
+                className={`flex items-center justify-between ${currentSize.item} cursor-pointer hover:bg-gray-100 rounded-lg p-3 transition-colors`}
+                onClick={() => handleItemClick(item)}
               >
-                {item.submenu.map((subItem) => (
-                  <button
-                    key={subItem.id}
-                    className={cn(
-                      "w-full text-left transition-all duration-200",
-                      "hover:bg-gray-50 focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset",
-                      "rounded-md text-gray-600 hover:text-gray-800",
-                      currentSize.submenu
-                    )}
-                    onClick={() => handleItemClick(subItem)}
-                    onKeyDown={(e) => handleKeyDown(e, subItem)}
-                    role="menuitem"
-                    tabIndex={-1}
-                  >
-                    {subItem.name}
-                  </button>
-                ))}
+                <span className="text-customBlue capitalize font-medium">
+                  {item.name}
+                </span>
+                {item.hasSubmenu && (
+                  <RiArrowDropDownLine
+                    className={`text-xl transition-all duration-300 text-gray-500 cursor-pointer ${
+                      isSubmenuVisible ? "rotate-180" : "rotate-0"
+                    }`}
+                    onClick={(e) => handleArrowClick(item, e)}
+                  />
+                )}
               </div>
-            )}
-          </div>
-        ))}
+              {item.hasSubmenu && item.submenu && isSubmenuVisible && (
+                <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-4">
+                  {item.submenu.map((subItem) => (
+                    <div
+                      key={subItem.id}
+                      className={`${currentSize.submenu} cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors`}
+                      onClick={() => handleItemClick(subItem)}
+                    >
+                      <span className="text-gray-700">{subItem.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </nav>
     );
   }
 
   return (
-    <nav
-      ref={menuRef}
-      className={cn(className)}
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <ul className={cn("flex items-center", currentSize.spacing)}>
-        {menuItems.map((item) => (
-          <li
-            key={item.id}
-            className={cn("relative", item.hasSubmenu ? "group" : "")}
-            onMouseEnter={() => handleMouseEnter(item)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <button
-              className={cn(
-                "flex items-center gap-2 transition-all duration-200",
-                "hover:text-blue-600 focus:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-                "font-medium capitalize",
-                currentSize.item,
-                focusedItem === item.id
-                  ? "text-blue-600 ring-2 ring-blue-500 ring-offset-2"
-                  : "",
-                "text-gray-800 hover:text-blue-600"
-              )}
-              onClick={() => handleItemClick(item)}
-              onKeyDown={(e) => handleKeyDown(e, item)}
-              onFocus={() => setFocusedItem(item.id)}
-              onBlur={() => setFocusedItem(null)}
-              role="menuitem"
-              tabIndex={0}
-              aria-expanded={
-                item.hasSubmenu &&
-                (hoveredItem === item.id || activeItem === item.id)
-              }
-              aria-haspopup={item.hasSubmenu ? "menu" : undefined}
+    <nav className={`${className}`}>
+      <ul className="space-y-3 xl:space-y-0 xl:flex xl:space-x-2">
+        {menuItems.map((item) => {
+          const isSubmenuVisible = isDesktop
+            ? hoveredItem === item.id
+            : clickedItem === item.id;
+
+          return (
+            <li
+              key={item.id}
+              onMouseLeave={handleMouseLeave}
+              className={`cursor-pointer ${
+                item.hasSubmenu ? "group relative" : ""
+              }`}
             >
-              <span>{item.name}</span>
-              {item.hasSubmenu && (
-                <ChevronDown
-                  className={cn(
-                    "w-4 h-4 transition-transform duration-200",
-                    hoveredItem === item.id || activeItem === item.id
-                      ? "rotate-180"
-                      : ""
+              <div className="text-customBlue">
+                <span
+                  className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
+                  onMouseEnter={() => handleMouseEnter(item)}
+                  onClick={() => handleItemClick(item)}
+                >
+                  {item.name}
+                  {item.hasSubmenu && (
+                    <RiArrowDropDownLine
+                      className={`text-2xl transition-all duration-300 cursor-pointer ${
+                        isDesktop
+                          ? `-rotate-90 ${isSubmenuVisible ? "rotate-0" : ""}`
+                          : `${isSubmenuVisible ? "rotate-180" : "rotate-0"}`
+                      }`}
+                      onClick={(e) => handleArrowClick(item, e)}
+                    />
                   )}
-                />
-              )}
-            </button>
-            {renderSubmenu(item)}
-          </li>
-        ))}
+                </span>
+                {renderSubmenu(item)}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
@@ -434,14 +277,6 @@ NavigationMenu.propTypes = {
   className: PropTypes.string,
   size: PropTypes.oneOf(["small", "default", "large"]),
   variant: PropTypes.oneOf(["horizontal", "vertical"]),
-};
-
-NavigationMenu.defaultProps = {
-  menuItems: [],
-  onItemClick: null,
-  className: "",
-  size: "default",
-  variant: "horizontal",
 };
 
 export default NavigationMenu;

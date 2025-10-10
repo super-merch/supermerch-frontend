@@ -7,14 +7,7 @@ import { getProductPrice, slugify } from "@/utils/utils";
 
 const HotDeals = () => {
   const navigate = useNavigate();
-  const {
-    fetchDiscountedProducts,
-    discountedProducts,
-    fetchProducts,
-    products,
-    marginApi,
-    skeletonLoading,
-  } = useContext(AppContext);
+  const { fetchDiscountedProducts, discountedProducts, fetchProducts, products, skeletonLoading } = useContext(AppContext);
 
   useEffect(() => {
     if (discountedProducts.length === 0 && products.length === 0) {
@@ -22,9 +15,9 @@ const HotDeals = () => {
       // Fallback: also fetch regular products in case discounted products are empty
       fetchProducts(1, "", 6);
     }
-  }, []);
+  }, [discountedProducts.length, products.length, fetchDiscountedProducts, fetchProducts]);
 
-  // Use discounted products ifp available, otherwise fall back to regular products
+  // Use discounted products if available, otherwise fall back to regular products
   const displayProducts =
     discountedProducts && discountedProducts.length > 0
       ? discountedProducts?.filter((product) => {
@@ -38,7 +31,6 @@ const HotDeals = () => {
     const slug = slugify(name);
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
-
   return (
     <div className="bg-white border border-blue-500 rounded-lg p-4 h-full flex flex-col shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/30">
       {/* Header */}
@@ -54,12 +46,7 @@ const HotDeals = () => {
             [...Array(4)].map((_, index) => {
               const isLastItem = index === 3;
               return (
-                <div
-                  key={index}
-                  className={`bg-blue-50 rounded-lg p-3 animate-pulse ${
-                    isLastItem ? "mb-0" : "mb-2"
-                  }`}
-                >
+                <div key={index} className={`bg-blue-50 rounded-lg p-3 animate-pulse ${isLastItem ? "mb-0" : "mb-2"}`}>
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
                     <div className="flex-1">
@@ -79,9 +66,9 @@ const HotDeals = () => {
                 );
               }
 
-              return displayProducts.map((product, index) => {
+              return displayProducts.slice(0, 4).map((product, index) => {
                 const price = getProductPrice(product);
-                const isLastItem = index === displayProducts.length - 1;
+                const isLastItem = index === 3;
 
                 return (
                   <div
@@ -89,12 +76,7 @@ const HotDeals = () => {
                     className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${
                       isLastItem ? "mb-0" : "mb-2"
                     }`}
-                    onClick={() =>
-                      handleViewProduct(
-                        product.meta?.id,
-                        product.overview?.name
-                      )
-                    }
+                    onClick={() => handleViewProduct(product.meta?.id, product.overview?.name)}
                   >
                     <div className="flex items-center gap-3">
                       {/* Product Image */}
@@ -109,16 +91,11 @@ const HotDeals = () => {
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
                         {/* Product Name */}
-                        <h4
-                          className="text-sm font-semibold text-gray-800 truncate mb-1"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
+                        <h4 className="text-sm font-semibold text-gray-800 truncate mb-1" style={{ whiteSpace: "nowrap" }}>
                           {product.overview?.name || "No Name"}
                         </h4>
                         {/* Price */}
-                        <span className="text-lg font-bold text-blue-600">
-                          ${price.toFixed(2)}
-                        </span>
+                        <span className="text-lg font-bold text-blue-600">${price.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -129,10 +106,7 @@ const HotDeals = () => {
 
       {/* View All Link */}
       <div className="mt-4 pt-3 border-t border-gray-200">
-        <Link
-          to="/hot-deals"
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-        >
+        <Link to="/hot-deals" className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
           View All Hot Deals →
         </Link>
       </div>

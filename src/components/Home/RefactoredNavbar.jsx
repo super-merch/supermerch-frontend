@@ -1,6 +1,7 @@
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -10,6 +11,13 @@ import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronRight } from "lucide-react";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 
 // Import reusable components
@@ -59,7 +67,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       { name: "Clothing", path: "/Clothing", hasSubmenu: true },
       { name: "Headwear", path: "/Headwear", hasSubmenu: true },
       { name: "Return Gifts", path: "/shop" },
-      { name: "24 Hour production", path: "/production" },
+      { name: "24hr Prod", path: "/production" },
       { name: "Sale", path: "/sales" },
       { name: "Australia Made", path: "/Australia" },
     ];
@@ -95,6 +103,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           id: "promotional",
           submenu: megaMenu,
           megaMenu: true,
+          onClick: () => handleMenuClick(item),
         };
       }
 
@@ -116,6 +125,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                   clothingCategory.name
                 ),
             })) || [],
+          onClick: () => handleMenuClick(item),
         };
       }
 
@@ -137,6 +147,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                   headwearCategory.name
                 ),
             })) || [],
+          onClick: () => handleMenuClick(item),
         };
       }
 
@@ -298,6 +309,128 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   return (
     <>
+      {/* Main Navbar */}
+      <div className="bg-line shadow-xl py-3 sticky top-0 z-50">
+        <div className="flex items-center justify-between gap-4 text-white !px-0 md:px-0 Mycontainer flex-wrap">
+          <Sheet
+            open={isSheetOpen}
+            onOpenChange={setIsSheetOpen}
+            className="xl:hidden"
+          >
+            <SheetTrigger className="text-black focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </SheetTrigger>
+            <SheetContent
+              className="overflow-y-auto w-[85vw] sm:w-[400px]"
+              side="left"
+            >
+              <SheetHeader>
+                <SheetTitle className="mb-6 text-2xl text-smallHeader font-bold">
+                  SuperMerch
+                </SheetTitle>
+              </SheetHeader>
+              <NavigationMenu
+                menuItems={menuItems}
+                onItemClick={(item) => {
+                  handleMenuClick(item);
+                  setIsSheetOpen(false);
+                }}
+                variant="vertical"
+                size="default"
+              />
+            </SheetContent>
+          </Sheet>
+          {/* Navigation Menu - Left side */}
+          <div className="hidden xl:block">
+            <NavigationMenu
+              menuItems={menuItems}
+              onItemClick={handleMenuClick}
+              size="default"
+              className="justify-start"
+            />
+          </div>
+          <div className="w-full flex-1 mx-2 sm:mx-4 order-3 lg:order-2">
+            <SearchBar
+              onSearch={handleSearch}
+              categoryData={categoryData}
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
+              size="small"
+              className="w-full"
+            />
+          </div>
+
+          {/* Search Bar and User Actions on the right */}
+          <div className="flex items-center gap-4 order-2 lg:order-3">
+            {/* User Actions */}
+            <UserActions
+              isAuthenticated={!!token}
+              onLogout={() => setNavbarLogout(true)}
+              cartQuantity={totalQuantity}
+              favouriteQuantity={favouriteQuantity}
+              size="default"
+            />
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="xl:hidden">
+          <div className="flex items-center justify-between px-2 sm:px-4 py-2">
+            {/* Mobile Search */}
+          </div>
+        </div>
+      </div>
+
+      {/* Logout Confirmation Modal */}
+      {navbarLogout && (
+        <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0.2, z: 50 }}
+            transition={{ duration: 0.3 }}
+            whileInView={{ opacity: 1, z: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
+          >
+            <p className="text-sm font-semibold">
+              Are you sure you want to logout?
+            </p>
+            <p className="text-sm text-gray-500">
+              You can login back at any time. All the changes you've been made
+              will not be lost.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
+                onClick={() => setNavbarLogout(false)}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setNavbarLogout(false);
+                }}
+                className="px-3 py-1 text-white transition-all bg-red-600 rounded hover:bg-red-500"
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
       {/* Coupon Modal */}
       {coupenModel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
@@ -356,136 +489,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             </button>
           </div>
         </div>
-      )}
-
-      {/* Main Navbar */}
-      <div className="bg-line shadow-xl py-3 sticky top-0 z-50">
-        <div className="flex items-center justify-between gap-4 text-white Mycontainer">
-          {/* Navigation Menu - Left side */}
-          <div className="hidden lg:block">
-            <NavigationMenu
-              menuItems={menuItems}
-              onItemClick={handleMenuClick}
-              size="default"
-              className="justify-start"
-            />
-          </div>
-
-          {/* Search Bar and User Actions on the right */}
-          <div className=" flex items-center gap-4">
-            {/* Search Bar */}
-            <div className="hidden lg:flex items-center">
-              <SearchBar
-                onSearch={handleSearch}
-                categoryData={categoryData}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                size="default"
-              />
-            </div>
-
-            {/* User Actions */}
-            <UserActions
-              isAuthenticated={!!token}
-              onLogout={() => setNavbarLogout(true)}
-              cartQuantity={totalQuantity}
-              favouriteQuantity={favouriteQuantity}
-              size="default"
-            />
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="lg:hidden">
-          <div className="flex items-center justify-between px-4 py-2">
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger>
-                <div className="text-black focus:outline-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                </div>
-              </SheetTrigger>
-              <SheetContent className="overflow-y-auto" side="left">
-                <SheetHeader>
-                  <SheetTitle className="mb-3 text-2xl text-smallHeader">
-                    SuperMerch
-                  </SheetTitle>
-                </SheetHeader>
-                <NavigationMenu
-                  menuItems={menuItems}
-                  onItemClick={(item) => {
-                    handleMenuClick(item);
-                    setIsSheetOpen(false);
-                  }}
-                  variant="vertical"
-                  size="default"
-                />
-              </SheetContent>
-            </Sheet>
-
-            {/* Mobile Search */}
-            <div className="flex-1 mx-4">
-              <SearchBar
-                onSearch={handleSearch}
-                categoryData={categoryData}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                size="small"
-                className="w-full"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Logout Confirmation Modal */}
-      {navbarLogout && (
-        <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0.2, z: 50 }}
-            transition={{ duration: 0.3 }}
-            whileInView={{ opacity: 1, z: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
-          >
-            <p className="text-sm font-semibold">
-              Are you sure you want to logout?
-            </p>
-            <p className="text-sm text-gray-500">
-              You can login back at any time. All the changes you've been made
-              will not be lost.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
-                onClick={() => setNavbarLogout(false)}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setNavbarLogout(false);
-                }}
-                className="px-3 py-1 text-white transition-all bg-red-600 rounded hover:bg-red-500"
-              >
-                Logout
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
       )}
     </>
   );

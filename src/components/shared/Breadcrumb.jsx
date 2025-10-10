@@ -7,11 +7,20 @@ import { AppContext } from "../../context/AppContext";
 const Breadcrumb = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
+  const {
+    setSelectedParamCategoryId,
+    setCurrentPage,
+    setSidebarActiveCategory,
+    setActiveFilterCategory,
+  } = useContext(AppContext);
 
   // Get URL parameters
-  const categoryName = searchParams.get("categoryName") ? decodeURIComponent(searchParams.get("categoryName")) : null;
-  const subCategory = searchParams.get("subCategory") ? decodeURIComponent(searchParams.get("subCategory")) : null;
+  const categoryName = searchParams.get("categoryName")
+    ? decodeURIComponent(searchParams.get("categoryName"))
+    : null;
+  const subCategory = searchParams.get("subCategory")
+    ? decodeURIComponent(searchParams.get("subCategory"))
+    : null;
   const category = searchParams.get("category");
 
   // Determine the current page type and breadcrumb text
@@ -74,31 +83,80 @@ const Breadcrumb = () => {
 
   return (
     <div className="Mycontainer">
-      <div className="flex items-center gap-2 text-smallHeader mt-4 text-lg">
-        {/* Home */}
-        <Link to="/" className="flex items-center gap-1">
-          <p>Home</p>
-          <MdKeyboardArrowRight className="text-xl" />
-        </Link>
+      {/* Mobile Layout */}
+      <div className="lg:hidden px-4 py-8">
+        <div className="flex flex-wrap items-center gap-1 text-smallHeader text-xs">
+          {/* Home */}
+          <Link
+            to="/"
+            className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
+          >
+            <p className="truncate">Home</p>
+            <MdKeyboardArrowRight className="text-sm" />
+          </Link>
 
-        {/* Category */}
-        <Link to="/category" className="flex items-center gap-1">
-          <p>Category</p>
-          <MdKeyboardArrowRight className="text-xl" />
-        </Link>
+          {/* Category */}
+          <Link
+            to="/category"
+            className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
+          >
+            <p className="truncate">Category</p>
+            <MdKeyboardArrowRight className="text-sm" />
+          </Link>
 
-        {/* Main Category */}
-        {categoryName && (
-          <>
-            <span className="cursor-pointer hover:underline" onClick={handleCategoryClick}>
-              {categoryName}
-            </span>
+          {/* Main Category */}
+          {categoryName && (
+            <>
+              <span
+                className="hover:underline hover:text-smallHeader-dark transition-colors truncate"
+                onClick={handleCategoryClick}
+              >
+                {categoryName}
+              </span>
+              <MdKeyboardArrowRight className="text-sm" />
+            </>
+          )}
+
+          {/* Subcategory or Page Name */}
+          {subCategory ? (
+            <span className="text-gray-600 truncate">{subCategory}</span>
+          ) : (
+            <span className="text-gray-600 truncate">{pageName}</span>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:block">
+        <div className="flex items-center gap-2 text-smallHeader mt-4 text-lg">
+          {/* Home */}
+          <Link to="/" className="flex items-center gap-1">
+            <p>Home</p>
             <MdKeyboardArrowRight className="text-xl" />
-          </>
-        )}
+          </Link>
 
-        {/* Subcategory or Page Name */}
-        {subCategory ? <span>{subCategory}</span> : <span>{pageName}</span>}
+          {/* Category */}
+          <Link to="/category" className="flex items-center gap-1">
+            <p>Category</p>
+            <MdKeyboardArrowRight className="text-xl" />
+          </Link>
+
+          {/* Main Category */}
+          {categoryName && (
+            <>
+              <span
+                className="cursor-pointer hover:underline"
+                onClick={handleCategoryClick}
+              >
+                {categoryName}
+              </span>
+              <MdKeyboardArrowRight className="text-xl" />
+            </>
+          )}
+
+          {/* Subcategory or Page Name */}
+          {subCategory ? <span>{subCategory}</span> : <span>{pageName}</span>}
+        </div>
       </div>
     </div>
   );

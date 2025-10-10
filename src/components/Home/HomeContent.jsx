@@ -12,7 +12,7 @@ import ImageCarousel from "./ImageCarousel";
 
 const HomeContent = () => {
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <HeroWithHotDeals />
       {/* Trending Products Section */}
       <div className="mt-8">
@@ -69,7 +69,7 @@ const HomeContent = () => {
       <div className="pt-2 pb-4">
         <GoogleReviewsComponent />
       </div>
-    </>
+    </div>
   );
 };
 

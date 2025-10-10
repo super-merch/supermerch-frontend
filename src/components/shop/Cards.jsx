@@ -1,4 +1,11 @@
-import { useContext, useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -7,6 +14,7 @@ import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosHeart } from "react-icons/io";
+import { IoMenu } from "react-icons/io5";
 import { CiHeart } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
@@ -658,6 +666,57 @@ const Cards = () => {
     setIsLoading(true);
     setError("");
 
+    // create the request promise and store it in the ref
+    const promise = (async () => {
+      try {
+        const limit = 10;
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/client-products?page=${apiPage}&limit=${limit}&sort=${sortOption}&filter=true`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+
+        if (!data || !data.data) {
+          throw new Error("Unexpected API response structure");
+        }
+        setCount(data.item_count);
+
+        const validProducts = data.data.filter((product) => {
+          const priceGroups = product.product?.prices?.price_groups || [];
+          const basePrice =
+            priceGroups.find((group) => group?.base_price) || {};
+          const priceBreaks = basePrice.base_price?.price_breaks || [];
+          return (
+            priceBreaks.length > 0 &&
+            priceBreaks[0]?.price !== undefined &&
+            priceBreaks[0]?.price > 0
+          );
+        });
+
+        if (apiPage === 1) {
+          setAllProducts(validProducts);
+        } else {
+          setAllProducts((prev) => {
+            const existingIds = new Set(prev.map((p) => p.meta?.id));
+            const newProducts = validProducts.filter(
+              (product) => !existingIds.has(product.meta?.id)
+            );
+            return [...prev, ...newProducts];
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Error fetching products. Please try again.");
+      } finally {
+        // leave isLoading false to callers after awaiting; keep it consistent
+        setIsLoading(false);
+      }
+    })();
+
+    pendingAllRequests.current[key] = promise;
     try {
       const limit = 10;
       const response = await fetch(
@@ -978,124 +1037,172 @@ const Cards = () => {
           <UnifiedSidebar pageType={pageType} />
         </div>
 
-        <div className="flex-1 w-full lg:mt-0 md:mt-4 ">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            {/* Product Count - Left Side */}
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-brand">
-                {!isLoading &&
-                  !skeletonLoading &&
-                  !isFiltering &&
-                  getTotalCount()}
-              </span>
-              <p className="">
-                {isLoading || isFiltering
-                  ? "Loading..."
-                  : `Results found ${
-                      selectedCategory ? "(Category)" : "(All Products)"
-                    }${isPriceFilterActive ? " (Price filtered)" : ""}`}
-                {isFiltering && " Please wait a while..."}
-              </p>
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-4">
+          {/* Mobile Layout */}
+          <div className="lg:hidden px-4 py-3">
+            {/* Hamburger Menu and Sort By - Properly aligned */}
+            <div className="flex items-center justify-between w-full mb-4">
+              {/* Hamburger Menu Button */}
+              <button
+                onClick={() => {
+                  const sidebarToggle = document.querySelector(
+                    "[data-sidebar-toggle]"
+                  );
+                  if (sidebarToggle) sidebarToggle.click();
+                }}
+                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-smallHeader shadow-sm hover:bg-smallHeader-dark transition-colors"
+              >
+                <IoMenu className="text-xl" />
+              </button>
+
+              {/* Sort By - Positioned to the right */}
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-medium text-gray-700">Sort by:</p>
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 transition-colors"
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  >
+                    {sortOption === "lowToHigh"
+                      ? "Lowest to Highest"
+                      : sortOption === "highToLow"
+                      ? "Highest to Lowest"
+                      : "Relevancy"}
+                    <span className="">
+                      {isDropdownOpen ? (
+                        <IoIosArrowUp className="text-gray-600" />
+                      ) : (
+                        <IoIosArrowDown className="text-gray-600" />
+                      )}
+                    </span>
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
+                      <button
+                        onClick={() => handleSortSelection("lowToHigh")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-t-lg ${
+                          sortOption === "lowToHigh" ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        Lowest to Highest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("highToLow")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 ${
+                          sortOption === "highToLow" ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        Highest to Lowest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("revelancy")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-b-lg ${
+                          sortOption === "revelancy" ? "bg-gray-50" : ""
+                        }`}
+                      >
+                        Relevancy
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Sort Dropdown - Right Side */}
-            <div className="flex items-center gap-3">
-              <p>Sort by:</p>
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
-                  onClick={() => setIsDropdownOpen((prev) => !prev)}
-                >
-                  {sortOption === "lowToHigh"
-                    ? "Lowest to Highest"
-                    : sortOption === "highToLow"
-                    ? "Highest to Lowest"
-                    : "Relevancy"}
-                  <span className="">
-                    {isDropdownOpen ? (
-                      <IoIosArrowUp className="text-black" />
-                    ) : (
-                      <IoIosArrowDown className="text-black" />
-                    )}
-                  </span>
-                </button>
-                {isDropdownOpen && (
-                  <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
-                    <button
-                      onClick={() => handleSortSelection("lowToHigh")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "lowToHigh" ? "bg-gray-100" : ""
-                      }`}
-                    >
-                      Lowest to Highest
-                    </button>
-                    <button
-                      onClick={() => handleSortSelection("highToLow")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
-                    >
-                      Highest to Lowest
-                    </button>
-                    <button
-                      onClick={() => handleSortSelection("revelancy")}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                        sortOption === "highToLow" ? "bg-gray-100" : ""
-                      }`}
-                    >
-                      Relevancy
-                    </button>
-                  </div>
-                )}
+            {/* Results Count - Below Sort By */}
+            <div className="mb-6 px-2">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-brand text-base">
+                  {!isLoading &&
+                    !skeletonLoading &&
+                    !isFiltering &&
+                    getTotalCount()}
+                </span>
+                <p className="text-sm text-gray-600">
+                  {isLoading || isFiltering
+                    ? "Loading..."
+                    : `Results found ${
+                        selectedCategory ? "(Category)" : "(All Products)"
+                      }${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  {isFiltering && " Please wait a while..."}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Active Filters - Only show if there are active filters */}
-          {(categoryName ||
-            (activeFilters.brands && activeFilters.brands.length > 0) ||
-            (activeFilters.price &&
-              activeFilters.price.length === 2 &&
-              (activeFilters.price[0] !== 0 ||
-                activeFilters.price[1] !== 1000))) && (
-            <div className="flex flex-wrap items-center gap-4 mt-4 px-2">
-              {categoryName && (
-                <div className="filter-item">
-                  <span className="text-md font-semibold">{categoryName}</span>
-                </div>
-              )}
+          {/* Desktop Layout */}
+          <div className="hidden lg:block">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Product Count - Left Side */}
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-brand">
+                  {!isLoading &&
+                    !skeletonLoading &&
+                    !isFiltering &&
+                    getTotalCount()}
+                </span>
+                <p className="">
+                  {isLoading || isFiltering
+                    ? "Loading..."
+                    : `Results found ${
+                        selectedCategory ? "(Category)" : "(All Products)"
+                      }${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  {isFiltering && " Please wait a while..."}
+                </p>
+              </div>
 
-              {activeFilters.brands && activeFilters.brands.length > 0 && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    {activeFilters.brands.join(", ")}
-                  </span>
+              {/* Sort Dropdown - Right Side */}
+              <div className="flex items-center gap-3">
+                <p>Sort by:</p>
+                <div className="relative" ref={dropdownRef}>
                   <button
-                    className="px-2 text-lg"
-                    onClick={() => handleClearFilter("brand")}
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
-                    x
-                  </button>
-                </div>
-              )}
-              {activeFilters.price &&
-                activeFilters.price.length === 2 &&
-                (activeFilters.price[0] !== 0 ||
-                  activeFilters.price[1] !== 1000) && (
-                  <div className="filter-item">
-                    <span className="text-sm">
-                      ${activeFilters.price[0]} - ${activeFilters.price[1]}
+                    {sortOption === "lowToHigh"
+                      ? "Lowest to Highest"
+                      : sortOption === "highToLow"
+                      ? "Highest to Lowest"
+                      : "Relevancy"}
+                    <span className="">
+                      {isDropdownOpen ? (
+                        <IoIosArrowUp className="text-black" />
+                      ) : (
+                        <IoIosArrowDown className="text-black" />
+                      )}
                     </span>
-                    <button
-                      className="px-2 text-lg"
-                      onClick={() => handleClearFilter("price")}
-                    >
-                      x
-                    </button>
-                  </div>
-                )}
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
+                      <button
+                        onClick={() => handleSortSelection("lowToHigh")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "lowToHigh" ? "bg-gray-100" : ""
+                        }`}
+                      >
+                        Lowest to Highest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("highToLow")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                        }`}
+                      >
+                        Highest to Lowest
+                      </button>
+                      <button
+                        onClick={() => handleSortSelection("revelancy")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                        }`}
+                      >
+                        Relevancy
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
@@ -1440,7 +1547,28 @@ const Cards = () => {
           {(totalPages > 1 ||
             (currentPageProducts.length <= itemsPerPage && hasMoreProducts)) &&
             currentPageProducts.length > 0 && (
-              <div className="flex items-center justify-center mt-16 space-x-2 pagination">
+              <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <IoMdArrowBack className="text-lg sm:text-xl" />
+                </button>
+
+                {/* Always show current page */}
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base transition-colors ${
+                    currentPage === 1
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                >
+                  1
+                </button>
                 <button
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(prev - 1, 1))
@@ -1510,8 +1638,6 @@ const Cards = () => {
                       }
                     }
                   }}
-                  disabled={currentPage === totalPages && !hasMoreProducts}
-                  className="flex items-center justify-center w-10 h-10 border rounded-full"
                 >
                   <IoMdArrowForward className="text-xl" />
                 </button>
@@ -1526,7 +1652,7 @@ const Cards = () => {
           onClick={handleCloseModal}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
+            className="relative max-w-4xl max-h-[90vh] w-full mx-2 sm:mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -1536,16 +1662,16 @@ const Cards = () => {
               <IoClose className="text-2xl text-gray-600" />
             </button>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <img
                 src={selectedProduct.overview.hero_image || noimage}
                 alt={selectedProduct.overview.name || "Product Image"}
-                className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
+                className="w-full h-auto max-h-[60vh] sm:max-h-[70vh] object-contain rounded-lg"
               />
 
               <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold text-brand mb-2">
-                  {selectedProduct.overview.name || "No Name"}
+                <h2 className="text-xl font-bold text-gray-800 mb-2">
+                  {selectedProduct.overview.name}
                 </h2>
                 {selectedProduct.overview.description && (
                   <p className="text-gray-700 text-sm leading-relaxed">

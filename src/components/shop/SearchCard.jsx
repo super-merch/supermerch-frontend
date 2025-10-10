@@ -531,16 +531,6 @@ const SearchCard = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-1 pt-3 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">{!searchLoading && !isFiltering && getTotalCount()}</span>
-              <p className="">
-                {searchLoading || isFiltering
-                  ? "Loading..."
-                  : `Results found for ${searchParam}
-                ${isPriceFilterActive ? ` (Price filtered)` : hasActiveFilters ? ` on page ${currentPage}` : ""}`}
-                {isFiltering && "Please wait a while..."}
-              </p>
-            </div>
           </div>
 
           {/* {filterError && (

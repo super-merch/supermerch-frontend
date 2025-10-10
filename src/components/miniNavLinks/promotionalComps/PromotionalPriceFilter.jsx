@@ -5,7 +5,7 @@
 // //   setMaxPrice,
 // //   applyFilters,
 // // } from "../../../redux/slices/filterSlice";
-// import { Range } from "react-range"; 
+// import { Range } from "react-range";
 // import { applyFilters, setMaxPrice, setMinPrice } from "@/redux/slices/promotionalSlice";
 
 // const PromotionalPriceFilter = () => {
@@ -141,45 +141,9 @@
 
 // export default PromotionalPriceFilter;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setMinPrice,
-  setMaxPrice,
-  applyFilters,
-} from "../../../redux/slices/filterSlice";
+import { setMinPrice, setMaxPrice, applyFilters } from "../../../redux/slices/filterSlice";
 import { Range } from "react-range";
 import { toast } from "react-toastify";
 
@@ -201,7 +165,7 @@ const PromotionalPriceFilter = () => {
     dispatch(setMinPrice(min));
     dispatch(setMaxPrice(max));
     dispatch(applyFilters());
-    
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
   };
@@ -219,12 +183,13 @@ const PromotionalPriceFilter = () => {
   const handleApplyCustomRange = () => {
     const minValue = Number(localMin);
     const maxValue = Number(localMax);
-    
+
     if (!localMin || !localMax || isNaN(minValue) || isNaN(maxValue)) {
       toast.error("Please enter valid numbers for Min and Max Price");
       return;
     }
-    if (maxValue < 0 || minValue <=-1) { // Only check if max is negative since min can be 0
+    if (maxValue < 0 || minValue <= -1) {
+      // Only check if max is negative since min can be 0
       toast.error("Price cannot be negative");
       return;
     }
@@ -232,14 +197,14 @@ const PromotionalPriceFilter = () => {
       toast.error("Min Price should be less than Max Price");
       return;
     }
-    
+
     setIsApplying(true);
     dispatch(setMinPrice(minValue));
     dispatch(setMaxPrice(maxValue));
     dispatch(applyFilters());
     setLocalMin("");
     setLocalMax("");
-    
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
   };
@@ -250,18 +215,15 @@ const PromotionalPriceFilter = () => {
     dispatch(setMinPrice(range.min));
     dispatch(setMaxPrice(range.max));
     dispatch(applyFilters());
-    
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
-
   };
 
   return (
     <>
-      <h1 className="mb-2 text-base font-medium uppercase text-brand">
-        Price Range
-      </h1>
-      
+      <h1 className="mb-2 text-base font-medium uppercase text-brand">Price Range</h1>
+
       {/* Show current filter status */}
       {(minPrice !== 0 || maxPrice !== 1000) && (
         <div className="mb-4 p-2 bg-blue-100 border border-blue-300 rounded text-sm">
@@ -271,38 +233,35 @@ const PromotionalPriceFilter = () => {
           </p>
         </div>
       )}
-      
-      <div className="flex flex-col gap-4 pb-6 mt-4 border-b-2">
-        <div className="flex gap-4 " >
 
-        <input 
-          type="text" 
-          placeholder="From" 
-          value={localMin} 
-          className="border-[2px] max-w-20 text-center p-1" 
-          onChange={(e) => setLocalMin(e.target.value)} 
+      <div className="flex flex-col gap-4 pb-6 mt-4 border-b-2">
+        <div className="flex gap-4 ">
+          <input
+            type="text"
+            placeholder="From"
+            value={localMin}
+            className="border-[2px] max-w-20 text-center p-1"
+            onChange={(e) => setLocalMin(e.target.value)}
           />
-        <input 
-          type="text" 
-          placeholder="To" 
-          value={localMax} 
-          className="border-[2px] p-1 max-w-20 text-center" 
-          onChange={(e) => setLocalMax(e.target.value)} 
+          <input
+            type="text"
+            placeholder="To"
+            value={localMax}
+            className="border-[2px] p-1 max-w-20 text-center"
+            onChange={(e) => setLocalMax(e.target.value)}
           />
-          </div>
+        </div>
         <button
           onClick={handleApplyCustomRange}
           disabled={isApplying}
           className={`px-4 max-w-44 py-2 text-white rounded ${
-            isApplying 
-              ? "bg-gray-400 cursor-not-allowed" 
-              : "bg-smallHeader hover:bg-smallHeader-dark"
+            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
           }`}
         >
           {isApplying ? "Applying..." : "Apply"}
         </button>
       </div>
-      
+
       <div className="mt-4">
         <div className="flex flex-col gap-2">
           {priceRanges.map((range, index) => (
@@ -313,15 +272,11 @@ const PromotionalPriceFilter = () => {
               <p
                 onClick={() => handlePresetRangeClick(range)}
                 className={`hover:underline ${
-                  minPrice === range.min && maxPrice === range.max
-                    ? "underline text-smallHeader font-semibold"
-                    : ""
+                  minPrice === range.min && maxPrice === range.max ? "underline text-smallHeader font-semibold" : ""
                 } ${isApplying ? "pointer-events-none opacity-50" : ""}`}
               >
                 {range.label}
-                {isApplying && minPrice === range.min && maxPrice === range.max && (
-                  <span className="ml-2 text-xs">(Applying...)</span>
-                )}
+                {isApplying && minPrice === range.min && maxPrice === range.max && <span className="ml-2 text-xs">(Applying...)</span>}
               </p>
             </div>
           ))}
