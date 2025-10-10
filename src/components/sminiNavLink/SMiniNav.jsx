@@ -1,50 +1,39 @@
-import React, { useState, useEffect, useRef } from "react";
-import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
-import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
-import { BiUser } from "react-icons/bi";
-import { googleLogout } from "@react-oauth/google";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { IoPricetagSharp } from "react-icons/io5";
-import { AppContext } from "../../context/AppContext";
-import { useContext } from "react";
-import { motion } from "framer-motion";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import {
-  setSelectedCategory,
-  applyFilters,
-  setMinPrice,
-  setMaxPrice,
-} from "../../redux/slices/filterSlice";
-import {
-  fetchcategoryProduct,
-  matchProduct,
-} from "@/redux/slices/categorySlice";
-import {
-  matchPromotionalProduct,
-  setAllProducts,
-} from "@/redux/slices/promotionalSlice";
-import { toast } from "react-toastify";
-import { cn } from "@/lib/utils";
-import { ArrowRight, ChevronRight } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import supermerch from "../../assets/supermerch.png";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { clearCurrentUser } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
-import { set } from "react-hook-form";
+import { googleLogout } from "@react-oauth/google";
+import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
+import {
+  HiOutlineHeart,
+  HiOutlineShoppingCart,
+  HiOutlineUser,
+} from "react-icons/hi";
+import { IoSearchSharp } from "react-icons/io5";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import supermerch from "../../assets/supermerch.png";
+import { AppContext } from "../../context/AppContext";
+import {
+  applyFilters,
+  setMaxPrice,
+  setMinPrice,
+} from "../../redux/slices/filterSlice";
 
 const SMiniNav = () => {
   // Dynamic categories from v1categories
@@ -64,32 +53,29 @@ const SMiniNav = () => {
     userEmail
   } = useContext(AppContext);
 
-  const getNav = async () => {
-    await fetchV1Categories();
-  };
-  const searchRef = useRef(null);
+  // const getNav = async () => {
+  //   await fetchV1Categories();
+  // };
+
+  // useEffect(() => {
+  //   getNav();
+  // }, []);
+
+  // Close category dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowSearchModal(false);
+    const handleClickOutside = (event) => {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target)
+      ) {
+        setIsCategoryDropdownOpen(false);
       }
-    }
+    };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  const [showSearchModal, setShowSearchModal] = useState(false);
-  // const [showCartModal, setShowCartModal] = useState(false);
-  // const [showFavModal, setShowFavModal] = useState(false);
-  // const [showUserModal, setShowUserModal] = useState(false);
-  // const [showFilterModal, setShowFilterModal] = useState(false);
-  // const [showPriceModal, setShowPriceModal] = useState(false);
-
-  useEffect(() => {
-    getNav();
   }, []);
 
   // Create megaMenu from v1categories data
@@ -171,8 +157,8 @@ const SMiniNav = () => {
   // Simplified route structure
   const route = [
     { name: "Promotional", path: "/Spromotional" },
-    { name: "Clothing", path: "/Spromotional" },
-    { name: "Headwear", path: "/Spromotional" },
+    { name: "Clothing", path: "/Clothing" },
+    { name: "Headwear", path: "/Headwear" },
     { name: "Return Gifts", path: "/ReturnGifts" },
     { name: "24 Hour production", path: "/production" },
     { name: "Sale", path: "/sales" },
@@ -304,6 +290,92 @@ const SMiniNav = () => {
     megaMenuClothing[0]?.id
   );
   const [openPromoId, setOpenPromoId] = useState(null);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const categoryDropdownRef = useRef(null);
+
+  // Hardcoded category data for sample
+  const categoryData = [
+    {
+      id: "promotional",
+      name: "Promotional",
+      subcategories: [
+        {
+          id: "apparel",
+          name: "Apparel",
+          subcategories: ["T-Shirts", "Polo Shirts", "Hoodies"],
+        },
+        {
+          id: "drinkware",
+          name: "Drinkware",
+          subcategories: ["Mugs", "Water Bottles", "Tumblers"],
+        },
+        {
+          id: "bags",
+          name: "Bags",
+          subcategories: ["Tote Bags", "Backpacks", "Laptop Bags"],
+        },
+        {
+          id: "accessories",
+          name: "Accessories",
+          subcategories: ["Keychains", "Lanyards", "Badges"],
+        },
+      ],
+    },
+    {
+      id: "clothing",
+      name: "Clothing",
+      subcategories: [
+        {
+          id: "mens",
+          name: "Men's",
+          subcategories: ["Shirts", "Pants", "Jackets"],
+        },
+        {
+          id: "womens",
+          name: "Women's",
+          subcategories: ["Blouses", "Dresses", "Skirts"],
+        },
+        {
+          id: "unisex",
+          name: "Unisex",
+          subcategories: ["T-Shirts", "Hoodies", "Caps"],
+        },
+      ],
+    },
+    {
+      id: "headwear",
+      name: "Headwear",
+      subcategories: [
+        {
+          id: "caps",
+          name: "Caps",
+          subcategories: ["Baseball Caps", "Snapbacks", "Beanies"],
+        },
+        {
+          id: "hats",
+          name: "Hats",
+          subcategories: ["Fedoras", "Bucket Hats", "Visors"],
+        },
+      ],
+    },
+    {
+      id: "office",
+      name: "Office Supplies",
+      subcategories: [
+        {
+          id: "writing",
+          name: "Writing",
+          subcategories: ["Pens", "Pencils", "Markers"],
+        },
+        {
+          id: "stationery",
+          name: "Stationery",
+          subcategories: ["Notebooks", "Staplers", "Clips"],
+        },
+      ],
+    },
+  ];
 
   const handleSearch = () => {
     if (!inputValue.trim()) {
@@ -840,7 +912,7 @@ const SMiniNav = () => {
               </Link>
             ) : (
               <div className="relative" ref={dropdownRef}>
-                <BiUser
+                <HiOutlineUser
                   onClick={toggleLogout}
                   className="text-2xl xl:text-3xl cursor-pointer text-customBlue"
                 />
@@ -907,21 +979,25 @@ const SMiniNav = () => {
                 </SheetHeader>
                 <div className="space-y-2">
                   {route.map((link, index) => (
-                    <li key={index} onClick={()=>{
-                      if(link.name =="Sale"){
-                        navigate("/sales")
-                        setIsSheetOpen(false)
-                      }else if(link.name =="24 Hour production"){
-                        navigate("/hour-production")
-                        setIsSheetOpen(false)
-                      }else if(link.name =="Return Gifts"){
-                        navigate("/shop")
-                        setIsSheetOpen(false)
-                      }else if(link.name == "Australia Made"){
-                        navigate("/australia-made")
-                        setIsSheetOpen(false)
-                      }
-                    }} className="list-none cursor-pointer">
+                    <li
+                      key={index}
+                      onClick={() => {
+                        if (link.name == "Sale") {
+                          navigate("/sales");
+                          setIsSheetOpen(false);
+                        } else if (link.name == "24 Hour production") {
+                          navigate("/hour-production");
+                          setIsSheetOpen(false);
+                        } else if (link.name == "Return Gifts") {
+                          navigate("/shop");
+                          setIsSheetOpen(false);
+                        } else if (link.name == "Australia Made") {
+                          navigate("/australia-made");
+                          setIsSheetOpen(false);
+                        }
+                      }}
+                      className="list-none cursor-pointer"
+                    >
                       <Collapsible>
                         <CollapsibleTrigger className="flex items-center capitalize cursor-pointer">
                           {link.name}
@@ -1021,7 +1097,6 @@ const SMiniNav = () => {
                             )}
                           </CollapsibleContent>
                         )}
-                        
                       </Collapsible>
                     </li>
                   ))}
@@ -1061,7 +1136,7 @@ const SMiniNav = () => {
                           }
                         }}
                         onClick={() => {
-                          if (link.name === "Promotional") return;
+                          // if (link.name === "Promotional") return;
                           conditionalCategoryNameHandler(link);
                         }}
                       >
@@ -1075,13 +1150,13 @@ const SMiniNav = () => {
 
                       {link.name === "Promotional" && (
                         <div
-                          className={`absolute -left-[120px] lg:-left-[150px] top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
+                          className={`absolute left-0 top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
                             hoverMegaMenu ? "group-hover:flex" : "hidden"
                           }`}
                         >
                           <div className="container mx-auto">
-                            <div className="overflow-hidden rounded-lg border bg-[#333333] w-[900px] shadow-lg">
-                              <div className="grid grid-cols-[1fr_3fr]">
+                            <div className="overflow-hidden rounded-lg border bg-[#333333] w-[500px] max-w-[80vw] max-h-[60vh] shadow-lg">
+                              <div className="grid grid-cols-[1fr_3fr] max-h-[60vh] overflow-y-auto">
                                 <div className="border-r backdrop-blur-sm">
                                   <nav className="flex flex-col py-2">
                                     {megaMenu?.map((item) => (
@@ -1140,7 +1215,7 @@ const SMiniNav = () => {
 
                       {link.name === "Clothing" && clothingCategory && (
                         <div
-                          className={`absolute -left-[120px] lg:-left-[150px] top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
+                          className={`absolute left-0 top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
                             hoverClothingMenu ? "group-hover:flex" : "hidden"
                           }`}
                         >
@@ -1176,7 +1251,7 @@ const SMiniNav = () => {
                       )}
                       {link.name === "Headwear" && headwearCategory && (
                         <div
-                          className={`absolute -left-[120px] lg:-left-[150px] top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
+                          className={`absolute left-0 top-full z-50 shadow-md backdrop-blur-sm transition-all duration-500 max-sm:hidden ${
                             hoverHeadwearMenu ? "group-hover:flex" : "hidden"
                           }`}
                         >
@@ -1191,15 +1266,14 @@ const SMiniNav = () => {
                                     (subType, index) => (
                                       <button
                                         key={index}
-                                        onClick={() =>{
+                                        onClick={() => {
                                           handleSubCategories(
                                             subType.name,
                                             subType.id,
                                             headwearCategory.name
-                                          )
+                                          );
                                           setHoverHeadwearMenu(false);
-                                        }
-                                        }
+                                        }}
                                         className="font-semibold hover:underline text-[13px] block text-start text-white p-2 hover:bg-gray-700 rounded"
                                       >
                                         {subType.name}
@@ -1221,46 +1295,114 @@ const SMiniNav = () => {
         </div>
       </div> */}
 
-      {/* <div className="Mycontainer">
-        <div className="mt-2 lg:hidden md:hidden flex gap-2 border border-black items-center bg-white w-full h-[40px] px-4">
-          <input
-            value={inputValue}
-            onChange={handleChange}
-            type="text"
-            placeholder="Search for anything..."
-            className="w-full text-black bg-transparent outline-none"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          />
-          <IoSearchSharp
-            onClick={handleSearch}
-            className="text-xl cursor-pointer text-black"
-          />
-        </div>
-      </div> */}
+      <div className="Mycontainer">
+        <div className="mt-2 lg:hidden md:hidden">
+          <div className="relative" ref={categoryDropdownRef}>
+            <div className="flex items-center bg-white border-2 border-blue-100 rounded-lg px-3 py-2 hover:border-blue-200 transition-colors">
+              {/* Dropdown selector */}
+              <div
+                className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-md mr-3 cursor-pointer hover:bg-gray-200 transition-colors"
+                onClick={() =>
+                  setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
+                }
+              >
+                <span className="text-blue-600 font-semibold text-sm">
+                  {selectedCategory}
+                </span>
+                <svg
+                  className={`w-3 h-3 text-blue-600 transition-transform ${
+                    isCategoryDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
 
-      {/* <div className="py-3 mt-1 bg-shipping lg:mt-0 md:mt-0">
-        <div className="flex flex-wrap items-center justify-center gap-2 Mycontainer lg:gap-8 md:gap-8">
-          <h1 className="text-sm font-medium lg:text-lg md:text-lg text-smallHeader">
-            Get Discount Using Coupon
-          </h1>
-          <div
-            onClick={() => {
-              setCoupenModel(true);
-              fetchCurrentCoupon();
-            }}
-            className="flex items-center gap-2 px-4 py-1 border-2 border-smallHeader"
-          >
-            <IoPricetagSharp className="text-sm font-bold lg:text-lg md:text-lg text-smallHeader" />
-            <button className="text-sm font-bold uppercase lg:text-lg md:text-lg text-smallHeader">
-              Get Code
-            </button>
+              {/* Search input */}
+              <input
+                value={inputValue}
+                onChange={handleChange}
+                type="text"
+                placeholder="Search for anything..."
+                className="flex-1 text-gray-700 bg-transparent outline-none placeholder-gray-400"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
+              />
+
+              {/* Search icon */}
+              <IoSearchSharp
+                onClick={handleSearch}
+                className="text-blue-600 text-xl cursor-pointer hover:text-blue-700 transition-colors ml-2"
+              />
+            </div>
+
+            {/* Category Dropdown for Mobile */}
+            {isCategoryDropdownOpen && (
+              <div className="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                <div className="p-2">
+                  {/* All option */}
+                  <div
+                    className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
+                    onClick={() => {
+                      setSelectedCategory("All");
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                  >
+                    <span className="text-gray-700 font-medium">
+                      All Categories
+                    </span>
+                  </div>
+
+                  {/* Category tree */}
+                  {categoryData.map((category) => (
+                    <div key={category.id} className="border-t border-gray-100">
+                      <div className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer">
+                        <span className="text-gray-800 font-semibold">
+                          {category.name}
+                        </span>
+                      </div>
+                      {category.subcategories.map((subcategory) => (
+                        <div key={subcategory.id} className="ml-4">
+                          <div className="px-3 py-1 hover:bg-gray-50 rounded cursor-pointer">
+                            <span className="text-gray-600 text-sm">
+                              {subcategory.name}
+                            </span>
+                          </div>
+                          {subcategory.subcategories.map((item, index) => (
+                            <div
+                              key={index}
+                              className="ml-6 px-3 py-1 hover:bg-gray-50 rounded cursor-pointer"
+                              onClick={() => {
+                                setSelectedCategory(item);
+                                setIsCategoryDropdownOpen(false);
+                              }}
+                            >
+                              <span className="text-gray-500 text-xs">
+                                {item}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </div> */}
+      </div> 
 
       {navbarLogout && (
         <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">

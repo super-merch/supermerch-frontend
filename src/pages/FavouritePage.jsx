@@ -17,7 +17,6 @@ const FavouritePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
-
   const [cardHover, setCardHover] = useState(null);
 
   const navigate = useNavigate();
@@ -56,19 +55,19 @@ const FavouritePage = () => {
   }, [isModalOpen]);
 
   const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  };
 
   const handleRemoveFavourite = (product) => {
     toast.success("Product removed from favourites");
@@ -118,7 +117,9 @@ const FavouritePage = () => {
                   <div
                     key={product.id}
                     className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                    onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                    onClick={() =>
+                      handleViewProduct(product.meta.id, product.overview.name)
+                    }
                     onMouseEnter={() => setCardHover(product.meta.id)}
                     onMouseLeave={() => setCardHover(null)}
                   >

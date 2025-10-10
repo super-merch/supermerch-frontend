@@ -1,16 +1,18 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
-import Home from "../src/pages/Home";
+import RouteTransition from "./components/Common/RouteTransition";
+import Home from "./pages/Home";
 import ProducPage from "./pages/ProducPage";
 import Footer from "./components/Home/Footer";
 import CategoryPage from "./pages/CategoryPage";
 import ShopPage from "./pages/ShopPage";
-import SignUp from "./components/singup/SignUp";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import ContactPage from "./pages/ContactPage";
 import Cart from "./pages/Cart";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutPage from "./pages/CheckoutPage";
 import AboutPage from "./pages/AboutPage";
 import { AppContext } from "./context/AppContext";
@@ -40,6 +42,11 @@ import MailOffer from "./pages/MailOffer";
 import TrackOrder from "./pages/TrackOrder";
 import Australia from "./pages/Australia";
 import HourProduction24 from "./pages/HourProduction24";
+import UploadArtwork from "./pages/UploadArtwork";
+import { useModals } from "./hooks/useModals";
+import HotDeals from "./pages/HotDeals";
+import HourProduction24Products from "./components/shop/HourProduction24Products";
+import AustraliaProducts from "./components/shop/AusProducts";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -53,14 +60,29 @@ export const ScrollToTop = () => {
 
 const App = () => {
   const { token } = useContext(AppContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleCouponClick = () => {
+    // Ensure we are on Home so the modal listener exists, then trigger it
+    if (location.pathname !== "/") {
+      // navigate("/");
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("triggerDiscountModal"));
+      }, 150);
+    } else {
+      window.dispatchEvent(new CustomEvent("triggerDiscountModal"));
+    }
+  };
 
   return (
     <div>
         <ToastContainer />
 
-        <Navbar />
-        <ScrollToTop />
+      <Navbar onCouponClick={handleCouponClick} />
+      <ScrollToTop />
       <HelmetProvider>
+      <RouteTransition>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProducPage />} />
@@ -71,14 +93,14 @@ const App = () => {
           <Route path="/Spromotional" element={<SpromotionalPage />} />
           <Route path="/success" element={<Success />} />
           <Route path="/cancel" element={<Cancel />} />
-
+          <Route path="hot-deals" element={<HotDeals />} />
           <Route path="/favourites" element={<FavouritePage />} />
           <Route path="/Clothing" element={<ShopPage />} />
           <Route path="/Headwear" element={<ShopPage />} />
           <Route path="/ReturnGifts" element={<ShopPage />} />
-          <Route path="/production" element={<ShopPage />} />
+          <Route path="/production" element={<HourProduction24Products />} />
           <Route path="/Sale" element={<ShopPage />} />
-          <Route path="/Australia" element={<ShopPage />} />
+          <Route path="/Australia" element={<AustraliaProducts />} />
           {/* SHOPPAGE  */}
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -90,8 +112,10 @@ const App = () => {
           <Route path="/new-arrivals" element={<NewArrival />} />
           <Route path="/sales" element={<SalesPage />} />
           <Route path="/bestSellers" element={<BestSellerPage />} />
-          {!token && <Route path="/signup" element={<SignUp />} />}
+          {!token && <Route path="/signup" element={<Signup />} />}
+          {!token && <Route path="/login" element={<Login />} />}
           <Route path="/cart" element={<Cart />} />
+          <Route path="/upload-artwork" element={<UploadArtwork />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/about" element={<AboutPage />} />
@@ -109,10 +133,11 @@ const App = () => {
           {token && <Route path="/admin" element={<Sidebar />} />}
           {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}
         </Routes>
+      </RouteTransition>
       </HelmetProvider>
-        {/* <Sidebar /> */}
-        {/* <Sidebar /> */}
-        <Footer />
+      {/* <Sidebar /> */}
+      {/* <Sidebar /> */}
+      <Footer />
     </div>
   );
 };

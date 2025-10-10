@@ -53,19 +53,19 @@ const Sale = () => {
 
   // Handle product click
   const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      // replace any sequence of non-alphanumeric chars with a single hyphen
+      .replace(/[^a-z0-9]+/g, "-")
+      // remove leading/trailing hyphens
+      .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  };
 
   return (
     <div>
@@ -154,7 +154,12 @@ const Sale = () => {
                         return (
                           <div
                             key={index}
-                            onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                            onClick={() =>
+                              handleViewProduct(
+                                product.meta.id,
+                                product.overview.name
+                              )
+                            }
                             className="flex items-center gap-3 p-4 mb-4 transition duration-300 transform border rounded-md cursor-pointer group hover:scale-105"
                           >
                             <img

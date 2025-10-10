@@ -3,7 +3,7 @@ import React from "react";
 export default function HowItWorks({ className = "" }) {
   return (
     <section className={`bg-white text-gray-800 py-12 ${className}`} aria-labelledby="how-it-works-heading">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="Mycontainer mx-auto">
         <header className="mb-8 text-center">
           <h2 id="how-it-works-heading" className="text-3xl font-semibold text-blue-700">How It Works</h2>
           <p className="mt-2 text-gray-600 max-w-2xl mx-auto">A simple, secure shopping flow — from adding items to tracking your orders.</p>

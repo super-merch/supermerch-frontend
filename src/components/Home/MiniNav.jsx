@@ -3,6 +3,11 @@ import { IoSearchSharp, IoCartOutline } from "react-icons/io5";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { BiUser } from "react-icons/bi";
+import {
+  HiOutlineShoppingCart,
+  HiOutlineHeart,
+  HiOutlineUser,
+} from "react-icons/hi";
 import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,6 +28,7 @@ import supermerch from "../../assets/supermerch.png";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
 import { toast } from "react-toastify";
+import { useCoupons } from "@/hooks/useCoupons";
 
 const MiniNav = () => {
   const megaMenu = [
@@ -113,6 +119,7 @@ const MiniNav = () => {
     setCategoryProducts,
     fetchCategories,
   } = useContext(AppContext);
+  const { coupons, coupenLoading } = useCoupons();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -314,10 +321,8 @@ const MiniNav = () => {
       return typeName?.toLowerCase().includes(subCategory.toLowerCase());
     });
     setProducts(subFilterProducts);
-    console.log(subFilterProducts, "subfilters");
   };
 
-  // console.log(products, "sjsdsdj");
   const handleSearch = () => {
     navigate(`/search?search=${inputValue}`);
   };
@@ -412,8 +417,8 @@ const MiniNav = () => {
               className="text-xl cursor-pointer text-black"
             />
           </div>
-          <div className="relative z-20 flex items-center gap-2 lg:gap-6 md:gap-6 sm:gap-5">
-            <Link to={"/cart"}>
+          <div className="relative z-20 flex items-center gap-4 lg:gap-6 md:gap-6 sm:gap-4">
+            <Link to={"/cart"} className="relative">
               {totalQuantity > 0 && (
                 <span
                   className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${
@@ -423,18 +428,18 @@ const MiniNav = () => {
                   {totalQuantity > 999 ? "+999" : totalQuantity}
                 </span>
               )}
-              <IoCartOutline className="text-3xl text-customBlue" />
+              <HiOutlineShoppingCart className="text-3xl text-customBlue hover:text-blue-600 transition-colors" />
             </Link>
-            <CiHeart className="text-3xl text-customBlue" />
+            <HiOutlineHeart className="text-3xl text-customBlue hover:text-red-500 transition-colors cursor-pointer" />
             {!token ? (
               <Link to={"/signup"}>
-                <BiUser className="text-3xl text-customBlue" />
+                <HiOutlineUser className="text-3xl text-customBlue hover:text-blue-600 transition-colors" />
               </Link>
             ) : (
               <div className="relative" ref={dropdownRef}>
-                <BiUser
+                <HiOutlineUser
                   onClick={toggleLogout}
-                  className="text-3xl cursor-pointer text-customBlue"
+                  className="text-3xl cursor-pointer text-customBlue hover:text-blue-600 transition-colors"
                 />
                 {isDropdownOpen && (
                   <div className="absolute right-0 w-48 mt-2 bg-white border rounded shadow-lg">

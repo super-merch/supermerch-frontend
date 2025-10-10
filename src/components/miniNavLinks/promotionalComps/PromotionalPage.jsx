@@ -1,18 +1,15 @@
-import React from 'react'
-import Promotional from './Promotional'
-import PromotionalNavigate from './PromotionalNavigate'
+import React from "react";
+import Promotional from "./Promotional";
+import Breadcrumb from "../../shared/Breadcrumb";
 
 const PromotionalPage = () => {
-    return (
-        <div>
-            <PromotionalNavigate />
-            <Promotional />
-            <div className='mt-10'>
+  return (
+    <div>
+      <Breadcrumb />
+      <Promotional />
+      <div className="mt-10">{/* <TabsBtns /> */}</div>
+    </div>
+  );
+};
 
-                {/* <TabsBtns /> */}
-            </div>
-        </div>
-    )
-}
-
-export default PromotionalPage
+export default PromotionalPage;

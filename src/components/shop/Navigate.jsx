@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const Navigate = () => {
   const [location, setLocation] = useState("")
@@ -25,6 +25,6 @@ const Navigate = () => {
       </div>
     </div>
   );
-}
+};
 
-export default Navigate
+export default Navigate;

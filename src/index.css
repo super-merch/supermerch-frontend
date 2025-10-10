@@ -1,22 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-*{
+* {
   padding: 0px;
   margin: 0px;
   box-sizing: border-box;
 }
-body{
-font-family: "Red Hat Text", sans-serif;}
+body {
+  font-family: "Red Hat Text", sans-serif;
+}
 
-.Mycontainer{
+/* Ensure all elements use Red Hat Text font */
+* {
+  font-family: "Red Hat Text", sans-serif;
+}
+
+/* Standardize heading styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Red Hat Text", sans-serif;
+  font-weight: 600;
+}
+
+/* Standardize text elements */
+p,
+span,
+div,
+a,
+button,
+input,
+textarea,
+select {
+  font-family: "Red Hat Text", sans-serif;
+}
+
+.Mycontainer {
   width: 90%;
   max-width: 1500px;
   margin: auto;
 }
-.Mycontainer2{
+.Mycontainer2 {
   width: 90%;
   max-width: 1400px;
   margin: auto;
@@ -35,25 +64,233 @@ font-family: "Red Hat Text", sans-serif;}
   appearance: textfield;
 }
 
-
-@media all and (max-width:768px){
-  .Mycontainer2{
+@media all and (max-width: 768px) {
+  .Mycontainer2 {
     width: 100%;
   }
 }
 
+/* Mobile-specific improvements with specified breakpoints */
 
+/* Small phones (iPhone SE, older Android) */
+@media (max-width: 360px) {
+  .Mycontainer {
+    width: 95%;
+    padding: 0 0.75rem;
+  }
 
-/* ensure two slides on very small screens if anything else interferes */
-@media (max-width: 479px) {
-  .mySwiper .swiper-slide {
-    width: calc((100% - 8px) / 2) !important; /* match spaceBetween */
-    max-width: calc((100% - 8px) / 2) !important;
+  .Mycontainer2 {
+    width: 95%;
+    padding: 0 0.75rem;
+  }
+
+  /* Ensure minimum touch targets */
+  button,
+  .cursor-pointer,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Smaller text for very small screens */
+  .text-xs {
+    font-size: 0.65rem;
+  }
+  .text-sm {
+    font-size: 0.75rem;
+  }
+  .text-base {
+    font-size: 0.875rem;
+  }
+  .text-lg {
+    font-size: 1rem;
+  }
+  .text-xl {
+    font-size: 1.125rem;
+  }
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+  .text-4xl {
+    font-size: 1.75rem;
   }
 }
 
+/* Standard phones (iPhone 13–15, Samsung Galaxy, Pixel) */
+@media (max-width: 414px) {
+  .Mycontainer {
+    width: 95%;
+    padding: 0 1rem;
+  }
 
+  .Mycontainer2 {
+    width: 95%;
+    padding: 0 1rem;
+  }
 
+  /* Touch-friendly elements */
+  button,
+  .cursor-pointer,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Large phones / phablets */
+@media (max-width: 480px) {
+  .Mycontainer {
+    width: 95%;
+    padding: 0 1rem;
+  }
+
+  .Mycontainer2 {
+    width: 95%;
+    padding: 0 1rem;
+  }
+}
+
+/* Portrait tablets (iPad Mini, Android tablets) */
+@media (max-width: 768px) {
+  .Mycontainer {
+    width: 95%;
+    padding: 0 1.5rem;
+  }
+
+  .Mycontainer2 {
+    width: 95%;
+    padding: 0 1.5rem;
+  }
+
+  /* Touch-friendly elements */
+  button,
+  .cursor-pointer,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input,
+  textarea,
+  select {
+    min-height: 44px;
+  }
+}
+
+/* Landscape tablets / small laptops (iPad Pro, Surface Go) */
+@media (max-width: 1024px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Touch-friendly elements */
+  button,
+  .cursor-pointer,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Standard laptops / desktops */
+@media (max-width: 1366px) {
+  .Mycontainer {
+    width: 90%;
+    max-width: 1200px;
+  }
+
+  .Mycontainer2 {
+    width: 90%;
+    max-width: 1200px;
+  }
+}
+
+/* Full HD displays */
+@media (max-width: 1920px) {
+  .Mycontainer {
+    width: 90%;
+    max-width: 1400px;
+  }
+
+  .Mycontainer2 {
+    width: 90%;
+    max-width: 1400px;
+  }
+}
+
+/* Quad HD (2K) displays */
+@media (max-width: 2560px) {
+  .Mycontainer {
+    width: 90%;
+    max-width: 1500px;
+  }
+
+  .Mycontainer2 {
+    width: 90%;
+    max-width: 1500px;
+  }
+}
+
+/* Ultra HD (4K and larger) */
+@media (min-width: 2561px) {
+  .Mycontainer {
+    width: 90%;
+    max-width: 1800px;
+  }
+
+  .Mycontainer2 {
+    width: 90%;
+    max-width: 1800px;
+  }
+}
+
+/* Touch-friendly button sizes for all touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  .cursor-pointer,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input,
+  textarea,
+  select {
+    min-height: 44px;
+  }
+
+  /* Disable hover effects on touch devices */
+  .hover\:text-blue-400:hover,
+  .hover\:bg-gray-100:hover,
+  .hover\:bg-gray-50:hover,
+  .hover\:bg-gray-700:hover,
+  .hover\:underline:hover,
+  .hover\:shadow-xl:hover,
+  .hover\:scale-105:hover,
+  .hover\:scale-110:hover {
+    color: inherit;
+    background-color: inherit;
+    text-decoration: none;
+    box-shadow: inherit;
+    transform: none;
+  }
+
+  /* Prevent hover-triggered dropdowns on touch devices */
+  .group:hover .group-hover\:flex {
+    display: none !important;
+  }
+
+  .group:hover .group-hover\:block {
+    display: none !important;
+  }
+}
 
 @layer base {
   :root {
@@ -111,12 +348,6 @@ font-family: "Red Hat Text", sans-serif;}
   }
 }
 
-
-
-
-
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -126,5 +357,18 @@ font-family: "Red Hat Text", sans-serif;}
   }
 }
 
+/* Custom animations for sidebar */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}

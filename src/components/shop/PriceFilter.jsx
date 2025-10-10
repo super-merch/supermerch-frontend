@@ -1,160 +1,148 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setMinPrice,
-  setMaxPrice,
-  applyFilters,
-} from "../../redux/slices/filterSlice";
-import { Range } from "react-range"; 
+import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
 import { toast } from "react-toastify";
 
 const PriceFilter = () => {
   const dispatch = useDispatch();
-  const { minPrice, maxPrice } = useSelector((state) => state.filters);
-  const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
   const [localMin, setLocalMin] = useState("");
   const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const debounceTimer = useRef(null);
 
-  const handleRangeChange = (values) => {
-    setPriceRange(values);
-  };
+  const handleApplyCustomRange = () => {
+    const minValue = Number(localMin);
+    const maxValue = Number(localMax);
 
-  const handleRangeFinalChange = (values) => {
-    const [min, max] = values;
+    if (!localMin || !localMax || isNaN(minValue) || isNaN(maxValue)) {
+      toast.error("Please enter valid numbers for Min and Max Price");
+      return;
+    }
+    if (maxValue < 0 || minValue <= -1) {
+      // Only check if max is negative since min can be 0
+      toast.error("Price cannot be negative");
+      return;
+    }
+    if (minValue >= maxValue) {
+      toast.error("Min Price should be less than Max Price");
+      return;
+    }
+
     setIsApplying(true);
-    dispatch(setMinPrice(min));
-    dispatch(setMaxPrice(max));
+    dispatch(setMinPrice(minValue));
+    dispatch(setMaxPrice(maxValue));
     dispatch(applyFilters());
-    
+    setLocalMin("");
+    setLocalMax("");
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
   };
-
-  const priceRanges = [
-    { label: "All Prices", min: 0, max: 1000 },
-    // { label: "Under $10", min: 0, max: 10 },
-    // { label: "$10 to $50", min: 10, max: 50 },
-    // { label: "$50 to $100", min: 50, max: 100 },
-    
-    // { label: "$100 to $150", min: 100, max: 150 },
-    // { label: "$150 to $200", min: 150, max: 200 },
-    // { label: "$200 to $250", min: 200, max: 250 },
-  ];
-
-  const handleApplyCustomRange = () => {
-  const minValue = Number(localMin);
-  const maxValue = Number(localMax);
-  
-  if (!localMin || !localMax || isNaN(minValue) || isNaN(maxValue)) {
-    toast.error("Please enter valid numbers for Min and Max Price");
-    return;
-  }
-  if (maxValue < 0 || minValue <=-1) { // Only check if max is negative since min can be 0
-    toast.error("Price cannot be negative");
-    return;
-  }
-  if (minValue >= maxValue) {
-    toast.error("Min Price should be less than Max Price");
-    return;
-  }
-  
-  setIsApplying(true);
-  dispatch(setMinPrice(minValue));
-  dispatch(setMaxPrice(maxValue));
-  dispatch(applyFilters());
-  setLocalMin("");
-  setLocalMax("");
-  
-  // Reset applying state after a short delay
-  setTimeout(() => setIsApplying(false), 1000);
-};
 
   const handlePresetRangeClick = (range) => {
     setIsApplying(true);
-    setPriceRange([range.min, range.max]);
     dispatch(setMinPrice(range.min));
     dispatch(setMaxPrice(range.max));
     dispatch(applyFilters());
-    
+
     // Reset applying state after a short delay
     setTimeout(() => setIsApplying(false), 1000);
-    
-
   };
 
-  return (
-    <>
-      <h1 className="mb-2 text-base font-medium uppercase text-brand">
-        Unit Price ($)
-      </h1>
-      
-      {/* Show current filter status */}
-      {(minPrice !== 0 || maxPrice !== 1000) && (
-        <div className="mb-4 p-2 bg-blue-100 border border-blue-300 rounded text-sm">
-          <p className="text-blue-800">
-            Active Filter: ${minPrice} - ${maxPrice}
-            {isApplying && <span className="ml-2 text-blue-600">(Applying...)</span>}
-          </p>
-        </div>
-      )}
-      
-      <div className="flex flex-col gap-4 pb-6 mt-4 border-b-2">
-        <div className="flex gap-4 " >
+  // Auto-apply filter when both fields are filled with valid numbers
+  useEffect(() => {
+    // Clear existing timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
 
-        <input 
-          type="text" 
-          placeholder="From" 
-          value={localMin} 
-          className="border-[2px] max-w-20 text-center p-1" 
-          onChange={(e) => setLocalMin(e.target.value)}
-          />
-        <input 
-          type="text" 
-          placeholder="To" 
-          value={localMax} 
-          className="border-[2px] p-1 max-w-20 text-center" 
-          onChange={(e) => setLocalMax(e.target.value)}
-          />
+    // Only auto-apply if both fields have values and are valid numbers
+    if (localMin && localMax) {
+      const minValue = Number(localMin);
+      const maxValue = Number(localMax);
+
+      // Check if both are valid numbers and meet criteria
+      if (!isNaN(minValue) && !isNaN(maxValue) && maxValue >= 0 && minValue >= 0 && minValue < maxValue) {
+        // Set debounce timer
+        debounceTimer.current = setTimeout(() => {
+          setIsApplying(true);
+          dispatch(setMinPrice(minValue));
+          dispatch(setMaxPrice(maxValue));
+          dispatch(applyFilters());
+
+          // Clear the input fields after successful auto-apply
+          setLocalMin("");
+          setLocalMax("");
+
+          // Reset applying state after a short delay
+          setTimeout(() => setIsApplying(false), 1000);
+        }, 700); // 700ms debounce delay
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [localMin, localMax, dispatch]);
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-4">
+      {/* Price Input Fields */}
+      <div className="mb-4">
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+            <input
+              type="text"
+              placeholder="0"
+              value={localMin}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              onChange={(e) => setLocalMin(e.target.value)}
+            />
           </div>
-        <button
-          onClick={handleApplyCustomRange}
-          disabled={isApplying}
-          className={`px-4 max-w-44 py-2 text-white rounded ${
-            isApplying 
-              ? "bg-gray-400 cursor-not-allowed" 
-              : "bg-smallHeader hover:bg-smallHeader-dark"
-          }`}
-        >
-          {isApplying ? "Applying..." : "Apply"}
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+            <input
+              type="text"
+              placeholder="1000"
+              value={localMax}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              onChange={(e) => setLocalMax(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Apply Button - Hidden since auto-apply is now active */}
+      {/* <button
+        onClick={handleApplyCustomRange}
+        disabled={isApplying}
+        className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
+          isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+        }`}
+      >
+        {isApplying ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+            <span>Applying...</span>
+          </>
+        ) : (
+          <>
+            <span>Apply Filter</span>
+          </>
+        )}
+      </button> */}
+
+      {/* All Prices Link */}
+      <div className="text-center">
+        <button onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })} className="text-blue-600 hover:text-blue-800 text-sm">
+          All Prices
         </button>
       </div>
-      
-      <div className="mt-4">
-        <div className="flex flex-col gap-2">
-          {priceRanges.map((range, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 mt-1 transition duration-300 transform cursor-pointer group hover:scale-x-95"
-            >
-              <p
-                onClick={() => handlePresetRangeClick(range)}
-                className={`hover:underline ${
-                  minPrice === range.min && maxPrice === range.max
-                    ? "underline text-smallHeader font-semibold"
-                    : ""
-                } ${isApplying ? "pointer-events-none opacity-50" : ""}`}
-              >
-                {range.label}
-                {isApplying && minPrice === range.min && maxPrice === range.max && (
-                  <span className="ml-2 text-xs">(Applying...)</span>
-                )}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
