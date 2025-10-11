@@ -11,6 +11,7 @@ import {
 } from "@/redux/slices/favouriteSlice";
 import { clearCart } from "@/redux/slices/cartSlice";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
+import { useQuery } from "@tanstack/react-query";
 
 export const AppContext = createContext();
 
@@ -106,6 +107,47 @@ const AppContextProvider = (props) => {
   const [shopCategory, setShopCategory] = useState(null);
 
   const options = { day: "2-digit", month: "short", year: "numeric" };
+
+  const [paginationData, setPaginationData] = useState({
+    page: 1,
+    limit: 9,
+    sortOption: "",
+    filter: true,
+    productTypeId: "",
+  });
+
+  const getProductsFromApi = async () => {
+    const response = await fetch(
+      `${backednUrl}/api/client-products?product_type_ids=${paginationData.productTypeId}&page=${paginationData.page}&limit=${paginationData.limit}&sort=${paginationData.sortOption}&filter=true`
+    );
+    const res = await response.json();
+    return res;
+  };
+
+  const { data: getProducts, isLoading: productsLoading } = useQuery({
+    queryKey: [
+      paginationData.productTypeId,
+      paginationData.page,
+      paginationData.limit,
+      paginationData.sortOption,
+      paginationData.filter,
+      paginationData.productTypeId,
+    ],
+    queryFn: () => getProductsFromApi(),
+  });
+
+  const refetchProducts = () => {
+    queryClient.invalidateQueries({
+      queryKey: [
+        paginationData.productTypeId,
+        paginationData.page,
+        paginationData.limit,
+        paginationData.sortOption,
+        paginationData.filter,
+        paginationData.productTypeId,
+      ],
+    });
+  };
 
   const loadUserOrder = async () => {
     try {
@@ -1258,6 +1300,12 @@ const AppContextProvider = (props) => {
     setOpenLoginModal,
     productsCategoryLoading,
     setProductsCategory,
+
+    paginationData,
+    setPaginationData,
+    getProducts,
+    productsLoading,
+    refetchProducts,
   };
 
   return (

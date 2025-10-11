@@ -41,7 +41,7 @@ const Headwear = ({ activeTab }) => {
   // }, []);
   // Fetch products when tab opens
   useEffect(() => {
-    if (activeTab === "Headwear" && products.length === 0) {
+    if (activeTab === "Headwear") {
       fetchClothingProducts();
     }
   }, [activeTab]);
@@ -125,6 +125,7 @@ const Headwear = ({ activeTab }) => {
     <>
       {activeTab === "Headwear" && (
         <div className="pb-10 Mycontainer">
+          {console.log(products, "products")}
           <div className="grid gap-5 max-default:grid-cols-1 lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
             {loading
               ? Array.from({ length: 8 }).map((_, index) => (
