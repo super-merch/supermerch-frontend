@@ -61,7 +61,7 @@ const ProductDetails = () => {
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorFetching, setErrorFetching] = useState(false);
-  const [activeInfoTab, setActiveInfoTab] = useState("features");
+  const [activeInfoTab, setActiveInfoTab] = useState("pricing");
 
   useEffect(() => {
     const fetchUserEmail = async () => {

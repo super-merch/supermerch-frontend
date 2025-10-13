@@ -75,9 +75,9 @@ const HeroWithHotDeals = () => {
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
       <div className="Mycontainer">
-        <div className="flex flex-col xl:flex-row gap-4 h-auto sm:h-80 ">
+        <div className="flex flex-col xl:flex-row gap-4 ">
           {/* Image Slider - 75% width */}
-          <div className="w-full xl:w-3/4 h-64 sm:h-80 md:h-full relative">
+          <div className="w-full xl:w-3/4 h-64 sm:h-96 md:h-96 relative">
             {/* Navigation Arrow - Right Only */}
             <div className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
               <button className="swiper-button-next-custom p-2 sm:p-3 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
@@ -118,10 +118,10 @@ const HeroWithHotDeals = () => {
                       // apply either bgClass or nothing, plus common cover/center sizing
                       className={`${
                         slide.bgClass ?? ""
-                      } bg-cover bg-center w-full h-full`}
+                      } bg-cover bg-center w-full h-full flex justify-start items-end`}
                       style={style}
                     >
-                      <div className="pt-4 pb-4 sm:pt-6 sm:pb-6 text-line px-4 sm:px-6 xl:pt-12 md:pt-12 xl:pb-12 md:pb-12">
+                      <div className="pt-4 pb-4 sm:pt-6 sm:pb-6 text-line px-4 sm:px-6 xl:pt-12 md:pt-12 xl:pb-12 md:pb-12 mt-auto">
                         <div className="flex items-center gap-2 text-xs sm:text-sm">
                           <span className="w-4 sm:w-5 bg-line h-[2px]" />
                           <h3 className="uppercase">{slide.span}</h3>

@@ -63,7 +63,7 @@ const TabsCategory = () => {
   };
 
   return (
-    <div>
+    <>
       <style jsx>{`
         @keyframes fadeInUp {
           from {
@@ -77,13 +77,13 @@ const TabsCategory = () => {
         }
       `}</style>
       <div style={{ backgroundColor: "#e3f2fd" }}>
-        <div className="Mycontainer pb-16">
+        <div className="Mycontainer mb-12">
           <Heading
             title="MORE WAY'S TO SHOP"
             align="center"
             size="default"
             titleClassName="uppercase"
-            containerClassName="xl:pt-8 md:pt-8 sm:pt-8 pt-4"
+            containerClassName=""
           />
           {/* <div className="TabsCategory"> */}
           {/* Main Category Tabs */}
@@ -105,7 +105,7 @@ const TabsCategory = () => {
 
           {/* Subcategories for the active main category */}
           <div
-            className={`mt-4 sm:mt-6 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 md:grid-cols-3 text-center xl:gap-6 md:gap-6 gap-3 sm:gap-4 transition-all duration-300 ${
+            className={`mt-4 sm:mt-6 grid grid-cols-2 xl:grid-cols-4 md:grid-cols-3 text-center xl:gap-6 md:gap-6 gap-3 sm:gap-4 transition-all duration-300 ${
               isAnimating
                 ? "opacity-0 transform translate-y-4"
                 : "opacity-100 transform translate-y-0"
@@ -160,7 +160,7 @@ const TabsCategory = () => {
           {/* </div> */}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

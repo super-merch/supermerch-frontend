@@ -34,12 +34,14 @@ const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
   return pages;
 };
 
-const Cards = () => {
+const Cards = ({ category = "dress" }) => {
   const [maxVisiblePages, setMaxVisiblePages] = useState(6);
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const selectedCategory = useSelector((state) => state.filters.categoryId);
+  const [cardHover, setCardHover] = useState(null);
+
   const { activeFilters, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
@@ -59,13 +61,13 @@ const Cards = () => {
     productsLoading,
     refetchProducts,
   } = useContext(AppContext);
+
   const [searchParams] = useSearchParams();
   const getProductsData = getProducts?.data;
   const itemsPerPage = getProducts?.items_per_page;
   const totalPages = getProducts?.total_pages;
   const itemCount = getProducts?.item_count;
   const currentPage = paginationData.page;
-  const [cardHover, setCardHover] = useState(null);
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
@@ -74,9 +76,15 @@ const Cards = () => {
       setPaginationData({
         ...paginationData,
         productTypeId: searchParams.get("category"),
+        category: null,
+      });
+    } else {
+      setPaginationData({
+        ...paginationData,
+        category: category,
       });
     }
-  }, [searchParams.get("category")]);
+  }, [searchParams, category]);
 
   favouriteItems.map((item) => {
     favSet.add(item.meta.id);
@@ -280,7 +288,7 @@ const Cards = () => {
               </div>
             </div>
           </div>
-          ``
+
           <div
             className={`${
               productsLoading
@@ -289,7 +297,7 @@ const Cards = () => {
             }`}
           >
             {productsLoading ? (
-              [1, 2, 3, 4, 5, 6].map((_, index) => (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
             ) : getProductsData?.length > 0 ? (

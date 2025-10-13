@@ -113,15 +113,33 @@ const AppContextProvider = (props) => {
     limit: 9,
     sortOption: "",
     filter: true,
-    productTypeId: "",
+    productTypeId: null,
+    category: null,
   });
 
   const getProductsFromApi = async () => {
-    const response = await fetch(
-      `${backednUrl}/api/client-products?product_type_ids=${paginationData.productTypeId}&page=${paginationData.page}&limit=${paginationData.limit}&sort=${paginationData.sortOption}&filter=true`
-    );
-    const res = await response.json();
-    return res;
+    const params = new URLSearchParams({
+      ...(paginationData.productTypeId && {
+        product_type_ids: paginationData.productTypeId,
+      }),
+      page: paginationData.page,
+      ...(paginationData.limit && { limit: paginationData.limit }),
+      ...(paginationData.sortOption && { sort: paginationData.sortOption }),
+      ...(paginationData.filter && { filter: paginationData.filter }),
+      ...(paginationData.category && { category: paginationData.category }),
+    });
+
+    let url = "";
+
+    if (paginationData.category) {
+      url = `${backednUrl}/api/client-products/category?${params.toString()}`;
+    } else {
+      url = `${backednUrl}/api/params-products?${params.toString()}`;
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+    return data;
   };
 
   const { data: getProducts, isLoading: productsLoading } = useQuery({
@@ -132,6 +150,7 @@ const AppContextProvider = (props) => {
       paginationData.sortOption,
       paginationData.filter,
       paginationData.productTypeId,
+      paginationData.category,
     ],
     queryFn: () => getProductsFromApi(),
   });
@@ -144,7 +163,6 @@ const AppContextProvider = (props) => {
         paginationData.limit,
         paginationData.sortOption,
         paginationData.filter,
-        paginationData.productTypeId,
       ],
     });
   };

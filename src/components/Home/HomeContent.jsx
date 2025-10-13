@@ -28,9 +28,8 @@ const HomeContent = () => {
       <BannerSection />
 
       {/* SHOP OUR BEST SELLERS - moved above Shop by Category */}
-      <div className="py-4">
-        <TabsButtons />
-      </div>
+
+      <TabsButtons />
 
       {/* Shop by Category Section */}
       <div className="py-4">

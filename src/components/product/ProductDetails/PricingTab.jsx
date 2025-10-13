@@ -202,7 +202,7 @@ const PricingTab = ({
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-center gap-4">
           <label className="md:text-lg text-md font-medium text-gray-700 whitespace-nowrap">
-            Custom Quantity:
+            Order Quantity:
           </label>
           <div className="flex items-center gap-2">
             <input

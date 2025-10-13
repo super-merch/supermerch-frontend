@@ -27,7 +27,7 @@ const BannerSection = () => {
               to={banner.link}
               className="group block overflow-hidden shadow-lg transition-all duration-300"
             >
-              <div className="relative w-full h-48 md:h-56 lg:h-64 overflow-hidden">
+              <div className="relative w-full h-48 md:h-56 lg:h-96 overflow-hidden">
                 <img
                   src={banner.image}
                   alt={banner.alt}
