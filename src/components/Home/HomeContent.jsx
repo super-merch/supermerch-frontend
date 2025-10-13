@@ -42,7 +42,7 @@ const HomeContent = () => {
       </div>
 
       {/* Easy Ways to Order - blank section for now */}
-      <div className="py-4">
+      {/* <div className="py-4">
         <div className="Mycontainer">
           <Heading
             title="EASY WAYS TO ORDER"
@@ -57,7 +57,7 @@ const HomeContent = () => {
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Let's Connect - Instagram Posts */}
       <div className="pt-2 pb-4">

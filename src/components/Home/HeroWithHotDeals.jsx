@@ -74,10 +74,10 @@ const HeroWithHotDeals = () => {
         }
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
-      <div className="Mycontainer">
-        <div className="flex flex-col xl:flex-row gap-4 ">
+      <div className="Mycontainer md:h-[40vh] h-full">
+        <div className="flex flex-col xl:flex-row  gap-4 h-full">
           {/* Image Slider - 75% width */}
-          <div className="w-full xl:w-3/4 h-64 sm:h-96 md:h-96 relative">
+          <div className="w-full xl:w-3/4 h-64 sm:h-96 md:h-full relative">
             {/* Navigation Arrow - Right Only */}
             <div className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
               <button className="swiper-button-next-custom p-2 sm:p-3 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
@@ -160,7 +160,7 @@ const HeroWithHotDeals = () => {
           </div>
 
           {/* Hot Deals Section - 25% width */}
-          <div className="w-full xl:w-1/4 h-auto md:h-full">
+          <div className="w-full xl:w-1/4 h-auto xl:h-full">
             <HotDeals />
           </div>
         </div>
