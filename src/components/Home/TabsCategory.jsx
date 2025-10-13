@@ -76,8 +76,8 @@ const TabsCategory = () => {
           }
         }
       `}</style>
-      <div style={{ backgroundColor: "#e3f2fd" }}>
-        <div className="Mycontainer mb-12">
+      <div className="bg-gray-100 pb-12">
+        <div className="Mycontainer mb-12 ">
           <Heading
             title="MORE WAY'S TO SHOP"
             align="center"

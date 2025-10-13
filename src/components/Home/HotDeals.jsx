@@ -51,7 +51,7 @@ const HotDeals = () => {
       </div>
 
       {/* Hot Deals List */}
-      <div className="flex-1 flex flex-col justify-start overflow-hidden">
+      <div className="flex-1 flex flex-col justify-start overflow-y-auto ">
         {skeletonLoading
           ? // Loading skeleton
             [...Array(4)].map((_, index) => {
