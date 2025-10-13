@@ -36,13 +36,20 @@ const Blogs = () => {
   ];
 
   // Display only 4 blogs - use fallback if no blogs available
-  const displayBlogs = blogs && blogs.length > 0 ? blogs.slice(0, 4) : fallbackBlogs;
+  const displayBlogs =
+    blogs && blogs.length > 0 ? blogs.slice(0, 4) : fallbackBlogs;
 
   return (
     <div className="w-full">
       <div className="Mycontainer">
-        <Heading title="OUR POPULAR BLOGS" align="center" size="default" titleClassName="uppercase" containerClassName="mb-8" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <Heading
+          title="OUR POPULAR BLOGS"
+          align="center"
+          size="default"
+          titleClassName="uppercase"
+          containerClassName="mb-8"
+        />
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {displayBlogs.map((blog, index) => (
             <div
               key={blog._id || index}
@@ -68,7 +75,12 @@ const Blogs = () => {
                 </h4>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-blue-600 font-medium">Read More →</span>
-                  <span className="text-gray-500">{new Date(blog?.createdAt).toLocaleDateString(undefined, options)}</span>
+                  <span className="text-gray-500">
+                    {new Date(blog?.createdAt).toLocaleDateString(
+                      undefined,
+                      options
+                    )}
+                  </span>
                 </div>
               </div>
             </div>

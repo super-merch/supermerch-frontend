@@ -3,11 +3,11 @@ import Breadcrumb from "../components/shared/Breadcrumb";
 import Cards from "../components/shop/Cards";
 import TabsBtns from "../components/shop/ProducsTabs/TabsBtns";
 import TabsButtons from "@/components/Home/ProducsTabs/TabsButtons";
-const ShopPage = () => {
+const ShopPage = ({ category }) => {
   return (
     <div>
       <Breadcrumb />
-      <Cards />
+      <Cards category={category} />
       <div className="mt-10">
         <TabsButtons />
       </div>

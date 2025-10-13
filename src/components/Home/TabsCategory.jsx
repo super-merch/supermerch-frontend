@@ -48,7 +48,9 @@ const TabsCategory = () => {
   const handleSubCategoryClick = (subCategory) => {
     const encodedMain = encodeURIComponent(activeCategory.name);
     // Navigate with query parameters: you can adjust the route as needed
-    navigate(`/category?categoryName=${encodedMain}&subCategory=${subCategory.label}&category=${activeCategory.id}`);
+    navigate(
+      `/category?categoryName=${encodedMain}&subCategory=${subCategory.label}&category=${activeCategory.id}`
+    );
     setShopCategory(subCategory.label);
   };
 
@@ -61,7 +63,7 @@ const TabsCategory = () => {
   };
 
   return (
-    <div>
+    <>
       <style jsx>{`
         @keyframes fadeInUp {
           from {
@@ -75,17 +77,17 @@ const TabsCategory = () => {
         }
       `}</style>
       <div style={{ backgroundColor: "#e3f2fd" }}>
-        <div className="Mycontainer pb-16">
+        <div className="Mycontainer mb-12">
           <Heading
             title="MORE WAY'S TO SHOP"
             align="center"
             size="default"
             titleClassName="uppercase"
-            containerClassName="xl:pt-8 md:pt-8 sm:pt-8 pt-4"
+            containerClassName=""
           />
           {/* <div className="TabsCategory"> */}
           {/* Main Category Tabs */}
-          <div className="xl:mt-6 md:mt-6 mt-4 flex flex-col sm:flex-row xl:grid md:grid sm:grid xl:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center xl:gap-6 md:gap-6 sm:gap-4 gap-2 sm:gap-1 border-b-4 border-blue-300">
+          <div className="xl:mt-6 md:mt-6 mt-0 flex sm:flex-row xl:grid md:grid sm:grid xl:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center xl:gap-6 md:gap-6 sm:gap-4 gap-2 sm:gap-1 border-b-4 border-blue-300">
             {megaMenu.slice(0, 4).map((category) => (
               <button
                 key={category.id}
@@ -103,8 +105,10 @@ const TabsCategory = () => {
 
           {/* Subcategories for the active main category */}
           <div
-            className={`mt-4 sm:mt-6 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 md:grid-cols-3 text-center xl:gap-6 md:gap-6 gap-3 sm:gap-4 transition-all duration-300 ${
-              isAnimating ? "opacity-0 transform translate-y-4" : "opacity-100 transform translate-y-0"
+            className={`mt-4 sm:mt-6 grid grid-cols-2 xl:grid-cols-4 md:grid-cols-3 text-center xl:gap-6 md:gap-6 gap-3 sm:gap-4 transition-all duration-300 ${
+              isAnimating
+                ? "opacity-0 transform translate-y-4"
+                : "opacity-100 transform translate-y-0"
             }`}
           >
             {activeCategory &&
@@ -114,7 +118,9 @@ const TabsCategory = () => {
                   onClick={() => handleSubCategoryClick(subCategory)}
                   className="bg-white rounded-xl lg:p-5 md:p-5 p-3 sm:p-4 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group min-h-[44px]"
                   style={{
-                    animation: isAnimating ? "none" : `fadeInUp 0.4s ease-out ${index * 50}ms both`,
+                    animation: isAnimating
+                      ? "none"
+                      : `fadeInUp 0.4s ease-out ${index * 50}ms both`,
                   }}
                 >
                   <div className="overflow-hidden rounded-lg">
@@ -125,7 +131,9 @@ const TabsCategory = () => {
                         (subCategory.label === "Pencils" && pencils) ||
                         (subCategory.label === "Misc" && misc) ||
                         (activeCategory.name == "Writing" && misc) ||
-                        (subCategory.label === "Misc" && activeCategory.name == "Bags" && bag) ||
+                        (subCategory.label === "Misc" &&
+                          activeCategory.name == "Bags" &&
+                          bag) ||
                         (subCategory.label == "Tote Bag" && tote) ||
                         (subCategory.label == "Business Bag" && business) ||
                         (subCategory.label == "Outdoor Bag" && outdoor) ||
@@ -134,7 +142,8 @@ const TabsCategory = () => {
                         (subCategory.label == "Glasses" && glass) ||
                         (subCategory.label == "Mugs" && mug) ||
                         (subCategory.label == "WristBands" && wrist) ||
-                        (subCategory.label == "Lanyards, Bagdes and Pins" && laynard) ||
+                        (subCategory.label == "Lanyards, Bagdes and Pins" &&
+                          laynard) ||
                         (subCategory.label == "Awards & Trophies" && trophy) ||
                         (subCategory.label == "Keyrings" && keyring)
                       }
@@ -151,7 +160,7 @@ const TabsCategory = () => {
           {/* </div> */}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

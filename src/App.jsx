@@ -86,17 +86,26 @@ const App = () => {
           {/* Akash */}
           {/* Other routes */}
           <Route path="/Promotional" element={<PromotionalPage />} />
-          <Route path="/Spromotional" element={<SpromotionalPage />} />
+          <Route
+            path="/Spromotional"
+            element={<ShopPage category="promotional" />}
+          />
           <Route path="/success" element={<Success />} />
           <Route path="/cancel" element={<Cancel />} />
           <Route path="hot-deals" element={<HotDeals />} />
           <Route path="/favourites" element={<FavouritePage />} />
-          <Route path="/Clothing" element={<ShopPage />} />
-          <Route path="/Headwear" element={<ShopPage />} />
+          <Route path="/Clothing" element={<ShopPage category="dress" />} />
+          <Route path="/Headwear" element={<ShopPage category="headwear" />} />
           <Route path="/ReturnGifts" element={<ShopPage />} />
-          <Route path="/production" element={<ShopPage />} />
-          <Route path="/Sale" element={<ShopPage />} />
-          <Route path="/Australia" element={<ShopPage />} />
+          <Route
+            path="/production"
+            element={<ShopPage category="production" />}
+          />
+          <Route path="/Sale" element={<ShopPage category="sale" />} />
+          <Route
+            path="/Australia"
+            element={<ShopPage category="australia" />}
+          />
           {/* SHOPPAGE  */}
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

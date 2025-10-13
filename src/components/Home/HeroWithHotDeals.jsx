@@ -22,7 +22,8 @@ const HeroWithHotDeals = () => {
       id: 1,
       span: "THE BEST PLACE Australia made products",
       title: "20% OFF +FREE SHIPPING",
-      description: "Rep your brand in style with custom hats, caps, and beanies.",
+      description:
+        "Rep your brand in style with custom hats, caps, and beanies.",
       buttonText: "Shop Now",
       // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",
@@ -74,14 +75,24 @@ const HeroWithHotDeals = () => {
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
       <div className="Mycontainer">
-        <div className="flex flex-col xl:flex-row gap-4 h-auto sm:h-80 md:h-[420px] xl:h-[500px]">
+        <div className="flex flex-col xl:flex-row gap-4 ">
           {/* Image Slider - 75% width */}
-          <div className="w-full xl:w-3/4 h-64 sm:h-80 md:h-full relative">
+          <div className="w-full xl:w-3/4 h-64 sm:h-96 md:h-96 relative">
             {/* Navigation Arrow - Right Only */}
             <div className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
               <button className="swiper-button-next-custom p-2 sm:p-3 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>
@@ -97,16 +108,20 @@ const HeroWithHotDeals = () => {
             >
               {slider.map((slide) => {
                 // decide inline style only if imageUrl is present
-                const style = slide.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {};
+                const style = slide.imageUrl
+                  ? { backgroundImage: `url(${slide.imageUrl})` }
+                  : {};
 
                 return (
                   <SwiperSlide key={slide.id}>
                     <div
                       // apply either bgClass or nothing, plus common cover/center sizing
-                      className={`${slide.bgClass ?? ""} bg-cover bg-center w-full h-full`}
+                      className={`${
+                        slide.bgClass ?? ""
+                      } bg-cover bg-center w-full h-full flex justify-start items-end`}
                       style={style}
                     >
-                      <div className="pt-4 pb-4 sm:pt-6 sm:pb-6 text-line px-4 sm:px-6 xl:pt-12 md:pt-12 xl:pb-12 md:pb-12">
+                      <div className="pt-4 pb-4 sm:pt-6 sm:pb-6 text-line px-4 sm:px-6 xl:pt-12 md:pt-12 xl:pb-12 md:pb-12 mt-auto">
                         <div className="flex items-center gap-2 text-xs sm:text-sm">
                           <span className="w-4 sm:w-5 bg-line h-[2px]" />
                           <h3 className="uppercase">{slide.span}</h3>
@@ -122,14 +137,18 @@ const HeroWithHotDeals = () => {
                             onClick={() => navigate("/shop")}
                             className="flex items-center justify-center w-full sm:w-40 gap-2 font-bold text-white cursor-pointer bg-heading h-11 sm:h-12 rounded-lg min-h-[44px] transition-all duration-300 hover:bg-heading/90"
                           >
-                            <button className="text-sm sm:text-base">{slide.buttonText}</button>
+                            <button className="text-sm sm:text-base">
+                              {slide.buttonText}
+                            </button>
                             <IoMdArrowForward className="text-sm sm:text-base" />
                           </div>
                           <div
                             onClick={() => setIsHelpModalOpen(true)}
                             className="flex items-center justify-center w-full sm:w-40 font-bold text-heading cursor-pointer border-2 border-heading h-11 sm:h-12 rounded-lg hover:bg-heading hover:text-white transition-all duration-300 min-h-[44px]"
                           >
-                            <button className="text-sm sm:text-base">Help me Pick</button>
+                            <button className="text-sm sm:text-base">
+                              Help me Pick
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -148,7 +167,10 @@ const HeroWithHotDeals = () => {
       </div>
 
       {/* Help Me Pick Modal */}
-      <HelpMePickModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
+      <HelpMePickModal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
     </div>
   );
 };
