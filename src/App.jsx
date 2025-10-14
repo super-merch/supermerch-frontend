@@ -44,6 +44,7 @@ import HourProduction24 from "./pages/HourProduction24";
 import UploadArtwork from "./pages/UploadArtwork";
 import { useModals } from "./hooks/useModals";
 import HotDeals from "./pages/HotDeals";
+import HourProduction24Products from "./components/shop/HourProduction24Products";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -97,10 +98,7 @@ const App = () => {
           <Route path="/Clothing" element={<ShopPage category="dress" />} />
           <Route path="/Headwear" element={<ShopPage category="headwear" />} />
           <Route path="/ReturnGifts" element={<ShopPage />} />
-          <Route
-            path="/production"
-            element={<ShopPage category="production" />}
-          />
+          <Route path="/production" element={<HourProduction24Products />} />
           <Route path="/Sale" element={<ShopPage category="sale" />} />
           <Route path="/Australia" element={<Australia />} />
           {/* SHOPPAGE  */}
