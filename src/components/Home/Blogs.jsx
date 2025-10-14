@@ -14,7 +14,7 @@ const Blogs = () => {
 
   return (
     <section className="Mycontainer">
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="">
         <h2 className="font-manrope text-4xl font-bold text-gray-900 text-center mb-14">
           Our popular blogs
         </h2>
@@ -47,7 +47,7 @@ const Blogs = () => {
               <SwiperSlide key={blog._id || index}>
                 <div
                   onClick={() => navigate(`/blogs/${blog?._id}`, {state: blog})}
-                  className="group cursor-pointer border border-gray-300 rounded-2xl p-5 transition-all duration-300 hover:border-indigo-600 hover:shadow-lg"
+                  className="group cursor-pointer border border-gray-300 rounded-2xl sm:p-5 p-3 transition-all duration-300 hover:border-indigo-600 hover:shadow-lg"
                 >
                   <div className="flex items-center mb-6">
                     <img

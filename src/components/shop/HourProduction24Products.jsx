@@ -409,27 +409,24 @@ const HourProduction24Products = () => {
             </div>
 
             {/* Results Count - Below Sort By */}
-            <div className="mb-6 px-2">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-brand text-base">
-                  {!isLoading && !skeletonLoading && !isFiltering && getTotalCount()}
+            <div className="hidden lg:block">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Product Count - Left Side */}
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-brand">
+                  {!isLoading && itemCount}
                 </span>
-                <p className="text-sm text-gray-600">
-                  {isLoading || isFiltering
+                <p className="">
+                  {isLoading
                     ? "Loading..."
-                    : `Results found (24 Hour Production Products)${isPriceFilterActive ? " (Price filtered)" : ""}`}
-                  {isFiltering && " Please wait a while..."}
+                    : `Results found ${
+                       "(Australia Products)"
+                      }${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  {isLoading && " Please wait a while..."}
                 </p>
               </div>
-            </div>
-          </div>
 
-          {/* Desktop Layout */}
-          <div className="hidden lg:block">
-            <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
-              <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-                {/* Placeholder for search if needed later */}
-              </div>
+              {/* Sort Dropdown - Right Side */}
               <div className="flex items-center gap-3">
                 <p>Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
@@ -437,28 +434,42 @@ const HourProduction24Products = () => {
                     className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
-                    {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevancy"}
+                    {sortOption === "lowToHigh"
+                      ? "Lowest to Highest"
+                      : sortOption === "highToLow"
+                      ? "Highest to Lowest"
+                      : "Relevancy"}
                     <span className="">
-                      {isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}
+                      {isDropdownOpen ? (
+                        <IoIosArrowUp className="text-black" />
+                      ) : (
+                        <IoIosArrowDown className="text-black" />
+                      )}
                     </span>
                   </button>
                   {isDropdownOpen && (
                     <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "lowToHigh" ? "bg-gray-100" : ""
+                        }`}
                       >
                         Lowest to Highest
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                        }`}
                       >
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                        onClick={() => handleSortSelection("revelancy")}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                        }`}
                       >
                         Relevancy
                       </button>
@@ -466,21 +477,6 @@ const HourProduction24Products = () => {
                   )}
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {isPriceFilterActive && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    ${minPrice} - ${maxPrice}
-                  </span>
-                  <button className="px-2 text-lg" onClick={handleClearPriceFilter}>
-                    x
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 
@@ -769,6 +765,7 @@ const HourProduction24Products = () => {
           </div>
         </div>
       )}
+      </div>
     </>
   );
 };

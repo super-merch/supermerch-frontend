@@ -1,26 +1,28 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { IoSearchOutline } from "react-icons/io5";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
-import { setSearchText, applyFilters } from "../../redux/slices/filterSlice";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
-import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";
-import { IoCartOutline, IoClose } from "react-icons/io5";
-import Skeleton from "react-loading-skeleton";
-import { setProducts } from "../../redux/slices/filterSlice";
-import noimage from "/noimage.png";
-import { setSelectedBrands, setMinPrice, setMaxPrice, setSelectedCategory } from "../../redux/slices/filterSlice";
-import { AppContext } from "../../context/AppContext";
-import UnifiedSidebar from "../shared/UnifiedSidebar";
-import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { useContext, useEffect, useRef, useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import {
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoIosHeart,
+  IoMdArrowBack,
+  IoMdArrowForward,
+} from "react-icons/io";
+import { IoClose } from "react-icons/io5";
+import Skeleton from "react-loading-skeleton";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
+import {
+  applyFilters,
+  setMaxPrice,
+  setMinPrice,
+  setProducts,
+  setSelectedBrands,
+  setSelectedCategory,
+} from "../../redux/slices/filterSlice";
+import noimage from "/noimage.png";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -74,12 +76,15 @@ const TrendCards = () => {
 
 
   // Get Redux filter state
-  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector((state) => state.filters);
+  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
+    useSelector((state) => state.filters);
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
 
-  const filteredProducts = useSelector((state) => state.filters.filteredProducts);
+  const filteredProducts = useSelector(
+    (state) => state.filters.filteredProducts
+  );
 
   useEffect(() => {
     if (contextTrendingProducts) {
@@ -134,7 +139,11 @@ const TrendCards = () => {
 
   // Function to fetch and filter trending products with price range
 
-  const fetchAndFilterTrendingProducts = async (minPrice, maxPrice, sortOption) => {
+  const fetchAndFilterTrendingProducts = async (
+    minPrice,
+    maxPrice,
+    sortOption
+  ) => {
     setIsFiltering(true);
     setFilterError("");
 
@@ -142,7 +151,11 @@ const TrendCards = () => {
       let maxPages = 1; // Start with fewer pages for faster response
 
       // Use the fetchMultipleTrendingPages method from AppContext
-      const fetchedProducts = await fetchMultipleTrendingPages(maxPages, 100, sortOption);
+      const fetchedProducts = await fetchMultipleTrendingPages(
+        maxPages,
+        100,
+        sortOption
+      );
       setFetchedPagesCount(maxPages); // Track how many pages we've fetched
 
       if (fetchedProducts && fetchedProducts.length > 0) {
@@ -155,7 +168,8 @@ const TrendCards = () => {
         if (filteredProducts.length > 0) {
           // Remove duplicates
           const uniqueProducts = filteredProducts.filter(
-            (product, index, self) => index === self.findIndex((p) => p.meta?.id === product.meta?.id)
+            (product, index, self) =>
+              index === self.findIndex((p) => p.meta?.id === product.meta?.id)
           );
 
           // Apply sorting to filtered products
@@ -169,12 +183,18 @@ const TrendCards = () => {
           });
 
           setAllFilteredProducts(sortedProducts);
-          setTotalFilteredPages(Math.ceil(sortedProducts.length / itemsPerPage));
+          setTotalFilteredPages(
+            Math.ceil(sortedProducts.length / itemsPerPage)
+          );
         } else {
-          setFilterError("No trending products found in the specified price range");
+          setFilterError(
+            "No trending products found in the specified price range"
+          );
         }
       } else {
-        setFilterError("No trending products found in the specified price range");
+        setFilterError(
+          "No trending products found in the specified price range"
+        );
       }
     } catch (error) {
       console.error("Error filtering trending products:", error);
@@ -197,15 +217,23 @@ const TrendCards = () => {
       const pagesToFetch = 3;
 
       // Fetch more pages From where we left off
-      const additionalProducts = await fetchMultipleTrendingPages(pagesToFetch, 100, sortOption, startPage);
+      const additionalProducts = await fetchMultipleTrendingPages(
+        pagesToFetch,
+        100,
+        sortOption,
+        startPage
+      );
 
       if (additionalProducts && additionalProducts.length > 0) {
         // Filter new products by price
         const newFilteredProducts = additionalProducts.filter((product) => {
           const price = getRealPrice(product);
-          const isInPriceRange = price >= minPrice && price <= maxPrice && price > 0;
+          const isInPriceRange =
+            price >= minPrice && price <= maxPrice && price > 0;
           // Also check if we don't already have this product
-          const notDuplicate = !allFilteredProducts.some((existing) => existing.meta?.id === product.meta?.id);
+          const notDuplicate = !allFilteredProducts.some(
+            (existing) => existing.meta?.id === product.meta?.id
+          );
           return isInPriceRange && notDuplicate;
         });
 
@@ -221,9 +249,14 @@ const TrendCards = () => {
           });
 
           // Add to existing products
-          const updatedProducts = [...allFilteredProducts, ...sortedNewProducts];
+          const updatedProducts = [
+            ...allFilteredProducts,
+            ...sortedNewProducts,
+          ];
           setAllFilteredProducts(updatedProducts);
-          setTotalFilteredPages(Math.ceil(updatedProducts.length / itemsPerPage));
+          setTotalFilteredPages(
+            Math.ceil(updatedProducts.length / itemsPerPage)
+          );
         }
 
         // Update the count of fetched pages
@@ -328,10 +361,16 @@ const TrendCards = () => {
         const priceGroups = product.product?.prices?.price_groups || [];
         const basePrice = priceGroups.find((group) => group?.base_price) || {};
         const priceBreaks = basePrice.base_price?.price_breaks || [];
-        const realPrice = priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : "0";
+        const realPrice =
+          priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
+            ? priceBreaks[0].price
+            : "0";
 
         const productName = product.overview.name || "";
-        return realPrice !== "0" && productName.toLowerCase().includes(searchProductName.toLowerCase());
+        return (
+          realPrice !== "0" &&
+          productName.toLowerCase().includes(searchProductName.toLowerCase())
+        );
       });
     }
   };
@@ -345,7 +384,8 @@ const TrendCards = () => {
   });
 
   // Check if any filters are active
-  const hasActiveFilters = searchProductName.trim() !== "" || isPriceFilterActive;
+  const hasActiveFilters =
+    searchProductName.trim() !== "" || isPriceFilterActive;
 
   const currentPageProducts = getCurrentPageProducts();
 
@@ -356,14 +396,17 @@ const TrendCards = () => {
       const basePrice = priceGroups.find((group) => group?.base_price) || {};
       const priceBreaks = basePrice.base_price?.price_breaks || [];
 
-      const prices = priceBreaks.map((breakItem) => breakItem.price).filter((price) => price !== undefined);
+      const prices = priceBreaks
+        .map((breakItem) => breakItem.price)
+        .filter((price) => price !== undefined);
 
       let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
 
       // Apply margin
       const productId = product.meta.id;
       const marginEntry = marginApi[productId] || {};
-      const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
+      const marginFlat =
+        typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
       minPrice += marginFlat;
 
       return minPrice;
@@ -378,14 +421,19 @@ const TrendCards = () => {
   });
 
   // Determine pagination logic
-  const paginationTotalPages = isPriceFilterActive ? totalFilteredPages : Math.ceil(sortedProducts.length / itemsPerPage);
+  const paginationTotalPages = isPriceFilterActive
+    ? totalFilteredPages
+    : Math.ceil(sortedProducts.length / itemsPerPage);
 
   const showPagination = paginationTotalPages > 1;
 
   // For regular view, slice the sorted products for current page
   const displayProducts = isPriceFilterActive
     ? sortedProducts
-    : sortedProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    : sortedProducts.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      );
 
   // Calculate total count for display
   const getTotalCount = () => {
@@ -438,7 +486,13 @@ const TrendCards = () => {
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
                     : "Relevency"}
-                  <span>{isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}</span>
+                  <span>
+                    {isDropdownOpen ? (
+                      <IoIosArrowUp className="text-black" />
+                    ) : (
+                      <IoIosArrowDown className="text-black" />
+                    )}
+                  </span>
                 </button>
 
                 {/* Dropdown only contains price sorts (no relevency option here) */}
@@ -449,7 +503,9 @@ const TrendCards = () => {
                         handleSortSelection("lowToHigh");
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "lowToHigh" ? "bg-gray-100" : ""
+                      }`}
                     >
                       Lowest to Highest
                     </button>
@@ -459,7 +515,9 @@ const TrendCards = () => {
                         handleSortSelection("highToLow");
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
                     >
                       Highest to Lowest
                     </button>
@@ -468,7 +526,9 @@ const TrendCards = () => {
                         handleSortSelection("relevancy");
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
                     >
                       Relevancy
                     </button>
@@ -483,27 +543,39 @@ const TrendCards = () => {
               {activeFilters.category && activeFilters.category !== "all" && (
                 <div className="filter-item">
                   <span className="text-sm">{activeFilters.category}</span>
-                  <button className="px-2 text-lg" onClick={() => handleClearFilter("category")}>
+                  <button
+                    className="px-2 text-lg"
+                    onClick={() => handleClearFilter("category")}
+                  >
                     x
                   </button>
                 </div>
               )}
               {activeFilters.brands && activeFilters.brands.length > 0 && (
                 <div className="filter-item">
-                  <span className="text-sm">{activeFilters.brands.join(", ")}</span>
-                  <button className="px-2 text-lg" onClick={() => handleClearFilter("brand")}>
+                  <span className="text-sm">
+                    {activeFilters.brands.join(", ")}
+                  </span>
+                  <button
+                    className="px-2 text-lg"
+                    onClick={() => handleClearFilter("brand")}
+                  >
                     x
                   </button>
                 </div>
               )}
               {activeFilters.price &&
                 activeFilters.price.length === 2 &&
-                (activeFilters.price[0] !== 0 || activeFilters.price[1] !== 1000) && (
+                (activeFilters.price[0] !== 0 ||
+                  activeFilters.price[1] !== 1000) && (
                   <div className="filter-item">
                     <span className="text-sm">
                       ${activeFilters.price[0]} - ${activeFilters.price[1]}
                     </span>
-                    <button className="px-2 text-lg" onClick={() => handleClearFilter("price")}>
+                    <button
+                      className="px-2 text-lg"
+                      onClick={() => handleClearFilter("price")}
+                    >
                       x
                     </button>
                   </div>
@@ -543,12 +615,19 @@ const TrendCards = () => {
           >
             {skeletonLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div key={index} className="relative p-4 border rounded-lg shadow-md border-border2">
+                <div
+                  key={index}
+                  className="relative p-4 border rounded-lg shadow-md border-border2"
+                >
                   <Skeleton height={200} className="rounded-md" />
                   <div className="p-4">
                     <Skeleton height={20} width={120} className="rounded" />
                     <Skeleton height={15} width={80} className="mt-2 rounded" />
-                    <Skeleton height={25} width={100} className="mt-3 rounded" />
+                    <Skeleton
+                      height={25}
+                      width={100}
+                      className="mt-3 rounded"
+                    />
                     <Skeleton height={15} width={60} className="mt-2 rounded" />
                     <div className="flex items-center justify-between pt-2">
                       <Skeleton height={20} width={80} className="rounded" />
@@ -566,18 +645,29 @@ const TrendCards = () => {
               <div className="grid grid-cols-1 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {displayProducts
                   .filter((product) => {
-                    const priceGroups = product.product?.prices?.price_groups || [];
-                    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks = basePrice.base_price?.price_breaks || [];
-                    return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined;
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+                    return (
+                      priceBreaks.length > 0 &&
+                      priceBreaks[0]?.price !== undefined
+                    );
                   })
                   .map((product) => {
-                    const priceGroups = product.product?.prices?.price_groups || [];
-                    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks = basePrice.base_price?.price_breaks || [];
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
 
                     // Get an array of prices from priceBreaks (these are already discounted)
-                    const prices = priceBreaks.map((breakItem) => breakItem.price).filter((price) => price !== undefined);
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
 
                     // 1) compute raw min/max
                     let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
@@ -586,8 +676,14 @@ const TrendCards = () => {
                     // 2) pull margin info (guarding against undefined)
                     const productId = product.meta.id;
                     const marginEntry = marginApi[productId] || {};
-                    const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
-                    const baseMarginPrice = typeof marginEntry.baseMarginPrice === "number" ? marginEntry.baseMarginPrice : 0;
+                    const marginFlat =
+                      typeof marginEntry.marginFlat === "number"
+                        ? marginEntry.marginFlat
+                        : 0;
+                    const baseMarginPrice =
+                      typeof marginEntry.baseMarginPrice === "number"
+                        ? marginEntry.baseMarginPrice
+                        : 0;
 
                     // 3) apply the flat margin to both ends of the range
                     minPrice += (minPrice * marginFlat) / 100;
@@ -595,13 +691,19 @@ const TrendCards = () => {
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
-                    const isGlobalDiscount = product.discountInfo?.isGlobal || false;
+                    const isGlobalDiscount =
+                      product.discountInfo?.isGlobal || false;
 
                     return (
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id, product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >
@@ -619,7 +721,8 @@ const TrendCards = () => {
                           </div>
                         )}
                         <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                          {(productionIds.has(product.meta.id) || productionIds.has(String(product.meta.id))) && (
+                          {(productionIds.has(product.meta.id) ||
+                            productionIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
                               {/* small clock SVG (no extra imports) */}
                               <svg
@@ -650,7 +753,8 @@ const TrendCards = () => {
                             </span>
                           )}
 
-                          {(australiaIds.has(product.meta.id) || australiaIds.has(String(product.meta.id))) && (
+                          {(australiaIds.has(product.meta.id) ||
+                            australiaIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                               {/* simple flag/triangle SVG */}
                               <svg
@@ -660,8 +764,19 @@ const TrendCards = () => {
                                 xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden
                               >
-                                <path d="M3 6h10l-2 3 2 3H3V6z" fill="currentColor" />
-                                <rect x="3" y="4" width="1" height="16" rx="0.5" fill="currentColor" opacity="0.9" />
+                                <path
+                                  d="M3 6h10l-2 3 2 3H3V6z"
+                                  fill="currentColor"
+                                />
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="1"
+                                  height="16"
+                                  rx="0.5"
+                                  fill="currentColor"
+                                  opacity="0.9"
+                                />
                               </svg>
                               <span>Australia Made</span>
                             </span>
@@ -689,7 +804,11 @@ const TrendCards = () => {
                         {/* Enlarged image section */}
                         <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
                           <img
-                            src={product.overview.hero_image ? product.overview.hero_image : noimage}
+                            src={
+                              product.overview.hero_image
+                                ? product.overview.hero_image
+                                : noimage
+                            }
                             alt=""
                             className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                           />
@@ -711,91 +830,96 @@ const TrendCards = () => {
                                   ),
                                 ];
 
-                                return uniqueColors.slice(0, 12).map((color, index) => (
-                                  <div
-                                    key={index}
-                                    style={{
-                                      backgroundColor:
-                                        color
-                                          .toLowerCase()
-                                          // Blues
+                                return uniqueColors
+                                  .slice(0, 12)
+                                  .map((color, index) => (
+                                    <div
+                                      key={index}
+                                      style={{
+                                        backgroundColor:
+                                          color
+                                            .toLowerCase()
+                                            // Blues
 
-                                          .replace("navy", "#1e40af")
+                                            .replace("navy", "#1e40af")
 
-                                          // Greys/Neutrals
+                                            // Greys/Neutrals
 
-                                          .replace("grey", "#6b7280")
-                                          .replace("gray", "#6b7280")
-                                          .replace("charcoal", "#374151")
-                                          .replace("carbon", "#1f2937")
-                                          .replace("gunmetal", "#2a3439")
-                                          .replace("slate", "#64748b")
-                                          .replace("stone", "#78716c")
-                                          .replace("zinc", "#71717a")
-                                          .replace("neutral", "#737373")
-                                          .replace("taupe", "#b8860b")
+                                            .replace("grey", "#6b7280")
+                                            .replace("gray", "#6b7280")
+                                            .replace("charcoal", "#374151")
+                                            .replace("carbon", "#1f2937")
+                                            .replace("gunmetal", "#2a3439")
+                                            .replace("slate", "#64748b")
+                                            .replace("stone", "#78716c")
+                                            .replace("zinc", "#71717a")
+                                            .replace("neutral", "#737373")
+                                            .replace("taupe", "#b8860b")
 
-                                          // Greens
+                                            // Greens
 
-                                          .replace("mint", "#10b981")
-                                          .replace("sage", "#9ca3af")
-                                          .replace("kiwi", "#8fbc8f")
-                                          .replace("khaki", "#bdb76b")
-                                          .replace("teal", "#0d9488")
-                                          .replace("emerald", "#10b981")
+                                            .replace("mint", "#10b981")
+                                            .replace("sage", "#9ca3af")
+                                            .replace("kiwi", "#8fbc8f")
+                                            .replace("khaki", "#bdb76b")
+                                            .replace("teal", "#0d9488")
+                                            .replace("emerald", "#10b981")
 
-                                          // Reds/Pinks
+                                            // Reds/Pinks
 
-                                          .replace("burgundy", "#7f1d1d")
-                                          .replace("red", "#ef4444")
-                                          .replace("pink", "#ec4899")
-                                          .replace("coral", "#ff7f7f")
-                                          .replace("berry", "#8b0000")
-                                          .replace("maroon", "#7f1d1d")
-                                          .replace("rose", "#f43f5e")
-                                          .replace("fuchsia", "#d946ef")
+                                            .replace("burgundy", "#7f1d1d")
+                                            .replace("red", "#ef4444")
+                                            .replace("pink", "#ec4899")
+                                            .replace("coral", "#ff7f7f")
+                                            .replace("berry", "#8b0000")
+                                            .replace("maroon", "#7f1d1d")
+                                            .replace("rose", "#f43f5e")
+                                            .replace("fuchsia", "#d946ef")
 
-                                          // Oranges/Yellows
-                                          .replace("orange", "#f97316")
-                                          .replace("yellow", "#eab308")
-                                          .replace("mustard", "#ffdb58")
-                                          .replace("rust", "#b7410e")
-                                          .replace("amber", "#f59e0b")
+                                            // Oranges/Yellows
+                                            .replace("orange", "#f97316")
+                                            .replace("yellow", "#eab308")
+                                            .replace("mustard", "#ffdb58")
+                                            .replace("rust", "#b7410e")
+                                            .replace("amber", "#f59e0b")
 
-                                          // Purples
-                                          .replace("lavender", "#c084fc")
-                                          .replace("violet", "#8b5cf6")
-                                          .replace("indigo", "#6366f1")
-                                          .replace("purple", "#a855f7")
-                                          .replace("mauve", "#dda0dd")
+                                            // Purples
+                                            .replace("lavender", "#c084fc")
+                                            .replace("violet", "#8b5cf6")
+                                            .replace("indigo", "#6366f1")
+                                            .replace("purple", "#a855f7")
+                                            .replace("mauve", "#dda0dd")
 
-                                          // Browns/Beiges
-                                          .replace("cream", "#fef3c7")
-                                          .replace("beige", "#f5f5dc")
-                                          .replace("ecru", "#c2b280")
-                                          .replace("tan", "#d2b48c")
-                                          .replace("brown", "#92400e")
+                                            // Browns/Beiges
+                                            .replace("cream", "#fef3c7")
+                                            .replace("beige", "#f5f5dc")
+                                            .replace("ecru", "#c2b280")
+                                            .replace("tan", "#d2b48c")
+                                            .replace("brown", "#92400e")
 
-                                          // Other colors
-                                          .replace("turquoise", "#06b6d4")
-                                          .replace("aqua", "#22d3ee")
-                                          .replace("cyan", "#06b6d4")
-                                          .replace("lime", "#84cc16")
-                                          .replace("white", "#ffffff")
-                                          .replace("black", "#000000")
+                                            // Other colors
+                                            .replace("turquoise", "#06b6d4")
+                                            .replace("aqua", "#22d3ee")
+                                            .replace("cyan", "#06b6d4")
+                                            .replace("lime", "#84cc16")
+                                            .replace("white", "#ffffff")
+                                            .replace("black", "#000000")
 
-                                          .replace(" ", "") || // remove remaining spaces
-                                        color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-full border border-slate-900"
-                                  />
-                                ));
+                                            .replace(" ", "") || // remove remaining spaces
+                                          color.toLowerCase(),
+                                      }}
+                                      className="w-4 h-4 rounded-full border border-slate-900"
+                                    />
+                                  ));
                               })()}
                           </div>
                           <div className="text-center">
                             <h2
                               className={`text-sm transition-all duration-300 ${
-                                cardHover === product.meta.id && product.overview.name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
                               } font-semibold text-brand sm:leading-[18px] `}
                             >
                               {(product.overview.name &&
@@ -807,13 +931,20 @@ const TrendCards = () => {
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1">
-                              Min Qty: {product.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
+                                ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
 
                             {/* Updated Price display with better font */}
                             <div className="">
                               <h2 className="text-base sm:text-lg font-bold text-heading ">
-                                From ${minPrice === maxPrice ? <span>{minPrice.toFixed(2)}</span> : <span>{minPrice.toFixed(2)}</span>}
+                                From $
+                                {minPrice === maxPrice ? (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                )}
                               </h2>
                             </div>
                           </div>
@@ -824,7 +955,9 @@ const TrendCards = () => {
               </div>
             ) : (
               <div className="flex items-center justify-center h-full">
-                <p className="pt-10 text-xl text-center text-red-500">No Trending Products Found</p>
+                <p className="pt-10 text-xl text-center text-red-500">
+                  No Trending Products Found
+                </p>
               </div>
             )}
           </div>
@@ -839,12 +972,18 @@ const TrendCards = () => {
                 <IoMdArrowBack className="text-xl" />
               </button>
 
-              {getPaginationButtons(currentPage, paginationTotalPages, maxVisiblePages).map((page) => (
+              {getPaginationButtons(
+                currentPage,
+                paginationTotalPages,
+                maxVisiblePages
+              ).map((page) => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                    currentPage === page ? "bg-blue-600 text-white" : "hover:bg-gray-200"
+                    currentPage === page
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
                   }`}
                 >
                   {page}
@@ -852,7 +991,11 @@ const TrendCards = () => {
               ))}
 
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, paginationTotalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, paginationTotalPages)
+                  )
+                }
                 disabled={currentPage === paginationTotalPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
@@ -886,10 +1029,16 @@ const TrendCards = () => {
               />
 
               <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold text-brand mb-2">{selectedProduct.overview.name || "No Name"}</h2>
-                <p className="text-gray-600 mb-2">Code: {selectedProduct.overview.code}</p>
+                <h2 className="text-2xl font-bold text-brand mb-2">
+                  {selectedProduct.overview.name || "No Name"}
+                </h2>
+                <p className="text-gray-600 mb-2">
+                  Code: {selectedProduct.overview.code}
+                </p>
                 {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm leading-relaxed">{selectedProduct.overview.description}</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {selectedProduct.overview.description}
+                  </p>
                 )}
               </div>
             </div>

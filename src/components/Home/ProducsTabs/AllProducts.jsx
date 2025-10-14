@@ -39,7 +39,7 @@ const AllProducts = ({ activeTab }) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/client-products?page=1&limit=8&sort=&filter=true`
+        }/api/client-products?page=1&limit=10&sort=&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");

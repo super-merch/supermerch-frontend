@@ -12,7 +12,7 @@ import ImageCarousel from "./ImageCarousel";
 
 const HomeContent = () => {
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <HeroWithHotDeals />
       {/* Trending Products Section */}
       <div className="mt-8">
@@ -28,9 +28,8 @@ const HomeContent = () => {
       <BannerSection />
 
       {/* SHOP OUR BEST SELLERS - moved above Shop by Category */}
-      <div className="py-4">
-        <TabsButtons />
-      </div>
+
+      <TabsButtons />
 
       {/* Shop by Category Section */}
       <div className="py-4">
@@ -43,7 +42,7 @@ const HomeContent = () => {
       </div>
 
       {/* Easy Ways to Order - blank section for now */}
-      <div className="py-4">
+      {/* <div className="py-4">
         <div className="Mycontainer">
           <Heading
             title="EASY WAYS TO ORDER"
@@ -58,7 +57,7 @@ const HomeContent = () => {
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Let's Connect - Instagram Posts */}
       <div className="pt-2 pb-4">
@@ -69,7 +68,7 @@ const HomeContent = () => {
       <div className="pt-2 pb-4">
         <GoogleReviewsComponent />
       </div>
-    </>
+    </div>
   );
 };
 

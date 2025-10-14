@@ -911,14 +911,14 @@ const ProductDetails = () => {
                 }}
               >
                 <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-2 sm:p-2">
-                    <IoArrowBackOutline className="text-base lg:text-xl md:text-xl sm:text-xl" />
+                  <button className=" text-white  rounded-full custom-prev bg-smallHeader lg:p-2 md:p-2 sm:p-2">
+                    <IoArrowBackOutline className="text-base lg:text-xl mx-auto md:text-xl sm:text-xl" />
                   </button>
                 </div>
 
                 <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-2 sm:p-2">
-                    <IoMdArrowForward className="text-base lg:text-xl md:text-xl sm:text-xl" />
+                  <button className=" text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-2 sm:p-2">
+                    <IoMdArrowForward className="text-base lg:text-xl mx-auto md:text-xl sm:text-xl" />
                   </button>
                 </div>
 

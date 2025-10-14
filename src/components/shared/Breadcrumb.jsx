@@ -7,11 +7,20 @@ import { AppContext } from "../../context/AppContext";
 const Breadcrumb = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
+  const {
+    setSelectedParamCategoryId,
+    setCurrentPage,
+    setSidebarActiveCategory,
+    setActiveFilterCategory,
+  } = useContext(AppContext);
 
   // Get URL parameters
-  const categoryName = searchParams.get("categoryName") ? decodeURIComponent(searchParams.get("categoryName")) : null;
-  const subCategory = searchParams.get("subCategory") ? decodeURIComponent(searchParams.get("subCategory")) : null;
+  const categoryName = searchParams.get("categoryName")
+    ? decodeURIComponent(searchParams.get("categoryName"))
+    : null;
+  const subCategory = searchParams.get("subCategory")
+    ? decodeURIComponent(searchParams.get("subCategory"))
+    : null;
   const category = searchParams.get("category");
 
   // Determine the current page type and breadcrumb text
@@ -33,15 +42,15 @@ const Breadcrumb = () => {
     }
 
     // Category pages
-    if (pathname === "/Clothing") {
-      return { pageName: "Clothing", isSpecialPage: false };
-    }
-    if (pathname === "/Headwear") {
-      return { pageName: "Headwear", isSpecialPage: false };
-    }
-    if (pathname === "/Promotional" || pathname === "/Spromotional") {
-      return { pageName: "Promotional", isSpecialPage: false };
-    }
+    // if (pathname === "/Clothing") {
+    //   return { pageName: "Clothing", isSpecialPage: false };
+    // }
+    // if (pathname === "/Headwear") {
+    //   return { pageName: "Headwear", isSpecialPage: false };
+    // }
+    // if (pathname === "/Promotional" || pathname === "/Spromotional") {
+    //   return { pageName: "Promotional", isSpecialPage: false };
+    // }
 
     // Default fallback
     return { pageName: "Shop", isSpecialPage: false };
@@ -75,16 +84,22 @@ const Breadcrumb = () => {
   return (
     <div className="Mycontainer">
       {/* Mobile Layout */}
-      <div className="lg:hidden px-4 py-2">
+      <div className="lg:hidden px-4 py-8">
         <div className="flex flex-wrap items-center gap-1 text-smallHeader text-xs">
           {/* Home */}
-          <Link to="/" className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors">
+          <Link
+            to="/"
+            className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
+          >
             <p className="truncate">Home</p>
             <MdKeyboardArrowRight className="text-sm" />
           </Link>
 
           {/* Category */}
-          <Link to="/category" className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors">
+          <Link
+            to="/category"
+            className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
+          >
             <p className="truncate">Category</p>
             <MdKeyboardArrowRight className="text-sm" />
           </Link>
@@ -93,7 +108,7 @@ const Breadcrumb = () => {
           {categoryName && (
             <>
               <span
-                className="cursor-pointer hover:underline hover:text-smallHeader-dark transition-colors truncate"
+                className="hover:underline hover:text-smallHeader-dark transition-colors truncate"
                 onClick={handleCategoryClick}
               >
                 {categoryName}
@@ -129,7 +144,10 @@ const Breadcrumb = () => {
           {/* Main Category */}
           {categoryName && (
             <>
-              <span className="cursor-pointer hover:underline" onClick={handleCategoryClick}>
+              <span
+                className="cursor-pointer hover:underline"
+                onClick={handleCategoryClick}
+              >
                 {categoryName}
               </span>
               <MdKeyboardArrowRight className="text-xl" />

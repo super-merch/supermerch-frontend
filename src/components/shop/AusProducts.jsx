@@ -463,6 +463,19 @@ const AustraliaProducts = () => {
                 </div>
               )}
             </div>
+              <div className="flex items-center gap-1">
+                  <span className="font-semibold text-brand">
+                    {!isLoading && totalCount}
+                  </span>
+                  <p className="">
+                    {isLoading
+                      ? "Loading..."
+                      : `Results found ${
+                        "(Australia Products)"
+                        }${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                    {isLoading && " Please wait a while..."}
+                  </p>
+                </div>
           </div>
 
           {error && (

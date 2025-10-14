@@ -2,8 +2,7 @@ import { useSelector } from "react-redux";
 import Cards from "./Cards";
 
 const ProductList = () => {
-    const { filteredProducts } = useSelector((state) => state.filters);
-    console.log(useSelector((state)=>state,"state"))
+  const { filteredProducts } = useSelector((state) => state.filters);
   return (
     <div>
       {filteredProducts.map((product) => (
