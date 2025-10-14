@@ -34,6 +34,7 @@ import { AppContext } from "../../context/AppContext";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import Sidebar from "./Sidebar";
+import { slugify } from "@/utils/utils";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -77,6 +78,7 @@ const SearchCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const pageType = getPageTypeFromRoute(location.pathname);
+  const searchTerm = search.get("search");
 
   const {
     fetchSearchedProducts,
@@ -402,7 +404,11 @@ const SearchCard = () => {
   };
 
   const handleViewProduct = (productId, name) => {
-    navigate(`/product/${name}`, { state: productId });
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+      state: productId,
+    });
   };
 
   const setSearchTextChanger = (e) => {
@@ -493,7 +499,7 @@ const SearchCard = () => {
           {(searchLoading || isFiltering) && <UnifiedSidebar />}
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4">
+        <div className="lg:w-[75%] w-full md:mt-4">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
             <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {/* {!isPriceFilterActive && (
@@ -508,6 +514,9 @@ const SearchCard = () => {
                   <IoSearchOutline className="text-2xl" />
                 </>
               )} */}
+              <p>
+                Showing {getTotalCount()} results for {searchTerm}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
@@ -579,50 +588,57 @@ const SearchCard = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {activeFilters.category && activeFilters.category !== "all" && (
-                <div className="filter-item">
-                  <span className="text-sm">{activeFilters.category}</span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={() => handleClearFilter("category")}
-                  >
-                    x
-                  </button>
+          {activeFilters.category ||
+            activeFilters.brands ||
+            (activeFilters.price && (
+              <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
+                <div className="flex flex-wrap items-center gap-4">
+                  {activeFilters.category &&
+                    activeFilters.category !== "all" && (
+                      <div className="filter-item">
+                        <span className="text-sm">
+                          {activeFilters.category}
+                        </span>
+                        <button
+                          className="px-2 text-lg"
+                          onClick={() => handleClearFilter("category")}
+                        >
+                          x
+                        </button>
+                      </div>
+                    )}
+                  {activeFilters.brands && activeFilters.brands.length > 0 && (
+                    <div className="filter-item">
+                      <span className="text-sm">
+                        {activeFilters.brands.join(", ")}
+                      </span>
+                      <button
+                        className="px-2 text-lg"
+                        onClick={() => handleClearFilter("brand")}
+                      >
+                        x
+                      </button>
+                    </div>
+                  )}
+                  {activeFilters.price &&
+                    activeFilters.price.length === 2 &&
+                    (activeFilters.price[0] !== 0 ||
+                      activeFilters.price[1] !== 1000) && (
+                      <div className="filter-item">
+                        <span className="text-sm">
+                          ${activeFilters.price[0]} - ${activeFilters.price[1]}
+                        </span>
+                        <button
+                          className="px-2 text-lg"
+                          onClick={() => handleClearFilter("price")}
+                        >
+                          x
+                        </button>
+                      </div>
+                    )}
                 </div>
-              )}
-              {activeFilters.brands && activeFilters.brands.length > 0 && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    {activeFilters.brands.join(", ")}
-                  </span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={() => handleClearFilter("brand")}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
-              {activeFilters.price &&
-                activeFilters.price.length === 2 &&
-                (activeFilters.price[0] !== 0 ||
-                  activeFilters.price[1] !== 1000) && (
-                  <div className="filter-item">
-                    <span className="text-sm">
-                      ${activeFilters.price[0]} - ${activeFilters.price[1]}
-                    </span>
-                    <button
-                      className="px-2 text-lg"
-                      onClick={() => handleClearFilter("price")}
-                    >
-                      x
-                    </button>
-                  </div>
-                )}
-            </div>
-          </div>
+              </div>
+            ))}
 
           {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">

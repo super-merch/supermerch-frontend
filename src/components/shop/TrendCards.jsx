@@ -23,6 +23,7 @@ import {
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
+import { slugify } from "@/utils/utils";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -361,6 +362,8 @@ const TrendCards = () => {
   };
 
   const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
     navigate(`/product/${name}`, { state: productId });
   };
 

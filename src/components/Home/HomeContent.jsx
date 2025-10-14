@@ -8,7 +8,7 @@ import LetsConnect from "./LetsConnect";
 import GoogleReviewsComponent from "./GoogleReviews";
 import BannerSection from "./BannerSection";
 import { Heading } from "../Common";
-import ImageCarousel from "./ImageCarousel";
+import ImageCarousel from "./TrendingCarousel";
 
 const HomeContent = () => {
   return (
