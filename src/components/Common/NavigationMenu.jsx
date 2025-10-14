@@ -237,7 +237,16 @@ const NavigationMenu = ({
                 <span
                   className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
                   onMouseEnter={() => handleMouseEnter(item)}
-                  // onClick={() => handleItemClick(item)}
+                  onClick={() => {
+                    if (
+                      item.name === "Promotional" ||
+                      item.name === "Clothing" ||
+                      item.name === "Headwear"
+                    ) {
+                      return;
+                    }
+                    handleItemClick(item);
+                  }}
                 >
                   {item.name}
                   {item.hasSubmenu && (

@@ -21,7 +21,7 @@ import {
 } from "../../redux/slices/filterSlice";
 import Sidebar from "./Sidebar";
 import noimage from "/noimage.png";
-import { slugify } from "@/utils/utils";
+import { getProductPrice, slugify } from "@/utils/utils";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import { Clock, Flag } from "lucide-react";
 import { getPageTypeFromRoute } from "@/config/sidebarConfig";
@@ -554,12 +554,7 @@ const AustraliaProducts = () => {
 
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
-                              From $
-                              {minPrice === maxPrice ? (
-                                <span>{minPrice.toFixed(2)}</span>
-                              ) : (
-                                <span>{minPrice.toFixed(2)}</span>
-                              )}
+                              From ${getProductPrice(product, product.meta.id)}
                             </h2>
                             {discountPct > 0 && (
                               <p className="text-xs text-green-600 font-medium">

@@ -446,7 +446,7 @@ const HourProduction24Products = () => {
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         {/* Price Filter Sidebar */}
         <div className="lg:w-[25%]">
-          <Sidebar filter={true} />
+          <UnifiedSidebar filter={true} />
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-4">
@@ -871,6 +871,11 @@ const HourProduction24Products = () => {
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
                               From $
+                              {console.log(
+                                minPrice,
+                                maxPrice,
+                                "minPrice, maxPrice"
+                              )}
                               {minPrice === maxPrice ? (
                                 <span>{minPrice.toFixed(2)}</span>
                               ) : (
