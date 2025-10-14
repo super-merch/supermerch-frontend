@@ -1073,7 +1073,10 @@ const ProductDetails = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-extrabold text-green-600">
-                        ${getProductPrice(single_product, productId) ?? 0}{" "}
+                        $
+                        {getProductPrice(single_product, productId)?.toFixed(
+                          2
+                        ) ?? 0}{" "}
                         <span className="text-xs text-gray-500">per unit</span>
                       </span>
                     </div>

@@ -11,7 +11,7 @@ import {
 } from "@/redux/slices/favouriteSlice";
 import { clearCart } from "@/redux/slices/cartSlice";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AppContext = createContext();
 
@@ -105,7 +105,7 @@ const AppContextProvider = (props) => {
   const [selectedParamCategoryId, setSelectedParamCategoryId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [shopCategory, setShopCategory] = useState(null);
-
+  const queryClient = useQueryClient();
   const options = { day: "2-digit", month: "short", year: "numeric" };
 
   const [paginationData, setPaginationData] = useState({
@@ -115,6 +115,13 @@ const AppContextProvider = (props) => {
     filter: true,
     productTypeId: null,
     category: null,
+  });
+
+  const [australiaPaginationData, setAustraliaPaginationData] = useState({
+    page: 1,
+    limit: 9,
+    sortOption: "",
+    filter: true,
   });
 
   const getProductsFromApi = async () => {
@@ -163,6 +170,46 @@ const AppContextProvider = (props) => {
         paginationData.limit,
         paginationData.sortOption,
         paginationData.filter,
+      ],
+    });
+  };
+
+  const getAustraliaProductsFromApi = async () => {
+    const params = new URLSearchParams({
+      ...(australiaPaginationData.sortOption && {
+        sort: australiaPaginationData.sortOption,
+      }),
+      ...(australiaPaginationData.filter && {
+        filter: australiaPaginationData.filter,
+      }),
+      page: australiaPaginationData.page,
+      limit: australiaPaginationData.limit,
+    });
+    const response = await fetch(
+      `${backednUrl}/api/australia/get-products?${params.toString()}`
+    );
+    const data = await response.json();
+    return data;
+  };
+
+  const { data: getAustraliaProducts, isLoading: australiaProductsLoading } =
+    useQuery({
+      queryKey: [
+        australiaPaginationData.sortOption,
+        australiaPaginationData.filter,
+        australiaPaginationData.page,
+        australiaPaginationData.limit,
+      ],
+      queryFn: () => getAustraliaProductsFromApi(),
+    });
+
+  const refetchAustraliaProducts = () => {
+    queryClient.invalidateQueries({
+      queryKey: [
+        australiaPaginationData.sortOption,
+        australiaPaginationData.filter,
+        australiaPaginationData.page,
+        australiaPaginationData.limit,
       ],
     });
   };
@@ -1324,6 +1371,12 @@ const AppContextProvider = (props) => {
     getProducts,
     productsLoading,
     refetchProducts,
+
+    australiaPaginationData,
+    setAustraliaPaginationData,
+    getAustraliaProducts,
+    australiaProductsLoading,
+    refetchAustraliaProducts,
   };
 
   return (

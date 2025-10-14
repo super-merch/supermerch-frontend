@@ -102,10 +102,7 @@ const App = () => {
             element={<ShopPage category="production" />}
           />
           <Route path="/Sale" element={<ShopPage category="sale" />} />
-          <Route
-            path="/Australia"
-            element={<ShopPage category="australia" />}
-          />
+          <Route path="/Australia" element={<Australia />} />
           {/* SHOPPAGE  */}
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
