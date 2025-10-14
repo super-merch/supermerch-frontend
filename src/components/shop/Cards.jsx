@@ -311,7 +311,7 @@ const Cards = ({ category = "dress" }) => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                       onClick={() =>
                         handleViewProduct(
                           product.meta.id,
@@ -397,7 +397,7 @@ const Cards = ({ category = "dress" }) => {
                         </div>
                         <div className="relative flex justify-between text-center">
                           <div className="flex-1">
-                            <h2
+                            <p
                               className={`text-sm transition-all duration-300 ${
                                 cardHover === product.meta.id &&
                                 product.overview.name.length > 20
@@ -410,7 +410,7 @@ const Cards = ({ category = "dress" }) => {
                                 //   ? product.overview.name.slice(0, 20) + "..."
                                 product.overview.name) ||
                                 "No Name"}
-                            </h2>
+                            </p>
                             <p className="text-xs text-gray-500 pt-1">
                               Min Qty:{" "}
                               {product.product?.prices?.price_groups[0]

@@ -27,7 +27,7 @@ const TopBanner = ({ onCouponClick }) => {
             className="flex items-center text-white text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
             onClick={handleCouponClick}
           >
-            50% Promotion is going on
+            15% off on your First Order
           </span>
 
           {/* Vertical separator */}
