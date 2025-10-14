@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IoMdArrowForward } from "react-icons/io";
 import { Swiper, SwiperSlide } from "swiper/react";
 import HotDeals from "./HotDeals";
-import ImageCarousel from "./ImageCarousel";
+import ImageCarousel from "./TrendingCarousel";
 import HelpMePickModal from "./HelpMePickModal";
 
 import "swiper/css";
