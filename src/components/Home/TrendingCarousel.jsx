@@ -9,7 +9,7 @@ import noimage from "/noimage.png";
 import { slugify } from "@/utils/utils";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 
-const ImageCarousel = () => {
+const TrendingCarousel = () => {
   const navigate = useNavigate();
   const { fetchTrendingProducts, trendingProducts, trendingProductsLoading } =
     useContext(AppContext);
@@ -28,42 +28,33 @@ const ImageCarousel = () => {
     slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
-    speed: 2000,
+    speed: 1000,
     autoplaySpeed: 3000,
+    initialSlide: 0,
     arrows: true,
     infinite: true,
     nextArrow: <BiChevronRight />,
     prevArrow: <BiChevronLeft />,
     pauseOnHover: true,
-
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 1,
           dots: true,
-          arrows: false,
-          infinite: false,
         },
       },
       {
         breakpoint: 600,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 1,
-
-          arrows: false,
-          infinite: false,
         },
       },
       {
         breakpoint: 480,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 1,
-          arrows: false,
-          infinite: false,
+          initialSlide: 2,
         },
       },
     ],
@@ -194,4 +185,4 @@ const ImageCarousel = () => {
   );
 };
 
-export default ImageCarousel;
+export default TrendingCarousel;

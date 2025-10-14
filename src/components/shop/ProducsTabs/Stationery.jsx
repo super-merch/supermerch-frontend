@@ -4,13 +4,14 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useContext } from "react";
 import { AppContext } from "../../../context/AppContext";
 import noimage from "/noimage.png";
+import { slugify } from "@/utils/utils";
 
 const Stationery = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -23,8 +24,10 @@ const Stationery = ({ activeTab }) => {
     fetchProducts();
   }, []);
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const handleOpenModal = (product) => {
@@ -146,11 +149,21 @@ const Stationery = ({ activeTab }) => {
                     return (
                       <div
                         key={product.id}
-                        onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         className="relative border border-border2 cursor-pointer max-h-[350px] h-full group"
                       >
                         <div
-                          onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                          onClick={() =>
+                            handleViewProduct(
+                              product.meta.id,
+                              product.overview.name
+                            )
+                          }
                           className="max-h-[50%] h-full border-b overflow-hidden"
                         >
                           <img
@@ -202,7 +215,12 @@ const Stationery = ({ activeTab }) => {
                               <CiHeart />
                             </p>
                             <div
-                              onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                              onClick={() =>
+                                handleViewProduct(
+                                  product.meta.id,
+                                  product.overview.name
+                                )
+                              }
                               className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
                             >
                               <p className="text-xl">

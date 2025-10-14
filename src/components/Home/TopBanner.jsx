@@ -21,26 +21,25 @@ const TopBanner = ({ onCouponClick }) => {
         </div>
 
         {/* Center - Promotion text */}
-        <div className="order-3 md:order-2 w-full md:w-auto flex items-center justify-between md:justify-center md:text-center md:flex-1 gap-3 mt-3">
-          {/* First promotion text */}
+        <div className="order-3 md:order-2 w-full md:w-auto flex items-center justify-between md:justify-center md:text-center md:flex-1 gap-3">
+          {/* Promotion text */}
           <span
-            className="text-white text-sm sm:text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
+            className="flex items-center text-white text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
             onClick={handleCouponClick}
           >
             50% Promotion is going on
           </span>
 
           {/* Vertical separator */}
-          <div className="h-4 sm:h-5 md:h-6 w-px bg-white opacity-60 md:block hidden"></div>
+          <div className="hidden sm:block w-px h-4 bg-white/30"></div>
 
-          {/* Coupon section with icon */}
+          {/* Coupon section */}
           <div
             className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleCouponClick}
           >
-            <FaTag className="hidden sm:block text-white text-xs sm:text-sm md:text-lg" />
-            <span className="text-white text-sm sm:text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap">
-              Get Discount Using Coupon
+            <span className="underline text-white text-sm md:text-lg font-medium whitespace-nowrap">
+              Click here
             </span>
           </div>
         </div>

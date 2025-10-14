@@ -23,6 +23,7 @@ import {
   setSelectedCategory,
 } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
+import { slugify } from "@/utils/utils";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -306,20 +307,12 @@ const TrendCards = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${name}`, { state: productId });
+  };
 
   const setSearchTextChanger = (e) => {
     setSearchProductName(e.target.value);
