@@ -58,6 +58,7 @@ const Spromotional = () => {
     paginationData,
     setPaginationData,
     getProducts,
+    totalCount,
     productsLoading,
     refetchProducts,
   } = useContext(AppContext);
@@ -65,7 +66,7 @@ const Spromotional = () => {
   const getProductsData = getProducts?.data;
   const itemsPerPage = getProducts?.items_per_page;
   const totalPages = getProducts?.total_pages;
-  const itemCount = getProducts?.item_count;
+  const itemCount = totalCount;
   const currentPage = paginationData.page;
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);

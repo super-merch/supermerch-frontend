@@ -335,13 +335,13 @@ export const selectCurrentUserCartItems = (state) => {
   const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
   
   // Always include guest items along with user-specific items
-  const guestItems = state.cart.items.filter(item => item.userEmail === "guest@gmail.com");
+  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
 
     if (currentUserEmail === "guest@gmail.com") {
       return guestItems;
     }
 
-    const userItems = items.filter(
+    const userItems = state?.cart?.items.filter(
       (item) => item.userEmail === currentUserEmail
     );
     return [...guestItems, ...userItems];

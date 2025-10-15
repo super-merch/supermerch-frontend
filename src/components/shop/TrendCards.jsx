@@ -75,7 +75,6 @@ const TrendCards = () => {
     australiaIds,
   } = useContext(AppContext);
 
-
   // Get Redux filter state
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
     useSelector((state) => state.filters);
@@ -307,11 +306,12 @@ const TrendCards = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);
-    navigate(`/product/${name}`, { state: productId });
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+      state: productId,
+    });
   };
 
   const setSearchTextChanger = (e) => {

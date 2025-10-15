@@ -261,10 +261,23 @@
   resolved "https://registry.npmjs.org/@emotion/weak-memoize/-/weak-memoize-0.4.0.tgz"
   integrity sha512-snKqtPW01tN0ui7yu9rGv69aJXr/a/Ywvl11sUjNtEcRc+ng/mQriFL0wLXMef74iHa/EkftbDzU9F8iFbH+zg==
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> dab2036ef287c0ca08a457cb76a8103bb03c1148
 "@esbuild/darwin-arm64@0.24.0":
   version "0.24.0"
   resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.24.0.tgz"
   integrity sha512-CKyDpRbK1hXwv79soeTJNHb5EiG6ct3efd/FTPdzOWdbZZfGhpbcqIpiD0+vwmpu0wTIL97ZRPZu8vUt46nBSw==
+<<<<<<< HEAD
+=======
+=======
+"@esbuild/win32-x64@0.24.0":
+  version "0.24.0"
+  resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.24.0.tgz"
+  integrity sha512-7IAFPrjSQIJrGsK6flwg7NFmwBoSTyF3rl7If0hNUFQU4ilTsEPL6GuMuU9BfIWVVGuRnuIidkSMC+c0Otu8IA==
+>>>>>>> 5c6075a584ebfa048c0c4e23315666b7ff89c8a6
+>>>>>>> dab2036ef287c0ca08a457cb76a8103bb03c1148
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.1"
@@ -662,10 +675,17 @@
     redux-thunk "^3.1.0"
     reselect "^5.1.0"
 
+<<<<<<< HEAD
 "@rollup/rollup-darwin-arm64@4.27.4":
   version "4.27.4"
   resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.27.4.tgz"
   integrity sha512-PlNiRQapift4LNS8DPUHuDX/IdXiLjf8mc5vdEmUR0fF/pyy2qWwzdLjB+iZquGr8LuN4LnUoSEvKRwjSVYz3Q==
+=======
+"@rollup/rollup-win32-x64-msvc@4.27.4":
+  version "4.27.4"
+  resolved "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.27.4.tgz"
+  integrity sha512-3j4jx1TppORdTAoBJRd+/wJRGCPC0ETWkXOecJ6PPZLj6SptXkrXcNqdj0oclbKML6FkQltdz7bBA3rUSirZug==
+>>>>>>> dab2036ef287c0ca08a457cb76a8103bb03c1148
 
 "@stripe/react-stripe-js@^3.8.1":
   version "3.8.1"
@@ -679,17 +699,17 @@
   resolved "https://registry.npmjs.org/@stripe/stripe-js/-/stripe-js-7.7.0.tgz"
   integrity sha512-SXuhqhuR5FXaYgKTXzZJeqtVA6JKb9IZWaGeEUxHHiOcFy2p51wccO72bYpXwoK4D5pzQOIYLTuAc7etxyMmwg==
 
-"@tanstack/query-core@5.90.2":
-  version "5.90.2"
-  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.2.tgz"
-  integrity sha512-k/TcR3YalnzibscALLwxeiLUub6jN5EDLwKDiO7q5f4ICEoptJ+n9+7vcEFy5/x/i6Q+Lb/tXrsKCggf5uQJXQ==
+"@tanstack/query-core@5.90.3":
+  version "5.90.3"
+  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.3.tgz"
+  integrity sha512-HtPOnCwmx4dd35PfXU8jjkhwYrsHfuqgC8RCJIwWglmhIUIlzPP0ZcEkDAc+UtAWCiLm7T8rxeEfHZlz3hYMCA==
 
-"@tanstack/react-query@^5.90.2":
-  version "5.90.2"
-  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.2.tgz"
-  integrity sha512-CLABiR+h5PYfOWr/z+vWFt5VsOA2ekQeRQBFSKlcoW6Ndx/f8rfyVmq4LbgOM4GG2qtxAxjLYLOpCNTYm4uKzw==
+"@tanstack/react-query@^5.90.3":
+  version "5.90.3"
+  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.3.tgz"
+  integrity sha512-i/LRL6DtuhG6bjGzavIMIVuKKPWx2AnEBIsBfuMm3YoHne0a20nWmsatOCBcVSaT0/8/5YFjNkebHAPLVUSi0Q==
   dependencies:
-    "@tanstack/query-core" "5.90.2"
+    "@tanstack/query-core" "5.90.3"
 
 "@types/babel__core@^7.20.5":
   version "7.20.5"
@@ -1705,6 +1725,11 @@ framer-motion@^12.4.3:
     motion-dom "^12.0.0"
     motion-utils "^12.0.0"
     tslib "^2.4.0"
+
+fsevents@~2.3.2, fsevents@~2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 function-bind@^1.1.2:
   version "1.1.2"
@@ -2822,7 +2847,11 @@ react-toastify@^11.0.3:
   dependencies:
     clsx "^2.1.1"
 
+<<<<<<< HEAD
 react@*, "react@^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.0.0 || 17.x || 18.x || 19.x", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^16.8.0 || ^17 || ^18 || ^19", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.9.0 || ^17.0.0 || ^18", "react@^18 || ^19", "react@^18 || ^19 || ^19.0.0-rc", react@^18.0, "react@^18.0.0 || ^19.0.0", "react@^18.0.0 || ^19.0.0-rc", react@^18.3.1, react@>=16.8.0, "react@>=16.8.0 <20.0.0", react@>=18:
+=======
+react@*, "react@^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.0.0 || 17.x || 18.x || 19.x", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.6.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^16.8.0 || ^17 || ^18 || ^19", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.9.0 || ^17.0.0 || ^18", "react@^18 || ^19", "react@^18 || ^19 || ^19.0.0-rc", react@^18.0, "react@^18.0.0 || ^19.0.0", "react@^18.0.0 || ^19.0.0-rc", react@^18.3.1, react@>=16.8.0, "react@>=16.8.0 <20.0.0", react@>=18:
+>>>>>>> dab2036ef287c0ca08a457cb76a8103bb03c1148
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==

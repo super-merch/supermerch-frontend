@@ -34,7 +34,7 @@ const ShippingTab = ({ single_product }) => {
           )
         )
       ) : (
-        <p>No decoration info available.</p>
+        <p>No shipping info available.</p>
       )}
     </div>
   );

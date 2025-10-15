@@ -120,7 +120,7 @@ const HotDeals = () => {
                         </h4>
                         {/* Price */}
                         <span className="text-lg font-bold text-blue-600">
-                          ${price.toFixed(2)}
+                          ${price}
                         </span>
                       </div>
                     </div>

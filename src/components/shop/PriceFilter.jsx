@@ -76,7 +76,7 @@ const PriceFilter = () => {
 
           // Reset applying state after a short delay
           setTimeout(() => setIsApplying(false), 1000);
-        }, 700); // 700ms debounce delay
+        }, 7000); // 700ms debounce delay
       }
     }
 

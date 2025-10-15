@@ -11,7 +11,7 @@ import {
 import { IoClose, IoMenu } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import {
@@ -21,9 +21,12 @@ import {
 } from "../../redux/slices/filterSlice";
 import Sidebar from "./Sidebar";
 import noimage from "/noimage.png";
-import { slugify } from "@/utils/utils";
+import { getProductPrice, slugify } from "@/utils/utils";
+import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
+import { Clock, Flag } from "lucide-react";
+import { getPageTypeFromRoute } from "@/config/sidebarConfig";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
 
-// Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
   let endPage = startPage + maxVisiblePages - 1;
@@ -41,15 +44,18 @@ const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
 const AustraliaProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(9);
   const [maxVisiblePages, setMaxVisiblePages] = useState(6);
   const [sortOption, setSortOption] = useState("lowToHigh");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const [allProducts, setAllProducts] = useState([]);
-  const [totalApiPages, setTotalApiPages] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
+
+  // Price filter state and tracking
+  const [allFilteredProducts, setAllFilteredProducts] = useState([]);
+  const [filterError, setFilterError] = useState("");
+  const [totalFilteredPages, setTotalFilteredPages] = useState(0);
+  const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
+
+  // State for managing products and pagination
 
   // Simplified state - remove local products state since we use context
   const [isLoading, setIsLoading] = useState(false);
@@ -65,151 +71,51 @@ const AustraliaProducts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-      const pageType = getPageTypeFromRoute(location.pathname);
+  const pageType = getPageTypeFromRoute(location.pathname);
 
-  const { marginApi, backendUrl, fetchAustraliaProducts, fetchAllAustraliaProducts, australia, skeletonLoading,totalAustraliaPages, productionIds, australiaIds } = useContext(AppContext);
+  const {
+    marginApi,
+
+    skeletonLoading,
+    australiaIds,
+    productionIds,
+    australiaPaginationData,
+    setAustraliaPaginationData,
+    getAustraliaProducts,
+    australiaProductsLoading,
+    refetchAustraliaProducts,
+  } = useContext(AppContext);
+
+  const getProductsData = getAustraliaProducts?.data;
+  const itemsPerPage = getAustraliaProducts?.itemsPerPage;
+  const totalPages = getAustraliaProducts?.totalPages;
+  const itemCount = getAustraliaProducts?.totalCount;
+  const currentPage = getAustraliaProducts?.currentPage;
 
   // Helper function to get real price with caching
   const priceCache = useRef(new Map());
-
-  const getRealPrice = useCallback((product) => {
-    const productId = product.meta?.id;
-    if (priceCache.current.has(productId)) {
-      return priceCache.current.get(productId);
-    }
-
-    const priceGroups = product.product?.prices?.price_groups || [];
-    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-    const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const price =
-      priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
-
-    // Cache the result
-    priceCache.current.set(productId, price);
-    return price;
-  }, []);
 
   // Clear price filter handler
   const handleClearPriceFilter = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
-    setCurrentPage(1);
+    setAllFilteredProducts([]);
+    setTotalFilteredPages(0);
+    setFilterError("");
+    setAustraliaPaginationData((prev) => ({ ...prev, page: 1 }));
     dispatch(applyFilters());
   };
 
-  // Function to fetch Australia products with pagination
-  const fetchAustraliaProductsPaginated = async (page = 1, sortOption = "") => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const data = await fetchAustraliaProducts(page, itemsPerPage, sortOption);
-
-      const validProducts = data.data.filter((product) => {
-        const priceGroups = product.product?.prices?.price_groups || [];
-        const basePrice = priceGroups.find((group) => group?.base_price) || {};
-        const priceBreaks = basePrice.base_price?.price_breaks || [];
-        return (
-          priceBreaks.length > 0 &&
-          priceBreaks[0]?.price !== undefined &&
-          priceBreaks[0]?.price > 0
-        );
-      });
-
-      setAllProducts(validProducts);
-      setTotalApiPages(data.totalPages || 1);
-      setTotalCount(data.totalCount || 0);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-      setError("Error fetching Australia products. Please try again.");
-      setIsLoading(false);
-    }
-  };
-
-  // Function to fetch and filter ALL Australia products with price range
-  const fetchAndFilterAllAustraliaProducts = async (
-    minPrice,
-    maxPrice,
-    sortOption
-  ) => {
-    setIsFiltering(true);
-    setFilterError("");
-
-    try {
-      // Fetch all Australia products for filtering
-      const data = await fetchAllAustraliaProducts(sortOption);
-
-      if (data && data.length > 0) {
-        const validProducts = data
-          .filter((item) => {
-            if (!item.product || item.error) return false;
-            const product = item.product;
-            const price = getRealPrice(product);
-            if (price <= 0) return false;
-            return price >= minPrice && price <= maxPrice;
-          })
-          .map((item) => item.product);
-
-        if (validProducts.length > 0) {
-          const uniqueProducts = Array.from(
-            new Map(
-              validProducts.map((product) => [product.meta?.id, product])
-            ).values()
-          );
-
-          const sortedProducts = sortOption
-            ? [...uniqueProducts].sort((a, b) => {
-                const priceA = getRealPrice(a);
-                const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh"
-                  ? priceA - priceB
-                  : priceB - priceA;
-              })
-            : uniqueProducts;
-
-          setAllFilteredProducts(sortedProducts);
-          setTotalFilteredPages(
-            Math.ceil(sortedProducts.length / itemsPerPage)
-          );
-        } else {
-          setFilterError("No products found in the specified price range.");
-        }
-      } else {
-        setFilterError("No products found in the specified price range");
-      }
-      return [];
-    } catch (error) {
-      console.error("Error filtering Australia products:", error);
-      setError("Error fetching filtered products. Please try again.");
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle price filter changes
   useEffect(() => {
-    if (isPriceFilterActive) {
-      setCurrentPage(1);
-      fetchAndFilterAllAustraliaProducts(minPrice, maxPrice, sortOption);
-    } else {
-      // Reset to normal pagination when no price filter is active
-      setCurrentPage(1);
-      fetchAustraliaProductsPaginated(1, sortOption);
+    if (getAustraliaProducts?.data?.length === 0) {
+      refetchAustraliaProducts();
     }
-  }, [minPrice, maxPrice, isPriceFilterActive]);
+  }, []);
 
-  // Initial load and sort changes
-  useEffect(() => {
-    if (!isPriceFilterActive) {
-      setCurrentPage(1);
-      fetchAustraliaProductsPaginated(1, sortOption);
-    }
-  }, [sortOption]);
-  useEffect(()=>{
-    fetchAustraliaProductsPaginated(currentPage, sortOption);
-  },[currentPage])
+  // Get the current active products based on price filter
+  const getActiveProducts = () => {
+    return isPriceFilterActive ? allFilteredProducts : allProducts;
+  };
 
   // Apply sorting to active products
   const getSortedProducts = () => {
@@ -256,64 +162,12 @@ const AustraliaProducts = () => {
     favSet.add(item.meta.id);
   });
 
-  // Get current products based on mode
-  const getCurrentProducts = () => {
-    // For price filtering, we need to handle locally (since backend doesn't support price filtering)
-    if (isPriceFilterActive) {
-      // This would need to be implemented with local filtering of all products
-      // For now, return empty array since we don't have all products locally
-      return [];
-    }
-    
-    // For normal pagination, use products from context
-    return australia || [];
-  };
-
-  // Calculate total pages based on current mode
-  const getTotalPages = () => {
-    if (isPriceFilterActive) {
-      // For price filtering, we'd need to calculate based on filtered products
-      // Since we don't have all products locally, return 1 for now
-      return 1;
-    }
-    return totalAustraliaPages || 1;
-  };
-
-  // Calculate total count for display
-  const getTotalCount = () => {
-    if (isPriceFilterActive) {
-      // For price filtering, we'd need the count of filtered products
-      return 0; // Placeholder
-    }
-    
-    // This should come from your API response - you might need to add it to context
-    return australiaIds?.size || 0;
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setMaxVisiblePages(window.innerWidth <= 767 ? 4 : 6);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // Calculate total pages based on current products and mode
 
   const handleSortSelection = (option) => {
     setSortOption(option);
     setIsDropdownOpen(false);
   };
-
 
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
@@ -344,10 +198,6 @@ const AustraliaProducts = () => {
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
-
-  const currentProducts = getCurrentProducts();
-  const totalPages = getTotalPages();
-  const showSkeleton = isLoading || skeletonLoading;
 
   return (
     <>
@@ -397,7 +247,7 @@ const AustraliaProducts = () => {
                     </span>
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute right-0 z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
+                    <div className="absolute right-0 z-50 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-t-lg ${
@@ -432,18 +282,15 @@ const AustraliaProducts = () => {
             <div className="mb-6 px-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
-                  {!isLoading &&
-                    !skeletonLoading &&
-                    !isFiltering &&
-                    getTotalCount()}
+                  {!australiaProductsLoading && itemCount}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {isLoading || isFiltering
+                  {australiaProductsLoading
                     ? "Loading..."
                     : `Results found (Australia Made Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
                       }`}
-                  {isFiltering && " Please wait a while..."}
+                  {australiaProductsLoading && " Please wait a while..."}
                 </p>
               </div>
             </div>
@@ -453,6 +300,7 @@ const AustraliaProducts = () => {
           <div className="hidden lg:block">
             <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
               <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
+                {itemCount} Results found (Australia Made Products)
                 {/* Placeholder for search if needed later */}
               </div>
               <div className="flex items-center gap-3">
@@ -508,23 +356,25 @@ const AustraliaProducts = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {isPriceFilterActive && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    ${minPrice} - ${maxPrice}
-                  </span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={handleClearPriceFilter}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
+          {isPriceFilterActive && (
+            <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
+              <div className="flex flex-wrap items-center gap-4">
+                {isPriceFilterActive && (
+                  <div className="filter-item">
+                    <span className="text-sm">
+                      ${minPrice} - ${maxPrice}
+                    </span>
+                    <button
+                      className="px-2 text-lg"
+                      onClick={handleClearPriceFilter}
+                    >
+                      x
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {error && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
@@ -534,44 +384,22 @@ const AustraliaProducts = () => {
 
           <div
             className={`${
-              showSkeleton && currentProducts.length === 0
+              australiaProductsLoading
                 ? "grid grid-cols-3 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
                 : ""
             }`}
           >
-            {showSkeleton ? (
-              Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div
-                  key={index}
-                  className="relative p-4 border rounded-lg shadow-md border-border2"
-                >
-                  <Skeleton height={200} className="rounded-md" />
-                  <div className="p-4">
-                    <Skeleton height={20} width={120} className="rounded" />
-                    <Skeleton height={15} width={80} className="mt-2 rounded" />
-                    <Skeleton
-                      height={25}
-                      width={100}
-                      className="mt-3 rounded"
-                    />
-                    <Skeleton height={15} width={60} className="mt-2 rounded" />
-                    <div className="flex items-center justify-between pt-2">
-                      <Skeleton height={20} width={80} className="rounded" />
-                      <Skeleton height={20} width={80} className="rounded" />
-                    </div>
-                    <div className="flex justify-between gap-1 mt-6 mb-2">
-                      <Skeleton circle height={40} width={40} />
-                      <Skeleton height={40} width={120} className="rounded" />
-                      <Skeleton circle height={40} width={40} />
-                    </div>
-                  </div>
-                </div>
+            {australiaProductsLoading ? (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+                <SkeletonLoadingCards key={index} />
               ))
-            ) : currentProducts.length > 0 ? (
+            ) : getAustraliaProducts?.data?.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {currentProducts.map((product) => {
-                  const priceGroups = product.product?.prices?.price_groups || [];
-                  const basePrice = priceGroups.find((group) => group?.base_price) || {};
+                {getProductsData?.map((product) => {
+                  const priceGroups =
+                    product.product?.prices?.price_groups || [];
+                  const basePrice =
+                    priceGroups.find((group) => group?.base_price) || {};
                   const priceBreaks = basePrice.base_price?.price_breaks || [];
 
                   const prices = priceBreaks
@@ -598,7 +426,7 @@ const AustraliaProducts = () => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                       onClick={() =>
                         handleViewProduct(
                           product.meta.id,
@@ -623,62 +451,19 @@ const AustraliaProducts = () => {
                           )}
                         </div>
                       )}
-                      <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                        {(productionIds.has(product.meta.id) ||
-                          productionIds.has(String(product.meta.id))) && (
+                      <div className="absolute left-2 top-2 z-10 flex flex-col gap-1 pointer-events-none">
+                        {(productionIds?.has(product.meta.id) ||
+                          productionIds?.has(String(product.meta.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                            <svg
-                              className="w-3 h-3 flex-shrink-0"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden
-                            >
-                              <path
-                                d="M12 7v5l3 1"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <circle
-                                cx="12"
-                                cy="12"
-                                r="8"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
+                            <Clock />
                             <span>24Hr Production</span>
                           </span>
                         )}
 
-                        {(australiaIds.has(product.meta.id) ||
-                          australiaIds.has(String(product.meta.id))) && (
+                        {(australiaIds?.has(product.meta.id) ||
+                          australiaIds?.has(String(product.meta.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                            <svg
-                              className="w-3 h-3 flex-shrink-0"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden
-                            >
-                              <path
-                                d="M3 6h10l-2 3 2 3H3V6z"
-                                fill="currentColor"
-                              />
-                              <rect
-                                x="3"
-                                y="4"
-                                width="1"
-                                height="16"
-                                rx="0.5"
-                                fill="currentColor"
-                                opacity="0.9"
-                              />
-                            </svg>
+                            <Flag />
                             <span>Australia Made</span>
                           </span>
                         )}
@@ -775,12 +560,7 @@ const AustraliaProducts = () => {
 
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
-                              From $
-                              {minPrice === maxPrice ? (
-                                <span>{minPrice.toFixed(2)}</span>
-                              ) : (
-                                <span>{minPrice.toFixed(2)}</span>
-                              )}
+                              From ${getProductPrice(product, product.meta.id)}
                             </h2>
                             {discountPct > 0 && (
                               <p className="text-xs text-green-600 font-medium">
@@ -806,82 +586,93 @@ const AustraliaProducts = () => {
           {totalPages > 1 && (
             <div className="flex items-center justify-center mt-16 space-x-2 pagination">
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                onClick={() =>
+                  setAustraliaPaginationData((prev) => ({
+                    ...prev,
+                    page: Math.max(prev.page - 1, 1),
+                  }))
+                }
                 disabled={currentPage === 1}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >
                 <IoMdArrowBack className="text-xl" />
               </button>
-
-              {getPaginationButtons(
-                currentPage,
-                totalPages,
-                maxVisiblePages
-              ).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                    currentPage === page
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {/* Middle pages */}
+              {getPaginationButtons(currentPage, totalPages, maxVisiblePages)
+                .filter((page) => page > 1 && page < totalPages)
+                .map((page) => (
+                  <button
+                    key={page}
+                    onClick={() =>
+                      setAustraliaPaginationData((prev) => ({
+                        ...prev,
+                        page: page,
+                      }))
+                    }
+                    className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
+                      currentPage === page
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
 
               <button
-                onClick={() => {
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                }}
-                disabled={currentPage === totalPages}
-                className="flex items-center justify-center w-10 h-10 border rounded-full"
+                onClick={() =>
+                  setAustraliaPaginationData((prev) => ({ ...prev, page: 1 }))
+                }
+                className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
+                  currentPage === 1
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "border-gray-300 hover:bg-gray-100"
+                }`}
               >
-                <IoMdArrowForward className="text-xl" />
+                1
+              </button>
+              {/* Show ellipsis if there are hidden pages at the end */}
+              {currentPage < totalPages - maxVisiblePages / 2 &&
+                totalPages > maxVisiblePages && (
+                  <span className="px-2 text-gray-500">...</span>
+                )}
+
+              {/* Last page - Always show if more than 1 page */}
+              {totalPages > 1 && (
+                <button
+                  onClick={() =>
+                    setAustraliaPaginationData((prev) => ({
+                      ...prev,
+                      page: totalPages,
+                    }))
+                  }
+                  className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
+                    currentPage === totalPages
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  {totalPages}
+                </button>
+              )}
+
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  setAustraliaPaginationData((prev) => ({
+                    ...prev,
+                    page: Math.min(prev.page + 1, totalPages),
+                  }))
+                }
+                disabled={currentPage === totalPages}
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <IoMdArrowForward className="text-lg sm:text-xl" />
               </button>
             </div>
           )}
         </div>
       </div>
-
-      {isModalOpen && selectedProduct && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-white rounded-lg overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
-            >
-              <IoClose className="text-2xl text-gray-600" />
-            </button>
-
-            <div className="p-6">
-              <img
-                src={selectedProduct.overview.hero_image || noimage}
-                alt={selectedProduct.overview.name || "Product Image"}
-                className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
-              />
-
-              <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold text-brand mb-2">
-                  {selectedProduct.overview.name || "No Name"}
-                </h2>
-                {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {selectedProduct.overview.description}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

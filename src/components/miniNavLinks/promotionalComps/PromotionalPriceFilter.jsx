@@ -172,12 +172,7 @@ const PromotionalPriceFilter = () => {
 
   const priceRanges = [
     { label: "All Prices", min: 0, max: 1000 },
-    // { label: "Under $10", min: 0, max: 10 },
-    // { label: "$10 to $50", min: 10, max: 50 },
-    // { label: "$50 to $100", min: 50, max: 100 },
-    // { label: "$100 to $150", min: 100, max: 150 },
-    // { label: "$150 to $200", min: 150, max: 200 },
-    // { label: "$200 to $250", min: 200, max: 250 },
+
   ];
 
   const handleApplyCustomRange = () => {

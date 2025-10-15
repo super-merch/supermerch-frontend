@@ -351,7 +351,6 @@ const SearchCard = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);

@@ -53,7 +53,7 @@ const HourProduction24Products = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
-    const pageType = getPageTypeFromRoute(location.pathname);
+  const pageType = getPageTypeFromRoute(location.pathname);
 
   // Price filter state and tracking
   const [allFilteredProducts, setAllFilteredProducts] = useState([]);
@@ -64,7 +64,6 @@ const HourProduction24Products = () => {
 
   const [totalApiPages, setTotalApiPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-
 
   // State for managing products and pagination
   const [allProducts, setAllProducts] = useState([]);
@@ -80,7 +79,16 @@ const HourProduction24Products = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { marginApi, backendUrl, fetchHourProducts, fetchAllHourProducts, hourProd, skeletonLoading,australiaIds,productionIds } = useContext(AppContext);
+  const {
+    marginApi,
+    backendUrl,
+    fetchHourProducts,
+    fetchAllHourProducts,
+    hourProd,
+    skeletonLoading,
+    australiaIds,
+    productionIds,
+  } = useContext(AppContext);
 
   // Helper function to get real price with caching
   const priceCache = useRef(new Map());
@@ -139,14 +147,14 @@ const HourProduction24Products = () => {
     }
   };
 
-  // Function to fetch and filter ALL Australia products with price range
-  const fetchAndFilterAllAustraliaProducts = async (
+  // Function to fetch and filter ALL 24 Hour products with price range
+  const fetchAndFilterAllHourProducts = async (
     minPrice,
     maxPrice,
     sortOption
   ) => {
-    setIsFiltering(true);
-    setFilterError("");
+    setIsLoading(true);
+    setError("");
 
     try {
       const data = await fetchAllHourProducts(sortOption);
@@ -296,7 +304,6 @@ const HourProduction24Products = () => {
     }
   }, [currentPage]);
 
-
   // Get current products based on mode
   const getCurrentProducts = () => {
     // For price filtering, we need to handle locally
@@ -304,13 +311,12 @@ const HourProduction24Products = () => {
       // This would need to be implemented with local filtering
       return [];
     }
-    
+
     // For normal pagination, use products from context
     return hourProd || [];
   };
 
   // Calculate total pages based on current mode
-
 
   // Calculate total count for display
   const getTotalCount = () => {
@@ -381,7 +387,7 @@ const HourProduction24Products = () => {
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         {/* Price Filter Sidebar */}
         <div className="lg:w-[25%]">
-          <UnifiedSidebar pageType={pageType} />
+          <UnifiedSidebar filter={true} />
         </div>
 
         <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4 mt-4">
@@ -464,8 +470,8 @@ const HourProduction24Products = () => {
                     !isFiltering &&
                     getTotalCount()}
                 </span>
-                <p className="text-sm text-gray-600">
-                  {isLoading || isFiltering
+                <p className="">
+                  {isLoading
                     ? "Loading..."
                     : `Results found (24 Hour Production Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
@@ -477,7 +483,7 @@ const HourProduction24Products = () => {
           </div>
 
           {/* Desktop Layout */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block mt-4">
             <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
               <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
                 {/* Placeholder for search if needed later */}
@@ -521,7 +527,7 @@ const HourProduction24Products = () => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("relevancy")}
+                        onClick={() => handleSortSelection("revelancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "highToLow" ? "bg-gray-100" : ""
                         }`}
@@ -535,23 +541,25 @@ const HourProduction24Products = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {isPriceFilterActive && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    ${minPrice} - ${maxPrice}
-                  </span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={handleClearPriceFilter}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
+          {isPriceFilterActive && (
+            <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
+              <div className="flex flex-wrap items-center gap-4">
+                {isPriceFilterActive && (
+                  <div className="filter-item">
+                    <span className="text-sm">
+                      ${minPrice} - ${maxPrice}
+                    </span>
+                    <button
+                      className="px-2 text-lg"
+                      onClick={handleClearPriceFilter}
+                    >
+                      x
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {error && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
@@ -597,8 +605,10 @@ const HourProduction24Products = () => {
             ) : currentProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentProducts.map((product) => {
-                  const priceGroups = product.product?.prices?.price_groups || [];
-                  const basePrice = priceGroups.find((group) => group?.base_price) || {};
+                  const priceGroups =
+                    product.product?.prices?.price_groups || [];
+                  const basePrice =
+                    priceGroups.find((group) => group?.base_price) || {};
                   const priceBreaks = basePrice.base_price?.price_breaks || [];
 
                   const prices = priceBreaks
@@ -804,6 +814,11 @@ const HourProduction24Products = () => {
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
                               From $
+                              {console.log(
+                                minPrice,
+                                maxPrice,
+                                "minPrice, maxPrice"
+                              )}
                               {minPrice === maxPrice ? (
                                 <span>{minPrice.toFixed(2)}</span>
                               ) : (
@@ -860,7 +875,9 @@ const HourProduction24Products = () => {
               ))}
 
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >

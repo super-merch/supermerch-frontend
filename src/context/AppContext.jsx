@@ -8,9 +8,13 @@ import {
   clearFavourites,
   loadFavouritesFromDB,
 } from "@/redux/slices/favouriteSlice";
-import { clearCart, initializeCartFromStorage, selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
+import {
+  clearCart,
+  initializeCartFromStorage,
+  selectCurrentUserCartItems,
+} from "@/redux/slices/cartSlice";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AppContext = createContext();
 
@@ -132,55 +136,67 @@ const AppContextProvider = (props) => {
     filter: true,
     productTypeId: null,
     category: null,
-    searchTerm:""
+    searchTerm: "",
   });
   const [totalCount, setTotalCount] = useState(0);
 
-  const getProductsFromApi = async () => {
-  const params = new URLSearchParams({
-    ...(paginationData.productTypeId && {
-      product_type_ids: paginationData.productTypeId,
-    }),
-    page: paginationData.page,
-    ...(paginationData.limit && { limit: paginationData.limit }),
-    ...(paginationData.sortOption && { sort: paginationData.sortOption }),
-    ...(paginationData.filter && { filter: paginationData.filter }),
-    ...(paginationData.category && { category: paginationData.category }),
-    ...(paginationData.searchTerm !== undefined && { searchTerm: paginationData.searchTerm }),
+  const [australiaPaginationData, setAustraliaPaginationData] = useState({
+    page: 1,
+    limit: 9,
+    sortOption: "",
+    filter: true,
   });
+
+  const getProductsFromApi = async () => {
+    const params = new URLSearchParams({
+      ...(paginationData.productTypeId && {
+        product_type_ids: paginationData.productTypeId,
+      }),
+      page: paginationData.page,
+      ...(paginationData.limit && { limit: paginationData.limit }),
+      ...(paginationData.sortOption && { sort: paginationData.sortOption }),
+      ...(paginationData.filter && { filter: paginationData.filter }),
+      ...(paginationData.category && { category: paginationData.category }),
+      ...(paginationData.searchTerm !== undefined && {
+        searchTerm: paginationData.searchTerm,
+      }),
+    });
 
   let url = "";
 
-  if (paginationData.category === "australia") {
-    url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
-  } else if (paginationData.category === "24hr-production") {
-    url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
-  } 
-  else if(paginationData.category === "sales"){
-    url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
-  }
-  else if(paginationData.category === "allProducts"){
-    url = `${backednUrl}/api/client-products?${params.toString()}`
-  }
-  else if(paginationData.category === "search"){
-    url = `${backednUrl}/api/client-products/search?${params.toString()}`
-  }
-  else if (paginationData.category) {
-    url = `${backednUrl}/api/client-products/category?${params.toString()}`;
-  } 
-  else if (paginationData.productTypeId) {
-    url = `${backednUrl}/api/params-products?${params.toString()}`;
-  }
-  else {
-    url = `${backednUrl}/api/client-products?${params.toString()}`;
-  }
+    if (paginationData.category === "australia") {
+      url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+    } else if (paginationData.category === "24hr-production") {
+      url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
+    } else if (paginationData.category === "sales") {
+      url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
+    } else if (paginationData.category === "allProducts") {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    } else if (paginationData.category === "search") {
+      url = `${backednUrl}/api/client-products/search?${params.toString()}`;
+    }else if(paginationData.category === "allProducts"){
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    }
+     else if (paginationData.category) {
+      url = `${backednUrl}/api/client-products/category?${params.toString()}`;
+    } else if (paginationData.productTypeId) {
+      url = `${backednUrl}/api/params-products?${params.toString()}`;
+    } else {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    }
 
-  const res = await fetch(url);
-  const data = await res.json();
+    const res = await fetch(url);
+    const data = await res.json();
 
-  setTotalCount(data.total_count || data.totalCount || data.item_count || data.meta?.total || 0);
-  return data;
-};
+    setTotalCount(
+      data.total_count ||
+        data.totalCount ||
+        data.item_count ||
+        data.meta?.total ||
+        0
+    );
+    return data;
+  };
 
   const { data: getProducts, isLoading: productsLoading } = useQuery({
     queryKey: [
@@ -191,7 +207,7 @@ const AppContextProvider = (props) => {
       paginationData.filter,
       paginationData.productTypeId,
       paginationData.category,
-      paginationData.searchTerm
+      paginationData.searchTerm,
     ],
     queryFn: () => getProductsFromApi(),
   });
@@ -204,6 +220,46 @@ const AppContextProvider = (props) => {
         paginationData.limit,
         paginationData.sortOption,
         paginationData.filter,
+      ],
+    });
+  };
+
+  const getAustraliaProductsFromApi = async () => {
+    const params = new URLSearchParams({
+      ...(australiaPaginationData.sortOption && {
+        sort: australiaPaginationData.sortOption,
+      }),
+      ...(australiaPaginationData.filter && {
+        filter: australiaPaginationData.filter,
+      }),
+      page: australiaPaginationData.page,
+      limit: australiaPaginationData.limit,
+    });
+    const response = await fetch(
+      `${backednUrl}/api/australia/get-products?${params.toString()}`
+    );
+    const data = await response.json();
+    return data;
+  };
+
+  const { data: getAustraliaProducts, isLoading: australiaProductsLoading } =
+    useQuery({
+      queryKey: [
+        australiaPaginationData.sortOption,
+        australiaPaginationData.filter,
+        australiaPaginationData.page,
+        australiaPaginationData.limit,
+      ],
+      queryFn: () => getAustraliaProductsFromApi(),
+    });
+
+  const refetchAustraliaProducts = () => {
+    queryClient.invalidateQueries({
+      queryKey: [
+        australiaPaginationData.sortOption,
+        australiaPaginationData.filter,
+        australiaPaginationData.page,
+        australiaPaginationData.limit,
       ],
     });
   };
@@ -234,7 +290,7 @@ const AppContextProvider = (props) => {
         if (data.user.defaultAddress) {
           setAddressData(data.user.defaultAddress);
         }
-        console.log(data)
+        console.log(data);
         if (data.user.defaultShippingAddress) {
           setShippingAddressData(data.user.defaultShippingAddress);
         }
@@ -493,7 +549,8 @@ const AppContextProvider = (props) => {
 
   const fetchTrendingProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 10;
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
+      setTrendingProductsLoading(true);
       const key = `${page}_${sort}_${limit}`;
 
       if (trendingCacheRef.current[key]) {
@@ -1109,6 +1166,26 @@ const AppContextProvider = (props) => {
     }
   };
 
+  // Legacy function (keep for backward compatibility)
+  const fetchAustralia = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      setAustralia(data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching Australia products:", error);
+    }
+  };
   const [hourProd, setHourProd] = useState([]);
   const [totalHourPages, setTotalHourPages] = useState(0);
 
@@ -1314,7 +1391,7 @@ const AppContextProvider = (props) => {
     try {
       const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs`);
       setBlogs(data.blogs);
-      console.log(data.blogs)
+      console.log(data.blogs);
     } catch (error) {
       toast.error(error.message);
       toast.error(error.message);
@@ -1557,6 +1634,12 @@ const AppContextProvider = (props) => {
     getProducts,
     productsLoading,
     refetchProducts,
+
+    australiaPaginationData,
+    setAustraliaPaginationData,
+    getAustraliaProducts,
+    australiaProductsLoading,
+    refetchAustraliaProducts,
   };
 
   return (
