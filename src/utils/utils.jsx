@@ -19,7 +19,7 @@ export const getProductPrice = (product, id) => {
     typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
   minPrice += marginFlat;
   maxPrice += marginFlat;
-  return minPrice?.toFixed(2);
+  return Number(minPrice?.toFixed(2));
 };
 
 export const slugify = (s) =>

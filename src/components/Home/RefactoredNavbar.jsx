@@ -63,9 +63,9 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   // Create menu items from categories
   const createMenuItems = () => {
     const baseMenuItems = [
-      { name: "Promotional", path: "/Spromotional", hasSubmenu: true },
-      { name: "Clothing", path: "/Clothing", hasSubmenu: true },
-      { name: "Headwear", path: "/Headwear", hasSubmenu: true },
+      { name: "Promotional", path: "/Spromotional?categoryName=Promotional&category=A", hasSubmenu: true },
+      { name: "Clothing", path: "/Spromotional?categoryName=Clothing&category=B", hasSubmenu: true },
+      { name: "Headwear", path: "/Spromotional?categoryName=Headwear&category=G", hasSubmenu: true },
       { name: "Return Gifts", path: "/shop" },
       { name: "24hr Prod", path: "/production" },
       { name: "Sale", path: "/sales" },
@@ -310,7 +310,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   return (
     <>
       {/* Main Navbar */}
-      <div className="bg-line shadow-xl py-3 sticky top-0 z-50">
+      <div className="bg-line shadow-xl sm:py-3 sticky top-0 z-50">
         <div className="flex items-center justify-between gap-4 text-white !px-0 md:px-0 Mycontainer flex-wrap">
           <Sheet
             open={isSheetOpen}

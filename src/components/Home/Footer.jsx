@@ -45,7 +45,7 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white pt-8 md:pt-0">
       {/* Main Footer Content */}
       <div className="Mycontainer py-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
@@ -59,18 +59,18 @@ const Footer = () => {
               Quality promotional products with fast delivery and competitive
               pricing. Your trusted partner for custom branded merchandise.
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 sm:gap-3">
               {miniNav.map((icon, i) => (
                 <button
                   key={i}
                   onClick={() => window.open(icon.path, "_blank")}
-                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
+                  className="sm:w-10 sm:h-10 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
                 >
                   <img src={icon.img} alt="social" className="w-5 h-5" />
                 </button>
               ))}
               <button
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="sm:w-10 sm:h-10 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
                 onClick={() =>
                   window.open(
                     "https://mail.google.com/mail/?view=cm&to=Info@supermerch.com.au",
@@ -86,7 +86,7 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1 sm:space-y-3">
               <li>
                 <Link
                   to="/about"
@@ -204,7 +204,7 @@ const Footer = () => {
                   href="mailto:Info@supermerch.com.au"
                   className="text-white hover:text-gray-300 transition-colors"
                 >
-                  Info@supermerch.com.au
+                  Info@supermerch<br className="block sm:hidden" />.com.au
                 </a>
               </div>
               <div>
@@ -221,7 +221,7 @@ const Footer = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-gray-300 text-sm mb-3">We Accept</p>
-              <div className="flex items-center gap-3">
+              <div className="sm:flex grid grid-cols-4 items-center gap-3">
                 {paymethod.map((p, i) => (
                   <img
                     key={i}
@@ -242,9 +242,9 @@ const Footer = () => {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1  px-3 sm:px-4 py-3 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <button className="px-6 py-3 bg-smallHeader text-white rounded-r-lg hover:opacity-90 transition-opacity font-medium">
+                  <button className= "px-3 sm:px-6 py-3 bg-smallHeader text-white rounded-r-lg hover:opacity-90 transition-opacity font-medium">
                     Subscribe
                   </button>
                 </div>

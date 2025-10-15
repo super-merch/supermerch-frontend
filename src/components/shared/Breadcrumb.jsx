@@ -42,15 +42,15 @@ const Breadcrumb = () => {
     }
 
     // Category pages
-    if (pathname === "/Clothing") {
-      return { pageName: "Clothing", isSpecialPage: false };
-    }
-    if (pathname === "/Headwear") {
-      return { pageName: "Headwear", isSpecialPage: false };
-    }
-    if (pathname === "/Promotional" || pathname === "/Spromotional") {
-      return { pageName: "Promotional", isSpecialPage: false };
-    }
+    // if (pathname === "/Clothing") {
+    //   return { pageName: "Clothing", isSpecialPage: false };
+    // }
+    // if (pathname === "/Headwear") {
+    //   return { pageName: "Headwear", isSpecialPage: false };
+    // }
+    // if (pathname === "/Promotional" || pathname === "/Spromotional") {
+    //   return { pageName: "Promotional", isSpecialPage: false };
+    // }
 
     // Default fallback
     return { pageName: "Shop", isSpecialPage: false };

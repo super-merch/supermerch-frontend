@@ -14,7 +14,7 @@ const Blogs = () => {
 
   return (
     <section className="Mycontainer">
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="">
         <h2 className="font-manrope text-4xl font-bold text-gray-900 text-center mb-14">
           Our popular blogs
         </h2>

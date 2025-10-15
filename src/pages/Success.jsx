@@ -24,7 +24,7 @@ const Success = () => {
       toast.error('Invalid payment session');
       navigate('/checkout');
     }
-  }, [navigate, searchParams]);
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

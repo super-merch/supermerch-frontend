@@ -169,13 +169,6 @@ const AustraliaProducts = () => {
     setIsDropdownOpen(false);
   };
 
-  const slugify = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);

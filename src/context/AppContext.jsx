@@ -136,7 +136,9 @@ const AppContextProvider = (props) => {
     filter: true,
     productTypeId: null,
     category: null,
+    searchTerm: "",
   });
+  const [totalCount, setTotalCount] = useState(0);
 
   const [australiaPaginationData, setAustraliaPaginationData] = useState({
     page: 1,
@@ -155,18 +157,41 @@ const AppContextProvider = (props) => {
       ...(paginationData.sortOption && { sort: paginationData.sortOption }),
       ...(paginationData.filter && { filter: paginationData.filter }),
       ...(paginationData.category && { category: paginationData.category }),
+      ...(paginationData.searchTerm !== undefined && {
+        searchTerm: paginationData.searchTerm,
+      }),
     });
 
     let url = "";
 
-    if (paginationData.category) {
+    if (paginationData.category === "australia") {
+      url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+    } else if (paginationData.category === "24hr-production") {
+      url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
+    } else if (paginationData.category === "sales") {
+      url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
+    } else if (paginationData.category === "allProducts") {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    } else if (paginationData.category === "search") {
+      url = `${backednUrl}/api/client-products/search?${params.toString()}`;
+    } else if (paginationData.category) {
       url = `${backednUrl}/api/client-products/category?${params.toString()}`;
-    } else {
+    } else if (paginationData.productTypeId) {
       url = `${backednUrl}/api/params-products?${params.toString()}`;
+    } else {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
     }
 
     const res = await fetch(url);
     const data = await res.json();
+
+    setTotalCount(
+      data.total_count ||
+        data.totalCount ||
+        data.item_count ||
+        data.meta?.total ||
+        0
+    );
     return data;
   };
 
@@ -179,6 +204,7 @@ const AppContextProvider = (props) => {
       paginationData.filter,
       paginationData.productTypeId,
       paginationData.category,
+      paginationData.searchTerm,
     ],
     queryFn: () => getProductsFromApi(),
   });
@@ -400,6 +426,8 @@ const AppContextProvider = (props) => {
       return [];
     }
   };
+  const pendingSearchRequestsRef = useRef({});
+  const searchCacheRef = useRef({});
   const fetchSearchedProducts = async (search, page = 1, sort = "") => {
     setSearchLoading(true);
     try {
@@ -567,12 +595,8 @@ const AppContextProvider = (props) => {
   const [arrivalProducts, setArrivalProducts] = useState([]);
   const fetchNewArrivalProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 10; // Default to 100 if limit is not provided
+      if (!limit) limit = 10;
       const key = `${page}_${sort}_${limit}`;
-
-      const response = await fetch(
-        `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
-      );
 
       if (arrivalCacheRef.current[key]) {
         setArrivalProducts(arrivalCacheRef.current[key]);
@@ -1549,6 +1573,7 @@ const AppContextProvider = (props) => {
     allProductsCacheRef,
     blogs,
     setBlogs,
+    totalCount,
     options,
     categoryProducts,
     fetchDiscountedProducts,

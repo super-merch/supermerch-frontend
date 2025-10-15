@@ -470,8 +470,8 @@ const HourProduction24Products = () => {
                     !isFiltering &&
                     getTotalCount()}
                 </span>
-                <p className="text-sm text-gray-600">
-                  {isLoading || isFiltering
+                <p className="">
+                  {isLoading
                     ? "Loading..."
                     : `Results found (24 Hour Production Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
@@ -527,7 +527,7 @@ const HourProduction24Products = () => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("relevancy")}
+                        onClick={() => handleSortSelection("revelancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "highToLow" ? "bg-gray-100" : ""
                         }`}
