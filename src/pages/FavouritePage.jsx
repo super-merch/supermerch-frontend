@@ -12,13 +12,16 @@ import { AppContext } from "@/context/AppContext";
 
 const FavouritePage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const {productionIds,
+    australiaIds,} = useContext(AppContext)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
-  const { productionIds, australiaIds } = useContext(AppContext);
   const [cardHover, setCardHover] = useState(null);
 
   const navigate = useNavigate();
+
+  
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);

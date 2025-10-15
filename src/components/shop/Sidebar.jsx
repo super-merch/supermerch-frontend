@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { IoMenu } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,31 @@ const Sidebar = (props) => {
 
   const [categoriesData, setCategoriesData] = useState([]);
   const [showAllCategories, setShowAllCategories] = useState(false); // <-- new
+  // cache key (change suffix if you need to invalidate)
+  const CATEGORIES_CACHE_KEY = "v1_categories_cache_v1";
+
+  // load cache helper
+  const loadCategoriesFromSession = () => {
+    try {
+      const raw = sessionStorage.getItem(CATEGORIES_CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  // save cache helper
+  const saveCategoriesToSession = (payload) => {
+    try {
+      sessionStorage.setItem(CATEGORIES_CACHE_KEY, JSON.stringify(payload));
+    } catch (e) {
+      // ignore write errors
+    }
+  };
+
+  // in-memory ref + pending request ref
+  const categoriesCacheRef = useRef(loadCategoriesFromSession()); // may be null or { data: [...] }
+  const pendingCategoriesRequestRef = useRef(null);
 
   const fetchCategories = async () => {
     try {
@@ -29,6 +54,7 @@ const Sidebar = (props) => {
       setCategoriesData([]); // fallback
     }
   };
+
   const filter = props.filter ? props.filter : false;
 
   // useEffect(() => {

@@ -1,97 +1,5 @@
-// import { createSlice } from "@reduxjs/toolkit";
-// import { getPriceForQuantity } from "../helper";
 
-// const cartSlice = createSlice({
-//   name: 'cart',
-//   initialState: {
-//     items: [],
-//     totalQuantity: 0,
-//     totalAmount: 0,
-//   },
-//   reducers: {
-//     addToCart: (state, action) => {
-//       const { id, printMethodKey, quantity, priceBreaks } = action.payload;
-//       const existing = state.items.find(item =>
-//         item.id === id && item.printMethodKey === printMethodKey
-//       );
-
-//       if (existing) {
-//         const newQty = existing.quantity + quantity;
-//         existing.quantity = newQty;
-//         existing.price = getPriceForQuantity(newQty, priceBreaks);
-//       } else {
-
-//         const price = priceBreaks.length > 0
-//         ? getPriceForQuantity(quantity, priceBreaks)
-//         : action.payload.price; // do this ao that it will also work for buy one sample qunatity
-//         state.items.push({ ...action.payload, price });
-//       }
-//       state.totalQuantity = state.items.length;
-//       state.totalAmount = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-//     },
-//     incrementQuantity: (state, action) => {
-//       const item = state.items.find(item => item.id === action.payload);
-//       if (item) {
-//         item.quantity += 1;
-//         // state.totalQuantity += 1;
-//         state.totalAmount += item.price;
-//       }
-//     },
-//     decrementQuantity: (state, action) => {
-//       const item = state.items.find(item => item.id === action.payload);
-//       if (item && item.quantity > 1) {
-//         item.quantity -= 1;
-//         // state.totalQuantity -= 1;
-//         state.totalAmount -= item.price;
-//       }
-//     },
-//     removeFromCart: (state, action) => {
-//       const item = state.items.find(item => item.id === action.payload);
-//       if (item) {
-//         state.totalQuantity -= item.quantity;
-//         state.totalAmount -= item.price * item.quantity;
-//         state.items = state.items.filter(item => item.id !== action.payload);
-//       }
-//     },
-//     updateCartItemImage: (state, action) => {
-//       const { id, dragdrop } = action.payload;
-//       const item = state.items.find(item => item.id === id);
-//       if (item) {
-//         item.dragdrop = dragdrop;
-//       }
-//     },
-
-//     // perfect for implementing the addtocart the same product
-//     updateCartItemQuantity: (state, action) => {
-//       const { id, quantity } = action.payload;
-//       const item = state.items.find(item => item.id === id);
-
-//       if (item) {
-//         const newQty = Math.max(quantity, 1);
-//         item.quantity = newQty;
-//         item.price = getPriceForQuantity(newQty, item.priceBreaks);
-
-//         // Update totals
-//         state.totalAmount = state.items.reduce(
-//           (sum, item) => sum + item.price * item.quantity,
-//           0
-//         );
-//       }
-//     }
-//   },
-// });
-
-// export const {
-//   addToCart,
-//   incrementQuantity,
-//   decrementQuantity,
-//   removeFromCart,
-//   updateCartItemImage,
-//   updateCartItemQuantity
-// } = cartSlice.actions;
-
-// export default cartSlice.reducer;
-import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { createSlice,createSelector } from '@reduxjs/toolkit';
 
 const initialState = {
   items: [], // This will store all items with userEmail
@@ -152,6 +60,7 @@ const cartSlice = createSlice({
         marginFlat = 0,
         discountPct = 0,
         userEmail,
+        dragdrop = null,
         ...rest
       } = action.payload;
 
@@ -171,17 +80,17 @@ const cartSlice = createSlice({
       if (existing) {
         existing.quantity += quantity;
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(
-          existing.quantity,
-          existing.basePrices
-        );
-        const priceWithMargin = newUnitPrice + existing.marginFlat;
+        const newUnitPrice = getPriceForQuantity(existing.quantity, existing.basePrices);
+        const priceWithMargin = newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
         existing.price = priceWithMargin * (1 - existing.discountPct / 100);
         existing.totalPrice = existing.price * existing.quantity;
+        if (dragdrop) {
+      existing.dragdrop = dragdrop;
+    }
       } else {
         // Calculate initial price with margin and discount
         const unitPrice = getPriceForQuantity(quantity, basePrices);
-        const priceWithMargin = unitPrice + marginFlat;
+        const priceWithMargin = unitPrice + (marginFlat * unitPrice) / 100;
         const finalPrice = priceWithMargin * (1 - discountPct / 100);
 
         state.items.push({
@@ -196,6 +105,7 @@ const cartSlice = createSlice({
           quantity,
           userEmail: effectiveUserEmail,
           size, // Use the effective email
+          dragdrop,
           ...rest,
         });
       }
@@ -234,11 +144,8 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity += 1;
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(
-          item.quantity,
-          item.basePrices
-        );
-        const priceWithMargin = newUnitPrice + (item.marginFlat || 0);
+        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
+        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
@@ -266,11 +173,8 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity = Math.max(quantity, 1);
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(
-          item.quantity,
-          item.basePrices
-        );
-        const priceWithMargin = newUnitPrice + (item.marginFlat || 0);
+        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
+        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) /100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
@@ -298,11 +202,8 @@ const cartSlice = createSlice({
       if (item && item.quantity > 1) {
         item.quantity -= 1;
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(
-          item.quantity,
-          item.basePrices
-        );
-        const priceWithMargin = newUnitPrice + (item.marginFlat || 0);
+        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
+        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
@@ -375,11 +276,8 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity = Math.max(quantity, 1);
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(
-          item.quantity,
-          item.basePrices
-        );
-        const priceWithMargin = newUnitPrice + (item.marginFlat || 0);
+        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
+        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice =
           item.price * item.quantity +
@@ -420,50 +318,35 @@ const cartSlice = createSlice({
     // Add this action to initialize user from storage
     initializeCartFromStorage: (state, action) => {
       const { email } = action.payload;
-      state.currentUserEmail = email;
+      state.currentUserEmail = email || "guest@gmail.com";
 
       // Recalculate totals for current user
-      const userItems = state.items.filter(
-        (item) =>
-          item.userEmail === email || item.userEmail === "guest@gmail.com"
-      );
-      state.totalQuantity = userItems.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
-      state.totalAmount = userItems.reduce(
-        (sum, item) => sum + item.totalPrice,
-        0
-      );
+      const userItems = state.items.filter(item => item.userEmail === email);
+      state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
+      state.totalAmount = userItems.reduce((sum, item) => sum + item.totalPrice, 0);
     },
 
     clearCart: () => initialState, // Keep this for complete reset if needed
   },
 });
 
-// Basic input selectors
-const selectCartItems = (state) => state.cart.items;
-const selectCurrentUserEmail = (state) => state.cart.currentUserEmail;
-
-export const selectCurrentUserCartItems = createSelector(
-  [selectCartItems, selectCurrentUserEmail],
-  (items, currentUserEmail) => {
-    if (!currentUserEmail) return [];
-
-    const guestItems = items.filter(
-      (item) => item.userEmail === "guest@gmail.com"
-    );
+// Selector to get current user's cart items
+export const selectCurrentUserCartItems = (state) => {
+  const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
+  
+  // Always include guest items along with user-specific items
+  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
 
     if (currentUserEmail === "guest@gmail.com") {
       return guestItems;
     }
 
-    const userItems = items.filter(
+    const userItems = state?.cart?.items.filter(
       (item) => item.userEmail === currentUserEmail
     );
     return [...guestItems, ...userItems];
   }
-);
+
 
 export const {
   setCurrentUser,

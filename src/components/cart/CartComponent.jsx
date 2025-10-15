@@ -99,6 +99,7 @@ const CartComponent = () => {
       quantities[item.id] = item.quantity;
     });
     setCustomQuantities(quantities);
+    console.log(items)
   }, [items]);
 
   const totalDiscountPercent = items.reduce(

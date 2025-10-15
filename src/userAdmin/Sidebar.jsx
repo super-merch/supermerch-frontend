@@ -45,7 +45,7 @@ export default function SidebarTabs() {
       <div className="flex flex-row justify-between bg-white border border-gray-300 shadow-xl ">
         {/* Sidebar */}
         <div
-          className={`fixed  inset-y-0 left-0  w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`fixed  inset-y-0 left-0 z-[20]  w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
         >
           <div className="flex items-center justify-between p-4 border-b">
@@ -58,7 +58,6 @@ export default function SidebarTabs() {
             {tabs.map((tab) => (
               <div key={tab.id}>
                 {tab.id === 'ordersDetails' ? null : <button
-
                   onClick={() => {
                     setActiveTab(tab.id)
                     setIsSidebarOpen(false)

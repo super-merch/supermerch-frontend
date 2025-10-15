@@ -191,7 +191,7 @@ const HotDeals = () => {
 
                       <div>
                         <h2 className="text-base sm:text-lg font-bold text-heading">
-                          From ${minPrice.toFixed(2)}
+                          From ${minPrice?.toFixed(2)}
                         </h2>
                         {discountPct > 0 && (
                           <p className="text-xs text-green-600 font-medium">

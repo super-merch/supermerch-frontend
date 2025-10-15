@@ -69,55 +69,10 @@ const SaleCards = () => {
     marginApi,
     totalDiscount,
     backendUrl,
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
 
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error("Failed to fetch 24 Hour Production products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
 
   // Get Redux filter state
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -527,43 +482,21 @@ const SaleCards = () => {
                 </p>
               </div>
 
-              {/* Sort Dropdown - Right Side */}
-              <div className="flex items-center gap-3">
-                <p>Sort by:</p>
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
-                    onClick={() => setIsDropdownOpen((prev) => !prev)}
-                  >
-                    {sortOption === "lowToHigh" ? "Lowest to Highest" : sortOption === "highToLow" ? "Highest to Lowest" : "Relevancy"}
-                    <span className="">
-                      {isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}
-                    </span>
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
-                      <button
-                        onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
-                      >
-                        Lowest to Highest
-                      </button>
-                      <button
-                        onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
-                      >
-                        Highest to Lowest
-                      </button>
-                      <button
-                        onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
-                      >
-                        Relevancy
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
+            <div className="flex items-center gap-1 lg:pt-0 md:pt-0 sm:pt-0">
+              <span className="font-semibold text-brand">
+                {!skeletonLoading && !isFiltering && getTotalCount()}
+              </span>
+              <p className="">
+                {skeletonLoading || isFiltering
+                  ? "Loading..."
+                  : `Discounted Results found${
+                      isPriceFilterActive
+                        ? ` (Price filtered)`
+                        : hasActiveFilters
+                        ? ` on page ${currentPage}`
+                        : ""
+                    }`}
+              </p>
             </div>
           </div>
 
@@ -629,8 +562,8 @@ const SaleCards = () => {
                     const baseMarginPrice = typeof marginEntry.baseMarginPrice === "number" ? marginEntry.baseMarginPrice : 0;
 
                     // 3) apply the flat margin to both ends of the range
-                    minPrice += marginFlat;
-                    maxPrice += marginFlat;
+                    minPrice += (minPrice * marginFlat) / 100;
+                    maxPrice += (maxPrice * marginFlat) / 100;a
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
@@ -938,6 +871,7 @@ const SaleCards = () => {
           </div>
         </div>
       )}
+      </div>
     </>
   );
 };

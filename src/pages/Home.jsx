@@ -4,6 +4,9 @@ import HomeModals from "../components/Home/HomeModals";
 import { useModals } from "../hooks/useModals";
 import { useCoupons } from "../hooks/useCoupons";
 import { useSessionStorageBoolean } from "../hooks/useSessionStorage";
+import RecentProducts from "@/components/Home/RecentProducts";
+import HowItWorks from "@/components/Home/HowItWorks";
+import WhyUs from "@/components/Home/WhyUs";
 
 const Home = () => {
   const {
@@ -77,6 +80,9 @@ const Home = () => {
         }}
         openEmailModal={openEmailModal}
       />
+      <RecentProducts />
+      <HowItWorks />
+      <WhyUs />
     </div>
   );
 };

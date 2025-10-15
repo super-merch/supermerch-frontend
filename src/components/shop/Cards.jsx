@@ -41,6 +41,13 @@ const Cards = ({ category = "dress" }) => {
   const dropdownRef = useRef(null);
   const selectedCategory = useSelector((state) => state.filters.categoryId);
   const [cardHover, setCardHover] = useState(null);
+  const isAustraliaPage = category === "australia";
+  const is24HrPage = category === "24hr-production";
+  const isSalesPage = category === "sales";
+  const isSearch = category === "search";
+  const isAllProducts = category === "allProducts";
+  const isSpecialPage =
+    isAustraliaPage || is24HrPage || isSalesPage || isSearch;
 
   const { activeFilters, minPrice, maxPrice } = useSelector(
     (state) => state.filters
@@ -65,23 +72,60 @@ const Cards = ({ category = "dress" }) => {
   const [searchParams] = useSearchParams();
   const getProductsData = getProducts?.data;
   const itemsPerPage = getProducts?.items_per_page;
-  const totalPages = getProducts?.total_pages;
-  const itemCount = getProducts?.item_count;
-  const currentPage = paginationData.page;
+  const totalPages = getProducts?.total_pages || getProducts?.totalPages;
+  const itemCount = getProducts?.item_count || getProducts?.totalCount;
+  const currentPage = paginationData?.page || paginationData?.currentPage;
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   useEffect(() => {
     if (searchParams.get("category")) {
+      const category = searchParams.get("category");
+      if (category === "australia") {
+        setPaginationData({
+          ...paginationData,
+          category: "australia",
+          page: 1,
+        });
+      } else if (category === "24hr-production") {
+        setPaginationData({
+          ...paginationData,
+          category: "24hr-production",
+          page: 1,
+        });
+      } else if (category === "sales") {
+        setPaginationData({
+          ...paginationData,
+          category: "sales",
+          page: 1,
+        });
+      }
+        else if(category === "allProducts"){
+          setPaginationData({
+            ...paginationData,
+            category: "allProducts",
+            page: 1,
+          });
+      } else {
+        setPaginationData({
+          ...paginationData,
+          productTypeId: searchParams.get("category"),
+          category: null,
+          page: 1,
+        });
+      }
+    } else if (searchParams.get("search")) {
       setPaginationData({
         ...paginationData,
-        productTypeId: searchParams.get("category"),
-        category: null,
+        category: "search",
+        page: 1,
+        searchTerm: searchParams.get("search"),
       });
     } else {
       setPaginationData({
         ...paginationData,
         category: category,
+        page: 1,
       });
     }
   }, [searchParams, category]);
@@ -120,6 +164,15 @@ const Cards = ({ category = "dress" }) => {
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
       state: productId,
     });
+  };
+  const getResultsText = () => {
+    if (isAustraliaPage) return "Australia Made Products";
+    if (is24HrPage) return "24Hr Production Products";
+    if (isSalesPage) return "Sales Products";
+    if (isSearch) return `Search Results for "${searchParams.get("search")}"`;
+    if (category)
+      return `${category.charAt(0).toUpperCase() + category.slice(1)} Products`;
+    return "All Products";
   };
 
   return (
@@ -209,9 +262,9 @@ const Cards = ({ category = "dress" }) => {
                 <p className="text-sm text-gray-600">
                   {productsLoading
                     ? "Loading..."
-                    : `Results found ${
-                        selectedCategory ? "(Category)" : "(All Products)"
-                      }${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                    : `Results found (${getResultsText()})${
+                        isPriceFilterActive ? " (Price filtered)" : ""
+                      }`}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -223,14 +276,14 @@ const Cards = ({ category = "dress" }) => {
               {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
-                  {!productsLoading && getProductsData?.length}
+                  {!productsLoading && itemCount}
                 </span>
                 <p className="">
                   {productsLoading
                     ? "Loading..."
-                    : `Results found ${
-                        selectedCategory ? "(Category)" : "(All Products)"
-                      }${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                    : `Results found (${
+                        getResultsText()
+                      })${isPriceFilterActive ? " (Price filtered)" : ""}`}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -419,7 +472,10 @@ const Cards = ({ category = "dress" }) => {
                             <div className="">
                               <h2 className="text-base sm:text-lg font-bold text-heading">
                                 From $
-                                {getProductPrice(product, product.meta.id)}
+                                {getProductPrice(
+                                  product,
+                                  product.meta.id
+                                ).toFixed(2)}
                               </h2>
                             </div>
                           </div>
@@ -469,7 +525,7 @@ const Cards = ({ category = "dress" }) => {
 
               {/* Page 1 - Always show */}
               <button
-                ßonClick={() =>
+                onClick={() =>
                   setPaginationData((prev) => ({ ...prev, page: 1 }))
                 }
                 className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${

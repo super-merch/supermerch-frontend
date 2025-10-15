@@ -1,6 +1,6 @@
 import TabsButtons from "@/components/Home/ProducsTabs/TabsButtons";
-import ProductDetails from "../components/product/ProductDetails";
 import ProductNavigate from "../components/product/ProductNavigate";
+import ProductDetails from "@/components/product/ProductDetails";
 
 const ProducPage = () => {
   // const { id } = useParams();

@@ -9,11 +9,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
-import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineEye } from "react-icons/ai";
-import { BsCursor } from "react-icons/bs";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose, IoMenu } from "react-icons/io5";
@@ -56,6 +52,8 @@ const HourProduction24Products = () => {
   const [sortOption, setSortOption] = useState("lowToHigh");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const location = useLocation();
+  const pageType = getPageTypeFromRoute(location.pathname);
 
   // Price filter state and tracking
   const [allFilteredProducts, setAllFilteredProducts] = useState([]);
@@ -64,69 +62,13 @@ const HourProduction24Products = () => {
   const [totalFilteredPages, setTotalFilteredPages] = useState(0);
   const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
 
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
+  const [totalApiPages, setTotalApiPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   // State for managing products and pagination
   const [allProducts, setAllProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [totalApiPages, setTotalApiPages] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   // Get Redux filter state
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -144,6 +86,8 @@ const HourProduction24Products = () => {
     fetchAllHourProducts,
     hourProd,
     skeletonLoading,
+    australiaIds,
+    productionIds,
   } = useContext(AppContext);
 
   // Helper function to get real price with caching
@@ -161,7 +105,6 @@ const HourProduction24Products = () => {
     const price =
       priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
 
-    // Cache the result
     priceCache.current.set(productId, price);
     return price;
   }, []);
@@ -170,14 +113,11 @@ const HourProduction24Products = () => {
   const handleClearPriceFilter = () => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
-    setAllFilteredProducts([]);
-    setTotalFilteredPages(0);
-    setFilterError("");
     setCurrentPage(1);
     dispatch(applyFilters());
   };
 
-  // Function to fetch Australia products with pagination
+  // Function to fetch 24 Hour products with pagination
   const fetchHourProductsPaginated = async (page = 1, sortOption = "") => {
     setIsLoading(true);
     setError("");
@@ -207,17 +147,16 @@ const HourProduction24Products = () => {
     }
   };
 
-  // Function to fetch and filter ALL Australia products with price range
-  const fetchAndFilterAllAustraliaProducts = async (
+  // Function to fetch and filter ALL 24 Hour products with price range
+  const fetchAndFilterAllHourProducts = async (
     minPrice,
     maxPrice,
     sortOption
   ) => {
-    setIsFiltering(true);
-    setFilterError("");
+    setIsLoading(true);
+    setError("");
 
     try {
-      // Fetch all Australia products for filtering
       const data = await fetchAllHourProducts(sortOption);
 
       if (data && data.length > 0) {
@@ -258,11 +197,13 @@ const HourProduction24Products = () => {
       } else {
         setFilterError("No products found in the specified price range");
       }
+      return [];
     } catch (error) {
-      console.error("Error filtering Australia products:", error);
-      setFilterError("Error fetching filtered products. Please try again.");
+      console.error("Error filtering 24 Hour products:", error);
+      setError("Error fetching filtered products. Please try again.");
+      return [];
     } finally {
-      setIsFiltering(false);
+      setIsLoading(false);
     }
   };
 
@@ -270,9 +211,9 @@ const HourProduction24Products = () => {
   useEffect(() => {
     if (isPriceFilterActive) {
       setCurrentPage(1);
-      fetchAndFilterAllAustraliaProducts(minPrice, maxPrice, sortOption);
+      fetchAndFilterAllHourProducts(minPrice, maxPrice, sortOption);
     } else {
-      // Reset filtered products when no price filter is active
+      // Reset to normal pagination when no price filter is active
       setCurrentPage(1);
       setAllFilteredProducts([]);
       setTotalFilteredPages(0);
@@ -354,26 +295,35 @@ const HourProduction24Products = () => {
     if (allProducts.length === 0 && !isPriceFilterActive) {
       fetchHourProductsPaginated(1, sortOption);
     }
-  }, []);
+  }, [minPrice, maxPrice, isPriceFilterActive]);
 
-  // Handle page changes
+  // Initial load and sort changes
   useEffect(() => {
     if (currentPage > 0 && !isPriceFilterActive) {
       fetchHourProductsPaginated(currentPage, sortOption);
     }
   }, [currentPage]);
 
-  // Get current page products
-  const getCurrentPageProducts = () => {
-    const sortedProducts = getSortedProducts();
-
+  // Get current products based on mode
+  const getCurrentProducts = () => {
+    // For price filtering, we need to handle locally
     if (isPriceFilterActive) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return sortedProducts.slice(startIndex, endIndex);
+      // This would need to be implemented with local filtering
+      return [];
     }
 
-    return sortedProducts;
+    // For normal pagination, use products from context
+    return hourProd || [];
+  };
+
+  // Calculate total pages based on current mode
+
+  // Calculate total count for display
+  const getTotalCount = () => {
+    if (isPriceFilterActive) {
+      return 0; // Placeholder for filtered count
+    }
+    return productionIds?.size || 0;
   };
 
   useEffect(() => {
@@ -428,18 +378,9 @@ const HourProduction24Products = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isModalOpen]);
 
-  // Calculate total count for display
-  const getTotalCount = () => {
-    if (isPriceFilterActive) {
-      return allFilteredProducts.length;
-    } else {
-      return totalCount;
-    }
-  };
-
-  const currentPageProducts = getCurrentPageProducts();
+  const currentProducts = getCurrentProducts();
   const totalPages = getTotalPages();
-  const showSkeleton = isLoading || skeletonLoading || isFiltering;
+  const showSkeleton = isLoading || skeletonLoading;
 
   return (
     <>
@@ -529,8 +470,8 @@ const HourProduction24Products = () => {
                     !isFiltering &&
                     getTotalCount()}
                 </span>
-                <p className="text-sm text-gray-600">
-                  {isLoading || isFiltering
+                <p className="">
+                  {isLoading
                     ? "Loading..."
                     : `Results found (24 Hour Production Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
@@ -542,7 +483,7 @@ const HourProduction24Products = () => {
           </div>
 
           {/* Desktop Layout */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block mt-4">
             <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
               <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
                 {/* Placeholder for search if needed later */}
@@ -586,7 +527,7 @@ const HourProduction24Products = () => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("relevancy")}
+                        onClick={() => handleSortSelection("revelancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "highToLow" ? "bg-gray-100" : ""
                         }`}
@@ -600,27 +541,29 @@ const HourProduction24Products = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {isPriceFilterActive && (
-                <div className="filter-item">
-                  <span className="text-sm">
-                    ${minPrice} - ${maxPrice}
-                  </span>
-                  <button
-                    className="px-2 text-lg"
-                    onClick={handleClearPriceFilter}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
+          {isPriceFilterActive && (
+            <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
+              <div className="flex flex-wrap items-center gap-4">
+                {isPriceFilterActive && (
+                  <div className="filter-item">
+                    <span className="text-sm">
+                      ${minPrice} - ${maxPrice}
+                    </span>
+                    <button
+                      className="px-2 text-lg"
+                      onClick={handleClearPriceFilter}
+                    >
+                      x
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
-          {filterError && (
+          {error && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
-              <p className="text-red-700">{filterError}</p>
+              <p className="text-red-700">{error}</p>
             </div>
           )}
 
@@ -659,9 +602,9 @@ const HourProduction24Products = () => {
                   </div>
                 </div>
               ))
-            ) : currentPageProducts.length > 0 ? (
+            ) : currentProducts.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {currentPageProducts.map((product) => {
+                {currentProducts.map((product) => {
                   const priceGroups =
                     product.product?.prices?.price_groups || [];
                   const basePrice =
@@ -682,8 +625,8 @@ const HourProduction24Products = () => {
                       ? marginEntry.marginFlat
                       : 0;
 
-                  minPrice += marginFlat;
-                  maxPrice += marginFlat;
+                  minPrice += (marginFlat * minPrice) / 100;
+                  maxPrice += (marginFlat * maxPrice) / 100;
 
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =
@@ -932,9 +875,9 @@ const HourProduction24Products = () => {
               ))}
 
               <button
-                onClick={() => {
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                }}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="flex items-center justify-center w-10 h-10 border rounded-full"
               >

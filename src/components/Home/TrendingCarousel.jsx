@@ -151,7 +151,7 @@ const TrendingCarousel = () => {
                       </div>
 
                       {/* Product Info */}
-                      <div className="p-3 rounded-b-xl">
+                      <div className="p-3 rounded-b-xl text-center">
                         <h3 className="text-base font-semibold text-brand group-hover:text-blue-600 transition-colors duration-300 line-clamp-2 truncate">
                           {product.overview.name || "No Name"}
                         </h3>

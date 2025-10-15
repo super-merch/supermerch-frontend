@@ -30,6 +30,7 @@ const Checkout = () => {
     totalDiscount,
     openLoginModal,
     setOpenLoginModal,
+    userData,
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -54,6 +55,35 @@ const Checkout = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loginModalRef, setLoginModalRef] = useState(null);
+  const saveUser = async (shippingAddressData) => {
+    if (userData) {
+      if (!userData?.defaultShippingAddress) {
+        try {
+          const response = await axios.put(
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/api/auth/update-shipping-address`,
+            { defaultShippingAddress: shippingAddressData },
+            {
+              headers: {
+                token,
+              },
+            }
+          );
+
+          if (response.data.success) {
+            toast.success("Shipping address saved successfully!");
+          } else {
+            toast.error("Failed to save shipping address.");
+          }
+        } catch (error) {
+          console.error("Error saving shipping address:", error);
+          toast.error("An error occurred while saving the shipping address.");
+        }
+      }
+    }
+  };
+
 
   useEffect(() => {
     // Get coupon data from location state if available
@@ -145,6 +175,7 @@ const Checkout = () => {
       // Clear the stored data
       localStorage.removeItem("pendingCheckoutData");
 
+      console.log(checkoutData);
       // Success actions
       dispatch(clearCart());
       toast.success("Order placed successfully!");
@@ -168,8 +199,8 @@ const Checkout = () => {
         region: addressData?.state || "",
         city: addressData?.city || "",
         zip: addressData?.postalCode || "",
-        email: addressData?.email || "",
-        phone: addressData?.phone || "",
+        // email: addressData?.email || "",
+        // phone: addressData?.phone || "",
       },
       shipping: {
         // Update these to use shippingAddressData
@@ -187,7 +218,6 @@ const Checkout = () => {
       paymentMethod: "card",
     },
   });
-
   const paymentMethod = watch("paymentMethod");
 
   const totalDiscountPercent = items.reduce(
@@ -222,16 +252,16 @@ const Checkout = () => {
       return;
     }
     const resolvedEmail =
-      (data?.billing?.email && data.billing.email.trim()) ||
-      (data?.shipping?.email && data.shipping.email.trim()) ||
+      userData?.email ||
+      data?.shipping?.email ||
       addressData?.email ||
-      "";
+      "guest@gmail.com";
 
     const resolvedPhone =
-      (data?.billing?.phone && data.billing.phone.trim()) ||
-      (data?.shipping?.phone && data.shipping.phone.trim()) ||
+      userData?.phone ||
+      data?.shipping?.phone ||
       addressData?.phone ||
-      "";
+      "1234567890";
     const checkoutData = {
       //orderId in format of "SM-(DATE)-(Random 5 digits)"
       orderId: `SM-${new Date()
@@ -240,8 +270,11 @@ const Checkout = () => {
         .replace(/-/g, "")
         .slice(2)}-${Math.floor(Math.random() * 100000)}`,
       user: {
-        firstName: data.billing.firstName || addressData.firstName,
-        lastName: data.billing.lastName || addressData.lastName,
+        firstName:
+          userData?.name || data.billing.firstName || addressData.firstName,
+        lastName: userData?.name
+          ? ""
+          : data.billing.lastName || addressData.lastName,
         email: resolvedEmail || addressData.email,
         phone: resolvedPhone || addressData.phone,
       },
@@ -347,6 +380,18 @@ const Checkout = () => {
     try {
       // Store checkout data in localStorage before redirecting to Stripe
       localStorage.setItem("pendingCheckoutData", JSON.stringify(checkoutData));
+      saveUser({
+        firstName: data.shipping.firstName,
+        lastName: data.shipping.lastName,
+        country: data.shipping.country,
+        state: data.shipping.region,
+        city: data.shipping.city,
+        postalCode: data.shipping.zip,
+        addressLine: data.shipping.address,
+        companyName: data.shipping.companyName,
+        email: data.shipping.email,
+        phone: data.shipping.phone,
+      })
 
       const stripe = await loadStripe(
         "pk_test_51RqoZXGaJ07cWJBqahLsX614YCqHKSaVwLcxxcYf9kYJbbX0Ww8tRrxfh8neqnoGkqh3ofUJ9qqA6tnavunDTJSY00ovkitoWt"

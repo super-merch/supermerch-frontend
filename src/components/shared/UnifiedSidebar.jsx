@@ -153,13 +153,13 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
     // Determine the correct route based on the category name
     let targetRoute = "/Spromotional"; // Default fallback
 
-    if (categoryName === "Clothing") {
-      targetRoute = "/Clothing";
-    } else if (categoryName === "Headwear") {
-      targetRoute = "/Headwear";
-    } else if (categoryName === "Capital Equipment") {
-      targetRoute = "/Spromotional"; // Keep as promotional for now
-    }
+    // if (categoryName === "Clothing") {
+    //   targetRoute = "/Clothing";
+    // } else if (categoryName === "Headwear") {
+    //   targetRoute = "/Headwear";
+    // } else if (categoryName === "Capital Equipment") {
+    //   targetRoute = "/Spromotional"; // Keep as promotional for now
+    // }
     // For all other categories, use /Spromotional
 
     navigate(`${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);

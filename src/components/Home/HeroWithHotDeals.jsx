@@ -74,7 +74,7 @@ const HeroWithHotDeals = () => {
         }
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
-      <div className="Mycontainer md:h-[40vh] h-full">
+      <div className="Mycontainer md:h-[55vh] h-full">
         <div className="flex flex-col xl:flex-row  gap-4 h-full">
           {/* Image Slider - 75% width */}
           <div className="w-full xl:w-3/4 h-64 sm:h-96 md:h-full relative">

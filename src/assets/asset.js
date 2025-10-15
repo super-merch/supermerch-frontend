@@ -1,11 +1,10 @@
 let v1categories;
-const getData = async () => {
-  const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v1-categories`
-  );
-  const result = await response.json();
-  v1categories = result.data;
-};
+const getData = async()=>{
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1-categories`)
+    const result = await response.json()
+    v1categories = result.data
+
+}
 // getData()
 
 export const megaMenu =

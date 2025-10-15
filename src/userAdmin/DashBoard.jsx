@@ -4,56 +4,45 @@ import { AppContext } from "../context/AppContext";
 import { FaBullseye } from "react-icons/fa";
 
 const DashBoard = () => {
-  const {
-    backednUrl,
-    handleLogout,
-    setNewId,
-    activeTab,
-    setActiveTab,
-    userOrder,
-  } = useContext(AppContext);
-  const [userEmail, setUserEmail] = useState("");
-  const [loading, setLoading] = useState(FaBullseye);
-  useEffect(() => {
-    const fetchUserEmail = async () => {
-      console.log("user order", userOrder);
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (data.success) {
-          setUserEmail(data.email);
-          setLoading(false);
-        }
-        console.log(data, "data login");
-        setLoading(false);
-      } catch (error) {
-        console.error(
-          "Error fetching user email:",
-          error.response?.data || error.message
-        );
-        setLoading(false);
-      }
-    };
+  const { backednUrl, handleLogout,setNewId, activeTab, setActiveTab, userOrder,userEmail } = useContext(AppContext);
+  // const [loading, setLoading] = useState(FaBullseye);
+  // useEffect(() => {
+  //   const fetchUserEmail = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const token = localStorage.getItem("token");
+  //       const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       if (data.success) {
+  //         setUserEmail(data.email);
+  //         setLoading(false);
+  //       }
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error(
+  //         "Error fetching user email:",
+  //         error.response?.data || error.message
+  //       );
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchUserEmail();
-  }, []);
+  //   fetchUserEmail();
+  // }, []);
   const handleSetView = (id) => {
+
     setNewId(id);
-    setActiveTab("ordersDetails");
-  };
+    setActiveTab('ordersDetails')
+  }
 
   return (
     <>
       <div className="w-full px-4 pt-2 pb-4 text-xl lg:px-8 md:px-8 lg:pt-6 md:pt-6 ">
-        {loading ? (
-          <h1>Loading...</h1>
-        ) : userEmail ? (
-          <h1>
+        { userEmail ? (
+          <h1 className="max-sm:text-[17px]" >
             Welcome{" "}
             <span className="font-semibold text-black ">{userEmail}</span> (not{" "}
             <span className="font-semibold text-black">{userEmail}? </span>{" "}
@@ -69,7 +58,7 @@ const DashBoard = () => {
         )}
 
         {/* Dashboard Stats Cards */}
-        {!loading && userOrder && (
+        { userOrder  && (
           <div className="w-full  mt-10 pb-8">
             {/* Stats Cards Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-6 mb-8">

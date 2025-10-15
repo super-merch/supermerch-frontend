@@ -39,7 +39,7 @@ const AllProducts = ({ activeTab }) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/client-products?page=1&limit=10&sort=&filter=true`
+        }/api/client-products?page=1&limit=8&sort=&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
@@ -81,6 +81,7 @@ const AllProducts = ({ activeTab }) => {
     const slug = slugify(name);
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
+
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   const [cardHover, setCardHover] = useState(null);
@@ -244,8 +245,8 @@ const AllProducts = ({ activeTab }) => {
                         : 0;
 
                     // 3) apply the flat margin to both ends of the range
-                    minPrice += marginFlat;
-                    maxPrice += marginFlat;
+                    minPrice += (minPrice * marginFlat) / 100;
+                    maxPrice += (maxPrice * marginFlat) / 100;
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;

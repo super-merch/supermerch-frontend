@@ -69,7 +69,6 @@ const UserProducts = () => {
     };
 
     const discountsArray = await getDiscount();
-    console.log(discountsArray, "discountsArray");
 
     // 2) Populate context.totalDiscount as { [id]: pct }
     const discountMap = {};
@@ -139,10 +138,6 @@ const UserProducts = () => {
     // Step 4: Final total
     const total = discountedAmount + gstAmount;
 
-    console.log(netAmount, "netAmount Re‑Order"); // ~148.09
-    console.log(totalDiscountPct, "discountedAmount Re‑Order");
-    console.log(gstAmount, "gstAmount Re‑Order"); // ~14.81
-    console.log(total, "total Re‑Order"); // ~162.90
 
     // 5) Build your payload
     const reOrderData = {
@@ -168,7 +163,6 @@ const UserProducts = () => {
       total: total,
     };
 
-    console.log(reOrderData, "reOrderData");
 
     try {
       const res = await axios.post(
@@ -322,8 +316,8 @@ const UserProducts = () => {
     <div className="w-full px-2 lg:px-8 md:px-8">
       <div className="flex items-center justify-between">
         <button
-          onClick={() => setActiveTab("dashboard")}
-          className="bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase"
+          onClick={() => setActiveTab('dashboard')}
+          className='bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase'
         >
           <IoMdArrowRoundBack />
           Back

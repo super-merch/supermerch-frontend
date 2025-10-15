@@ -71,64 +71,9 @@ const TrendCards = () => {
     marginApi,
     totalDiscount,
     backendUrl,
+    productionIds,
+    australiaIds,
   } = useContext(AppContext);
-
-  const [productionIds, setProductionIds] = useState(new Set());
-  const getAll24HourProduction = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const productIds = data.map((item) => Number(item.id));
-        setProductionIds(new Set(productIds));
-        console.log("Fetched 24 Hour Production products:", productionIds);
-      } else {
-        console.error(
-          "Failed to fetch 24 Hour Production products:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching 24 Hour Production products:", error);
-    }
-  };
-  const [australiaIds, setAustraliaIds] = useState(new Set());
-  const getAllAustralia = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure consistent data types (convert to strings)
-        const productIds = data.map((item) => Number(item.id));
-        setAustraliaIds(new Set(productIds));
-        console.log("Fetched Australia products:", data);
-      } else {
-        console.error("Failed to fetch Australia products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching Australia products:", error);
-    }
-  };
-  useEffect(() => {
-    getAll24HourProduction();
-    getAllAustralia();
-  }, []);
 
   // Get Redux filter state
   const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
@@ -364,7 +309,9 @@ const TrendCards = () => {
   const handleViewProduct = (productId, name) => {
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);
-    navigate(`/product/${name}`, { state: productId });
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+      state: productId,
+    });
   };
 
   const setSearchTextChanger = (e) => {
@@ -627,6 +574,23 @@ const TrendCards = () => {
                   </div>
                 )}
             </div>
+
+            <div className="flex items-center gap-1 lg:pt-0 md:pt-0 sm:pt-0">
+              <span className="font-semibold text-brand">
+                {!skeletonLoading && !isFiltering && getTotalCount()}
+              </span>
+              <p className="">
+                {skeletonLoading || isFiltering
+                  ? "Loading..."
+                  : `Trending Results found${
+                      isPriceFilterActive
+                        ? ` (Price filtered)`
+                        : hasActiveFilters
+                        ? ` on page ${currentPage}`
+                        : ""
+                    }`}
+              </p>
+            </div>
           </div>
 
           {filterError && (
@@ -715,8 +679,8 @@ const TrendCards = () => {
                         : 0;
 
                     // 3) apply the flat margin to both ends of the range
-                    minPrice += marginFlat;
-                    maxPrice += marginFlat;
+                    minPrice += (minPrice * marginFlat) / 100;
+                    maxPrice += (maxPrice * marginFlat) / 100;
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;

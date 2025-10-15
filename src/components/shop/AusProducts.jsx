@@ -11,7 +11,7 @@ import {
 import { IoClose, IoMenu } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import {
@@ -48,16 +48,19 @@ const AustraliaProducts = () => {
   const [sortOption, setSortOption] = useState("lowToHigh");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const pageType = getPageTypeFromRoute(location.pathname);
 
   // Price filter state and tracking
   const [allFilteredProducts, setAllFilteredProducts] = useState([]);
-  const [isFiltering, setIsFiltering] = useState(false);
   const [filterError, setFilterError] = useState("");
   const [totalFilteredPages, setTotalFilteredPages] = useState(0);
   const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
 
   // State for managing products and pagination
+
+  // Simplified state - remove local products state since we use context
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isFiltering, setIsFiltering] = useState(false);
 
   // Get Redux filter state
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -67,6 +70,8 @@ const AustraliaProducts = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const pageType = getPageTypeFromRoute(location.pathname);
 
   const {
     marginApi,
@@ -371,9 +376,9 @@ const AustraliaProducts = () => {
             </div>
           )}
 
-          {filterError && (
+          {error && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
-              <p className="text-red-700">{filterError}</p>
+              <p className="text-red-700">{error}</p>
             </div>
           )}
 
@@ -411,8 +416,8 @@ const AustraliaProducts = () => {
                       ? marginEntry.marginFlat
                       : 0;
 
-                  minPrice += marginFlat;
-                  maxPrice += marginFlat;
+                  minPrice += (marginFlat * minPrice) / 100;
+                  maxPrice += (marginFlat * maxPrice) / 100;
 
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =
@@ -431,6 +436,7 @@ const AustraliaProducts = () => {
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >
+                      {/* ... (rest of your product card JSX remains the same) ... */}
                       {/* Australia Made Badge */}
 
                       {discountPct > 0 && (
