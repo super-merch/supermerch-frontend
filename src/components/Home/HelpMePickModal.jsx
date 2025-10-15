@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
+import {
+  setMinPrice,
+  setMaxPrice,
+  applyFilters,
+} from "../../redux/slices/filterSlice";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import { megaMenu } from "../../assets/assets.js";
@@ -157,7 +161,8 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
   };
 
   const handlePriceSelect = (price) => setPrice(price);
-  const handleSubCategorySelect = (subCategory) => setSelectedSubCategory(subCategory);
+  const handleSubCategorySelect = (subCategory) =>
+    setSelectedSubCategory(subCategory);
 
   useEffect(() => {
     if (isOpen) {
@@ -184,7 +189,9 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
 
     if (selectedMainCategory.id === "promotion") {
       const encodedCategoryName = encodeURIComponent(selectedSubCategory.name);
-      navigate(`/Spromotional?categoryName=${encodedCategoryName}&category=${selectedSubCategory.id}`);
+      navigate(
+        `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedSubCategory.id}`
+      );
     } else if (selectedMainCategory.id === "clothing") {
       let selectedItem = null;
       let selectedLabel = null;
@@ -198,9 +205,13 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
       }
 
       if (selectedItem) {
-        const encodedCategoryName = encodeURIComponent(selectedSubCategory.name);
+        const encodedCategoryName = encodeURIComponent(
+          selectedSubCategory.name
+        );
         const encodedLabel = encodeURIComponent(selectedLabel);
-        navigate(`/Spromotional?categoryName=${encodedCategoryName}&category=${selectedItem.id}&label=${encodedLabel}`);
+        navigate(
+          `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedItem.id}&label=${encodedLabel}`
+        );
       }
     } else if (selectedMainCategory.id === "headwear") {
       let selectedItem = null;
@@ -215,9 +226,13 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
       }
 
       if (selectedItem) {
-        const encodedCategoryName = encodeURIComponent(selectedSubCategory.name);
+        const encodedCategoryName = encodeURIComponent(
+          selectedSubCategory.name
+        );
         const encodedLabel = encodeURIComponent(selectedLabel);
-        navigate(`/Spromotional?categoryName=${encodedCategoryName}&category=${selectedItem.id}&label=${encodedLabel}`);
+        navigate(
+          `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedItem.id}&label=${encodedLabel}`
+        );
       }
     }
 
@@ -240,30 +255,40 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
     >
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full relative max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full relative max-h-[95vh] sm:max-h-[90vh] overflow-hidden mx-2 sm:mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Help Me Pick</h2>
-            <p className="text-sm text-gray-500 mt-1">Step {step} of 3</p>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+              Help Me Pick
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Step {step} of 3
+            </p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <FaTimes className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
         {/* Step 1: Main Category Selection */}
         {step === 1 && (
-          <div className="p-6">
-            <div className="text-center mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Main Category</h3>
-              <p className="text-gray-600 mb-1">What type of products are you looking for?</p>
-              <p className="text-sm text-gray-500">Choose 1 from {mainCategories?.length} options</p>
+          <div className="p-4 sm:p-6">
+            <div className="text-center mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                Select a Main Category
+              </h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-1">
+                What type of products are you looking for?
+              </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8">
               {mainCategories.map((category) => (
                 <button
                   key={category.id}
@@ -271,7 +296,7 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
                     handleMainCategorySelect(category);
                     handleNext();
                   }}
-                  className={`px-6 py-4 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 ${
+                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-4 lg:px-8 lg:py-4 xl:px-10 xl:py-5 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 break-words text-sm sm:text-base md:text-lg ${
                     selectedMainCategory?.id === category.id
                       ? "border-blue-500 text-blue-600 bg-blue-50"
                       : "border-gray-300 text-gray-700 hover:bg-blue-50"
@@ -286,14 +311,14 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
               <button
                 disabled={step === 1}
                 onClick={handleBack}
-                className="px-6 py-2 text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleNext}
                 disabled={!selectedMainCategory}
-                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -303,14 +328,20 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
 
         {/* Step 2: Price Range Selection */}
         {step === 2 && (
-          <div className="p-6">
-            <div className="text-center mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Price Range</h3>
-              <p className="text-gray-600 mb-1">Select price range you are looking for...</p>
-              <p className="text-sm text-gray-500">Choose 1 from {priceRanges?.length} options</p>
+          <div className="p-4 sm:p-6">
+            <div className="text-center mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                Select a Price Range
+              </h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-1">
+                Select price range you are looking for...
+              </p>
+              <p className="text-xs sm:text-sm text-gray-500">
+                Choose 1 from {priceRanges?.length} options
+              </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-8 max-h-64 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 max-h-64 overflow-y-auto">
               {priceRanges.map((range) => (
                 <button
                   key={range.label}
@@ -318,8 +349,10 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
                     handlePriceSelect(range);
                     handleNext();
                   }}
-                  className={`px-4 py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 ${
-                    selectedPrice === range ? "border-blue-500 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-700 hover:bg-blue-50"
+                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 text-sm sm:text-base break-words ${
+                    selectedPrice === range
+                      ? "border-blue-500 text-blue-600 bg-blue-50"
+                      : "border-gray-300 text-gray-700 hover:bg-blue-50"
                   }`}
                 >
                   {range.label}
@@ -331,14 +364,14 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
               <button
                 disabled={step === 1}
                 onClick={handleBack}
-                className="px-6 py-2 text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleNext}
                 disabled={!selectedPrice}
-                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -348,19 +381,25 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
 
         {/* Step 3: Sub Category Selection */}
         {step === 3 && (
-          <div className="p-6">
-            <div className="text-center mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Category</h3>
-              <p className="text-gray-600 mb-1">Select the specific category you want...</p>
-              <p className="text-sm text-gray-500">Choose 1 from {availableSubCategories?.length} options</p>
+          <div className="p-4 sm:p-6">
+            <div className="text-center mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                Select a Category
+              </h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-1">
+                Select the specific category you want...
+              </p>
+              <p className="text-xs sm:text-sm text-gray-500">
+                Choose 1 from {availableSubCategories?.length} options
+              </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-8 max-h-64 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 max-h-64 overflow-y-auto">
               {availableSubCategories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleSubCategorySelect(category)}
-                  className={`px-4 py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 ${
+                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 text-sm sm:text-base break-words ${
                     selectedSubCategory?.id === category.id
                       ? "border-blue-500 text-blue-600 bg-blue-50"
                       : "border-gray-300 text-gray-700 hover:bg-blue-50"
@@ -375,14 +414,14 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
               <button
                 disabled={step === 1}
                 onClick={handleBack}
-                className="px-6 py-2 text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base text-gray-600 font-semibold disabled:text-gray-400 disabled:cursor-not-allowed hover:text-gray-800 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleApplyFilters}
                 disabled={!selectedSubCategory}
-                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Apply Filter
               </button>

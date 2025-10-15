@@ -10,6 +10,7 @@ import {
 } from "@/redux/slices/favouriteSlice";
 import { clearCart, initializeCartFromStorage, selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
+import { useQuery } from "@tanstack/react-query";
 
 export const AppContext = createContext();
 
@@ -28,13 +29,17 @@ const AppContextProvider = (props) => {
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
   const pendingParamMultiRequestsRef = useRef({});
-  const [token, setToken] = useState(localStorage.getItem("token") ? localStorage.getItem("token") : false);
+  const [token, setToken] = useState(
+    localStorage.getItem("token") ? localStorage.getItem("token") : false
+  );
 
   const [blogs, setBlogs] = useState([]);
 
   const getGlobalDiscount = async () => {
     try {
-      const response = await axios.get(`${backednUrl}/api/add-discount/global-discount`);
+      const response = await axios.get(
+        `${backednUrl}/api/add-discount/global-discount`
+      );
       if (response.data.data) {
         setGlobalDiscount(response.data.data);
         return response.data.data;
@@ -120,9 +125,95 @@ const AppContextProvider = (props) => {
 
   const options = { day: "2-digit", month: "short", year: "numeric" };
 
+  const [paginationData, setPaginationData] = useState({
+    page: 1,
+    limit: 9,
+    sortOption: "",
+    filter: true,
+    productTypeId: null,
+    category: null,
+    searchTerm:""
+  });
+  const [totalCount, setTotalCount] = useState(0);
+
+  const getProductsFromApi = async () => {
+  const params = new URLSearchParams({
+    ...(paginationData.productTypeId && {
+      product_type_ids: paginationData.productTypeId,
+    }),
+    page: paginationData.page,
+    ...(paginationData.limit && { limit: paginationData.limit }),
+    ...(paginationData.sortOption && { sort: paginationData.sortOption }),
+    ...(paginationData.filter && { filter: paginationData.filter }),
+    ...(paginationData.category && { category: paginationData.category }),
+    ...(paginationData.searchTerm !== undefined && { searchTerm: paginationData.searchTerm }),
+  });
+
+  let url = "";
+
+  if (paginationData.category === "australia") {
+    url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+  } else if (paginationData.category === "24hr-production") {
+    url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
+  } 
+  else if(paginationData.category === "sales"){
+    url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
+  }
+  else if(paginationData.category === "allProducts"){
+    url = `${backednUrl}/api/client-products?${params.toString()}`
+  }
+  else if(paginationData.category === "search"){
+    url = `${backednUrl}/api/client-products/search?${params.toString()}`
+  }
+  else if (paginationData.category) {
+    url = `${backednUrl}/api/client-products/category?${params.toString()}`;
+  } 
+  else if (paginationData.productTypeId) {
+    url = `${backednUrl}/api/params-products?${params.toString()}`;
+  }
+  else {
+    url = `${backednUrl}/api/client-products?${params.toString()}`;
+  }
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  setTotalCount(data.total_count || data.totalCount || data.item_count || data.meta?.total || 0);
+  return data;
+};
+
+  const { data: getProducts, isLoading: productsLoading } = useQuery({
+    queryKey: [
+      paginationData.productTypeId,
+      paginationData.page,
+      paginationData.limit,
+      paginationData.sortOption,
+      paginationData.filter,
+      paginationData.productTypeId,
+      paginationData.category,
+      paginationData.searchTerm
+    ],
+    queryFn: () => getProductsFromApi(),
+  });
+
+  const refetchProducts = () => {
+    queryClient.invalidateQueries({
+      queryKey: [
+        paginationData.productTypeId,
+        paginationData.page,
+        paginationData.limit,
+        paginationData.sortOption,
+        paginationData.filter,
+      ],
+    });
+  };
+
   const loadUserOrder = async () => {
     try {
-      const { data } = await axios.get(`${backednUrl}/api/checkout/user-order`, { headers: { token } });
+      const { data } = await axios.get(
+        `${backednUrl}/api/checkout/user-order`,
+        { headers: { token } }
+      );
       if (data.success) {
         setUserOrder(data.orders.reverse());
       }
@@ -199,8 +290,10 @@ const AppContextProvider = (props) => {
 
     setSkeletonLoading(true);
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
-      const response = await fetch(`${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`);
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
+      const response = await fetch(
+        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+      );
 
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
@@ -235,12 +328,21 @@ const AppContextProvider = (props) => {
   const [searchedProducts, setSearchedProducts] = useState([]);
   // Add this method to your AppContext
 
-  const fetchMultipleSearchPages = async (searchTerm, maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
+  const fetchMultipleSearchPages = async (
+    searchTerm,
+    maxPages = 1,
+    limit = 10,
+    sortOption = "",
+    startPage = 1
+  ) => {
     try {
       const endPage = startPage + maxPages - 1;
 
       // Create array of page numbers to fetch
-      const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      const pageNumbers = Array.from(
+        { length: endPage - startPage + 1 },
+        (_, i) => startPage + i
+      );
 
       // Fetch all pages in parallel
       const fetchPromises = pageNumbers.map(async (page) => {
@@ -271,6 +373,8 @@ const AppContextProvider = (props) => {
       return [];
     }
   };
+  const pendingSearchRequestsRef = useRef({});
+  const searchCacheRef = useRef({});
   const fetchSearchedProducts = async (search, page = 1, sort = "") => {
     setSearchLoading(true);
     try {
@@ -343,7 +447,12 @@ const AppContextProvider = (props) => {
 
   const [trendingProducts, setTrendingProducts] = useState([]);
   const [trendingProductsLoading, setTrendingProductsLoading] = useState(false);
-  const fetchMultipleTrendingPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
+  const fetchMultipleTrendingPages = async (
+    maxPages = 1,
+    limit = 10,
+    sortOption = "",
+    startPage = 1
+  ) => {
     setTrendingProductsLoading(true);
     const allProducts = [];
     let currentPage = startPage;
@@ -384,7 +493,7 @@ const AppContextProvider = (props) => {
 
   const fetchTrendingProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100;
+      if (!limit) limit = 10;
       const key = `${page}_${sort}_${limit}`;
 
       if (trendingCacheRef.current[key]) {
@@ -432,7 +541,7 @@ const AppContextProvider = (props) => {
   const [arrivalProducts, setArrivalProducts] = useState([]);
   const fetchNewArrivalProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100;
+      if (!limit) limit = 10;
       const key = `${page}_${sort}_${limit}`;
 
       if (arrivalCacheRef.current[key]) {
@@ -473,7 +582,12 @@ const AppContextProvider = (props) => {
       setError(err.message);
     }
   };
-  const fetchMultipleArrivalPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
+  const fetchMultipleArrivalPages = async (
+    maxPages = 1,
+    limit = 10,
+    sortOption = "",
+    startPage = 1
+  ) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -508,7 +622,12 @@ const AppContextProvider = (props) => {
       return allProducts;
     }
   };
-  const fetchMultipleDiscountedPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
+  const fetchMultipleDiscountedPages = async (
+    maxPages = 1,
+    limit = 10,
+    sortOption = "",
+    startPage = 1
+  ) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -546,7 +665,7 @@ const AppContextProvider = (props) => {
   const [discountedProducts, setDiscountedProducts] = useState([]);
   const fetchDiscountedProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100;
+      if (!limit) limit = 10;
       const key = `${page}_${sort}_${limit}`;
 
       if (discountedCacheRef.current[key]) {
@@ -589,7 +708,12 @@ const AppContextProvider = (props) => {
   };
 
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
-  const fetchMultipleBestSellerPages = async (maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
+  const fetchMultipleBestSellerPages = async (
+    maxPages = 1,
+    limit = 10,
+    sortOption = "",
+    startPage = 1
+  ) => {
     const allProducts = [];
     let currentPage = startPage;
     const endPage = startPage + maxPages - 1;
@@ -625,7 +749,7 @@ const AppContextProvider = (props) => {
   };
   const fetchBestSellerProducts = async (page = 1, sort = "", limit) => {
     try {
-      if (!limit) limit = 100; // Default to 100 if limit is not provided
+      if (!limit) limit = 10; // Default to 100 if limit is not provided
       const key = `${page}_${sort}_${limit}`;
 
       // Return cached result if present
@@ -675,7 +799,13 @@ const AppContextProvider = (props) => {
 
   const [paramProducts, setParamProducts] = useState([]);
 
-  const fetchMultipleParamPages = async (categoryId, maxPages = 1, limit = 100, sortOption = "", startPage = 1) => {
+  const fetchMultipleParamPages = async (
+    categoryId,
+    maxPages = 1,
+    limit = 10,
+    sortOption = "",
+    startPage = 1
+  ) => {
     try {
       const endPage = startPage + maxPages - 1;
 
@@ -759,7 +889,8 @@ const AppContextProvider = (props) => {
       const key = `${categoryId}_${page}`;
 
       // 1) Return cached page if exists
-      const cachedPage = paramProductsCacheRef.current?.[categoryId]?.pages?.[page];
+      const cachedPage =
+        paramProductsCacheRef.current?.[categoryId]?.pages?.[page];
       if (cachedPage) {
         // cachedPage is the full API response object (same shape as data)
         setParamProducts(cachedPage);
@@ -803,7 +934,9 @@ const AppContextProvider = (props) => {
             [page]: data,
           },
           // keep a canonical total_pages (useful)
-          total_pages: data.total_pages ?? paramProductsCacheRef.current[categoryId]?.total_pages,
+          total_pages:
+            data.total_pages ??
+            paramProductsCacheRef.current[categoryId]?.total_pages,
         };
 
         // update exposed state exactly as before
@@ -881,7 +1014,11 @@ const AppContextProvider = (props) => {
   const [allAustraliaCache, setAllAustraliaCache] = useState({});
 
   // Function to fetch Australia products with pagination
-  const fetchAustraliaProducts = async (page = 1, limit = 9, sortOption = "") => {
+  const fetchAustraliaProducts = async (
+    page = 1,
+    limit = 9,
+    sortOption = ""
+  ) => {
     try {
       const cacheKey = `${page}-${limit}-${sortOption}`;
 
@@ -895,7 +1032,9 @@ const AppContextProvider = (props) => {
 
       // Fetch from API if not in cache
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/australia/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
         {
           method: "GET",
           headers: {
@@ -952,7 +1091,8 @@ const AppContextProvider = (props) => {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch all Australia products");
+      if (!response.ok)
+        throw new Error("Failed to fetch all Australia products");
 
       const data = await response.json();
 
@@ -991,7 +1131,9 @@ const AppContextProvider = (props) => {
 
       // Fetch from API if not in cache
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/24hour/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -1064,12 +1206,15 @@ const AppContextProvider = (props) => {
   // Legacy function (keep for backward compatibility)
   const fetchHour = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get-products`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
       setHourProd(data);
@@ -1085,7 +1230,9 @@ const AppContextProvider = (props) => {
 
   const listDiscount = async () => {
     try {
-      const { data } = await axios.get(`${backednUrl}/api/add-discount/list-discounts`);
+      const { data } = await axios.get(
+        `${backednUrl}/api/add-discount/list-discounts`
+      );
       if (data.success) {
         setDiscountPromo(data.discounts);
         if (data.globalDiscount) {
@@ -1104,11 +1251,14 @@ const AppContextProvider = (props) => {
     if (!productId) return { productId, discount: 0, discountPrice: 0 };
 
     try {
-      const res = await axios.get(`${backednUrl}/api/add-discount/discounts/${productId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axios.get(
+        `${backednUrl}/api/add-discount/discounts/${productId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (res.data && res.data.data) {
         return {
@@ -1138,7 +1288,9 @@ const AppContextProvider = (props) => {
 
   const marginAdd = async () => {
     try {
-      const { data } = await axios.get(`${backednUrl}/api/product-margin/list-margin`);
+      const { data } = await axios.get(
+        `${backednUrl}/api/product-margin/list-margin`
+      );
 
       if (data.success) {
         const marginMap = {};
@@ -1230,18 +1382,24 @@ const AppContextProvider = (props) => {
   const [productionIds, setProductionIds] = useState(new Set());
   const getAll24HourProduction = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/24hour/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         const productIds = data.map((item) => Number(item.id));
         setProductionIds(new Set(productIds));
       } else {
-        console.error("Failed to fetch 24 Hour Production products:", response.status);
+        console.error(
+          "Failed to fetch 24 Hour Production products:",
+          response.status
+        );
       }
     } catch (error) {
       console.error("Error fetching 24 Hour Production products:", error);
@@ -1250,12 +1408,15 @@ const AppContextProvider = (props) => {
   const [australiaIds, setAustraliaIds] = useState(new Set());
   const getAllAustralia = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/australia/get`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/australia/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         // Ensure consistent data types (convert to strings)
@@ -1338,6 +1499,7 @@ const AppContextProvider = (props) => {
     allProductsCacheRef,
     blogs,
     setBlogs,
+    totalCount,
     options,
     categoryProducts,
     fetchDiscountedProducts,
@@ -1389,9 +1551,17 @@ const AppContextProvider = (props) => {
     setOpenLoginModal,
     productsCategoryLoading,
     setProductsCategory,
+
+    paginationData,
+    setPaginationData,
+    getProducts,
+    productsLoading,
+    refetchProducts,
   };
 
-  return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+  );
 };
 
 // export default AppContextProvider;

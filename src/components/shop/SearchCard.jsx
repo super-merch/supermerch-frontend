@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,10 +24,17 @@ import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { setProducts } from "../../redux/slices/filterSlice";
 import noimage from "/noimage.png";
-import { setSelectedBrands, setMinPrice, setMaxPrice, setSelectedCategory } from "../../redux/slices/filterSlice";
+import {
+  setSelectedBrands,
+  setMinPrice,
+  setMaxPrice,
+  setSelectedCategory,
+} from "../../redux/slices/filterSlice";
 import { AppContext } from "../../context/AppContext";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
+import Sidebar from "./Sidebar";
+import { slugify } from "@/utils/utils";
 
 // Utility function to calculate visible page buttons
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -65,6 +78,7 @@ const SearchCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const pageType = getPageTypeFromRoute(location.pathname);
+  const searchTerm = search.get("search");
 
   const {
     fetchSearchedProducts,
@@ -84,7 +98,8 @@ const SearchCard = () => {
   // }, []);
 
   // Get Redux filter state
-  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } = useSelector((state) => state.filters);
+  const { searchText, activeFilters, filteredCount, minPrice, maxPrice } =
+    useSelector((state) => state.filters);
 
   // Check if price filters are active
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
@@ -134,7 +149,8 @@ const SearchCard = () => {
     const priceGroups = product.product?.prices?.price_groups || [];
     const basePrice = priceGroups.find((group) => group?.base_price) || {};
     const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const price = priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+    const price =
+      priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
 
     // Cache the result
     priceCache.current.set(productId, price);
@@ -142,7 +158,12 @@ const SearchCard = () => {
   }, []);
 
   // Function to fetch and filter products with timeout using AppContext method
-  const fetchAndFilterProducts = async (searchTerm, minPrice, maxPrice, sortOption) => {
+  const fetchAndFilterProducts = async (
+    searchTerm,
+    minPrice,
+    maxPrice,
+    sortOption
+  ) => {
     setIsFiltering(true);
     setFilterError("");
 
@@ -151,7 +172,12 @@ const SearchCard = () => {
       let maxPages = 3; // Increased from 2
 
       // Fetch products in parallel batches instead of sequentially
-      const fetchedProducts = await fetchMultipleSearchPages(searchTerm, maxPages, 100, sortOption);
+      const fetchedProducts = await fetchMultipleSearchPages(
+        searchTerm,
+        maxPages,
+        100,
+        sortOption
+      );
       setFetchedPagesCount(maxPages);
 
       if (fetchedProducts && fetchedProducts.length > 0) {
@@ -165,21 +191,31 @@ const SearchCard = () => {
 
         if (filteredProducts.length > 0) {
           // Remove duplicates more efficiently using Set
-          const uniqueProducts = Array.from(new Map(filteredProducts.map((product) => [product.meta?.id, product])).values());
+          const uniqueProducts = Array.from(
+            new Map(
+              filteredProducts.map((product) => [product.meta?.id, product])
+            ).values()
+          );
 
           // Apply sorting only once at the end
           const sortedProducts = sortOption
             ? [...uniqueProducts].sort((a, b) => {
                 const priceA = getRealPrice(a);
                 const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+                return sortOption === "lowToHigh"
+                  ? priceA - priceB
+                  : priceB - priceA;
               })
             : uniqueProducts;
 
           setAllFilteredProducts(sortedProducts);
-          setTotalFilteredPages(Math.ceil(sortedProducts.length / itemsPerPage));
+          setTotalFilteredPages(
+            Math.ceil(sortedProducts.length / itemsPerPage)
+          );
         } else {
-          setFilterError("No products found in the specified price range. Showing you the previous results");
+          setFilterError(
+            "No products found in the specified price range. Showing you the previous results"
+          );
         }
       } else {
         setFilterError("No products found in the specified price range");
@@ -211,7 +247,13 @@ const SearchCard = () => {
       const pagesToFetch = 3; // Increased from 2
 
       // Fetch pages in parallel
-      const additionalProducts = await fetchMultipleSearchPages(searchParam, pagesToFetch, 100, sortOption, startPage);
+      const additionalProducts = await fetchMultipleSearchPages(
+        searchParam,
+        pagesToFetch,
+        100,
+        sortOption,
+        startPage
+      );
 
       if (additionalProducts && additionalProducts.length > 0) {
         // Use Set for faster duplicate checking
@@ -219,7 +261,8 @@ const SearchCard = () => {
 
         const newFilteredProducts = additionalProducts.filter((product) => {
           const price = getRealPrice(product);
-          const isInPriceRange = price >= minPrice && price <= maxPrice && price > 0;
+          const isInPriceRange =
+            price >= minPrice && price <= maxPrice && price > 0;
           const notDuplicate = !existingIds.has(product.meta?.id);
           return isInPriceRange && notDuplicate;
         });
@@ -230,13 +273,20 @@ const SearchCard = () => {
             ? [...newFilteredProducts].sort((a, b) => {
                 const priceA = getRealPrice(a);
                 const priceB = getRealPrice(b);
-                return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+                return sortOption === "lowToHigh"
+                  ? priceA - priceB
+                  : priceB - priceA;
               })
             : newFilteredProducts;
 
-          const updatedProducts = [...allFilteredProducts, ...sortedNewProducts];
+          const updatedProducts = [
+            ...allFilteredProducts,
+            ...sortedNewProducts,
+          ];
           setAllFilteredProducts(updatedProducts);
-          setTotalFilteredPages(Math.ceil(updatedProducts.length / itemsPerPage));
+          setTotalFilteredPages(
+            Math.ceil(updatedProducts.length / itemsPerPage)
+          );
         }
 
         setFetchedPagesCount((prev) => prev + pagesToFetch);
@@ -274,17 +324,23 @@ const SearchCard = () => {
   // Fetch products when page or sort changes (only when no price filter is active)
   useEffect(() => {
     if (searchParam && !isPriceFilterActive) {
-      fetchSearchedProducts(searchParam, currentPage, sortOption).then((response) => {
-        if (response && response.total_pages) {
-          setTotalApiPages(response.total_pages);
+      fetchSearchedProducts(searchParam, currentPage, sortOption).then(
+        (response) => {
+          if (response && response.total_pages) {
+            setTotalApiPages(response.total_pages);
+          }
         }
-      });
+      );
     }
   }, [currentPage, sortOption, searchParam, isPriceFilterActive]);
 
   // Update total API pages based on the API response
   useEffect(() => {
-    if (searchedProducts && searchedProducts.total_pages && !isPriceFilterActive) {
+    if (
+      searchedProducts &&
+      searchedProducts.total_pages &&
+      !isPriceFilterActive
+    ) {
       setTotalApiPages(searchedProducts.total_pages);
     }
   }, [searchedProducts, isPriceFilterActive]);
@@ -295,20 +351,14 @@ const SearchCard = () => {
     setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const slugify = (s) =>
-  String(s || "")
-    .trim()
-    .toLowerCase()
-    // replace any sequence of non-alphanumeric chars with a single hyphen
-    .replace(/[^a-z0-9]+/g, "-")
-    // remove leading/trailing hyphens
-    .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-  const encodedId = btoa(productId); // base64 encode
-  const slug = slugify(name);
-  navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-};
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+      state: productId,
+    });
+  };
 
   const setSearchTextChanger = (e) => {
     setSearchProductName(e.target.value);
@@ -353,7 +403,9 @@ const SearchCard = () => {
           ? [...apiProducts].sort((a, b) => {
               const priceA = getRealPrice(a) || 0;
               const priceB = getRealPrice(b) || 0;
-              return sortOption === "lowToHigh" ? priceA - priceB : priceB - priceA;
+              return sortOption === "lowToHigh"
+                ? priceA - priceB
+                : priceB - priceA;
             })
           : apiProducts;
 
@@ -366,13 +418,16 @@ const SearchCard = () => {
   };
 
   // Check if any filters are active
-  const hasActiveFilters = searchProductName.trim() !== "" || isPriceFilterActive;
+  const hasActiveFilters =
+    searchProductName.trim() !== "" || isPriceFilterActive;
 
   const currentPageProducts = getCurrentPageProducts();
   const currentPageFilteredCount = currentPageProducts.length;
 
   // Determine which pagination to use
-  const paginationTotalPages = isPriceFilterActive ? totalFilteredPages : totalApiPages;
+  const paginationTotalPages = isPriceFilterActive
+    ? totalFilteredPages
+    : totalApiPages;
 
   // Calculate total count for display
   const getTotalCount = () => {
@@ -389,11 +444,11 @@ const SearchCard = () => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          {currentPageProducts.length > 0 && <SideBar2 />}
-          {(searchLoading || isFiltering) && <SideBar2 />}
+          {currentPageProducts.length > 0 && <UnifiedSidebar />}
+          {(searchLoading || isFiltering) && <UnifiedSidebar />}
         </div>
 
-        <div className="lg:w-[75%] w-full lg:mt-0 md:mt-4">
+        <div className="lg:w-[75%] w-full md:mt-4">
           <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
             <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
               {/* {!isPriceFilterActive && (
@@ -408,6 +463,9 @@ const SearchCard = () => {
                   <IoSearchOutline className="text-2xl" />
                 </>
               )} */}
+              <p>
+                Showing {getTotalCount()} results for {searchTerm}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <p>Sort by:</p>
@@ -427,7 +485,13 @@ const SearchCard = () => {
                     : sortOption === "highToLow"
                     ? "Highest to Lowest"
                     : "Relevency"}
-                  <span>{isDropdownOpen ? <IoIosArrowUp className="text-black" /> : <IoIosArrowDown className="text-black" />}</span>
+                  <span>
+                    {isDropdownOpen ? (
+                      <IoIosArrowUp className="text-black" />
+                    ) : (
+                      <IoIosArrowDown className="text-black" />
+                    )}
+                  </span>
                 </button>
 
                 {/* Dropdown only contains price sorts (no relevency option here) */}
@@ -438,7 +502,9 @@ const SearchCard = () => {
                         handleSortSelection("lowToHigh");
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "lowToHigh" ? "bg-gray-100" : ""
+                      }`}
                     >
                       Lowest to Highest
                     </button>
@@ -448,7 +514,9 @@ const SearchCard = () => {
                         handleSortSelection("highToLow");
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
                     >
                       Highest to Lowest
                     </button>
@@ -457,7 +525,9 @@ const SearchCard = () => {
                         handleSortSelection("relevancy");
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        sortOption === "highToLow" ? "bg-gray-100" : ""
+                      }`}
                     >
                       Relevancy
                     </button>
@@ -467,57 +537,57 @@ const SearchCard = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
-            <div className="flex flex-wrap items-center gap-4">
-              {activeFilters.category && activeFilters.category !== "all" && (
-                <div className="filter-item">
-                  <span className="text-sm">{activeFilters.category}</span>
-                  <button className="px-2 text-lg" onClick={() => handleClearFilter("category")}>
-                    x
-                  </button>
+          {activeFilters.category ||
+            activeFilters.brands ||
+            (activeFilters.price && (
+              <div className="flex flex-wrap items-center justify-between px-5 py-3 mt-4 rounded-md bg-activeFilter">
+                <div className="flex flex-wrap items-center gap-4">
+                  {activeFilters.category &&
+                    activeFilters.category !== "all" && (
+                      <div className="filter-item">
+                        <span className="text-sm">
+                          {activeFilters.category}
+                        </span>
+                        <button
+                          className="px-2 text-lg"
+                          onClick={() => handleClearFilter("category")}
+                        >
+                          x
+                        </button>
+                      </div>
+                    )}
+                  {activeFilters.brands && activeFilters.brands.length > 0 && (
+                    <div className="filter-item">
+                      <span className="text-sm">
+                        {activeFilters.brands.join(", ")}
+                      </span>
+                      <button
+                        className="px-2 text-lg"
+                        onClick={() => handleClearFilter("brand")}
+                      >
+                        x
+                      </button>
+                    </div>
+                  )}
+                  {activeFilters.price &&
+                    activeFilters.price.length === 2 &&
+                    (activeFilters.price[0] !== 0 ||
+                      activeFilters.price[1] !== 1000) && (
+                      <div className="filter-item">
+                        <span className="text-sm">
+                          ${activeFilters.price[0]} - ${activeFilters.price[1]}
+                        </span>
+                        <button
+                          className="px-2 text-lg"
+                          onClick={() => handleClearFilter("price")}
+                        >
+                          x
+                        </button>
+                      </div>
+                    )}
                 </div>
-              )}
-              {activeFilters.brands && activeFilters.brands.length > 0 && (
-                <div className="filter-item">
-                  <span className="text-sm">{activeFilters.brands.join(", ")}</span>
-                  <button className="px-2 text-lg" onClick={() => handleClearFilter("brand")}>
-                    x
-                  </button>
-                </div>
-              )}
-              {activeFilters.price &&
-                activeFilters.price.length === 2 &&
-                (activeFilters.price[0] !== 0 || activeFilters.price[1] !== 1000) && (
-                  <div className="filter-item">
-                    <span className="text-sm">
-                      ${activeFilters.price[0]} - ${activeFilters.price[1]}
-                    </span>
-                    <button className="px-2 text-lg" onClick={() => handleClearFilter("price")}>
-                      x
-                    </button>
-                  </div>
-                )}
-            </div>
-
-            <div className="flex items-center gap-1 lg:pt-0 md:pt-0 sm:pt-0">
-              <span className="font-semibold text-brand">
-                {!searchLoading && !isFiltering && getTotalCount()}
-              </span>
-              <p className="">
-                {searchLoading || isFiltering
-                  ? "Loading..."
-                  : `Results found for ${searchParam}
-                ${
-                  isPriceFilterActive
-                    ? ` (Price filtered)`
-                    : hasActiveFilters
-                    ? ` on page ${currentPage}`
-                    : ""
-                }`}
-                {isFiltering && "Please wait a while..."}
-              </p>
-            </div>
-          </div>
+              </div>
+            ))}
 
           {/* {filterError && (
             <div className="flex items-center justify-center p-4 mt-4 bg-red-100 border border-red-400 rounded">
@@ -534,12 +604,19 @@ const SearchCard = () => {
           >
             {searchLoading || isFiltering ? (
               Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div key={index} className="relative p-4 border rounded-lg shadow-md border-border2">
+                <div
+                  key={index}
+                  className="relative p-4 border rounded-lg shadow-md border-border2"
+                >
                   <Skeleton height={200} className="rounded-md" />
                   <div className="p-4">
                     <Skeleton height={20} width={120} className="rounded" />
                     <Skeleton height={15} width={80} className="mt-2 rounded" />
-                    <Skeleton height={25} width={100} className="mt-3 rounded" />
+                    <Skeleton
+                      height={25}
+                      width={100}
+                      className="mt-3 rounded"
+                    />
                     <Skeleton height={15} width={60} className="mt-2 rounded" />
                     <div className="flex items-center justify-between pt-2">
                       <Skeleton height={20} width={80} className="rounded" />
@@ -557,18 +634,29 @@ const SearchCard = () => {
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
                 {currentPageProducts
                   .filter((product) => {
-                    const priceGroups = product.product?.prices?.price_groups || [];
-                    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks = basePrice.base_price?.price_breaks || [];
-                    return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined;
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+                    return (
+                      priceBreaks.length > 0 &&
+                      priceBreaks[0]?.price !== undefined
+                    );
                   })
                   .map((product) => {
-                    const priceGroups = product.product?.prices?.price_groups || [];
-                    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks = basePrice.base_price?.price_breaks || [];
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
 
                     // Get an array of prices from priceBreaks (these are already discounted)
-                    const prices = priceBreaks.map((breakItem) => breakItem.price).filter((price) => price !== undefined);
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
 
                     // 1) compute raw min/max
                     let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
@@ -577,8 +665,14 @@ const SearchCard = () => {
                     // 2) pull margin info (guarding against undefined)
                     const productId = product.meta.id;
                     const marginEntry = marginApi[productId] || {};
-                    const marginFlat = typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
-                    const baseMarginPrice = typeof marginEntry.baseMarginPrice === "number" ? marginEntry.baseMarginPrice : 0;
+                    const marginFlat =
+                      typeof marginEntry.marginFlat === "number"
+                        ? marginEntry.marginFlat
+                        : 0;
+                    const baseMarginPrice =
+                      typeof marginEntry.baseMarginPrice === "number"
+                        ? marginEntry.baseMarginPrice
+                        : 0;
 
                     // 3) apply the flat margin to both ends of the range
                     minPrice += marginFlat;
@@ -586,13 +680,19 @@ const SearchCard = () => {
 
                     // Get discount percentage from product's discount info
                     const discountPct = product.discountInfo?.discount || 0;
-                    const isGlobalDiscount = product.discountInfo?.isGlobal || false;
+                    const isGlobalDiscount =
+                      product.discountInfo?.isGlobal || false;
 
                     return (
                       <div
                         key={productId}
                         className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                        onClick={() => handleViewProduct(product.meta.id, product.overview.name)}
+                        onClick={() =>
+                          handleViewProduct(
+                            product.meta.id,
+                            product.overview.name
+                          )
+                        }
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                       >
@@ -610,7 +710,8 @@ const SearchCard = () => {
                           </div>
                         )}
                         <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                          {(productionIds.has(product.meta.id) || productionIds.has(String(product.meta.id))) && (
+                          {(productionIds.has(product.meta.id) ||
+                            productionIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
                               {/* small clock SVG (no extra imports) */}
                               <svg
@@ -641,7 +742,8 @@ const SearchCard = () => {
                             </span>
                           )}
 
-                          {(australiaIds.has(product.meta.id) || australiaIds.has(String(product.meta.id))) && (
+                          {(australiaIds.has(product.meta.id) ||
+                            australiaIds.has(String(product.meta.id))) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                               {/* simple flag/triangle SVG */}
                               <svg
@@ -651,8 +753,19 @@ const SearchCard = () => {
                                 xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden
                               >
-                                <path d="M3 6h10l-2 3 2 3H3V6z" fill="currentColor" />
-                                <rect x="3" y="4" width="1" height="16" rx="0.5" fill="currentColor" opacity="0.9" />
+                                <path
+                                  d="M3 6h10l-2 3 2 3H3V6z"
+                                  fill="currentColor"
+                                />
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="1"
+                                  height="16"
+                                  rx="0.5"
+                                  fill="currentColor"
+                                  opacity="0.9"
+                                />
                               </svg>
                               <span>Australia Made</span>
                             </span>
@@ -680,7 +793,11 @@ const SearchCard = () => {
                         {/* Enlarged image section */}
                         <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
                           <img
-                            src={product.overview.hero_image ? product.overview.hero_image : noimage}
+                            src={
+                              product.overview.hero_image
+                                ? product.overview.hero_image
+                                : noimage
+                            }
                             alt=""
                             className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
                           />
@@ -702,78 +819,83 @@ const SearchCard = () => {
                                   ),
                                 ];
 
-                                return uniqueColors.slice(0, 12).map((color, index) => (
-                                  <div
-                                    key={index}
-                                    style={{
-                                      backgroundColor:
-                                        color
-                                          .toLowerCase()
-                                          .replace("dark blue", "#1e3a8a")
-                                          .replace("light blue", "#3b82f6")
-                                          .replace("navy blue", "#1e40af")
-                                          .replace("royal blue", "#2563eb")
-                                          .replace("sky blue", "#0ea5e9")
-                                          .replace("gunmetal", "#2a3439")
-                                          .replace("dark grey", "#4b5563")
-                                          .replace("light grey", "#9ca3af")
-                                          .replace("dark gray", "#4b5563")
-                                          .replace("light gray", "#9ca3af")
-                                          .replace("charcoal", "#374151")
-                                          .replace("lime green", "#65a30d")
-                                          .replace("forest green", "#166534")
-                                          .replace("dark green", "#15803d")
-                                          .replace("light green", "#16a34a")
-                                          .replace("bright green", "#22c55e")
-                                          .replace("dark red", "#dc2626")
-                                          .replace("bright red", "#ef4444")
-                                          .replace("wine red", "#991b1b")
-                                          .replace("burgundy", "#7f1d1d")
-                                          .replace("hot pink", "#ec4899")
-                                          .replace("bright pink", "#f472b6")
-                                          .replace("light pink", "#f9a8d4")
-                                          .replace("dark pink", "#be185d")
-                                          .replace("bright orange", "#f97316")
-                                          .replace("dark orange", "#ea580c")
-                                          .replace("bright yellow", "#eab308")
-                                          .replace("golden yellow", "#f59e0b")
-                                          .replace("dark yellow", "#ca8a04")
-                                          .replace("cream", "#fef3c7")
-                                          .replace("beige", "#f5f5dc")
-                                          .replace("tan", "#d2b48c")
-                                          .replace("brown", "#92400e")
-                                          .replace("dark brown", "#78350f")
-                                          .replace("light brown", "#a3a3a3")
-                                          .replace("maroon", "#7f1d1d")
-                                          .replace("teal", "#0d9488")
-                                          .replace("turquoise", "#06b6d4")
-                                          .replace("aqua", "#22d3ee")
-                                          .replace("mint", "#10b981")
-                                          .replace("lavender", "#c084fc")
-                                          .replace("violet", "#8b5cf6")
-                                          .replace("indigo", "#6366f1")
-                                          .replace("slate", "#64748b")
-                                          .replace("stone", "#78716c")
-                                          .replace("zinc", "#71717a")
-                                          .replace("neutral", "#737373")
-                                          .replace("rose", "#f43f5e")
-                                          .replace("emerald", "#10b981")
-                                          .replace("cyan", "#06b6d4")
-                                          .replace("amber", "#f59e0b")
-                                          .replace("lime", "#84cc16")
-                                          .replace("fuchsia", "#d946ef")
-                                          .replace(" ", "") || // remove remaining spaces
-                                        color.toLowerCase(),
-                                    }}
-                                    className="w-4 h-4 rounded-full border border-slate-900"
-                                  />
-                                ));
+                                return uniqueColors
+                                  .slice(0, 12)
+                                  .map((color, index) => (
+                                    <div
+                                      key={index}
+                                      style={{
+                                        backgroundColor:
+                                          color
+                                            .toLowerCase()
+                                            .replace("dark blue", "#1e3a8a")
+                                            .replace("light blue", "#3b82f6")
+                                            .replace("navy blue", "#1e40af")
+                                            .replace("royal blue", "#2563eb")
+                                            .replace("sky blue", "#0ea5e9")
+                                            .replace("gunmetal", "#2a3439")
+                                            .replace("dark grey", "#4b5563")
+                                            .replace("light grey", "#9ca3af")
+                                            .replace("dark gray", "#4b5563")
+                                            .replace("light gray", "#9ca3af")
+                                            .replace("charcoal", "#374151")
+                                            .replace("lime green", "#65a30d")
+                                            .replace("forest green", "#166534")
+                                            .replace("dark green", "#15803d")
+                                            .replace("light green", "#16a34a")
+                                            .replace("bright green", "#22c55e")
+                                            .replace("dark red", "#dc2626")
+                                            .replace("bright red", "#ef4444")
+                                            .replace("wine red", "#991b1b")
+                                            .replace("burgundy", "#7f1d1d")
+                                            .replace("hot pink", "#ec4899")
+                                            .replace("bright pink", "#f472b6")
+                                            .replace("light pink", "#f9a8d4")
+                                            .replace("dark pink", "#be185d")
+                                            .replace("bright orange", "#f97316")
+                                            .replace("dark orange", "#ea580c")
+                                            .replace("bright yellow", "#eab308")
+                                            .replace("golden yellow", "#f59e0b")
+                                            .replace("dark yellow", "#ca8a04")
+                                            .replace("cream", "#fef3c7")
+                                            .replace("beige", "#f5f5dc")
+                                            .replace("tan", "#d2b48c")
+                                            .replace("brown", "#92400e")
+                                            .replace("dark brown", "#78350f")
+                                            .replace("light brown", "#a3a3a3")
+                                            .replace("maroon", "#7f1d1d")
+                                            .replace("teal", "#0d9488")
+                                            .replace("turquoise", "#06b6d4")
+                                            .replace("aqua", "#22d3ee")
+                                            .replace("mint", "#10b981")
+                                            .replace("lavender", "#c084fc")
+                                            .replace("violet", "#8b5cf6")
+                                            .replace("indigo", "#6366f1")
+                                            .replace("slate", "#64748b")
+                                            .replace("stone", "#78716c")
+                                            .replace("zinc", "#71717a")
+                                            .replace("neutral", "#737373")
+                                            .replace("rose", "#f43f5e")
+                                            .replace("emerald", "#10b981")
+                                            .replace("cyan", "#06b6d4")
+                                            .replace("amber", "#f59e0b")
+                                            .replace("lime", "#84cc16")
+                                            .replace("fuchsia", "#d946ef")
+                                            .replace(" ", "") || // remove remaining spaces
+                                          color.toLowerCase(),
+                                      }}
+                                      className="w-4 h-4 rounded-full border border-slate-900"
+                                    />
+                                  ));
                               })()}
                           </div>
                           <div className="text-center">
                             <h2
                               className={`text-sm transition-all duration-300 ${
-                                cardHover === product.meta.id && product.overview.name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
                               } font-semibold text-brand sm:leading-[18px] `}
                             >
                               {(product.overview.name &&
@@ -785,13 +907,20 @@ const SearchCard = () => {
 
                             {/* Minimum quantity */}
                             <p className="text-xs text-gray-500 pt-1">
-                              Min Qty: {product.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
+                                ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
 
                             {/* Updated Price display with better font */}
                             <div className="">
                               <h2 className="text-base sm:text-lg font-bold text-heading ">
-                                From ${minPrice === maxPrice ? <span>{minPrice.toFixed(2)}</span> : <span>{minPrice.toFixed(2)}</span>}
+                                From $
+                                {minPrice === maxPrice ? (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span>{minPrice.toFixed(2)}</span>
+                                )}
                               </h2>
                             </div>
                           </div>
@@ -803,98 +932,131 @@ const SearchCard = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="pt-10 text-xl text-center text-red-900">
-                  No products found. Explore our categories or refine your search to discover more options
+                  No products found. Explore our categories or refine your
+                  search to discover more options
                 </p>
               </div>
             )}
           </div>
 
-          {(paginationTotalPages > 1 || hasMoreProducts) && currentPageProducts.length > 0 && (
-            <div className="flex items-center justify-center mt-16 space-x-2 pagination">
-              {/* Previous Button */}
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center w-10 h-10 border rounded-full"
-              >
-                <IoMdArrowBack className="text-xl" />
-              </button>
-
-              {/* Always show Page 1 */}
-              <button
-                onClick={() => setCurrentPage(1)}
-                className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                  currentPage === 1 ? "bg-blue-600 text-white" : "hover:bg-gray-200"
-                }`}
-              >
-                1
-              </button>
-
-              {/* Show Page 2 when there might be more products */}
-              {paginationTotalPages === 1 && hasMoreProducts && (
+          {(paginationTotalPages > 1 || hasMoreProducts) &&
+            currentPageProducts.length > 0 && (
+              <div className="flex items-center justify-center mt-16 space-x-2 pagination">
+                {/* Previous Button */}
                 <button
-                  onClick={() => {
-                    setCurrentPage(2);
-                    if (isPriceFilterActive) {
-                      fetchMoreFilteredProducts();
-                    } else {
-                      // For regular search results
-                      fetchSearchedProducts(searchParam, 2, sortOption).then((response) => {
-                        if (response && response.data && response.data.length === 0) {
-                          setHasMoreProducts(false);
-                        }
-                      });
-                    }
-                  }}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="flex items-center justify-center w-10 h-10 border rounded-full"
+                >
+                  <IoMdArrowBack className="text-xl" />
+                </button>
+
+                {/* Always show Page 1 */}
+                <button
+                  onClick={() => setCurrentPage(1)}
                   className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                    currentPage === 2 ? "bg-blue-600 text-white" : "hover:bg-gray-200"
+                    currentPage === 1
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
                   }`}
                 >
-                  2
+                  1
                 </button>
-              )}
 
-              {/* Show remaining pages (if any) */}
-              {paginationTotalPages > 1 &&
-                getPaginationButtons(currentPage, paginationTotalPages, maxVisiblePages)
-                  .filter((page) => page > 1) // Skip page 1 since we always show it
-                  .map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 border rounded-full flex items-center justify-center ${
-                        currentPage === page ? "bg-blue-600 text-white" : "hover:bg-gray-200"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                {/* Show Page 2 when there might be more products */}
+                {paginationTotalPages === 1 && hasMoreProducts && (
+                  <button
+                    onClick={() => {
+                      setCurrentPage(2);
+                      if (isPriceFilterActive) {
+                        fetchMoreFilteredProducts();
+                      } else {
+                        // For regular search results
+                        fetchSearchedProducts(searchParam, 2, sortOption).then(
+                          (response) => {
+                            if (
+                              response &&
+                              response.data &&
+                              response.data.length === 0
+                            ) {
+                              setHasMoreProducts(false);
+                            }
+                          }
+                        );
+                      }
+                    }}
+                    className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                      currentPage === 2
+                        ? "bg-blue-600 text-white"
+                        : "hover:bg-gray-200"
+                    }`}
+                  >
+                    2
+                  </button>
+                )}
 
-              {/* Next Button */}
-              <button
-                onClick={() => {
-                  const nextPage = Math.min(currentPage + 1, paginationTotalPages);
-                  setCurrentPage(nextPage);
-                  if (nextPage === paginationTotalPages && hasMoreProducts) {
-                    if (isPriceFilterActive) {
-                      fetchMoreFilteredProducts();
-                    } else {
-                      // For regular search results
-                      fetchSearchedProducts(searchParam, nextPage + 1, sortOption).then((response) => {
-                        if (response && response.data && response.data.length === 0) {
-                          setHasMoreProducts(false);
-                        }
-                      });
+                {/* Show remaining pages (if any) */}
+                {paginationTotalPages > 1 &&
+                  getPaginationButtons(
+                    currentPage,
+                    paginationTotalPages,
+                    maxVisiblePages
+                  )
+                    .filter((page) => page > 1) // Skip page 1 since we always show it
+                    .map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-10 h-10 border rounded-full flex items-center justify-center ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-gray-200"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                {/* Next Button */}
+                <button
+                  onClick={() => {
+                    const nextPage = Math.min(
+                      currentPage + 1,
+                      paginationTotalPages
+                    );
+                    setCurrentPage(nextPage);
+                    if (nextPage === paginationTotalPages && hasMoreProducts) {
+                      if (isPriceFilterActive) {
+                        fetchMoreFilteredProducts();
+                      } else {
+                        // For regular search results
+                        fetchSearchedProducts(
+                          searchParam,
+                          nextPage + 1,
+                          sortOption
+                        ).then((response) => {
+                          if (
+                            response &&
+                            response.data &&
+                            response.data.length === 0
+                          ) {
+                            setHasMoreProducts(false);
+                          }
+                        });
+                      }
                     }
+                  }}
+                  disabled={
+                    currentPage === paginationTotalPages && !hasMoreProducts
                   }
-                }}
-                disabled={currentPage === paginationTotalPages && !hasMoreProducts}
-                className="flex items-center justify-center w-10 h-10 border rounded-full"
-              >
-                <IoMdArrowForward className="text-xl" />
-              </button>
-            </div>
-          )}
+                  className="flex items-center justify-center w-10 h-10 border rounded-full"
+                >
+                  <IoMdArrowForward className="text-xl" />
+                </button>
+              </div>
+            )}
         </div>
       </div>
       {isModalOpen && selectedProduct && (
@@ -921,9 +1083,13 @@ const SearchCard = () => {
               />
 
               <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold text-brand mb-2">{selectedProduct.overview.name || "No Name"}</h2>
+                <h2 className="text-2xl font-bold text-brand mb-2">
+                  {selectedProduct.overview.name || "No Name"}
+                </h2>
                 {selectedProduct.overview.description && (
-                  <p className="text-gray-700 text-sm leading-relaxed">{selectedProduct.overview.description}</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {selectedProduct.overview.description}
+                  </p>
                 )}
               </div>
             </div>

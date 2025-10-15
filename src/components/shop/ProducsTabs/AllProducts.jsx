@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { slugify } from "@/utils/utils";
 
 const AllProducts = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -32,8 +33,10 @@ const AllProducts = ({ activeTab }) => {
   }, []);
   const dispatch = useDispatch();
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   const handleOpenModal = (product) => {
@@ -166,7 +169,12 @@ const AllProducts = ({ activeTab }) => {
                           </span>
                         )}
                         <div
-                          onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                          onClick={() =>
+                            handleViewProduct(
+                              product.meta.id,
+                              product.overview.name
+                            )
+                          }
                           className="max-h-[50%] h-full border-b overflow-hidden"
                         >
                           <img

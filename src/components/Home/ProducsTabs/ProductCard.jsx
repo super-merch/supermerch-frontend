@@ -31,19 +31,6 @@ const ProductCard = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {discountPct > 0 && (
-        <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
-          <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
-            {discountPct}%
-          </span>
-          {isGlobalDiscount && (
-            <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
-              Sale
-            </span>
-          )}
-        </div>
-      )}
-
       <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
         {(productionIds?.has(productId) ||
           productionIds?.has(String(productId))) && (
@@ -130,10 +117,10 @@ const ProductCard = ({
         />
       </div>
 
-      <div className="p-2 ">
+      <div className="p-2 relative">
         <div className="text-center">
           <h2
-            className={`text-sm transition-all duration-300 ${
+            className={`text-sm transition-all duration-300 truncate ${
               isHovered && name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
             } font-semibold text-brand sm:leading-[18px] `}
           >
@@ -151,6 +138,18 @@ const ProductCard = ({
             </h2>
           </div>
         </div>
+        {discountPct > 0 && (
+          <div className="block absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
+            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
+              {discountPct}%
+            </span>
+            {isGlobalDiscount && (
+              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                Sale
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

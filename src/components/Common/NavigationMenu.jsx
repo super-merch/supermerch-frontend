@@ -92,7 +92,9 @@ const NavigationMenu = ({
     if (!item.hasSubmenu || !item.submenu) return null;
 
     // Determine if submenu should be visible
-    const isVisible = isDesktop ? hoveredItem === item.id : clickedItem === item.id;
+    const isVisible = isDesktop
+      ? hoveredItem === item.id
+      : clickedItem === item.id;
 
     // On mobile, don't render submenu at all if not visible
     if (!isDesktop && !isVisible) return null;
@@ -104,7 +106,9 @@ const NavigationMenu = ({
         } ${isVisible ? "opacity-100 visible" : "opacity-0 invisible"}`}
       >
         <div className="container mx-auto">
-          <div className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}>
+          <div
+            className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}
+          >
             {item.megaMenu ? (
               // Mega menu layout
               <div className="grid grid-cols-[1fr_3fr]">
@@ -115,7 +119,9 @@ const NavigationMenu = ({
                         key={subItem.id}
                         className={cn(
                           "flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors hover:bg-muted",
-                          activeItem === subItem.id ? "bg-muted font-medium text-primary" : "text-white"
+                          activeItem === subItem.id
+                            ? "bg-muted font-medium text-primary"
+                            : "text-white"
                         )}
                         onMouseEnter={() => setActiveItem(subItem.id)}
                         onClick={() => handleItemClick(subItem)}
@@ -145,7 +151,9 @@ const NavigationMenu = ({
             ) : (
               // Regular submenu layout
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-blue-500 mb-4">{item.name}</h3>
+                <h3 className="text-lg font-semibold text-blue-500 mb-4">
+                  {item.name}
+                </h3>
                 <div className="grid grid-cols-3 gap-4">
                   {item.submenu.map((subItem, index) => (
                     <button
@@ -177,7 +185,9 @@ const NavigationMenu = ({
                 className={`flex items-center justify-between ${currentSize.item} cursor-pointer hover:bg-gray-100 rounded-lg p-3 transition-colors`}
                 onClick={() => handleItemClick(item)}
               >
-                <span className="text-customBlue capitalize font-medium">{item.name}</span>
+                <span className="text-customBlue capitalize font-medium">
+                  {item.name}
+                </span>
                 {item.hasSubmenu && (
                   <RiArrowDropDownLine
                     className={`text-xl transition-all duration-300 text-gray-500 cursor-pointer ${
@@ -211,10 +221,18 @@ const NavigationMenu = ({
     <nav className={`${className}`}>
       <ul className="space-y-3 xl:space-y-0 xl:flex xl:space-x-2">
         {menuItems.map((item) => {
-          const isSubmenuVisible = isDesktop ? hoveredItem === item.id : clickedItem === item.id;
+          const isSubmenuVisible = isDesktop
+            ? hoveredItem === item.id
+            : clickedItem === item.id;
 
           return (
-            <li key={item.id} onMouseLeave={handleMouseLeave} className={`cursor-pointer ${item.hasSubmenu ? "group relative" : ""}`}>
+            <li
+              key={item.id}
+              onMouseLeave={handleMouseLeave}
+              className={`cursor-pointer ${
+                item.hasSubmenu ? "group relative" : ""
+              }`}
+            >
               <div className="text-customBlue">
                 <span
                   className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
@@ -225,7 +243,9 @@ const NavigationMenu = ({
                   {item.hasSubmenu && (
                     <RiArrowDropDownLine
                       className={`text-2xl transition-all duration-300 cursor-pointer ${
-                        isDesktop ? `-rotate-90 ${isSubmenuVisible ? "rotate-0" : ""}` : `${isSubmenuVisible ? "rotate-180" : "rotate-0"}`
+                        isDesktop
+                          ? `-rotate-90 ${isSubmenuVisible ? "rotate-0" : ""}`
+                          : `${isSubmenuVisible ? "rotate-180" : "rotate-0"}`
                       }`}
                       onClick={(e) => handleArrowClick(item, e)}
                     />

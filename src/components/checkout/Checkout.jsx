@@ -30,6 +30,7 @@ const Checkout = () => {
     totalDiscount,
     openLoginModal,
     setOpenLoginModal,
+    userData,
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -54,6 +55,35 @@ const Checkout = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loginModalRef, setLoginModalRef] = useState(null);
+  const saveUser = async (shippingAddressData) => {
+    if (userData) {
+      if (!userData?.defaultShippingAddress) {
+        try {
+          const response = await axios.put(
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/api/auth/update-shipping-address`,
+            { defaultShippingAddress: shippingAddressData },
+            {
+              headers: {
+                token,
+              },
+            }
+          );
+
+          if (response.data.success) {
+            toast.success("Shipping address saved successfully!");
+          } else {
+            toast.error("Failed to save shipping address.");
+          }
+        } catch (error) {
+          console.error("Error saving shipping address:", error);
+          toast.error("An error occurred while saving the shipping address.");
+        }
+      }
+    }
+  };
+
 
   useEffect(() => {
     // Get coupon data from location state if available
@@ -103,24 +133,24 @@ const Checkout = () => {
   const [shippingCharges, setShippingCharges] = useState(0);
 
   // // Add this useEffect to get shipping charges from location state or API
-  // useEffect(() => {
-  //   // First try to get from location state (passed from cart)
-  //   if (location.state?.shippingCharges) {
-  //     setShippingCharges(location.state.shippingCharges);
-  //   } else {
-  //     // Fallback: fetch from API if not in location state
-  //     const getShippingCharges = async () => {
-  //       try {
-  //         const response = await axios.get(`${backednUrl}/api/shipping/get`);
-  //         setShippingCharges(response.data.shipping || 0);
-  //       } catch (error) {
-  //         console.error("Error fetching shipping charges:", error);
-  //         setShippingCharges(0);
-  //       }
-  //     };
-  //     getShippingCharges();
-  //   }
-  // }, [location.state, backednUrl]);
+  useEffect(() => {
+    // First try to get from location state (passed from cart)
+    if (location.state?.shippingCharges) {
+      setShippingCharges(location.state.shippingCharges);
+    } else {
+      // Fallback: fetch from API if not in location state
+      const getShippingCharges = async () => {
+        try {
+          const response = await axios.get(`${backednUrl}/api/shipping/get`);
+          setShippingCharges(response.data.shipping || 0);
+        } catch (error) {
+          console.error("Error fetching shipping charges:", error);
+          setShippingCharges(0);
+        }
+      };
+      getShippingCharges();
+    }
+  }, [location.state, backednUrl]);
 
   // Handle successful payment
   const handlePaymentSuccess = async (sessionId) => {
@@ -350,6 +380,18 @@ const Checkout = () => {
     try {
       // Store checkout data in localStorage before redirecting to Stripe
       localStorage.setItem("pendingCheckoutData", JSON.stringify(checkoutData));
+      saveUser({
+        firstName: data.shipping.firstName,
+        lastName: data.shipping.lastName,
+        country: data.shipping.country,
+        state: data.shipping.region,
+        city: data.shipping.city,
+        postalCode: data.shipping.zip,
+        addressLine: data.shipping.address,
+        companyName: data.shipping.companyName,
+        email: data.shipping.email,
+        phone: data.shipping.phone,
+      })
 
       const stripe = await loadStripe(
         "pk_test_51RqoZXGaJ07cWJBqahLsX614YCqHKSaVwLcxxcYf9kYJbbX0Ww8tRrxfh8neqnoGkqh3ofUJ9qqA6tnavunDTJSY00ovkitoWt"

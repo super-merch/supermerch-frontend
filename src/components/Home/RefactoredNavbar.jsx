@@ -1,10 +1,21 @@
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { googleLogout } from "@react-oauth/google";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ChevronRight } from "lucide-react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { toast } from "react-toastify";
@@ -16,7 +27,11 @@ import { NavigationMenu, SearchBar, UserActions } from "../Common";
 import { useCoupons } from "@/hooks/useCoupons";
 import { clearCurrentUser } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
-import { applyFilters, setMaxPrice, setMinPrice } from "../../redux/slices/filterSlice";
+import {
+  applyFilters,
+  setMaxPrice,
+  setMinPrice,
+} from "../../redux/slices/filterSlice";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const {
@@ -48,11 +63,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   // Create menu items from categories
   const createMenuItems = () => {
     const baseMenuItems = [
-      { name: "Promotional", path: "/Spromotional", hasSubmenu: true },
-      { name: "Clothing", path: "/Clothing", hasSubmenu: true },
-      { name: "Headwear", path: "/Headwear", hasSubmenu: true },
+      { name: "Promotional", path: "/Spromotional?categoryName=Promotional&category=A", hasSubmenu: true },
+      { name: "Clothing", path: "/Spromotional?categoryName=Clothing&category=B", hasSubmenu: true },
+      { name: "Headwear", path: "/Spromotional?categoryName=Headwear&category=G", hasSubmenu: true },
       { name: "Return Gifts", path: "/shop" },
-      { name: "24 Hour production", path: "/production" },
+      { name: "24hr Prod", path: "/production" },
       { name: "Sale", path: "/sales" },
       { name: "Australia Made", path: "/Australia" },
     ];
@@ -61,7 +76,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       if (item.name === "Promotional") {
         const megaMenu =
           v1categories
-            ?.filter((category) => category.name !== "Clothing" && category.name !== "Headwear" && category.name !== "Capital Equipment")
+            ?.filter(
+              (category) =>
+                category.name !== "Clothing" &&
+                category.name !== "Headwear" &&
+                category.name !== "Capital Equipment"
+            )
             .map((category) => ({
               id: category.id,
               name: category.name,
@@ -69,7 +89,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                 category.subTypes?.map((subType) => ({
                   id: subType.id,
                   name: subType.name,
-                  onClick: () => handleSubCategories(subType.name, subType.id, category.name),
+                  onClick: () =>
+                    handleSubCategories(
+                      subType.name,
+                      subType.id,
+                      category.name
+                    ),
                 })) || [],
             })) || [];
 
@@ -83,7 +108,9 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       }
 
       if (item.name === "Clothing") {
-        const clothingCategory = v1categories?.find((cat) => cat.name === "Clothing");
+        const clothingCategory = v1categories?.find(
+          (cat) => cat.name === "Clothing"
+        );
         return {
           ...item,
           id: "clothing",
@@ -91,14 +118,21 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             clothingCategory?.subTypes?.map((subType) => ({
               id: subType.id,
               name: subType.name,
-              onClick: () => handleSubCategories(subType.name, subType.id, clothingCategory.name),
+              onClick: () =>
+                handleSubCategories(
+                  subType.name,
+                  subType.id,
+                  clothingCategory.name
+                ),
             })) || [],
           onClick: () => handleMenuClick(item),
         };
       }
 
       if (item.name === "Headwear") {
-        const headwearCategory = v1categories?.find((cat) => cat.name === "Headwear");
+        const headwearCategory = v1categories?.find(
+          (cat) => cat.name === "Headwear"
+        );
         return {
           ...item,
           id: "headwear",
@@ -106,7 +140,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             headwearCategory?.subTypes?.map((subType) => ({
               id: subType.id,
               name: subType.name,
-              onClick: () => handleSubCategories(subType.name, subType.id, headwearCategory.name),
+              onClick: () =>
+                handleSubCategories(
+                  subType.name,
+                  subType.id,
+                  headwearCategory.name
+                ),
             })) || [],
           onClick: () => handleMenuClick(item),
         };
@@ -210,7 +249,9 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`);
+    navigate(
+      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
+    );
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -236,7 +277,9 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     // }
     // For all other categories, use /Spromotional
 
-    navigate(`${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);
+    navigate(
+      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+    );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
     setCurrentPage(1);
@@ -266,76 +309,72 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   return (
     <>
-      {/* Coupon Modal */}
-      {coupenModel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-semibold text-gray-800">🎁 Exclusive Offers!</h2>
-
-            {coupenLoading ? (
-              <div className="space-y-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-gray-600">Loading...</p>
-              </div>
-            ) : coupons.length > 0 ? (
-              <div className="space-y-3">
-                {coupons.map((coupon) => (
-                  <div key={coupon._id} className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3">
-                    <p className="text-lg font-bold text-blue-600">{coupon.coupen}</p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Get <strong>{coupon.discount}% OFF</strong> on your order
-                    </p>
-                    <p
-                      className="text-blue-600 text-sm cursor-pointer hover:underline"
-                      onClick={() => {
-                        navigator.clipboard.writeText(coupon.coupen);
-                        toast.success(`${coupon.coupen} copied!`);
-                      }}
-                    >
-                      📋 Copy Coupon
-                    </p>
-                  </div>
-                ))}
-                <p className="text-xs text-gray-500 mt-3">Use any code at checkout • Valid on all products</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-lg text-gray-600">No Coupons Available</p>
-                <p className="text-sm text-gray-500">Check back soon for deals!</p>
-              </div>
-            )}
-
-            <button
-              onClick={() => setCoupenModel(false)}
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
-            >
-              Got It
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Main Navbar */}
-      <div className="bg-line shadow-xl py-3 sticky top-0 z-50">
-        <div className="flex items-center justify-between gap-4 text-white Mycontainer">
+      <div className="bg-line shadow-xl sm:py-3 sticky top-0 z-50">
+        <div className="flex items-center justify-between gap-4 text-white !px-0 md:px-0 Mycontainer flex-wrap">
+          <Sheet
+            open={isSheetOpen}
+            onOpenChange={setIsSheetOpen}
+            className="xl:hidden"
+          >
+            <SheetTrigger className="text-black focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </SheetTrigger>
+            <SheetContent
+              className="overflow-y-auto w-[85vw] sm:w-[400px]"
+              side="left"
+            >
+              <SheetHeader>
+                <SheetTitle className="mb-6 text-2xl text-smallHeader font-bold">
+                  SuperMerch
+                </SheetTitle>
+              </SheetHeader>
+              <NavigationMenu
+                menuItems={menuItems}
+                onItemClick={(item) => {
+                  handleMenuClick(item);
+                  setIsSheetOpen(false);
+                }}
+                variant="vertical"
+                size="default"
+              />
+            </SheetContent>
+          </Sheet>
           {/* Navigation Menu - Left side */}
           <div className="hidden xl:block">
-            <NavigationMenu menuItems={menuItems} onItemClick={handleMenuClick} size="default" className="justify-start" />
+            <NavigationMenu
+              menuItems={menuItems}
+              onItemClick={handleMenuClick}
+              size="default"
+              className="justify-start"
+            />
+          </div>
+          <div className="w-full flex-1 mx-2 sm:mx-4 order-3 lg:order-2">
+            <SearchBar
+              onSearch={handleSearch}
+              categoryData={categoryData}
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
+              size="small"
+              className="w-full"
+            />
           </div>
 
           {/* Search Bar and User Actions on the right */}
-          <div className=" flex items-center gap-4">
-            {/* Search Bar */}
-            <div className="hidden xl:flex items-center">
-              <SearchBar
-                onSearch={handleSearch}
-                categoryData={categoryData}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                size="default"
-              />
-            </div>
-
+          <div className="flex items-center gap-4 order-2 lg:order-3">
             {/* User Actions */}
             <UserActions
               isAuthenticated={!!token}
@@ -350,39 +389,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         {/* Mobile Navigation */}
         <div className="xl:hidden">
           <div className="flex items-center justify-between px-2 sm:px-4 py-2">
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger className="text-black focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </SheetTrigger>
-              <SheetContent className="overflow-y-auto w-[85vw] sm:w-[400px]" side="left">
-                <SheetHeader>
-                  <SheetTitle className="mb-6 text-2xl text-smallHeader font-bold">SuperMerch</SheetTitle>
-                </SheetHeader>
-                <NavigationMenu
-                  menuItems={menuItems}
-                  onItemClick={(item) => {
-                    handleMenuClick(item);
-                    setIsSheetOpen(false);
-                  }}
-                  variant="vertical"
-                  size="default"
-                />
-              </SheetContent>
-            </Sheet>
-
             {/* Mobile Search */}
-            <div className="flex-1 mx-2 sm:mx-4">
-              <SearchBar
-                onSearch={handleSearch}
-                categoryData={categoryData}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                size="small"
-                className="w-full"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -397,8 +404,13 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             viewport={{ once: true }}
             className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
           >
-            <p className="text-sm font-semibold">Are you sure you want to logout?</p>
-            <p className="text-sm text-gray-500">You can login back at any time. All the changes you've been made will not be lost.</p>
+            <p className="text-sm font-semibold">
+              Are you sure you want to logout?
+            </p>
+            <p className="text-sm text-gray-500">
+              You can login back at any time. All the changes you've been made
+              will not be lost.
+            </p>
             <div className="flex justify-end gap-2">
               <button
                 className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
@@ -423,7 +435,9 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       {coupenModel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-semibold text-gray-800">🎁 Exclusive Offers!</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              🎁 Exclusive Offers!
+            </h2>
 
             {coupenLoading ? (
               <div className="space-y-3">
@@ -433,8 +447,13 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             ) : coupons.length > 0 ? (
               <div className="space-y-3">
                 {coupons.map((coupon) => (
-                  <div key={coupon._id} className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3">
-                    <p className="text-lg font-bold text-blue-600">{coupon.coupen}</p>
+                  <div
+                    key={coupon._id}
+                    className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
+                  >
+                    <p className="text-lg font-bold text-blue-600">
+                      {coupon.coupen}
+                    </p>
                     <p className="text-sm text-gray-600 mb-2">
                       Get <strong>{coupon.discount}% OFF</strong> on your order
                     </p>
@@ -449,12 +468,16 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     </p>
                   </div>
                 ))}
-                <p className="text-xs text-gray-500 mt-3">Use any code at checkout • Valid on all products</p>
+                <p className="text-xs text-gray-500 mt-3">
+                  Use any code at checkout • Valid on all products
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
                 <p className="text-lg text-gray-600">No Coupons Available</p>
-                <p className="text-sm text-gray-500">Check back soon for deals!</p>
+                <p className="text-sm text-gray-500">
+                  Check back soon for deals!
+                </p>
               </div>
             )}
 
