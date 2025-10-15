@@ -67,7 +67,6 @@ const AllProducts = ({ activeTab }) => {
 
   const dispatch = useDispatch();
 
-
   const slugify = (s) =>
     String(s || "")
       .trim()

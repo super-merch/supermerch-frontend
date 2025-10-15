@@ -42,10 +42,10 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gray-900 text-white pt-8 md:pt-0">
       {/* Main Footer Content */}
       <div className="Mycontainer py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
@@ -218,7 +218,7 @@ const Footer = () => {
 
         {/* Payment Methods */}
         <div className="border-t border-gray-800 mt-2 pt-2">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-gray-300 text-sm mb-3">We Accept</p>
               <div className="flex items-center gap-3">
@@ -250,7 +250,7 @@ const Footer = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mb-2 md:mb-0">
               <PopUps />
             </div>
           </div>
@@ -258,7 +258,7 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="border-t border-gray-800 bg-gray-950">
+      <div className="border-t border-gray-800 bg-gray-950 py-4 md:py-0">
         <div className="Mycontainer py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-400 text-sm text-center md:text-left">

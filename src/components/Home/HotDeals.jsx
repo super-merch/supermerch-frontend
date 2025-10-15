@@ -7,7 +7,13 @@ import { getProductPrice, slugify } from "@/utils/utils";
 
 const HotDeals = () => {
   const navigate = useNavigate();
-  const { fetchDiscountedProducts, discountedProducts, fetchProducts, products, skeletonLoading } = useContext(AppContext);
+  const {
+    fetchDiscountedProducts,
+    discountedProducts,
+    fetchProducts,
+    products,
+    skeletonLoading,
+  } = useContext(AppContext);
 
   useEffect(() => {
     if (discountedProducts.length === 0 && products.length === 0) {
@@ -15,7 +21,12 @@ const HotDeals = () => {
       // Fallback: also fetch regular products in case discounted products are empty
       fetchProducts(1, "", 6);
     }
-  }, [discountedProducts.length, products.length, fetchDiscountedProducts, fetchProducts]);
+  }, [
+    discountedProducts.length,
+    products.length,
+    fetchDiscountedProducts,
+    fetchProducts,
+  ]);
 
   // Use discounted products if available, otherwise fall back to regular products
   const displayProducts =
@@ -32,7 +43,7 @@ const HotDeals = () => {
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
   return (
-    <div className="bg-white border border-blue-500 rounded-lg p-4 h-full flex flex-col shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/30">
+    <div className="bg-white border border-blue-500 rounded-lg p-4 h-full flex flex-col shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/30 min-h-96">
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <FaFire className="text-orange-500 text-lg animate-pulse hover:animate-bounce transition-all duration-300" />
@@ -40,13 +51,18 @@ const HotDeals = () => {
       </div>
 
       {/* Hot Deals List */}
-      <div className="flex-1 flex flex-col justify-start overflow-hidden">
+      <div className="flex-1 flex flex-col justify-start overflow-y-auto ">
         {skeletonLoading
           ? // Loading skeleton
             [...Array(4)].map((_, index) => {
               const isLastItem = index === 3;
               return (
-                <div key={index} className={`bg-blue-50 rounded-lg p-3 animate-pulse ${isLastItem ? "mb-0" : "mb-2"}`}>
+                <div
+                  key={index}
+                  className={`bg-blue-50 rounded-lg p-3 animate-pulse ${
+                    isLastItem ? "mb-0" : "mb-2"
+                  }`}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
                     <div className="flex-1">
@@ -76,7 +92,12 @@ const HotDeals = () => {
                     className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${
                       isLastItem ? "mb-0" : "mb-2"
                     }`}
-                    onClick={() => handleViewProduct(product.meta?.id, product.overview?.name)}
+                    onClick={() =>
+                      handleViewProduct(
+                        product.meta?.id,
+                        product.overview?.name
+                      )
+                    }
                   >
                     <div className="flex items-center gap-3">
                       {/* Product Image */}
@@ -91,11 +112,16 @@ const HotDeals = () => {
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
                         {/* Product Name */}
-                        <h4 className="text-sm font-semibold text-gray-800 truncate mb-1" style={{ whiteSpace: "nowrap" }}>
+                        <h4
+                          className="text-sm font-semibold text-gray-800 truncate mb-1"
+                          style={{ whiteSpace: "nowrap" }}
+                        >
                           {product.overview?.name || "No Name"}
                         </h4>
                         {/* Price */}
-                        <span className="text-lg font-bold text-blue-600">${price.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-blue-600">
+                          ${price}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -106,7 +132,10 @@ const HotDeals = () => {
 
       {/* View All Link */}
       <div className="mt-4 pt-3 border-t border-gray-200">
-        <Link to="/hot-deals" className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+        <Link
+          to="/hot-deals"
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+        >
           View All Hot Deals →
         </Link>
       </div>

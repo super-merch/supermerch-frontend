@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -8,12 +8,13 @@ import {
   FaShoppingCart,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { AppContext } from "@/context/AppContext";
 
 const UploadArtwork = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-
+  const { totalDiscount } = useContext(AppContext);
   // Get cart data from Redux
   const items = useSelector((state) => state.cart.items);
 
@@ -27,19 +28,29 @@ const UploadArtwork = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [artworkOption, setArtworkOption] = useState("no_artwork"); // 'upload' | 'text' | 'on_file' | 'no_artwork'
 
-  // Calculate totals
+  const totalDiscountPercent = items.reduce(
+    (sum, item) => sum + (totalDiscount[item.id] || 0),
+    0
+  );
+
+  // Base total calculation
   const totalAmount = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const totalDiscountPercent =
-    items.length > 0 ? Math.min(items.length * 5, 50) : 0;
-  const discountedAmount = totalAmount * (1 - totalDiscountPercent / 100);
-  const finalDiscountedAmount = appliedCoupon
-    ? discountedAmount * (1 - couponDiscount / 100)
-    : discountedAmount;
-  const gstAmount = finalDiscountedAmount * 0.1;
-  const total = finalDiscountedAmount + gstAmount + (shippingCharges || 0);
+
+  // Apply the same calculation logic as cart page
+  // Apply product discounts first
+  const productDiscountedAmount =
+    totalAmount - (totalAmount * totalDiscountPercent) / 100;
+
+  // Apply coupon discount to the product-discounted amount
+  const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
+  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
+
+  // Calculate GST and final total (same as cart)
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
+  const total = finalDiscountedAmount + gstAmount + shippingCharges;
 
   const handleFileUpload = (file) => {
     if (

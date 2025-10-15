@@ -4,7 +4,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
 import { IoIosHeart } from "react-icons/io";
-import { CiHeart } from "react-icons/ci";;
+import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -14,6 +14,7 @@ import noimage from "/noimage.png";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { slugify } from "@/utils/utils";
 
 const Bags = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -60,8 +61,10 @@ const Bags = ({ activeTab }) => {
     fetchProducts();
   }, []);
 
-  const handleViewProduct = (productId,name) => {
-    navigate(`/product/${name}`, { state:productId  });
+  const handleViewProduct = (productId, name) => {
+    const encodedId = btoa(productId); // base64 encode
+    const slug = slugify(name);
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   if (error)
@@ -169,7 +172,12 @@ const Bags = ({ activeTab }) => {
                           </span>
                         )}
                         <div
-                          onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                          onClick={() =>
+                            handleViewProduct(
+                              product.meta.id,
+                              product.overview.name
+                            )
+                          }
                           className="max-h-[50%] h-full border-b overflow-hidden"
                         >
                           <img
@@ -226,7 +234,12 @@ const Bags = ({ activeTab }) => {
                               <CiHeart />
                             </p>
                             <div
-                              onClick={() => handleViewProduct(product.meta.id,product.overview.name)}
+                              onClick={() =>
+                                handleViewProduct(
+                                  product.meta.id,
+                                  product.overview.name
+                                )
+                              }
                               className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
                             >
                               <p className="text-xl">
