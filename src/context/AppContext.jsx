@@ -303,13 +303,19 @@ const AppContextProvider = (props) => {
   };
   const [productsCategory, setProductsCategory] = useState([]);
   const [productsCategoryLoading, setProductsCategoryLoading] = useState(false);
-  const fetchProductsCategory = async (category, page = 1, sort = "") => {
+  const fetchProductsCategory = async (
+    category,
+    page = 1,
+    sort = "",
+    limit
+  ) => {
+    console.log(limit, "limit");
     setProductsCategoryLoading(true);
     try {
-      const limit = 10;
+      const limitParam = limit ?? 10;
       // Fixed: Removed duplicate ? and properly formatted query string
       const response = await fetch(
-        `${backednUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
+        `${backednUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limitParam}&sort=${sort}&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");

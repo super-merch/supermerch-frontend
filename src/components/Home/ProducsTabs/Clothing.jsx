@@ -29,7 +29,7 @@ const Clothing = ({ activeTab }) => {
   // Fetch products when tab opens
   useEffect(() => {
     if (activeTab === "Clothing" && productsCategory?.length === 0) {
-      fetchProductsCategory("dress", 1, "");
+      fetchProductsCategory("dress", 1, "", 8);
     }
   }, [activeTab]);
 

@@ -1,60 +1,158 @@
-import React from 'react'
-import checks from "/Checks.png";
+import React from "react";
+import {
+  FaCheckCircle,
+  FaHeadset,
+  FaUsers,
+  FaGlobe,
+  FaBoxes,
+} from "react-icons/fa";
 
 const ABoutHero = () => {
-    const check = [
-      {
-        image: checks,
-        desc: "Great 24/7 customer services.",
-      },
-      {
-        image: checks,
-        desc: "600+ Dedicated employe.",
-      },
-      {
-        image: checks,
-        desc: "50+ Branches all over the world.",
-      },
-      {
-        image: checks,
-        desc: "Over 1 Million Electronics Products",
-      },
-    ];
-    return (
-      <div>
-        <div className="  mt-6">
-          <img src="/group2.png" alt="" className="lg:w-[90%] " />
+  const features = [
+    {
+      icon: FaHeadset,
+      title: "24/7 Customer Service",
+      description:
+        "Round-the-clock support to help you whenever you need assistance.",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      icon: FaUsers,
+      title: "600+ Dedicated Team",
+      description: "Expert professionals committed to delivering excellence.",
+      color: "from-green-500 to-green-600",
+    },
+    {
+      icon: FaGlobe,
+      title: "Global Presence",
+      description: "50+ branches worldwide serving customers across the globe.",
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      icon: FaBoxes,
+      title: "1M+ Products",
+      description: "Extensive catalog of quality promotional products.",
+      color: "from-orange-500 to-orange-600",
+    },
+  ];
+
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-blue-50 py-16 lg:py-24">
+      <div className="Mycontainer mx-auto px-4">
+        {/* Hero Image Section */}
+        <div className="relative mb-16">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+            <img
+              src="/group2.png"
+              alt="SuperMerch Team"
+              className="w-full h-auto object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          </div>
+
+          {/* Floating Stats Cards */}
+          <div className="absolute -bottom-8 left-4 right-4 lg:left-8 lg:right-auto lg:w-80">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">15+</div>
+                  <div className="text-sm text-gray-600">Years Experience</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">99%</div>
+                  <div className="text-sm text-gray-600">
+                    Customer Satisfaction
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className=" flex flex-wrap relative">
-          <div className="lg:w-[35%]">
-            <div className=" lg:px-12 md:px-12 px-6  lg:pt-16 pt-8">
-              {check.map((item, i) => {
+
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Features List */}
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              Our Strengths
+            </div>
+
+            <div className="space-y-4">
+              {features.map((feature, index) => {
+                const IconComponent = feature.icon;
                 return (
-                  <div key={i} className=" flex items-center gap-3 pt-3">
-                    <img src={item.image} alt="" className="" />
-                    <p>{item.desc}</p>
+                  <div
+                    key={index}
+                    className="group flex items-start gap-4 p-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300"
+                  >
+                    <div
+                      className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
-          <div className=" lg:relative lg:-z-10 bg-smallHeader mb-10 lg:mb-0 lg:px-10 md:px-10 px-6 py-12  lg:rounded-tr-[285px] lg:-mt-[180px] mt-12 lg:h-[444px] md:h-full lg:pt-[220px]  lg:w-[65%]	">
-            <button className="text-smallHeader bg-white px-4 py-1.5 font-semibold text-sm">
-              WHO WE ARE
-            </button>
-            <h1 className="text-line font-semibold lg:text-4xl md:text-4xl text-2xl pt-4 ">
-              Welcome To SuperMerch
-            </h1>
-            <p className="text-line lg:text-base md:text-base text-sm max-w-[870px] pt-4">
-              Pellentesque ultrices, dui vel hendrerit iaculis, ipsum velit
-              vestibulum risus, ac tincidunt diam lectus id magna. Praesent
-              maximus lobortis neque sit amet rhoncus. Nullam tempus lectus a
-              dui aliquet, non ultricies nibh elementum. Nulla ac nulla dolor.{" "}
-            </p>
+
+          {/* About Content */}
+          <div className="relative">
+            <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 "></div>
+
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
+                  <FaCheckCircle className="w-4 h-4" />
+                  WHO WE ARE
+                </div>
+
+                <h1 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight">
+                  Welcome to <span className="text-white">SuperMerch</span>
+                </h1>
+
+                <p className="text-lg text-blue-100 leading-relaxed mb-6">
+                  We're Australia's leading provider of premium promotional
+                  products and custom merchandise. With over 15 years of
+                  experience, we've helped thousands of businesses build
+                  stronger brand connections through quality products and
+                  exceptional service.
+                </p>
+
+                <p className="text-base text-blue-200 leading-relaxed">
+                  From small startups to enterprise corporations, we deliver
+                  innovative solutions that make your brand unforgettable. Our
+                  commitment to quality, sustainability, and customer
+                  satisfaction sets us apart in the competitive promotional
+                  products industry.
+                </p>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                  <button className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300">
+                    Learn More
+                  </button>
+                  <button className="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-colors duration-300">
+                    Get Quote
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    );
-}
+    </section>
+  );
+};
 
-export default ABoutHero
+export default ABoutHero;
