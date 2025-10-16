@@ -203,7 +203,7 @@ const Spromotional = () => {
                 <p className="text-sm text-gray-600">
                   {productsLoading
                     ? "Loading..."
-                    : `Results found ${
+                    : `products found ${
                         selectedCategory ? "(Category)" : "(All Products)"
                       }${isPriceFilterActive ? " (Price filtered)" : ""}`}
                   {productsLoading && " Please wait a while..."}
@@ -222,7 +222,7 @@ const Spromotional = () => {
                 <p className="">
                   {productsLoading
                     ? "Loading..."
-                    : `Results found ${
+                    : `products found ${
                         selectedCategory ? "(Category)" : "(All Products)"
                       }${isPriceFilterActive ? " (Price filtered)" : ""}`}
                   {productsLoading && " Please wait a while..."}

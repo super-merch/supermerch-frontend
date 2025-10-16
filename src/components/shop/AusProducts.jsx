@@ -86,6 +86,7 @@ const AustraliaProducts = () => {
     refetchAustraliaProducts,
   } = useContext(AppContext);
 
+  const [productsData, setProductsData] = useState(getAustraliaProducts?.data);
   const getProductsData = getAustraliaProducts?.data;
   const itemsPerPage = getAustraliaProducts?.itemsPerPage;
   const totalPages = getAustraliaProducts?.totalPages;
@@ -167,6 +168,36 @@ const AustraliaProducts = () => {
   const handleSortSelection = (option) => {
     setSortOption(option);
     setIsDropdownOpen(false);
+    const sortedProducts = [...productsData].sort((a, b) => {
+      const getRealPriceForSort = (product) => {
+        const priceGroups = product.product?.prices?.price_groups || [];
+        const basePrice = priceGroups.find((group) => group?.base_price) || {};
+        const priceBreaks = basePrice.base_price?.price_breaks || [];
+
+        const prices = priceBreaks
+          .map((breakItem) => breakItem.price)
+          .filter((price) => price !== undefined);
+
+        let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+
+        const productId = product.meta.id;
+        const marginEntry = marginApi[productId] || {};
+        const marginFlat =
+          typeof marginEntry.marginFlat === "number"
+            ? marginEntry.marginFlat
+            : 0;
+
+        return minPrice + marginFlat;
+      };
+
+      const priceA = getRealPriceForSort(a);
+      const priceB = getRealPriceForSort(b);
+
+      if (option === "lowToHigh") return priceA - priceB;
+      if (option === "highToLow") return priceB - priceA;
+      if (option === "relevancy") return 0;
+    });
+    setProductsData(sortedProducts);
   };
 
   const handleViewProduct = (productId, name) => {
@@ -175,12 +206,6 @@ const AustraliaProducts = () => {
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
       state: productId,
     });
-  };
-
-  const handleOpenModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-    document.body.style.overflow = "hidden";
   };
 
   const handleCloseModal = () => {
@@ -287,7 +312,7 @@ const AustraliaProducts = () => {
                 <p className="text-sm text-gray-600">
                   {australiaProductsLoading
                     ? "Loading..."
-                    : `Results found (Australia Made Products)${
+                    : `products found (Australia Made Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
                       }`}
                   {australiaProductsLoading && " Please wait a while..."}
@@ -300,7 +325,7 @@ const AustraliaProducts = () => {
           <div className="hidden lg:block">
             <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
               <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-                {itemCount} Results found (Australia Made Products)
+                {itemCount} products found (Australia Made Products)
                 {/* Placeholder for search if needed later */}
               </div>
               <div className="flex items-center gap-3">
@@ -344,7 +369,7 @@ const AustraliaProducts = () => {
                       <button
                         onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                          sortOption === "relevancy" ? "bg-gray-100" : ""
                         }`}
                       >
                         Relevancy
@@ -393,9 +418,9 @@ const AustraliaProducts = () => {
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
-            ) : getAustraliaProducts?.data?.length > 0 ? (
+            ) : productsData?.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {getProductsData?.map((product) => {
+                {productsData?.map((product) => {
                   const priceGroups =
                     product.product?.prices?.price_groups || [];
                   const basePrice =

@@ -582,7 +582,7 @@ const TrendCards = () => {
               <p className="">
                 {skeletonLoading || isFiltering
                   ? "Loading..."
-                  : `Trending Results found${
+                  : `Trending products found${
                       isPriceFilterActive
                         ? ` (Price filtered)`
                         : hasActiveFilters

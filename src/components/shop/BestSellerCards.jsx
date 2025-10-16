@@ -583,7 +583,7 @@ const BestSellerCards = () => {
               <p className="">
                 {skeletonLoading || isFiltering
                   ? "Loading..."
-                  : `Best Seller Results found${
+                  : `Best Seller products found${
                       isPriceFilterActive
                         ? ` (Price filtered)`
                         : hasActiveFilters

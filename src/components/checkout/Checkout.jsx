@@ -174,7 +174,7 @@ const Checkout = () => {
     };
   }, [openLoginModal, loginModalRef]);
   // Add this state for shipping charges
-  const [shippingCharges, setShippingCharges] = useState(0);
+  const [shippingCharges, setShippingCharges] = useState(20);
 
   // // Add this useEffect to get shipping charges from location state or API
   // useEffect(() => {
@@ -476,30 +476,70 @@ const Checkout = () => {
       logoId: logoId,
     };
 
+    if (
+      !data.shipping.firstName ||
+      !data.shipping.lastName ||
+      !data.shipping.country ||
+      !data.shipping.region ||
+      !data.shipping.city ||
+      !data.shipping.zip ||
+      !data.shipping.email ||
+      !data.shipping.phone
+    ) {
+      setLoading(false);
+      return toast.error("Please fill all the fields in shipping address");
+    }
+    if (
+      !data.billing.firstName ||
+      !data.billing.lastName ||
+      !data.billing.country ||
+      !data.billing.region ||
+      !data.billing.city ||
+      !data.billing.zip
+      // !data.billing.email ||
+      // !data.billing.phone
+    ) {
+      setLoading(false);
+      return toast.error("Please fill all the fields in billing address");
+    }
+    if (products.length === 0) {
+      setLoading(false);
+      return toast.error("Please add some products to checkout");
+    }
+
+    if (!token) {
+      toast.info(
+        "Proceeding as guest. Create an account later to view order history."
+      );
+    }
+
     try {
       // Store checkout data in localStorage before redirecting to Stripe
       localStorage.setItem("pendingCheckoutData", JSON.stringify(checkoutData));
-      saveUser({
-        firstName: data.shipping.firstName,
-        lastName: data.shipping.lastName,
-        country: data.shipping.country,
-        state: data.shipping.region,
-        city: data.shipping.city,
-        postalCode: data.shipping.zip,
-        addressLine: data.shipping.address,
-        companyName: data.shipping.companyName,
-        email: data.shipping.email,
-        phone: data.shipping.phone,
-      },{
-        firstName: data.billing.firstName || addressData.firstName,
-        lastName: data.billing.lastName || addressData.lastName,
-        country: data.billing.country || addressData.country,
-        state: data.billing.region || addressData.state,
-        city: data.billing.city || addressData.city,
-        postalCode: data.billing.zip || addressData.postalCode,
-        addressLine: data.billing.address || addressData.addressLine,
-        companyName: data.billing.companyName || addressData.companyName,
-      });
+      saveUser(
+        {
+          firstName: data.shipping.firstName,
+          lastName: data.shipping.lastName,
+          country: data.shipping.country,
+          state: data.shipping.region,
+          city: data.shipping.city,
+          postalCode: data.shipping.zip,
+          addressLine: data.shipping.address,
+          companyName: data.shipping.companyName,
+          email: data.shipping.email,
+          phone: data.shipping.phone,
+        },
+        {
+          firstName: data.billing.firstName || addressData.firstName,
+          lastName: data.billing.lastName || addressData.lastName,
+          country: data.billing.country || addressData.country,
+          state: data.billing.region || addressData.state,
+          city: data.billing.city || addressData.city,
+          postalCode: data.billing.zip || addressData.postalCode,
+          addressLine: data.billing.address || addressData.addressLine,
+          companyName: data.billing.companyName || addressData.companyName,
+        }
+      );
 
       const stripe = await loadStripe(
         "pk_test_51RqoZXGaJ07cWJBqahLsX614YCqHKSaVwLcxxcYf9kYJbbX0Ww8tRrxfh8neqnoGkqh3ofUJ9qqA6tnavunDTJSY00ovkitoWt"

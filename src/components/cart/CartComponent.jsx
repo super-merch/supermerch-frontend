@@ -99,7 +99,7 @@ const CartComponent = () => {
       quantities[item.id] = item.quantity;
     });
     setCustomQuantities(quantities);
-    console.log(items)
+    console.log(items);
   }, [items]);
 
   const totalDiscountPercent = items.reduce(
@@ -398,7 +398,7 @@ const CartComponent = () => {
                                           })
                                         )
                                       }
-                                      className="w-16 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
+                                      className="w-32 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
                                       min="1"
                                     />
                                     <button

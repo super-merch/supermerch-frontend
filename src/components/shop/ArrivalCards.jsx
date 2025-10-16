@@ -566,7 +566,7 @@ const ArrivalCards = () => {
               <p className="">
                 {skeletonLoading || isFiltering
                   ? "Loading..."
-                  : `New Arrivals Results found${
+                  : `New Arrivals products found${
                       isPriceFilterActive
                         ? ` (Price filtered)`
                         : hasActiveFilters

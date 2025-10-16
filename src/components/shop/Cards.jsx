@@ -1,6 +1,6 @@
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { backgroundColor, getProductPrice, slugify } from "@/utils/utils";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { CiHeart } from "react-icons/ci";
 import {
   IoIosArrowDown,
@@ -11,7 +11,12 @@ import {
 } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { toast } from "react-toastify";
 import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { AppContext } from "../../context/AppContext";
@@ -68,9 +73,29 @@ const Cards = ({ category = "dress" }) => {
     productsLoading,
     refetchProducts,
   } = useContext(AppContext);
+  const [productsData, setProductsData] = useState(getProducts?.data);
 
-  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    if (getProducts?.data) {
+      setProductsData(getProducts?.data);
+    }
+  }, [getProducts]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const getProductsData = getProducts?.data;
+
+  // Helper function to update URL with pagination
+  const updatePaginationInURL = (newPage) => {
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.set("page", newPage.toString());
+    setSearchParams(currentParams);
+
+    // Scroll to top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
   const itemsPerPage = getProducts?.items_per_page;
   const totalPages = getProducts?.total_pages || getProducts?.totalPages;
   const itemCount = getProducts?.item_count || getProducts?.totalCount;
@@ -79,53 +104,54 @@ const Cards = ({ category = "dress" }) => {
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   useEffect(() => {
+    const pageFromURL = parseInt(searchParams.get("page")) || 1;
+
     if (searchParams.get("category")) {
       const category = searchParams.get("category");
       if (category === "australia") {
         setPaginationData({
           ...paginationData,
           category: "australia",
-          page: 1,
+          page: pageFromURL,
         });
       } else if (category === "24hr-production") {
         setPaginationData({
           ...paginationData,
           category: "24hr-production",
-          page: 1,
+          page: pageFromURL,
         });
       } else if (category === "sales") {
         setPaginationData({
           ...paginationData,
           category: "sales",
-          page: 1,
+          page: pageFromURL,
         });
-      }
-        else if(category === "allProducts"){
-          setPaginationData({
-            ...paginationData,
-            category: "allProducts",
-            page: 1,
-          });
+      } else if (category === "allProducts") {
+        setPaginationData({
+          ...paginationData,
+          category: "allProducts",
+          page: pageFromURL,
+        });
       } else {
         setPaginationData({
           ...paginationData,
           productTypeId: searchParams.get("category"),
           category: null,
-          page: 1,
+          page: pageFromURL,
         });
       }
     } else if (searchParams.get("search")) {
       setPaginationData({
         ...paginationData,
         category: "search",
-        page: 1,
+        page: pageFromURL,
         searchTerm: searchParams.get("search"),
       });
     } else {
       setPaginationData({
         ...paginationData,
         category: category,
-        page: 1,
+        page: pageFromURL,
       });
     }
   }, [searchParams, category]);
@@ -152,9 +178,47 @@ const Cards = ({ category = "dress" }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  const priceCache = useRef(new Map());
+
+  const getRealPrice = useCallback((product) => {
+    const productId = product.meta?.id;
+    if (priceCache.current.has(productId)) {
+      return priceCache.current.get(productId);
+    }
+
+    const priceGroups = product.product?.prices?.price_groups || [];
+    const basePrice = priceGroups.find((group) => group?.base_price) || {};
+    const priceBreaks = basePrice.base_price?.price_breaks || [];
+    const price =
+      priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
+
+    // Cache the result
+    priceCache.current.set(productId, price);
+    return price;
+  }, []);
 
   const handleSortSelection = (option) => {
     setSortOption(option);
+    if (option === "lowToHigh") {
+      const sortedProducts = [...getProductsData].sort((a, b) => {
+        const priceA = getRealPrice(a);
+        const priceB = getRealPrice(b);
+        return priceA - priceB;
+      });
+      setProductsData(sortedProducts);
+    }
+    if (option === "highToLow") {
+      const sortedProducts = [...getProductsData].sort((a, b) => {
+        const priceA = getRealPrice(a);
+        const priceB = getRealPrice(b);
+        return priceB - priceA;
+      });
+      setProductsData(sortedProducts);
+    }
+    if (option === "revelancy") {
+      setProductsData(getProductsData);
+    }
+
     setIsDropdownOpen(false);
   };
 
@@ -260,11 +324,7 @@ const Cards = ({ category = "dress" }) => {
                   {!productsLoading && itemCount}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {productsLoading
-                    ? "Loading..."
-                    : `Results found (${getResultsText()})${
-                        isPriceFilterActive ? " (Price filtered)" : ""
-                      }`}
+                  {productsLoading ? "Loading..." : `products found `}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -279,11 +339,7 @@ const Cards = ({ category = "dress" }) => {
                   {!productsLoading && itemCount}
                 </span>
                 <p className="">
-                  {productsLoading
-                    ? "Loading..."
-                    : `Results found (${
-                        getResultsText()
-                      })${isPriceFilterActive ? " (Price filtered)" : ""}`}
+                  {productsLoading ? "Loading..." : `products found`}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -353,38 +409,36 @@ const Cards = ({ category = "dress" }) => {
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
-            ) : getProductsData?.length > 0 ? (
+            ) : productsData?.length > 0 ? (
               <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
-                {getProductsData?.map((product) => {
+                {productsData?.map((product) => {
                   const productId = product.meta.id;
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =
                     product.discountInfo?.isGlobal || false;
-
+                  const encodedId = btoa(productId);
+                  const slug = slugify(product.overview.name);
                   return (
-                    <div
+                    <Link
                       key={productId}
                       className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                      onClick={() =>
-                        handleViewProduct(
-                          product.meta.id,
-                          product.overview.name
-                        )
-                      }
+                      to={`/product/${encodeURIComponent(
+                        slug
+                      )}?ref=${encodedId}`}
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >
                       <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                        {(productionIds.has(product.meta.id) ||
-                          productionIds.has(String(product.meta.id))) && (
+                        {(productionIds.has(product?.meta?.id) ||
+                          productionIds.has(String(product?.meta?.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
                             <Clock />
                             <span>24Hr Production</span>
                           </span>
                         )}
 
-                        {(australiaIds.has(product.meta.id) ||
-                          australiaIds.has(String(product.meta.id))) && (
+                        {(australiaIds.has(product?.meta?.id) ||
+                          australiaIds.has(String(product?.meta?.id))) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
                             <Flag />
                             <span>Australia Made</span>
@@ -402,7 +456,7 @@ const Cards = ({ category = "dress" }) => {
                           }}
                           className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                         >
-                          {favSet.has(product.meta.id) ? (
+                          {favSet.has(product?.meta?.id) ? (
                             <IoIosHeart className="text-lg text-red-500" />
                           ) : (
                             <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
@@ -413,7 +467,7 @@ const Cards = ({ category = "dress" }) => {
                       <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
                         <img
                           src={
-                            product.overview.hero_image
+                            product?.overview?.hero_image
                               ? product.overview.hero_image
                               : noimage
                           }
@@ -494,7 +548,7 @@ const Cards = ({ category = "dress" }) => {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -511,12 +565,14 @@ const Cards = ({ category = "dress" }) => {
             <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination">
               {/* Previous Button */}
               <button
-                onClick={() =>
+                onClick={() => {
+                  const newPage = Math.max(currentPage - 1, 1);
                   setPaginationData((prev) => ({
                     ...prev,
-                    page: Math.max(prev.page - 1, 1),
-                  }))
-                }
+                    page: newPage,
+                  }));
+                  updatePaginationInURL(newPage);
+                }}
                 disabled={currentPage === 1}
                 className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -525,9 +581,10 @@ const Cards = ({ category = "dress" }) => {
 
               {/* Page 1 - Always show */}
               <button
-                onClick={() =>
-                  setPaginationData((prev) => ({ ...prev, page: 1 }))
-                }
+                onClick={() => {
+                  setPaginationData((prev) => ({ ...prev, page: 1 }));
+                  updatePaginationInURL(1);
+                }}
                 className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                   currentPage === 1
                     ? "bg-blue-600 text-white border-blue-600"
@@ -549,9 +606,10 @@ const Cards = ({ category = "dress" }) => {
                 .map((page) => (
                   <button
                     key={page}
-                    onClick={() =>
-                      setPaginationData((prev) => ({ ...prev, page: page }))
-                    }
+                    onClick={() => {
+                      setPaginationData((prev) => ({ ...prev, page: page }));
+                      updatePaginationInURL(page);
+                    }}
                     className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                       currentPage === page
                         ? "bg-blue-600 text-white border-blue-600"
@@ -571,9 +629,13 @@ const Cards = ({ category = "dress" }) => {
               {/* Last page - Always show if more than 1 page */}
               {totalPages > 1 && (
                 <button
-                  onClick={() =>
-                    setPaginationData((prev) => ({ ...prev, page: totalPages }))
-                  }
+                  onClick={() => {
+                    setPaginationData((prev) => ({
+                      ...prev,
+                      page: totalPages,
+                    }));
+                    updatePaginationInURL(totalPages);
+                  }}
                   className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                     currentPage === totalPages
                       ? "bg-blue-600 text-white border-blue-600"
@@ -586,12 +648,14 @@ const Cards = ({ category = "dress" }) => {
 
               {/* Next Button */}
               <button
-                onClick={() =>
+                onClick={() => {
+                  const newPage = Math.min(currentPage + 1, totalPages);
                   setPaginationData((prev) => ({
                     ...prev,
-                    page: Math.min(prev.page + 1, totalPages),
-                  }))
-                }
+                    page: newPage,
+                  }));
+                  updatePaginationInURL(newPage);
+                }}
                 disabled={currentPage === totalPages}
                 className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
