@@ -443,8 +443,12 @@ const SearchCard = () => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[25%]">
-          {currentPageProducts.length > 0 && <UnifiedSidebar />}
-          {(searchLoading || isFiltering) && <UnifiedSidebar />}
+          {currentPageProducts.length > 0 && (
+            <UnifiedSidebar isSearchPage={true} />
+          )}
+          {(searchLoading || isFiltering) && (
+            <UnifiedSidebar isSearchPage={true} />
+          )}
         </div>
 
         <div className="lg:w-[75%] w-full md:mt-4">
