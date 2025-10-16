@@ -105,7 +105,7 @@ const App = () => {
             />
             <Route path="/ReturnGifts" element={<ShopPage category="allProducts" />} />
             <Route path="/production" element={<HourProduction24Products />} />
-            <Route path="/Sale" element={<ShopPage category="sale" />} />
+            <Route path="/Sale" element={<ShopPage category="sales" />} />
             <Route path="/Australia" element={<Australia />} />
             {/* SHOPPAGE  */}
             <Route path="/category" element={<CategoryPage />} />
@@ -114,7 +114,7 @@ const App = () => {
             <Route path="/trendings" element={<BestSellers />} />
             <Route path="/australia-made" element={<Australia />} />
             <Route path="/hour-production" element={<HourProduction24 />} />
-            <Route path="/search" element={<SearchPage />} />
+            <Route path="/search" element={<ShopPage category="search" />} />
             <Route path="/new-arrivals" element={<NewArrival />} />
             <Route path="/sales" element={<SalesPage />} />
             <Route path="/bestSellers" element={<BestSellerPage />} />

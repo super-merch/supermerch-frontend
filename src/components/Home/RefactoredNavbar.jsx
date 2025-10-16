@@ -68,7 +68,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       { name: "Headwear", path: "/Spromotional?categoryName=Headwear&category=G", hasSubmenu: true },
       { name: "Return Gifts", path: "/ReturnGifts" },
       { name: "24hr Prod", path: "/production" },
-      { name: "Sale", path: "/sales" },
+      { name: "Sale", path: "/Sale" },
       { name: "Australia Made", path: "/Australia" },
     ];
 
