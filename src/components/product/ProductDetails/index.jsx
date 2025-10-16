@@ -58,46 +58,48 @@ const ProductDetails = () => {
     error,
     marginApi,
     totalDiscount,
+    shippingCharges:freightFee,
+    userData
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorFetching, setErrorFetching] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState("pricing");
 
-  useEffect(() => {
-    const fetchUserEmail = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setUserEmail("guest@gmail.com");
-          dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
-          return;
-        }
+  // useEffect(() => {
+  //   const fetchUserEmail = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         setUserEmail("guest@gmail.com");
+  //         dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
+  //         return;
+  //       }
 
-        const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  //       const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        if (data.success) {
-          setUserEmail(data.email);
-          // Set current user in Redux cart
-          dispatch(initializeCartFromStorage({ email: data.email }));
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching user email:",
-          error.response?.data || error.message
-        );
-        // Fallback to guest email if there's an error
-        setUserEmail("guest@gmail.com");
-        dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
-      }
-    };
+  //       if (data.success) {
+  //         setUserEmail(data.email);
+  //         // Set current user in Redux cart
+  //         dispatch(initializeCartFromStorage({ email: data.email }));
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Error fetching user email:",
+  //         error.response?.data || error.message
+  //       );
+  //       // Fallback to guest email if there's an error
+  //       setUserEmail("guest@gmail.com");
+  //       dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
+  //     }
+  //   };
 
-    fetchUserEmail();
-  }, [dispatch, backednUrl]);
+  //   fetchUserEmail();
+  // }, [dispatch, backednUrl]);
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
 
@@ -181,6 +183,8 @@ const ProductDetails = () => {
         console.log(error);
       }
     };
+    const email = userData?.email || "guest@gmail.com";
+    setUserEmail(email);
     fetchSingleProduct();
   }, [id]);
 
@@ -222,36 +226,7 @@ const ProductDetails = () => {
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
 
-  const [freightFee, setFreightFee] = useState(0);
 
-  const getShippingCharges = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // Add authorization headers if needed
-          },
-        }
-      );
-
-      const data = await response.json();
-      setFreightFee(data.shipping || 0);
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch shipping charges");
-      }
-
-      return { data };
-    } catch (error) {
-      throw error;
-    }
-  };
-  useEffect(() => {
-    getShippingCharges();
-  }, []);
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
