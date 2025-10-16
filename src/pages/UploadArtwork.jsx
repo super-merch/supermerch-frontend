@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -53,6 +53,11 @@ const UploadArtwork = () => {
   const total = finalDiscountedAmount + gstAmount + shippingCharges;
 
   const handleFileUpload = (file) => {
+    // file size less then 5 mb
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size should be less than 10MB");
+      return;
+    }
     if (
       file &&
       (file.type.startsWith("image/") || file.type === "application/pdf")
@@ -111,7 +116,7 @@ const UploadArtwork = () => {
         return;
       }
     }
-
+    
     // Navigate to checkout with artwork data
     navigate("/checkout", {
       state: {
