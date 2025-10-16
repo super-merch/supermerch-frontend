@@ -36,6 +36,7 @@ import { LoadingBar } from "@/components/Common";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
+
   const currentUserCartItems = useSelector(selectCurrentUserCartItems);
   //get id from navigate's state
 
@@ -344,6 +345,58 @@ const ProductDetails = () => {
       }
     }
   }, [product]);
+
+  // Set dynamic page title
+  useEffect(() => {
+    if (product?.name) {
+      const productName = product.name;
+      const productDescription = product.description
+        ? product.description.substring(0, 150) + "..."
+        : "Premium promotional products and custom merchandise";
+
+      document.title = `${productName} - SuperMerch Australia`;
+
+      // Update meta description
+      const metaDescription = document.querySelector(
+        'meta[name="description"]'
+      );
+      if (metaDescription) {
+        metaDescription.setAttribute("content", productDescription);
+      } else {
+        // Create meta description if it doesn't exist
+        const meta = document.createElement("meta");
+        meta.name = "description";
+        meta.content = productDescription;
+        document.head.appendChild(meta);
+      }
+
+      // Update Open Graph meta tags for social media sharing
+      const updateMetaTag = (property, content) => {
+        let meta = document.querySelector(`meta[property="${property}"]`);
+        if (meta) {
+          meta.setAttribute("content", content);
+        } else {
+          meta = document.createElement("meta");
+          meta.setAttribute("property", property);
+          meta.setAttribute("content", content);
+          document.head.appendChild(meta);
+        }
+      };
+
+      updateMetaTag("og:title", `${productName} - SuperMerch Australia`);
+      updateMetaTag("og:description", productDescription);
+      updateMetaTag("og:type", "product");
+      if (product?.images?.[0]) {
+        updateMetaTag("og:image", product.images[0]);
+      }
+    }
+
+    // Cleanup function to reset title when component unmounts
+    return () => {
+      document.title =
+        "SuperMerch - Premium Australian Made Promotional Products & Custom Merchandise";
+    };
+  }, [product?.name, product?.description]);
 
   useEffect(() => {
     if (!selectedPrintMethod?.price_breaks?.length) return;
@@ -839,7 +892,6 @@ const ProductDetails = () => {
     );
 
   if (errorFetching) return <ProductNotFound />;
-  console.log(loading);
   if (loading)
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">

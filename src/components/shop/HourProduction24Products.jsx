@@ -473,7 +473,7 @@ const HourProduction24Products = () => {
                 <p className="">
                   {isLoading
                     ? "Loading..."
-                    : `Results found (24 Hour Production Products)${
+                    : `products found (24 Hour Production Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
                       }`}
                   {isFiltering && " Please wait a while..."}
@@ -814,11 +814,6 @@ const HourProduction24Products = () => {
                           <div className="">
                             <h2 className="text-base sm:text-lg font-bold text-heading">
                               From $
-                              {console.log(
-                                minPrice,
-                                maxPrice,
-                                "minPrice, maxPrice"
-                              )}
                               {minPrice === maxPrice ? (
                                 <span>{minPrice.toFixed(2)}</span>
                               ) : (

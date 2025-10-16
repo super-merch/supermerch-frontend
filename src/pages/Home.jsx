@@ -81,7 +81,6 @@ const Home = () => {
         }}
         openEmailModal={openEmailModal}
       />
-      <RecentProducts />
       <HowItWorks />
       <WhyUs />
     </div>
