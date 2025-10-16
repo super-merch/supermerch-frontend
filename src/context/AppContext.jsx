@@ -172,9 +172,14 @@ const AppContextProvider = (props) => {
       url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
       url = `${backednUrl}/api/client-products?${params.toString()}`;
-    } else if (paginationData.category === "search") {
+    }
+     else if (paginationData.category === "search") {
       url = `${backednUrl}/api/client-products/search?${params.toString()}`;
-    } else if (paginationData.category) {
+    }
+     else if (paginationData.category === "allProducts") {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    }
+     else if (paginationData.category) {
       url = `${backednUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {
       url = `${backednUrl}/api/params-products?${params.toString()}`;
