@@ -312,7 +312,7 @@ const AustraliaProducts = () => {
                 <p className="text-sm text-gray-600">
                   {australiaProductsLoading
                     ? "Loading..."
-                    : `Results found (Australia Made Products)${
+                    : `products found (Australia Made Products)${
                         isPriceFilterActive ? " (Price filtered)" : ""
                       }`}
                   {australiaProductsLoading && " Please wait a while..."}
@@ -325,7 +325,7 @@ const AustraliaProducts = () => {
           <div className="hidden lg:block">
             <div className="flex flex-wrap items-center justify-end gap-3 lg:justify-between md:justify-between">
               <div className="flex items-center justify-between px-3 py-3 lg:w-[43%] md:w-[42%] w-full">
-                {itemCount} Results found (Australia Made Products)
+                {itemCount} products found (Australia Made Products)
                 {/* Placeholder for search if needed later */}
               </div>
               <div className="flex items-center gap-3">

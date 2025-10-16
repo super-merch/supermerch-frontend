@@ -85,19 +85,16 @@ const HotDeals = () => {
               return displayProducts.slice(0, 4).map((product, index) => {
                 const price = getProductPrice(product);
                 const isLastItem = index === 3;
+                const encodedId = btoa(product.meta?.id); // base64 encode
+                const slug = slugify(product.overview?.name);
 
                 return (
-                  <div
+                  <Link
+                    to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
                     key={`${product.meta?.id || "product"}-${index}`}
                     className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${
                       isLastItem ? "mb-0" : "mb-2"
                     }`}
-                    onClick={() =>
-                      handleViewProduct(
-                        product.meta?.id,
-                        product.overview?.name
-                      )
-                    }
                   >
                     <div className="flex items-center gap-3">
                       {/* Product Image */}
@@ -124,7 +121,7 @@ const HotDeals = () => {
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               });
             })()}

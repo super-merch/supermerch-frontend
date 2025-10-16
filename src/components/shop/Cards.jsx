@@ -75,6 +75,12 @@ const Cards = ({ category = "dress" }) => {
   } = useContext(AppContext);
   const [productsData, setProductsData] = useState(getProducts?.data);
 
+  useEffect(() => {
+    if (getProducts?.data) {
+      setProductsData(getProducts?.data);
+    }
+  }, [getProducts]);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const getProductsData = getProducts?.data;
 
@@ -318,7 +324,7 @@ const Cards = ({ category = "dress" }) => {
                   {!productsLoading && itemCount}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {productsLoading ? "Loading..." : `Results found `}
+                  {productsLoading ? "Loading..." : `products found `}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -333,11 +339,7 @@ const Cards = ({ category = "dress" }) => {
                   {!productsLoading && itemCount}
                 </span>
                 <p className="">
-                  {productsLoading
-                    ? "Loading..."
-                    : `Results found (${getResultsText()})${
-                        isPriceFilterActive ? " (Price filtered)" : ""
-                      }`}
+                  {productsLoading ? "Loading..." : `products found`}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
