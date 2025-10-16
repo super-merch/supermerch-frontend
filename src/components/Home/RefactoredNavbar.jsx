@@ -25,7 +25,7 @@ import { AppContext } from "../../context/AppContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
 
 import { useCoupons } from "@/hooks/useCoupons";
-import { clearCurrentUser } from "@/redux/slices/cartSlice";
+import { clearCurrentUser, currentUserCartAmount } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import {
   applyFilters,
@@ -50,7 +50,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const totalQuantity = useSelector((state) => state.cart.items.length);
+  const totalQuantity = useSelector(currentUserCartAmount);
   const { favouriteQuantity } = useSelector((state) => state.favouriteProducts);
 
   // State management
@@ -68,7 +68,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       { name: "Headwear", path: "/Spromotional?categoryName=Headwear&category=G", hasSubmenu: true },
       { name: "Return Gifts", path: "/ReturnGifts" },
       { name: "24hr Prod", path: "/production" },
-      { name: "Sale", path: "/Sale" },
+      { name: "Sale", path: "/sales" },
       { name: "Australia Made", path: "/Australia" },
     ];
 

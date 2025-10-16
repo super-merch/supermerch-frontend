@@ -61,6 +61,7 @@ const cartSlice = createSlice({
         discountPct = 0,
         userEmail,
         dragdrop = null,
+        print = "",
         ...rest
       } = action.payload;
 
@@ -84,6 +85,8 @@ const cartSlice = createSlice({
         const priceWithMargin = newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
         existing.price = priceWithMargin * (1 - existing.discountPct / 100);
         existing.totalPrice = existing.price * existing.quantity;
+        existing.print = print
+        existing.setupFee = setupFee
         if (dragdrop) {
       existing.dragdrop = dragdrop;
     }
@@ -346,6 +349,22 @@ export const selectCurrentUserCartItems = (state) => {
     );
     return [...guestItems, ...userItems];
   }
+export const currentUserCartAmount = (state) => {
+  const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
+  
+  // Always include guest items along with user-specific items
+  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
+
+    if (currentUserEmail === "guest@gmail.com") {
+      return guestItems.length;
+    }
+
+    const userItems = state?.cart?.items.filter(
+      (item) => item.userEmail === currentUserEmail
+    );
+    return guestItems.length+userItems.length;
+  }
+
 
 
 export const {
