@@ -482,8 +482,6 @@ const Cards = () => {
 
   // Handle category selection - fetch category-specific products
   useEffect(() => {
-    console.log("Selected Category ID:", selectedCategory);
-
     // Reset visible products and pagination immediately (UI)
     setCategoryProducts([]);
     setCategoryFilteredProducts([]);

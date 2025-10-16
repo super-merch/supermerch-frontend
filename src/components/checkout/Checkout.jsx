@@ -84,7 +84,6 @@ const Checkout = () => {
     }
   };
 
-
   useEffect(() => {
     // Get coupon data from location state if available
     if (location.state?.appliedCoupon) {
@@ -130,7 +129,7 @@ const Checkout = () => {
     };
   }, [openLoginModal, loginModalRef]);
   // Add this state for shipping charges
-  const [shippingCharges, setShippingCharges] = useState(0);
+  const [shippingCharges, setShippingCharges] = useState(20);
 
   // // Add this useEffect to get shipping charges from location state or API
   // useEffect(() => {
@@ -338,10 +337,10 @@ const Checkout = () => {
       },
     };
 
+    console.log(data);
     if (
       !data.shipping.firstName ||
       !data.shipping.lastName ||
-      !data.shipping.address ||
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
@@ -355,7 +354,6 @@ const Checkout = () => {
     if (
       !data.billing.firstName ||
       !data.billing.lastName ||
-      !data.billing.address ||
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
@@ -391,7 +389,7 @@ const Checkout = () => {
         companyName: data.shipping.companyName,
         email: data.shipping.email,
         phone: data.shipping.phone,
-      })
+      });
 
       const stripe = await loadStripe(
         "pk_test_51RqoZXGaJ07cWJBqahLsX614YCqHKSaVwLcxxcYf9kYJbbX0Ww8tRrxfh8neqnoGkqh3ofUJ9qqA6tnavunDTJSY00ovkitoWt"
@@ -1040,7 +1038,7 @@ const Checkout = () => {
                         <input
                           type="text"
                           placeholder="Enter postal code"
-                          {...register("billing.zip", { required: true })}
+                          {...register("shipping.zip", { required: true })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
