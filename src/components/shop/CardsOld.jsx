@@ -482,8 +482,6 @@ const Cards = () => {
 
   // Handle category selection - fetch category-specific products
   useEffect(() => {
-    console.log("Selected Category ID:", selectedCategory);
-
     // Reset visible products and pagination immediately (UI)
     setCategoryProducts([]);
     setCategoryFilteredProducts([]);
@@ -1067,7 +1065,7 @@ const Cards = () => {
                 <p className="text-sm text-gray-600">
                   {isLoading || isFiltering
                     ? "Loading..."
-                    : `Results found ${
+                    : `products found ${
                         selectedCategory ? "(Category)" : "(All Products)"
                       }${isPriceFilterActive ? " (Price filtered)" : ""}`}
                   {isFiltering && " Please wait a while..."}
@@ -1090,7 +1088,7 @@ const Cards = () => {
                 <p className="">
                   {isLoading || isFiltering
                     ? "Loading..."
-                    : `Results found ${
+                    : `products found ${
                         selectedCategory ? "(Category)" : "(All Products)"
                       }${isPriceFilterActive ? " (Price filtered)" : ""}`}
                   {isFiltering && " Please wait a while..."}

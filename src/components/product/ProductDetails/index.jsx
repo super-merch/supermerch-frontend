@@ -33,9 +33,11 @@ import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
 import { LoadingBar } from "@/components/Common";
+import LoadingOverlay from "@/components/Common/LoadingOverlay";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
+
   const currentUserCartItems = useSelector(selectCurrentUserCartItems);
   //get id from navigate's state
 
@@ -57,46 +59,48 @@ const ProductDetails = () => {
     error,
     marginApi,
     totalDiscount,
+    shippingCharges: freightFee,
+    userData,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorFetching, setErrorFetching] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState("pricing");
 
-  useEffect(() => {
-    const fetchUserEmail = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setUserEmail("guest@gmail.com");
-          dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
-          return;
-        }
+  // useEffect(() => {
+  //   const fetchUserEmail = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         setUserEmail("guest@gmail.com");
+  //         dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
+  //         return;
+  //       }
 
-        const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  //       const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        if (data.success) {
-          setUserEmail(data.email);
-          // Set current user in Redux cart
-          dispatch(initializeCartFromStorage({ email: data.email }));
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching user email:",
-          error.response?.data || error.message
-        );
-        // Fallback to guest email if there's an error
-        setUserEmail("guest@gmail.com");
-        dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
-      }
-    };
+  //       if (data.success) {
+  //         setUserEmail(data.email);
+  //         // Set current user in Redux cart
+  //         dispatch(initializeCartFromStorage({ email: data.email }));
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Error fetching user email:",
+  //         error.response?.data || error.message
+  //       );
+  //       // Fallback to guest email if there's an error
+  //       setUserEmail("guest@gmail.com");
+  //       dispatch(initializeCartFromStorage({ email: "guest@gmail.com" }));
+  //     }
+  //   };
 
-    fetchUserEmail();
-  }, [dispatch, backednUrl]);
+  //   fetchUserEmail();
+  // }, [dispatch, backednUrl]);
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
 
@@ -110,7 +114,9 @@ const ProductDetails = () => {
         );
         if (data) {
           setSingle_Product(data.data, "fetchSingleProduct");
-          setLoading(false);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
           setErrorFetching(false);
         }
 
@@ -173,13 +179,17 @@ const ProductDetails = () => {
         setSizes(extractedSizes);
         setSelectedSize(extractedSizes[0] || extractedSizes[1]);
 
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
         setLoading(false);
         setErrorFetching(true);
         console.log(error);
       }
     };
+    const email = userData?.email || "guest@gmail.com";
+    setUserEmail(email);
     fetchSingleProduct();
   }, [id]);
 
@@ -220,37 +230,6 @@ const ProductDetails = () => {
 
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
-
-  const [freightFee, setFreightFee] = useState(0);
-
-  const getShippingCharges = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // Add authorization headers if needed
-          },
-        }
-      );
-
-      const data = await response.json();
-      setFreightFee(data.shipping || 0);
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch shipping charges");
-      }
-
-      return { data };
-    } catch (error) {
-      throw error;
-    }
-  };
-  useEffect(() => {
-    getShippingCharges();
-  }, []);
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
@@ -344,6 +323,58 @@ const ProductDetails = () => {
       }
     }
   }, [product]);
+
+  // Set dynamic page title
+  useEffect(() => {
+    if (product?.name) {
+      const productName = product.name;
+      const productDescription = product.description
+        ? product.description.substring(0, 150) + "..."
+        : "Premium promotional products and custom merchandise";
+
+      document.title = `${productName} - SuperMerch Australia`;
+
+      // Update meta description
+      const metaDescription = document.querySelector(
+        'meta[name="description"]'
+      );
+      if (metaDescription) {
+        metaDescription.setAttribute("content", productDescription);
+      } else {
+        // Create meta description if it doesn't exist
+        const meta = document.createElement("meta");
+        meta.name = "description";
+        meta.content = productDescription;
+        document.head.appendChild(meta);
+      }
+
+      // Update Open Graph meta tags for social media sharing
+      const updateMetaTag = (property, content) => {
+        let meta = document.querySelector(`meta[property="${property}"]`);
+        if (meta) {
+          meta.setAttribute("content", content);
+        } else {
+          meta = document.createElement("meta");
+          meta.setAttribute("property", property);
+          meta.setAttribute("content", content);
+          document.head.appendChild(meta);
+        }
+      };
+
+      updateMetaTag("og:title", `${productName} - SuperMerch Australia`);
+      updateMetaTag("og:description", productDescription);
+      updateMetaTag("og:type", "product");
+      if (product?.images?.[0]) {
+        updateMetaTag("og:image", product.images[0]);
+      }
+    }
+
+    // Cleanup function to reset title when component unmounts
+    return () => {
+      document.title =
+        "SuperMerch - Premium Australian Made Promotional Products & Custom Merchandise";
+    };
+  }, [product?.name, product?.description]);
 
   useEffect(() => {
     if (!selectedPrintMethod?.price_breaks?.length) return;
@@ -839,43 +870,14 @@ const ProductDetails = () => {
     );
 
   if (errorFetching) return <ProductNotFound />;
-  console.log(loading);
   if (loading)
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
-        <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
-          <div className="flex flex-col items-center space-y-6">
-            {/* Loading Spinner */}
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
-            </div>
-
-            {/* Loading Text */}
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Loading Product Details
-              </h3>
-              <p className="text-sm text-gray-600">
-                Please wait while we fetch the latest information...
-              </p>
-            </div>
-
-            {/* Progress Dots */}
-            <div className="flex space-x-2">
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-              <div
-                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
-                style={{ animationDelay: "0.1s" }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
-                style={{ animationDelay: "0.2s" }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <LoadingOverlay
+        title="Loading Product Details"
+        subtitle="Please wait while we fetch the latest product information and pricing..."
+        variant="product"
+        showBrand={true}
+      />
     );
 
   return (

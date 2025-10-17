@@ -20,7 +20,7 @@ import {
 } from "../../redux/slices/cartSlice";
 
 const CartComponent = () => {
-  const { totalDiscount } = useContext(AppContext);
+  const { totalDiscount,shippingCharges,userData,setupFee } = useContext(AppContext);
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const { totalQuantity } = useSelector((state) => state.cart);
@@ -36,62 +36,33 @@ const CartComponent = () => {
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
 
-  useEffect(() => {
-    const checkUserAuth = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setCurrentUserEmail("guest@gmail.com");
-        return;
-      }
+  // useEffect(() => {
+  //   const checkUserAuth = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       setCurrentUserEmail("guest@gmail.com");
+  //       return;
+  //     }
 
-      try {
-        const { data } = await axios.get(`${API_BASE}/api/auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  //     try {
+  //       const { data } = await axios.get(`${API_BASE}/api/auth/user`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        if (data.success) {
-          setCurrentUserEmail(data.email);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        setCurrentUserEmail("guest@gmail.com");
-      }
-    };
+  //       if (data.success) {
+  //         setCurrentUserEmail(data.email);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //       setCurrentUserEmail("guest@gmail.com");
+  //     }
+  //   };
 
-    checkUserAuth();
-  }, []);
+  //   checkUserAuth();
+  // }, []);
 
-  const [shippingCharges, setShippingCharges] = useState(0);
-  const getShippingCharges = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // Add authorization headers if needed
-          },
-        }
-      );
-
-      const data = await response.json();
-      setShippingCharges(data.shipping || 0);
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch shipping charges");
-      }
-
-      return { data };
-    } catch (error) {
-      throw error;
-    }
-  };
-  useEffect(() => {
-    // getShippingCharges();
-  }, []);
 
   useEffect(() => {
     const quantities = {};
@@ -99,7 +70,9 @@ const CartComponent = () => {
       quantities[item.id] = item.quantity;
     });
     setCustomQuantities(quantities);
-    console.log(items)
+    console.log(items);
+    const email = userData?.email || "guest@gmail.com";
+    setCurrentUserEmail(email);
   }, [items]);
 
   const totalDiscountPercent = items.reduce(
@@ -108,7 +81,7 @@ const CartComponent = () => {
   );
 
   // Base total calculation
-  const totalAmount = items.reduce(
+  const totalAmount =  items.reduce(
     (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
     0
   );
@@ -123,7 +96,7 @@ const CartComponent = () => {
 
   // Calculate GST and final total
   const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
-  const total = finalDiscountedAmount + gstAmount + shippingCharges;
+  const total = finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
   const [uploadedImage, setUploadedImage] = useState("/drag.png");
   const fileInputRef = useRef(null);
@@ -287,6 +260,9 @@ const CartComponent = () => {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
                           Product
                         </th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                          Setup Fee
+                        </th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
                           Price
                         </th>
@@ -361,6 +337,11 @@ const CartComponent = () => {
                             {/* Price */}
                             <td className="px-6 py-4 text-center">
                               <div className="text-2xl font-bold text-smallHeader">
+                                ${item.setupFee.toFixed(2)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <div className="text-2xl font-bold text-smallHeader">
                                 ${item.price.toFixed(2)}
                               </div>
                               <div className="text-xs text-gray-500">
@@ -398,7 +379,7 @@ const CartComponent = () => {
                                           })
                                         )
                                       }
-                                      className="w-16 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
+                                      className="w-32 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
                                       min="1"
                                     />
                                     <button
@@ -608,6 +589,15 @@ const CartComponent = () => {
 
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">
+                      Total Setup Charges
+                    </span>
+                    <span className="text-lg font-bold text-gray-900">
+                      { setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-" }
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm font-medium text-gray-600">
                       Tax (GST 10%)
                     </span>
                     <span className="text-lg font-bold text-gray-900">
@@ -709,6 +699,7 @@ const CartComponent = () => {
                         appliedCoupon: appliedCoupon,
                         couponDiscount: couponDiscount,
                         shippingCharges: shippingCharges,
+                        setupFee: setupFee
                       }}
                       className="bg-smallHeader text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center space-x-2"
                     >

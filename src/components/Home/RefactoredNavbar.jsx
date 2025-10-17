@@ -25,7 +25,7 @@ import { AppContext } from "../../context/AppContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
 
 import { useCoupons } from "@/hooks/useCoupons";
-import { clearCurrentUser } from "@/redux/slices/cartSlice";
+import { clearCurrentUser, currentUserCartAmount } from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import {
   applyFilters,
@@ -50,7 +50,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const totalQuantity = useSelector((state) => state.cart.items.length);
+  const totalQuantity = useSelector(currentUserCartAmount);
   const { favouriteQuantity } = useSelector((state) => state.favouriteProducts);
 
   // State management
@@ -66,7 +66,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       { name: "Promotional", path: "/Spromotional?categoryName=Promotional&category=A", hasSubmenu: true },
       { name: "Clothing", path: "/Spromotional?categoryName=Clothing&category=B", hasSubmenu: true },
       { name: "Headwear", path: "/Spromotional?categoryName=Headwear&category=G", hasSubmenu: true },
-      { name: "Return Gifts", path: "/shop" },
+      { name: "Return Gifts", path: "/ReturnGifts" },
       { name: "24hr Prod", path: "/production" },
       { name: "Sale", path: "/sales" },
       { name: "Australia Made", path: "/Australia" },
@@ -85,6 +85,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             .map((category) => ({
               id: category.id,
               name: category.name,
+              onClick: () => handleNameCategories(category.name, category.id),
               subItems:
                 category.subTypes?.map((subType) => ({
                   id: subType.id,
@@ -348,6 +349,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                   handleMenuClick(item);
                   setIsSheetOpen(false);
                 }}
+                onSubItemClick={() => setIsSheetOpen(false)}
                 variant="vertical"
                 size="default"
               />

@@ -20,8 +20,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
-import { getSidebarConfig, getCategoriesForConfig } from "../../config/sidebarConfig";
-import { setSelectedCategory, applyFilters, setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
+import {
+  getSidebarConfig,
+  getCategoriesForConfig,
+} from "../../config/sidebarConfig";
+import {
+  setSelectedCategory,
+  applyFilters,
+  setMinPrice,
+  setMaxPrice,
+} from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
 import ColorFilter from "./ColorFilter";
 import ClothingGenderToggle from "./ClothingGenderToggle";
@@ -56,7 +64,11 @@ const getCategoryIcon = (categoryName) => {
   return iconMap[categoryName] || FaShoppingBag;
 };
 
-const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
+const UnifiedSidebar = ({
+  pageType = "GENERAL",
+  customConfig = null,
+  isSearchPage = false,
+}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedCategory } = useSelector((state) => state.filters);
@@ -65,7 +77,12 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
   const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
   const [searchParams] = useSearchParams();
-  const { setSelectedParamCategoryId, setCurrentPage, setSidebarActiveCategory, setActiveFilterCategory } = useContext(AppContext);
+  const {
+    setSelectedParamCategoryId,
+    setCurrentPage,
+    setSidebarActiveCategory,
+    setActiveFilterCategory,
+  } = useContext(AppContext);
 
   // Get configuration for this page type
   const config = customConfig || getSidebarConfig(pageType);
@@ -98,7 +115,12 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
         const sidebar = document.querySelector("[data-sidebar-content]");
         const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
 
-        if (sidebar && !sidebar.contains(event.target) && hamburgerButton && !hamburgerButton.contains(event.target)) {
+        if (
+          sidebar &&
+          !sidebar.contains(event.target) &&
+          hamburgerButton &&
+          !hamburgerButton.contains(event.target)
+        ) {
           setIsSidebarOpen(false);
         }
       }
@@ -118,7 +140,9 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
     if (urlSubCategory && urlCategoryName && categories.length > 0) {
       // Find the category that contains this subcategory
       const categoryWithSubcategory = categories.find(
-        (category) => category.name === urlCategoryName && category.subTypes?.some((subType) => subType.name === urlSubCategory)
+        (category) =>
+          category.name === urlCategoryName &&
+          category.subTypes?.some((subType) => subType.name === urlSubCategory)
       );
 
       if (categoryWithSubcategory) {
@@ -162,7 +186,9 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
     // }
     // For all other categories, use /Spromotional
 
-    navigate(`${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`);
+    navigate(
+      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+    );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
     setCurrentPage(1);
@@ -172,7 +198,12 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
   return (
     <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
       {/* Hidden toggle button for external control */}
-      <button data-sidebar-toggle onClick={toggleSidebar} className="hidden" aria-hidden="true" />
+      <button
+        data-sidebar-toggle
+        onClick={toggleSidebar}
+        className="hidden"
+        aria-hidden="true"
+      />
 
       {/* Sidebar */}
       <div
@@ -185,68 +216,85 @@ const UnifiedSidebar = ({ pageType = "GENERAL", customConfig = null }) => {
       >
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Categories Section */}
-          <CollapsibleSection title={config.title} defaultExpanded={true}>
-            {/* Categories List */}
-            <div className="space-y-0.5">
-              {categories.map((category) => {
-                const IconComponent = getCategoryIcon(category.name);
-                return (
-                  <div key={category.id} className="w-full">
-                    {/* Main Category */}
-                    <div
-                      className={`group flex items-center justify-between py-1.5 px-1 cursor-pointer transition-all duration-200 ${
-                        openCategory === category.id ? "bg-gray-100 text-gray-800" : "hover:bg-gray-50 text-gray-600"
-                      }`}
-                      onClick={() => handleMainCategoryClick(category.id, category.name)}
-                    >
-                      <div className="flex items-center gap-2 flex-1">
-                        <div className="transition-colors duration-200 text-gray-500">
-                          <IconComponent size={14} />
-                        </div>
-                        <span className="text-sm font-medium">{category.name}</span>
-                      </div>
-
-                      {/* Expand/Collapse Icon */}
+          {!isSearchPage && (
+            <CollapsibleSection title={config.title} defaultExpanded={true}>
+              {/* Categories List */}
+              <div className="space-y-0.5">
+                {categories.map((category) => {
+                  const IconComponent = getCategoryIcon(category.name);
+                  return (
+                    <div key={category.id} className="w-full">
+                      {/* Main Category */}
                       <div
-                        className={`transition-transform duration-200 ${
-                          openCategory === category.id ? "rotate-180 text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                        className={`group flex items-center justify-between py-1.5 px-1 cursor-pointer transition-all duration-200 ${
+                          openCategory === category.id
+                            ? "bg-gray-100 text-gray-800"
+                            : "hover:bg-gray-50 text-gray-600"
                         }`}
+                        onClick={() =>
+                          handleMainCategoryClick(category.id, category.name)
+                        }
                       >
-                        <FaCaretDown size={12} />
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className="transition-colors duration-200 text-gray-500">
+                            <IconComponent size={14} />
+                          </div>
+                          <span className="text-sm font-medium">
+                            {category.name}
+                          </span>
+                        </div>
+
+                        {/* Expand/Collapse Icon */}
+                        <div
+                          className={`transition-transform duration-200 ${
+                            openCategory === category.id
+                              ? "rotate-180 text-blue-600"
+                              : "text-gray-400 group-hover:text-gray-600"
+                          }`}
+                        >
+                          <FaCaretDown size={12} />
+                        </div>
                       </div>
+
+                      {/* Subcategories */}
+                      {openCategory === category.id && category.subTypes && (
+                        <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
+                          {category.subTypes.map((subType) => {
+                            // Check if this subcategory is active based on URL parameters or local state
+                            const isActive =
+                              (urlSubCategory === subType.name &&
+                                urlCategoryName === category.name) ||
+                              (activeSub === subType.name &&
+                                openCategory == category.id);
+
+                            return (
+                              <button
+                                key={subType.id}
+                                onClick={() =>
+                                  handleSubCategoryClick(
+                                    subType.name,
+                                    subType.id,
+                                    category.name
+                                  )
+                                }
+                                className={`w-full text-left py-1 px-1 transition-all duration-200 ${
+                                  isActive || selectedCategory === subType.name
+                                    ? "bg-gray-100 text-gray-800 font-medium"
+                                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                                }`}
+                              >
+                                <span className="text-xs">{subType.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Subcategories */}
-                    {openCategory === category.id && category.subTypes && (
-                      <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
-                        {category.subTypes.map((subType) => {
-                          // Check if this subcategory is active based on URL parameters or local state
-                          const isActive =
-                            (urlSubCategory === subType.name && urlCategoryName === category.name) ||
-                            (activeSub === subType.name && openCategory == category.id);
-
-                          return (
-                            <button
-                              key={subType.id}
-                              onClick={() => handleSubCategoryClick(subType.name, subType.id, category.name)}
-                              className={`w-full text-left py-1 px-1 transition-all duration-200 ${
-                                isActive || selectedCategory === subType.name
-                                  ? "bg-gray-100 text-gray-800 font-medium"
-                                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-                              }`}
-                            >
-                              <span className="text-xs">{subType.name}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </CollapsibleSection>
-
+                  );
+                })}
+              </div>
+            </CollapsibleSection>
+          )}
           {/* Filters Section */}
           <div className="mt-4 space-y-4">
             {pageType === "CLOTHING" && (

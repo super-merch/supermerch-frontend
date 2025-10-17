@@ -46,13 +46,13 @@ const Home = () => {
       window.removeEventListener("triggerDiscountModal", handleCouponClick);
     };
   }, [openDiscountModal]);
-
-  // Show modals based on session storage
   useEffect(() => {
-    if (!cookieModalShown) {
+    const cookieAccepted = localStorage.getItem("cookieAccepted");
+    if (!cookieAccepted && !cookieModalShown) {
       openCookieModal();
     }
   }, [cookieModalShown, openCookieModal]);
+
 
   useEffect(() => {
     if (!discountModalShown) {
@@ -76,6 +76,7 @@ const Home = () => {
         }}
         closeCookieModal={() => {
           closeCookieModal();
+          localStorage.setItem("cookieAccepted", "true");
           setCookieModalShown(true);
         }}
         openEmailModal={openEmailModal}

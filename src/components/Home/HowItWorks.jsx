@@ -16,7 +16,7 @@ export default function HowItWorks({ className = "" }) {
       icon: FaShoppingCart,
       title: "Browse & Add to Cart",
       description:
-        "Explore our extensive catalog and add your favorite products to your cart. Choose quantities and variations that suit your needs.",
+        "Explore our extensive catalog and add your favourite products to your cart. Choose quantities and variations that suit your needs.",
       color: "from-blue-500 to-blue-600",
     },
     {

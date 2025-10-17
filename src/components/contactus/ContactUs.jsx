@@ -45,7 +45,7 @@ const serviceCards = [
   {
     icon: FaList,
     title: "Wishlist & Compare",
-    description: "Save and compare your favorite products",
+    description: "Save and compare your favourite products",
     color: "from-pink-500 to-pink-600",
     href: "/wishlist",
   },

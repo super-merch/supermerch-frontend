@@ -353,7 +353,7 @@ const FavouritePage = () => {
           ) : (
             <div className="">
               <h1 className="text-xl text-center   my-20 text-brand">
-                Your favorites are empty! <br /> Tap the ❤️ on any product to
+                Your favourites are empty! <br /> Tap the ❤️ on any product to
                 save it here for later.
               </h1>
             </div>

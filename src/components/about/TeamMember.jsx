@@ -5,67 +5,11 @@ const TeamMember = () => {
   const teamMembers = [
     {
       id: 1,
-      name: "Sarah Mitchell",
+      name: "Ankit Bagdi",
       role: "Chief Executive Officer",
       image: "/team1.png",
       bio: "Visionary leader with 15+ years in promotional products industry.",
       color: "from-blue-500 to-blue-600",
-    },
-    {
-      id: 2,
-      name: "David Chen",
-      role: "Chief Technology Officer",
-      image: "/team2.png",
-      bio: "Tech innovator driving digital transformation and platform excellence.",
-      color: "from-green-500 to-green-600",
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      role: "Head of Design",
-      image: "/team3.png",
-      bio: "Creative director with award-winning designs and brand expertise.",
-      color: "from-purple-500 to-purple-600",
-    },
-    {
-      id: 4,
-      name: "Michael Thompson",
-      role: "UX Designer",
-      image: "/team4.png",
-      bio: "User experience specialist focused on intuitive and engaging designs.",
-      color: "from-orange-500 to-orange-600",
-    },
-    {
-      id: 5,
-      name: "Lisa Wang",
-      role: "Product Designer",
-      image: "/team5.png",
-      bio: "Product innovation expert with passion for sustainable solutions.",
-      color: "from-pink-500 to-pink-600",
-    },
-    {
-      id: 6,
-      name: "James Wilson",
-      role: "Head of Development",
-      image: "/team6.png",
-      bio: "Full-stack developer building scalable and robust systems.",
-      color: "from-indigo-500 to-indigo-600",
-    },
-    {
-      id: 7,
-      name: "Rachel Brown",
-      role: "Design Engineer",
-      image: "/team7.png",
-      bio: "Engineering excellence in product development and quality assurance.",
-      color: "from-teal-500 to-teal-600",
-    },
-    {
-      id: 8,
-      name: "Alex Kumar",
-      role: "UI Designer",
-      image: "/team8.png",
-      bio: "Interface design specialist creating beautiful and functional experiences.",
-      color: "from-red-500 to-red-600",
     },
   ];
 
@@ -153,23 +97,6 @@ const TeamMember = () => {
               ></div>
             </div>
           ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              Join Our Team
-            </h3>
-            <p className="text-gray-600 mb-6">
-              We're always looking for talented individuals to join our growing
-              team. Check out our current openings and be part of something
-              amazing.
-            </p>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-              View Openings
-            </button>
-          </div>
         </div>
       </div>
     </section>

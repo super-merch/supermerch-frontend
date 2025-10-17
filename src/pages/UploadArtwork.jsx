@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -9,17 +9,18 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AppContext } from "@/context/AppContext";
+import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
 
 const UploadArtwork = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { totalDiscount } = useContext(AppContext);
+  const { totalDiscount,shippingCharges,setupFee } = useContext(AppContext);
+  
   // Get cart data from Redux
-  const items = useSelector((state) => state.cart.items);
-
+  const items = useSelector(selectCurrentUserCartItems);
   // Get data passed from cart page
-  const { cartTotal, appliedCoupon, couponDiscount, shippingCharges } =
+  const { cartTotal, appliedCoupon, couponDiscount } =
     location.state || {};
 
   // State for artwork uploads
@@ -46,13 +47,18 @@ const UploadArtwork = () => {
 
   // Apply coupon discount to the product-discounted amount
   const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
-  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
+  const finalDiscountedAmount = productDiscountedAmount - (couponDiscountAmount || 0);
 
   // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
-  const total = finalDiscountedAmount + gstAmount + shippingCharges;
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
+  const total = finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
   const handleFileUpload = (file) => {
+    // file size less then 5 mb
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size should be less than 10MB");
+      return;
+    }
     if (
       file &&
       (file.type.startsWith("image/") || file.type === "application/pdf")
@@ -97,6 +103,10 @@ const UploadArtwork = () => {
   };
 
   const handleProceedToCheckout = () => {
+    if(setupFee === undefined){
+      toast.error("Invalid amount please go back to cart page and proceed.");
+      return
+    }
     // Validate based on selected option
     if (artworkOption === "upload") {
       if (!artworkFile && !artworkInstructions.trim()) {
@@ -111,7 +121,7 @@ const UploadArtwork = () => {
         return;
       }
     }
-
+    
     // Navigate to checkout with artwork data
     navigate("/checkout", {
       state: {
@@ -122,6 +132,7 @@ const UploadArtwork = () => {
         artworkFile,
         artworkInstructions,
         artworkOption,
+        setupFee
       },
     });
   };
@@ -449,6 +460,14 @@ const UploadArtwork = () => {
                   <span>
                     {shippingCharges > 0
                       ? `$${shippingCharges.toFixed(2)}`
+                      : "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-lg">
+                  <span>Total Setup Charges:</span>
+                  <span>
+                    {setupFee > 0
+                      ? `$${setupFee.toFixed(2)}`
                       : "-"}
                   </span>
                 </div>
