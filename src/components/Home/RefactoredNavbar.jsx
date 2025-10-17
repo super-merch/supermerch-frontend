@@ -85,6 +85,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             .map((category) => ({
               id: category.id,
               name: category.name,
+              onClick: () => handleNameCategories(category.name, category.id),
               subItems:
                 category.subTypes?.map((subType) => ({
                   id: subType.id,
@@ -348,6 +349,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                   handleMenuClick(item);
                   setIsSheetOpen(false);
                 }}
+                onSubItemClick={() => setIsSheetOpen(false)}
                 variant="vertical"
                 size="default"
               />

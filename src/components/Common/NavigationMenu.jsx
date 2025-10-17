@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 const NavigationMenu = ({
   menuItems = [],
   onItemClick,
+  onSubItemClick,
   className = "",
   size = "default", // "small", "default", "large"
   variant = "horizontal", // "horizontal", "vertical"
@@ -15,6 +16,7 @@ const NavigationMenu = ({
   const [hoveredItem, setHoveredItem] = useState(null);
   const [clickedItem, setClickedItem] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [expandedSubItem, setExpandedSubItem] = useState(null);
 
   const sizeClasses = {
     small: {
@@ -183,7 +185,10 @@ const NavigationMenu = ({
             <div key={item.id} className="space-y-1">
               <div
                 className={`flex items-center justify-between ${currentSize.item} cursor-pointer hover:bg-gray-100 rounded-lg p-3 transition-colors`}
-                onClick={() => handleItemClick(item)}
+                onClick={() => {
+                  handleItemClick(item);
+                  onSubItemClick && onSubItemClick();
+                }}
               >
                 <span className="text-customBlue capitalize font-medium">
                   {item.name}
@@ -197,15 +202,62 @@ const NavigationMenu = ({
                   />
                 )}
               </div>
+
               {item.hasSubmenu && item.submenu && isSubmenuVisible && (
                 <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-4">
                   {item.submenu.map((subItem) => (
-                    <div
-                      key={subItem.id}
-                      className={`${currentSize.submenu} cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors`}
-                      onClick={() => handleItemClick(subItem)}
-                    >
-                      <span className="text-gray-700">{subItem.name}</span>
+                    <div key={subItem.id} className="space-y-1">
+                      <div
+                        className={`${currentSize.submenu} flex items-center justify-between cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors`}
+                        onClick={() => {
+                          if (subItem.name && subItem.id) {
+                            handleItemClick(subItem);
+                            onSubItemClick && onSubItemClick();
+                          } else {
+                            handleItemClick(subItem);
+                            onSubItemClick && onSubItemClick();
+                          }
+                        }}
+                      >
+                        <span className="text-gray-700">{subItem.name}</span>
+
+                        {subItem.subItems && subItem.subItems.length > 0 && (
+                          <ChevronRight
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedSubItem(
+                                expandedSubItem === subItem.id
+                                  ? null
+                                  : subItem.id
+                              );
+                            }}
+                            className={`w-5 h-5 transition-transform ${
+                              expandedSubItem === subItem.id ? "rotate-90" : ""
+                            }`}
+                          />
+                        )}
+                      </div>
+
+                      {subItem.subItems &&
+                        subItem.subItems.length > 0 &&
+                        expandedSubItem === subItem.id && (
+                          <div className="ml-4 mt-1 space-y-1">
+                            {subItem.subItems.map((subSubItem, idx) => (
+                              <div
+                                key={idx}
+                                className={`${currentSize.submenu} cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors`}
+                                onClick={() => {
+                                  handleItemClick(subSubItem);
+                                  onSubItemClick && onSubItemClick();
+                                }}
+                              >
+                                <span className="text-gray-600">
+                                  {subSubItem.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
