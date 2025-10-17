@@ -188,7 +188,7 @@ const PricingTab = ({
                   />
                 </td>
                 <td className="py-2 pr-4 align-middle">
-                  {i === 0 && "0 - "} {item.qty}+
+                   {item.qty}+
                 </td>
                 <td className="py-2 pr-4 align-middle">
                   ${unitDiscounted.toFixed(2)}
