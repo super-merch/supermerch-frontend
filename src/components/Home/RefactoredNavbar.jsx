@@ -229,7 +229,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   // Event handlers
   const handleSearch = (searchTerm) => {
-    navigate(`/search?search=${searchTerm}`);
+    navigate(`/search?search=${searchTerm}${selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ''}`);
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
@@ -367,7 +367,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           <div className="w-full flex-1 mx-2 sm:mx-4 order-3 lg:order-2">
             <SearchBar
               onSearch={handleSearch}
-              categoryData={categoryData}
+              categoryData={v1categories}
               selectedCategory={selectedCategory}
               onCategoryChange={handleCategoryChange}
               size="small"
