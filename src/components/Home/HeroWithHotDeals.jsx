@@ -21,9 +21,8 @@ const HeroWithHotDeals = () => {
     {
       id: 1,
       span: "THE BEST PLACE Australia made products",
-      title: "20% OFF +FREE SHIPPING",
-      description:
-        "Rep your brand in style with custom hats, caps, and beanies.",
+      title: "15% OFF on your first order",
+      description: "Enjoy 15% off on your first order with us.",
       buttonText: "Shop Now",
       // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",

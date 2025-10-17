@@ -23,6 +23,7 @@ import { AppContext } from "../../context/AppContext";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
 import noimage from "/noimage.png";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
+import EmptyState from "../Common/EmptyState";
 import { Clock, Flag } from "lucide-react";
 
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
@@ -321,10 +322,10 @@ const Cards = ({ category = "dress" }) => {
             <div className="mb-6 px-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
-                  {!productsLoading && itemCount}
+                  {!productsLoading && (itemCount || 0)}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {productsLoading ? "Loading..." : `products found `}
+                  {productsLoading ? "Loading..." : `product found `}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -336,10 +337,10 @@ const Cards = ({ category = "dress" }) => {
               {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
-                  {!productsLoading && itemCount}
+                  {!productsLoading && (itemCount || 0)}
                 </span>
                 <p className="">
-                  {productsLoading ? "Loading..." : `products found`}
+                  {productsLoading ? "Loading..." : `product found`}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -419,12 +420,9 @@ const Cards = ({ category = "dress" }) => {
                   const encodedId = btoa(productId);
                   const slug = slugify(product.overview.name);
                   return (
-                    <Link
+                    <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                      to={`/product/${encodeURIComponent(
-                        slug
-                      )}?ref=${encodedId}`}
+                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 max-h-[320px] sm:max-h-[400px] h-full group"
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >
@@ -502,38 +500,43 @@ const Cards = ({ category = "dress" }) => {
                                 ));
                             })()}
                         </div>
-                        <div className="relative flex justify-between text-center">
-                          <div className="flex-1">
-                            <p
-                              className={`text-sm transition-all duration-300 ${
-                                cardHover === product.meta.id &&
-                                product.overview.name.length > 20
-                                  ? "sm:text-[18px]"
-                                  : "sm:text-lg"
-                              } font-semibold text-brand sm:leading-[18px] `}
-                            >
-                              {(product.overview.name &&
-                                // product.overview.name.length > 20 && cardHover!==product.meta.id
-                                //   ? product.overview.name.slice(0, 20) + "..."
-                                product.overview.name) ||
-                                "No Name"}
-                            </p>
-                            <p className="text-xs text-gray-500 pt-1">
-                              Min Qty:{" "}
-                              {product.product?.prices?.price_groups[0]
-                                ?.base_price?.price_breaks[0]?.qty || 1}{" "}
-                            </p>
-                            <div className="">
-                              <h2 className="text-base sm:text-lg font-bold text-heading">
-                                From $
-                                {getProductPrice(
-                                  product,
-                                  product.meta.id
-                                ).toFixed(2)}
-                              </h2>
+                        <div className="relative flex justify-center items-center text-center">
+                          <Link
+                            to={`/product/${encodeURIComponent(
+                              slug
+                            )}?ref=${encodedId}`}
+                          >
+                            <div className="flex-1">
+                              <p
+                                className={`text-sm transition-all duration-300 ${
+                                  cardHover === product.meta.id &&
+                                  product.overview.name.length > 20
+                                    ? "sm:text-[18px]"
+                                    : "sm:text-lg"
+                                } font-semibold text-brand sm:leading-[18px] `}
+                              >
+                                {(product.overview.name &&
+                                  // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                  //   ? product.overview.name.slice(0, 20) + "..."
+                                  product.overview.name) ||
+                                  "No Name"}
+                              </p>
+                              <p className="text-xs text-gray-500 pt-1">
+                                Min Qty:{" "}
+                                {product.product?.prices?.price_groups[0]
+                                  ?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                              </p>
+                              <div className="">
+                                <h2 className="text-base sm:text-lg font-bold text-heading">
+                                  From $
+                                  {getProductPrice(
+                                    product,
+                                    product.meta.id
+                                  ).toFixed(2)}
+                                </h2>
+                              </div>
                             </div>
-                          </div>
-
+                          </Link>
                           {discountPct > 0 && (
                             <div className="absolute top-1 sm:top-0 right-1 sm:right-2 z-20">
                               <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
@@ -548,17 +551,24 @@ const Cards = ({ category = "dress" }) => {
                           )}
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full">
-                <p className="pt-10 text-xl text-center text-red-500">
-                  No products found. Explore our categories or refine your
-                  search to discover more options
-                </p>
-              </div>
+              <EmptyState
+                title="No Products Found"
+                description="We couldn't find any products matching your search criteria. Try adjusting your filters or explore our categories to discover amazing products."
+                icon="search"
+                variant="detailed"
+                suggestions={[
+                  "Check your spelling or try different keywords",
+                  "Use more general search terms",
+                  "Remove some filters to broaden your search",
+                  "Browse our popular categories",
+                ]}
+                showContact={true}
+              />
             )}
           </div>
           {totalPages > 1 && getProductsData.length > 0 && (

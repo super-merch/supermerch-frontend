@@ -30,7 +30,7 @@ const Bags = ({ activeTab }) => {
   // Fetch products when tab opens
   useEffect(() => {
     if (activeTab === "Bags" && productsCategory?.length === 0) {
-      fetchProductsCategory("bag", 1, "");
+      fetchProductsCategory("bag", 1, "", 8);
     }
   }, [activeTab]);
 

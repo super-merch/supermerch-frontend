@@ -82,7 +82,7 @@ const Home = () => {
         openEmailModal={openEmailModal}
       />
       <HowItWorks />
-      <WhyUs />
+      {/* <WhyUs /> */}
     </div>
   );
 };

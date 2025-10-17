@@ -90,7 +90,7 @@ const TabsButtons = ({ changeBg = false }) => {
                 <span className="sm:hidden">Stationery</span>
               </button>{" "}
               <Link
-                to={"/shop"}
+                to={"/Spromotional"}
                 className="flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-smallHeader  px-3 py-2  rounded-lg  transition-colors duration-200 w-content"
               >
                 See All

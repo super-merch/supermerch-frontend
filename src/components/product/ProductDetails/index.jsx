@@ -33,6 +33,7 @@ import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
 import { LoadingBar } from "@/components/Common";
+import LoadingOverlay from "@/components/Common/LoadingOverlay";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -58,8 +59,8 @@ const ProductDetails = () => {
     error,
     marginApi,
     totalDiscount,
-    shippingCharges:freightFee,
-    userData
+    shippingCharges: freightFee,
+    userData,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -113,7 +114,9 @@ const ProductDetails = () => {
         );
         if (data) {
           setSingle_Product(data.data, "fetchSingleProduct");
-          setLoading(false);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
           setErrorFetching(false);
         }
 
@@ -176,7 +179,9 @@ const ProductDetails = () => {
         setSizes(extractedSizes);
         setSelectedSize(extractedSizes[0] || extractedSizes[1]);
 
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
         setLoading(false);
         setErrorFetching(true);
@@ -225,8 +230,6 @@ const ProductDetails = () => {
 
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
-
-
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
@@ -869,40 +872,12 @@ const ProductDetails = () => {
   if (errorFetching) return <ProductNotFound />;
   if (loading)
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center h-screen">
-        <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
-          <div className="flex flex-col items-center space-y-6">
-            {/* Loading Spinner */}
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-gray-200 rounded-full animate-spin border-t-blue-600"></div>
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400 opacity-20"></div>
-            </div>
-
-            {/* Loading Text */}
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Loading Product Details
-              </h3>
-              <p className="text-sm text-gray-600">
-                Please wait while we fetch the latest information...
-              </p>
-            </div>
-
-            {/* Progress Dots */}
-            <div className="flex space-x-2">
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-              <div
-                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
-                style={{ animationDelay: "0.1s" }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
-                style={{ animationDelay: "0.2s" }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <LoadingOverlay
+        title="Loading Product Details"
+        subtitle="Please wait while we fetch the latest product information and pricing..."
+        variant="product"
+        showBrand={true}
+      />
     );
 
   return (

@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import noimage from "/noimage.png";
 import { slugify } from "@/utils/utils";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToFavourite } from "@/redux/slices/favouriteSlice";
+import { toast } from "react-toastify";
 
 const ProductCard = ({
   product,
@@ -15,26 +18,31 @@ const ProductCard = ({
   australiaIds,
   favSet,
   onClickView,
-  onAddFavourite,
   onMouseEnter,
   onMouseLeave,
   isHovered,
 }) => {
   const productId = product?.meta?.id;
+  const [cardHover, setCardHover] = useState(null);
+
   const name = product?.overview?.name || "No Name";
   const minQty =
     product?.product?.prices?.price_groups?.[0]?.base_price?.price_breaks?.[0]
       ?.qty || 1;
   const encodedId = btoa(product?.meta?.id); // base64 encode
   const slug = slugify(product?.overview?.name);
+  const dispatch = useDispatch();
+  const onAddFavourite = () => {
+    dispatch(addToFavourite(product));
+    toast.success("Product added to favourites");
+  };
 
   return (
-    <Link
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
+    <div
+      onMouseEnter={() => setCardHover(product.meta.id)}
+      onMouseLeave={() => setCardHover(null)}
     >
-      <div className="relative border border-border2 hover:border-1 transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group">
+      <div className="relative border border-border2 hover:border-1 transition-all duration-200 hover:border-red-500  max-h-[320px] sm:max-h-[400px] h-full group">
         <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
           {(productionIds?.has(productId) ||
             productionIds?.has(String(productId))) && (
@@ -122,14 +130,24 @@ const ProductCard = ({
         </div>
 
         <div className="p-2 relative">
-          <div className="text-center">
-            <h2
-              className={`text-sm transition-all duration-300 truncate ${
-                isHovered && name.length > 20 ? "sm:text-[18px]" : "sm:text-lg"
+          <Link
+            to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
+            className="text-center"
+          >
+            <p
+              className={`text-sm transition-all duration-300 ${
+                cardHover === product.meta.id &&
+                product.overview.name.length > 20
+                  ? "sm:text-[18px]"
+                  : "sm:text-lg"
               } font-semibold text-brand sm:leading-[18px] `}
             >
-              {name}
-            </h2>
+              {(product.overview.name &&
+                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                //   ? product.overview.name.slice(0, 20) + "..."
+                product.overview.name) ||
+                "No Name"}
+            </p>
 
             <p className="text-xs text-gray-500 pt-1">Min Qty: {minQty} </p>
 
@@ -141,7 +159,7 @@ const ProductCard = ({
                   : Number(minPrice || 0).toFixed(2)}
               </h2>
             </div>
-          </div>
+          </Link>
           {discountPct > 0 && (
             <div className="block absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
               <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
@@ -156,7 +174,7 @@ const ProductCard = ({
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

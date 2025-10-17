@@ -1,76 +1,159 @@
 import React from "react";
+import {
+  FaShoppingCart,
+  FaChartLine,
+  FaTag,
+  FaCreditCard,
+  FaClipboardList,
+  FaHeadset,
+} from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function HowItWorks({ className = "" }) {
+  const steps = [
+    {
+      number: "01",
+      icon: FaShoppingCart,
+      title: "Browse & Add to Cart",
+      description:
+        "Explore our extensive catalog and add your favourite products to your cart. Choose quantities and variations that suit your needs.",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      number: "02",
+      icon: FaChartLine,
+      title: "Quantity Price Breaks",
+      description:
+        "Save more when you buy more! Our automatic quantity-based pricing gives you better rates for larger orders.",
+      color: "from-green-500 to-green-600",
+    },
+    {
+      number: "03",
+      icon: FaTag,
+      title: "Apply Coupon Codes",
+      description:
+        "Have a discount code? Enter it at checkout to unlock special savings and promotional offers.",
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      number: "04",
+      icon: FaCreditCard,
+      title: "Secure Checkout",
+      description:
+        "Complete your purchase with our secure payment system powered by Stripe. Your data is always protected.",
+      color: "from-orange-500 to-orange-600",
+    },
+    {
+      number: "05",
+      icon: FaClipboardList,
+      title: "Track Your Orders",
+      description:
+        "Monitor your order status, view shipping details, and manage your purchase history all in one place.",
+      color: "from-indigo-500 to-indigo-600",
+    },
+    {
+      number: "06",
+      icon: FaHeadset,
+      title: "Bulk & Custom Orders",
+      description:
+        "Need special pricing or large quantities? Our support team is here to help with custom solutions.",
+      color: "from-teal-500 to-teal-600",
+    },
+  ];
+
   return (
-    <section className={`bg-white text-gray-800 py-12 ${className}`} aria-labelledby="how-it-works-heading">
-      <div className="Mycontainer mx-auto">
-        <header className="mb-8 text-center">
-          <h2 id="how-it-works-heading" className="text-3xl font-semibold text-blue-700">How It Works</h2>
-          <p className="mt-2 text-gray-600 max-w-2xl mx-auto">A simple, secure shopping flow — from adding items to tracking your orders.</p>
+    <section
+      className={`bg-gradient-to-br from-gray-50 to-white py-16 lg:py-20 ${className}`}
+      aria-labelledby="how-it-works-heading"
+    >
+      <div className="Mycontainer mx-auto px-4">
+        {/* Header Section */}
+        <header className="text-center mb-16">
+          <h2
+            id="how-it-works-heading"
+            className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+          >
+            Simple Steps to
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {" "}
+              Success
+            </span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Our streamlined process makes it easy to get exactly what you need,
+            when you need it. From browsing to delivery, we've got you covered
+            every step of the way.
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <article className="p-5 border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4 mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-blue-700 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-lg font-medium text-blue-700">1. Add Products to Cart</h3>
-            </div>
-            <p className="text-gray-600 text-sm">Browse the store and add the items you like to your cart. You can choose different quantities for each product before proceeding.</p>
-          </article>
+        {/* Steps Grid */}
+        <div className="relative">
+          {/* Desktop Connection Lines */}
+          <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-green-200 via-purple-200 via-orange-200 via-indigo-200 to-teal-200"></div>
 
-          <article className="p-5 border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4 mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-blue-700 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 12h18M6 6h12M6 18h12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-lg font-medium text-blue-700">2. Quantity & Pricing Breaks</h3>
-            </div>
-            <p className="text-gray-600 text-sm">Certain products include quantity-based price breaks — the more you order, the better the unit price. Breaks are applied automatically at checkout for eligible items.</p>
-          </article>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            {steps.map((step, index) => {
+              const IconComponent = step.icon;
+              return (
+                <div key={step.number} className="relative group">
+                  {/* Step Card */}
+                  <article className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100">
+                    {/* Step Number Badge */}
+                    <div
+                      className={`absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-r ${step.color} rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {step.number}
+                    </div>
 
-          <article className="p-5 border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4 mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-blue-700 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M21 10v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M7 10V6a5 5 0 0 1 10 0v4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-lg font-medium text-blue-700">3. Apply Coupon Codes</h3>
-            </div>
-            <p className="text-gray-600 text-sm">Have a coupon? Enter it during checkout. We sometimes send starter coupons by email when the site launches — keep an eye on your inbox.</p>
-          </article>
+                    {/* Icon */}
+                    <div
+                      className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
 
-          <article className="p-5 border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4 mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-blue-700 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 7h18M21 7l-8 8-4-4-6 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-lg font-medium text-blue-700">4. Checkout & Payment</h3>
-            </div>
-            <p className="text-gray-600 text-sm">At checkout you'll provide billing and shipping details. Payments are processed securely via Stripe — enter your credit card information to complete the order.</p>
-          </article>
+                    {/* Content */}
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {step.description}
+                    </p>
 
-          <article className="p-5 border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4 mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-blue-700 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-lg font-medium text-blue-700">5. Manage Your Orders</h3>
-            </div>
-            <p className="text-gray-600 text-sm">After purchase, track and manage your orders from the "Manage Orders" page — view order status, history, and details in one place.</p>
-          </article>
+                    {/* Hover Effect Overlay */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-r ${step.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}
+                    ></div>
+                  </article>
 
-          <article className="p-5 border rounded-lg shadow-sm">
-            <div className="flex items-center gap-4 mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-blue-700 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M12 20l9-5-9-5-9 5 9 5z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 12v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-lg font-medium text-blue-700">Need Bulk or Custom Support?</h3>
-            </div>
-            <p className="text-gray-600 text-sm">If you need a large quantity or special pricing, contact our support — we can offer tailored quotes and faster handling for bulk orders.</p>
-          </article>
+                  {/* Mobile Connection Line */}
+                  {index < steps.length - 1 && (
+                    <div className="lg:hidden flex justify-center mt-8 mb-8">
+                      <div className="w-0.5 h-8 bg-gradient-to-b from-gray-300 to-gray-200"></div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="text-center mt-16">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              Ready to Get Started?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Join thousands of satisfied customers who trust us with their
+              promotional product needs.
+            </p>
+            <Link to="/Spromotional">
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                Start Shopping Now
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

@@ -14,7 +14,7 @@ const Blogs = () => {
 
   return (
     <section className="Mycontainer">
-      <div className="">
+      <div className="mt-4">
         <h2 className="font-manrope text-4xl font-bold text-gray-900 text-center mb-14">
           Our popular blogs
         </h2>
@@ -43,7 +43,7 @@ const Blogs = () => {
               1024: { slidesPerView: 4, spaceBetween: 10 },
             }}
           >
-            {blogs.length > 0 ? (
+            {blogs?.length > 0 ? (
               blogs?.map((blog, index) => (
                 <SwiperSlide key={blog._id || index}>
                   <div

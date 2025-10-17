@@ -55,11 +55,11 @@ const CategoryGrid = ({ activeTab }) => {
     setLoading(true);
     try {
       if (activeTab === "All Product") {
-        await fetchProducts(1, "", 42);
+        await fetchProducts(1, "", 6);
       } else {
         const cat = tabToCategory[activeTab];
 
-        await fetchProductsCategory(cat, 1, "");
+        await fetchProductsCategory(cat, 1, "", 8);
       }
     } catch (e) {
       if (!ignore) setError(e?.message || "Error fetching products");
@@ -68,18 +68,22 @@ const CategoryGrid = ({ activeTab }) => {
     }
   };
 
+  useEffect(() => {
+    fetchForTab();
+  }, [activeTab]);
+
   const finalProducts =
     activeTab === "All Product" ? products : productsCategory;
 
   // Fetch logic per tab (via AppContext)
-  useEffect(() => {
-    if (finalProducts.length === 0) {
-      fetchForTab();
-    }
-    return () => {
-      ignore = true;
-    };
-  }, [activeTab]);
+  // useEffect(() => {
+  //   if (finalProducts.length === 0) {
+  //     fetchForTab();
+  //   }
+  //   return () => {
+  //     ignore = true;
+  //   };
+  // }, [activeTab]);
 
   if (error) {
     return (

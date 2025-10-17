@@ -11,7 +11,7 @@ import {
 import { IoClose, IoMenu } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import {
@@ -447,11 +447,13 @@ const AustraliaProducts = () => {
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =
                     product.discountInfo?.isGlobal || false;
+                  const encodedId = btoa(product.meta.id);
+                  const slug = slugify(product.overview.name);
 
                   return (
                     <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 max-h-[320px] sm:max-h-[400px] h-full group"
                       onClick={() =>
                         handleViewProduct(
                           product.meta.id,
@@ -565,7 +567,12 @@ const AustraliaProducts = () => {
                                 ));
                             })()}
                         </div>
-                        <div className="text-center">
+                        <Link
+                          to={`/product/${encodeURIComponent(
+                            slug
+                          )}?ref=${encodedId}`}
+                          className="text-center"
+                        >
                           <h2
                             className={`text-sm transition-all duration-300 ${
                               cardHover === product.meta.id &&
@@ -593,7 +600,7 @@ const AustraliaProducts = () => {
                               </p>
                             )}
                           </div>
-                        </div>
+                        </Link>
                       </div>
                     </div>
                   );
