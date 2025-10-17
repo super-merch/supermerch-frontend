@@ -21,7 +21,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
-
   const {
     token,
     addressData,
@@ -32,6 +31,8 @@ const Checkout = () => {
     setOpenLoginModal,
     userData,
     loadUserOrder,
+    shippingCharges,
+    setupFee
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -173,28 +174,6 @@ const Checkout = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [openLoginModal, loginModalRef]);
-  // Add this state for shipping charges
-  const [shippingCharges, setShippingCharges] = useState(20);
-
-  // // Add this useEffect to get shipping charges from location state or API
-  // useEffect(() => {
-  //   // First try to get from location state (passed from cart)
-  //   if (location.state?.shippingCharges) {
-  //     setShippingCharges(location.state.shippingCharges);
-  //   } else {
-  //     // Fallback: fetch from API if not in location state
-  //     const getShippingCharges = async () => {
-  //       try {
-  //         const response = await axios.get(`${backednUrl}/api/shipping/get`);
-  //         setShippingCharges(response.data.shipping || 0);
-  //       } catch (error) {
-  //         console.error("Error fetching shipping charges:", error);
-  //         setShippingCharges(0);
-  //       }
-  //     };
-  //     getShippingCharges();
-  //   }
-  // }, [location.state, backednUrl]);
 
   // Handle successful payment
   const handlePaymentSuccess = async (sessionId) => {
@@ -339,9 +318,13 @@ const Checkout = () => {
   };
   // Calculate GST and final total (same as cart)
   const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
-  const total = finalDiscountedAmount + gstAmount + shippingCharges;
+  const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee ;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
+    if (setupFee === undefined) {
+      toast.error("Invalid amount please go back to cart page and proceed.");
+      return;
+    }
     setLoading(true);
     if (items.length === 0) {
       toast.error("Cart is empty");
@@ -458,6 +441,7 @@ const Checkout = () => {
         supplierName: item?.supplierName,
       })),
       shipping: shippingCharges,
+      setupFee: setupFee,
       discount: totalDiscountPercent,
       // Add coupon information to order data
       coupon: appliedCoupon
@@ -475,44 +459,6 @@ const Checkout = () => {
       artworkOption: artworkOption,
       logoId: logoId,
     };
-
-    if (
-      !data.shipping.firstName ||
-      !data.shipping.lastName ||
-      !data.shipping.country ||
-      !data.shipping.region ||
-      !data.shipping.city ||
-      !data.shipping.zip ||
-      !data.shipping.email ||
-      !data.shipping.phone
-    ) {
-      setLoading(false);
-      return toast.error("Please fill all the fields in shipping address");
-    }
-    if (
-      !data.billing.firstName ||
-      !data.billing.lastName ||
-      !data.billing.country ||
-      !data.billing.region ||
-      !data.billing.city ||
-      !data.billing.zip
-      // !data.billing.email ||
-      // !data.billing.phone
-    ) {
-      setLoading(false);
-      return toast.error("Please fill all the fields in billing address");
-    }
-    if (products.length === 0) {
-      setLoading(false);
-      return toast.error("Please add some products to checkout");
-    }
-
-    if (!token) {
-      toast.info(
-        "Proceeding as guest. Create an account later to view order history."
-      );
-    }
-
     try {
       // Store checkout data in localStorage before redirecting to Stripe
       localStorage.setItem("pendingCheckoutData", JSON.stringify(checkoutData));
@@ -548,6 +494,7 @@ const Checkout = () => {
         products: items,
         gst: gstAmount,
         shipping: shippingCharges,
+        setupFee: setupFee,
         // Add coupon information to the request body
         coupon: appliedCoupon
           ? {
@@ -1169,7 +1116,7 @@ const Checkout = () => {
                           <input
                             type="text"
                             placeholder="Enter postal code"
-                            {...register("billing.zip", { required: true })}
+                            {...register("shipping.zip", { required: true })}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                           />
                         </div>
@@ -1559,7 +1506,7 @@ const Checkout = () => {
                           <input
                             type="text"
                             placeholder="Enter postal code"
-                            {...register("shipping.zip", { required: true })}
+                            {...register("billing.zip", { required: true })}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                           />
                         </div>
@@ -1977,6 +1924,12 @@ const Checkout = () => {
                         {shippingCharges > 0
                           ? `$${shippingCharges.toFixed(2)}`
                           : "-"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-base">
+                      <span>Setup Fee:</span>
+                      <span>
+                        {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
                       </span>
                     </div>
                     {/* <div className="flex justify-between text-base">

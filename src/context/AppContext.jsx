@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   clearFavourites,
   loadFavouritesFromDB,
@@ -36,8 +36,13 @@ const AppContextProvider = (props) => {
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
-
   const [blogs, setBlogs] = useState([]);
+  const [setupFee, setSetupFee] = useState(0);
+  const items = useSelector(selectCurrentUserCartItems);
+  useEffect(() => {
+    const setup = items.reduce((total, item) => total + (item.setupFee || 0), 0);
+    setSetupFee(setup);
+  },[items]);
 
   const getGlobalDiscount = async () => {
     try {
@@ -336,6 +341,36 @@ const AppContextProvider = (props) => {
       setError(err.message);
     }
   };
+
+  const [shippingCharges, setShippingCharges] = useState(0);
+    const getShippingCharges = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Add authorization headers if needed
+            },
+          }
+        );
+  
+        const data = await response.json();
+        setShippingCharges(data.shipping || 0);
+  
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch shipping charges");
+        }
+  
+        return { data };
+      } catch (error) {
+        throw error;
+      }
+    };
+    useEffect(() => {
+      getShippingCharges();
+    }, []);
 
   // *************************************************Client paginate api
 
@@ -1532,6 +1567,8 @@ const AppContextProvider = (props) => {
     loadUserOrder,
     loading,
     setLoading,
+    shippingCharges,
+    setShippingCharges,
     userEmail,
     fetchWebUser,
     addressData,
@@ -1607,7 +1644,7 @@ const AppContextProvider = (props) => {
     setParamProducts,
     selectedParamCategoryId,
     setSelectedParamCategoryId,
-
+    setupFee,
     totalApiPages,
     setTotalApiPages,
     v1categories,
