@@ -146,6 +146,7 @@ const Cards = ({ category = "dress" }) => {
         category: "search",
         page: pageFromURL,
         searchTerm: searchParams.get("search"),
+        productTypeId:searchParams.get("categoryId"),
       });
     } else {
       setPaginationData({

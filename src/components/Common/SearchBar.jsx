@@ -21,6 +21,21 @@ const SearchBar = ({
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const categoryDropdownRef = useRef(null);
   const searchInputRef = useRef(null);
+  // add near other useState declarations
+  const [expandedCategories, setExpandedCategories] = useState([]);
+
+  const toggleExpand = (categoryId) => {
+    setExpandedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  const getSubTypesToShow = (category) =>
+    expandedCategories.includes(category?.id)
+      ? category?.subTypes
+      : category?.subTypes?.slice(0, 3);
 
   const sizeClasses = {
     small: {
@@ -92,7 +107,6 @@ const SearchBar = ({
     onCategoryChange?.(category);
     setIsCategoryDropdownOpen(false);
   };
-
   // If collapsible and not open, show only search icon
   if (collapsible && !isOpen) {
     return (
@@ -122,7 +136,7 @@ const SearchBar = ({
               onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
             >
               <span className="text-blue-700 font-semibold text-sm">
-                {selectedCategory}
+                {selectedCategory?.name || selectedCategory}
               </span>
               <svg
                 className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${
@@ -180,14 +194,20 @@ const SearchBar = ({
 
               {categoryData.map((category) => (
                 <div key={category.id} className="border-t border-gray-100">
-                  <div className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer">
+                  <div
+                    onClick={() => handleCategorySelect(category)}
+                    className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
+                  >
                     <span className="text-gray-800 font-semibold">
                       {category.name}
                     </span>
                   </div>
-                  {category.subcategories?.map((subcategory) => (
+                  {getSubTypesToShow(category)?.map((subcategory) => (
                     <div key={subcategory.id} className="ml-4">
-                      <div className="px-3 py-1 hover:bg-gray-50 rounded cursor-pointer">
+                      <div
+                        onClick={() => handleCategorySelect(subcategory)}
+                        className="px-3 py-1 hover:bg-gray-50 rounded cursor-pointer"
+                      >
                         <span className="text-gray-600 text-sm">
                           {subcategory.name}
                         </span>
@@ -203,6 +223,20 @@ const SearchBar = ({
                       ))}
                     </div>
                   ))}
+
+                  {/* View all / View less button */}
+                  {category.subTypes && category.subTypes.length > 3 && (
+                    <div className="ml-4 px-3 py-1">
+                      <button
+                        onClick={() => toggleExpand(category.id)}
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        {expandedCategories.includes(category.id)
+                          ? "View less"
+                          : "View all"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -230,7 +264,7 @@ const SearchBar = ({
             onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
           >
             <span className="text-blue-600 font-semibold text-sm">
-              {selectedCategory}
+              {selectedCategory?.name || selectedCategory}
             </span>
             <svg
               className={`w-3 h-3 text-blue-600 transition-transform ${
@@ -293,14 +327,20 @@ const SearchBar = ({
 
             {categoryData.map((category) => (
               <div key={category.id} className="border-t border-blue-100">
-                <div className="px-4 py-3 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors duration-200">
+                <div
+                  onClick={() => handleCategorySelect(category)}
+                  className="px-4 py-3 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors duration-200"
+                >
                   <span className="text-gray-800 font-semibold">
                     {category.name}
                   </span>
                 </div>
-                {category.subcategories?.map((subcategory) => (
+                {getSubTypesToShow(category)?.map((subcategory) => (
                   <div key={subcategory.id} className="ml-4">
-                    <div className="px-4 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors duration-200">
+                    <div
+                      onClick={() => handleCategorySelect(subcategory)}
+                      className="px-4 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors duration-200"
+                    >
                       <span className="text-gray-700 text-sm font-medium">
                         {subcategory.name}
                       </span>
@@ -316,6 +356,20 @@ const SearchBar = ({
                     ))}
                   </div>
                 ))}
+
+                {/* View all / View less button */}
+                {category.subTypes && category.subTypes.length > 3 && (
+                  <div className="ml-4 px-4 py-2">
+                    <button
+                      onClick={() => toggleExpand(category.id)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      {expandedCategories.includes(category.id)
+                        ? "View less"
+                        : "View all"}
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
