@@ -47,10 +47,16 @@ const HomeModals = ({
     <>
       <DiscountModal
         isOpen={discountModal}
-        onClose={closeDiscountModal}
-        onSubscribe={handleDiscountSubscribe}
+        onClose={() => {
+          closeDiscountModal();
+          setDiscountModalShown(true);
+        }}
+        onSubscribe={() => {
+          openEmailModal();
+        }}
         selectedCoupon={selectedCoupon}
         coupenLoading={coupenLoading}
+        disableBackdropClose={emailModal}
       />
 
       <EmailModal

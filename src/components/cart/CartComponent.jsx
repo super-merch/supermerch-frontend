@@ -70,7 +70,6 @@ const CartComponent = () => {
       quantities[item.id] = item.quantity;
     });
     setCustomQuantities(quantities);
-    console.log(items);
     const email = userData?.email || "guest@gmail.com";
     setCurrentUserEmail(email);
   }, [items]);
@@ -95,7 +94,7 @@ const CartComponent = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; 
   const total = finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
   const [uploadedImage, setUploadedImage] = useState("/drag.png");

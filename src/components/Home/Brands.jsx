@@ -67,14 +67,18 @@ const Brands = () => {
       {/* Scrollable container */}
       <motion.div
         ref={containerRef}
-        className="flex overflow-x-scroll scroll-smooth gap-4 scroll-container"
+        className="flex overflow-x-scroll w-[90%] mx-auto scroll-smooth gap-4 scroll-container"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {slide.map((item, index) => (
           <motion.div
             key={item.id}
             ref={index === 0 ? itemRef : null} // measure only first item
-            className="min-w-[50%] xs:min-w-[45%] sm:min-w-[40%] md:min-w-[25%] xl:min-w-[15%] flex-shrink-0"
+            // add negative margin on first / last items so they peek out of the container
+            className={`min-w-[50%] xs:min-w-[45%] sm:min-w-[40%] md:min-w-[25%] xl:min-w-[15%] flex-shrink-0
+      ${index === 0 ? "-ml-6" : ""} ${
+              index === slide.length - 1 ? "-mr-6 md:-mr-8" : ""
+            }`}
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 200 }}
           >

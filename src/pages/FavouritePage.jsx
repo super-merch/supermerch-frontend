@@ -77,7 +77,7 @@ const FavouritePage = () => {
   return (
     <div className="mt-10">
       <div className=" Mycontainer">
-        <h2 className="mb-5 text-2xl font-semibold text-center">Favourites</h2>
+        <h2 className="mb-5 text-2xl font-semibold text-center">Favorites</h2>
         <div
           className={`grid gap-5 max-default:grid-cols-1 ${
             favouriteItems.length > 0
