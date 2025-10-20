@@ -14,7 +14,7 @@ const AboutPage = () => {
     <div>
       <NavigateAbout />
       <ABoutHero />
-      <TeamMember />
+      {/* <TeamMember /> */}
       <Feature />
       <MetricSec />
       <Stable />
