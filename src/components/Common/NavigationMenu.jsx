@@ -56,6 +56,8 @@ const NavigationMenu = ({
     } else if (onItemClick) {
       onItemClick(item);
     }
+    setHoveredItem(null);
+    setActiveItem(null);
   };
 
   const handleArrowClick = (item, e) => {
@@ -112,7 +114,6 @@ const NavigationMenu = ({
             className={`overflow-hidden rounded-lg border bg-[#333333] ${currentSize.megaMenu} shadow-lg`}
           >
             {item.megaMenu ? (
-              // Mega menu layout
               <div className="grid grid-cols-[1fr_3fr]">
                 <div className="border-r backdrop-blur-sm">
                   <nav className="flex flex-col py-2">
@@ -288,7 +289,14 @@ const NavigationMenu = ({
               <div className="text-customBlue">
                 <span
                   className={`flex capitalize items-center hover:text-blue-400 hover:drop-shadow-lg hover:underline hover:shadow-blue-400/50 transition-all duration-300 ${currentSize.item}`}
-                  onMouseEnter={() => handleMouseEnter(item)}
+                  onMouseEnter={() => {
+                    handleMouseEnter(item)
+                    if (
+                      item.name === "Promotional"
+                    ) {
+                      setActiveItem(item.submenu[0].id);
+                  }
+                  }}
                   onClick={() => {
                     if (
                       item.name === "Promotional" ||

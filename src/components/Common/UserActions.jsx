@@ -107,7 +107,7 @@ const UserActions = ({
         <div className="relative" ref={dropdownRef}>
           <HiOutlineUser
             onClick={toggleLogout}
-            className={`${currentSize.icon} cursor-pointer text-customBlue hover:text-blue-600 transition-colors p-2 hover:bg-gray-100 rounded-lg`}
+            className={`${currentSize.icon} cursor-pointer text-customBlue hover:text-blue-600 transition-colors  hover:bg-gray-100 rounded-lg`}
           />
           {isDropdownOpen && (
             <div className="absolute right-0 w-48 mt-2 bg-white border rounded-lg shadow-lg z-50">

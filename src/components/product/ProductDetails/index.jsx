@@ -266,7 +266,7 @@ const ProductDetails = () => {
   );
 
   const marginEntry = marginApi[productId] || { marginFlat: 0 };
-  const perUnitWithMargin = unitPrice + marginEntry.marginFlat;
+  const perUnitWithMargin = unitPrice
 
   const discountPct = totalDiscount[productId] || 0;
   const discountMultiplier = 1 - discountPct / 100;
@@ -294,8 +294,8 @@ const ProductDetails = () => {
       );
 
       // Initialize quantity and price based on first price break
-      if (allGroups[0]?.price_breaks?.length > 0) {
-        const firstBreak = allGroups[0].price_breaks[0];
+      if ((allGroups.length === 1 ? allGroups[0] : allGroups[1])?.price_breaks?.length > 0) {
+        const firstBreak = (allGroups.length === 1 ? allGroups[0] : allGroups[1])?.price_breaks[0];
         setCurrentQuantity(firstBreak.qty);
         setUnitPrice(firstBreak.price);
         setCurrentPrice(
@@ -433,7 +433,7 @@ const ProductDetails = () => {
     discountPct,
     sortedPriceBreaks,
   ]);
-
+  
   const handleColorClick = (color) => {
     setSelectedColor(color);
     setActiveImage(colorImages[color] || noimage);
@@ -731,7 +731,6 @@ const ProductDetails = () => {
       setQuoteLoading(false);
     }
   };
-
   const getPrintMethods = (details) => {
     const printAreas = details.find((item) => item.name === "printAreas");
     if (!printAreas) return [];
@@ -784,10 +783,7 @@ const ProductDetails = () => {
           priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
         image: product.images?.[0] || "",
         price: (() => {
-          // Get the base product price for current quantity
           const baseProductPrice = getPriceForQuantity(currentQuantity);
-
-          // Sort price breaks and find the correct one for current quantity
           const sortedBreaks = [...selectedPrintMethod?.price_breaks].sort(
             (a, b) => a.qty - b.qty
           );
@@ -801,7 +797,6 @@ const ProductDetails = () => {
               break;
             }
           }
-
           // Calculate final unit price based on print method type
           let finalUnitPrice;
           if (selectedPrintMethod.type === "base") {
@@ -810,8 +805,6 @@ const ProductDetails = () => {
             // For decoration, add decoration price to base product price
             finalUnitPrice = baseProductPrice + selectedBreak.price;
           }
-
-          // Add margin and apply discount
           const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
           return rawPerUnit * (1 - discountPct / 100);
         })(),
@@ -1191,7 +1184,7 @@ const ProductDetails = () => {
                       Total
                     </p>
                     <div className="flex items-center justify-end gap-2">
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-gray-200">
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[13px] text-gray-700 ring-1 ring-inset ring-gray-200">
                         {currentQuantity} pcs
                       </span>
                       <p className="text-3xl font-extrabold text-smallHeader">

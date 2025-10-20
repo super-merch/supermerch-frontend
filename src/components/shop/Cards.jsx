@@ -423,9 +423,10 @@ const Cards = ({ category = "dress" }) => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1  transition-all duration-200 hover:border-red-500 max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-border2 hover:border-1 cursor-pointer transition-all duration-200 hover:border-red-500 max-h-[320px] sm:max-h-[400px] h-full group"
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
+                      onClick={() => handleViewProduct(product.meta.id, product.overview.name)}
                     >
                       <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
                         {(productionIds.has(product?.meta?.id) ||
@@ -502,19 +503,14 @@ const Cards = ({ category = "dress" }) => {
                             })()}
                         </div>
                         <div className="relative flex justify-center items-center text-center">
-                          <Link
-                            to={`/product/${encodeURIComponent(
-                              slug
-                            )}?ref=${encodedId}`}
-                          >
-                            <div className="flex-1">
+                            <div className="flex-1 justify-center">
                               <p
                                 className={`text-sm transition-all duration-300 ${
                                   cardHover === product.meta.id &&
                                   product.overview.name.length > 20
                                     ? "sm:text-[18px]"
                                     : "sm:text-lg"
-                                } font-semibold text-brand sm:leading-[18px] `}
+                                } font-semibold text-brand sm:leading-[18px] lg:leading-[20px]`}
                               >
                                 {(product.overview.name &&
                                   // product.overview.name.length > 20 && cardHover!==product.meta.id
@@ -537,7 +533,6 @@ const Cards = ({ category = "dress" }) => {
                                 </h2>
                               </div>
                             </div>
-                          </Link>
                           {discountPct > 0 && (
                             <div className="absolute top-1 sm:top-0 right-1 sm:right-2 z-20">
                               <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">

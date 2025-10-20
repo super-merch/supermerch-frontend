@@ -47,6 +47,7 @@ import { useModals } from "./hooks/useModals";
 import HotDeals from "./pages/HotDeals";
 import HourProduction24Products from "./components/shop/HourProduction24Products";
 import AustraliaProducts from "./components/shop/AusProducts";
+import Terms from "./pages/Terms";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -135,6 +136,7 @@ const App = () => {
             <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/mail-offer" element={<MailOffer />} />
             <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/terms" element={<Terms />} />
 
             {token && <Route path="/admin" element={<Sidebar />} />}
             {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}

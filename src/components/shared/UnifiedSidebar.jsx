@@ -20,10 +20,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
-import {
-  getSidebarConfig,
-  getCategoriesForConfig,
-} from "../../config/sidebarConfig";
+// import {
+//   getSidebarConfig,
+//   getCategoriesForConfig,
+// } from "../../config/sidebarConfig";
 import {
   setSelectedCategory,
   applyFilters,
@@ -74,19 +74,20 @@ const UnifiedSidebar = ({
   const { selectedCategory } = useSelector((state) => state.filters);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [openCategory, setOpenCategory] = useState(null); // which main group is expanded
-  const [activeSub, setActiveSub] = useState(null); // which sub item is highlighted
+  const [openCategory, setOpenCategory] = useState(null);
+  const [activeSub, setActiveSub] = useState(null);
   const [searchParams] = useSearchParams();
   const {
     setSelectedParamCategoryId,
     setCurrentPage,
     setSidebarActiveCategory,
     setActiveFilterCategory,
+    v1categories, // Add this from context
   } = useContext(AppContext);
 
   // Get configuration for this page type
-  const config = customConfig || getSidebarConfig(pageType);
-  const categories = getCategoriesForConfig(config);
+  const categories = v1categories || [];
+  const config = { title: "Categories" }; 
 
   // Get URL parameters for active state
   const urlSubCategory = searchParams.get("subCategory");
@@ -150,7 +151,7 @@ const UnifiedSidebar = ({
         setActiveSub(urlSubCategory);
       }
     }
-  }, [urlSubCategory, urlCategoryName]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [urlSubCategory, urlCategoryName, categories]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -220,7 +221,7 @@ const UnifiedSidebar = ({
             <CollapsibleSection title={config.title} defaultExpanded={true}>
               {/* Categories List */}
               <div className="space-y-0.5">
-                {categories.map((category) => {
+                {categories.filter((category) => category.name !== "Capital Equipment").map((category) => {
                   const IconComponent = getCategoryIcon(category.name);
                   return (
                     <div key={category.id} className="w-full">

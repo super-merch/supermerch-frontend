@@ -91,24 +91,24 @@ const cartSlice = createSlice({
       existing.dragdrop = dragdrop;
     }
       } else {
-        // Calculate initial price with margin and discount
-        const unitPrice = getPriceForQuantity(quantity, basePrices);
-        const priceWithMargin = unitPrice + (marginFlat * unitPrice) / 100;
-        const finalPrice = priceWithMargin * (1 - discountPct / 100);
+        // const unitPrice = getPriceForQuantity(quantity, basePrices);
+        // const priceWithMargin = unitPrice + (marginFlat * unitPrice) / 100;
+        // const finalPrice = priceWithMargin * (1 - discountPct / 100);
 
         state.items.push({
           id,
-          price: finalPrice,
+          price,
           basePrices, // Store the price breaks for future calculations
           marginFlat,
           discountPct,
-          totalPrice: finalPrice * quantity,
+          totalPrice: price * quantity,
           setupFee,
           freightFee,
           quantity,
           userEmail: effectiveUserEmail,
           size, // Use the effective email
           dragdrop,
+          print,
           ...rest,
         });
       }

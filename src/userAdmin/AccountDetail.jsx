@@ -90,6 +90,7 @@ const AccountDetail = () => {
             </label>
             <input
               type="text"
+              disabled
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"
@@ -102,6 +103,7 @@ const AccountDetail = () => {
             </label>
             <input
               type="email"
+              disabled
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"

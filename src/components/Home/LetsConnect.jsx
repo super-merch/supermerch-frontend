@@ -86,7 +86,7 @@ const LetsConnect = () => {
               href="https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-3 sm:px-6 sm:py-3 bg-blue-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base min-h-[44px]"
+              className="inline-flex items-center px-4 py-3 sm:px-6 sm:py-3 bg-gradient-to-r from-[#f58529] via-[#dd2a7b] to-[#b551d4] text-white font-semibold rounded-full hover:scale-105 hover:brightness-110 transition duration-300 transform shadow-lg hover:shadow-xl text-sm sm:text-base min-h-[44px]"
             >
               <FaInstagram className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               @supermerch_official

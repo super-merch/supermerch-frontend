@@ -32,7 +32,7 @@ const Checkout = () => {
     userData,
     loadUserOrder,
     shippingCharges,
-    setupFee
+    setupFee,
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -318,7 +318,7 @@ const Checkout = () => {
   };
   // Calculate GST and final total (same as cart)
   const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
-  const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee ;
+  const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
     if (setupFee === undefined) {
@@ -423,7 +423,7 @@ const Checkout = () => {
         postalCode: data.shipping.zip,
         addressLine: data.shipping.address,
         companyName: data.shipping.companyName,
-        email: data.shipping.email,
+        email: data.shipping.email || userData?.email,
         phone: data.shipping.phone,
       },
       products: items.map((item) => ({
@@ -472,7 +472,7 @@ const Checkout = () => {
           postalCode: data.shipping.zip,
           addressLine: data.shipping.address,
           companyName: data.shipping.companyName,
-          email: data.shipping.email,
+          email: data.shipping.email || userData?.email,
           phone: data.shipping.phone,
         },
         {
@@ -748,6 +748,7 @@ const Checkout = () => {
                           type="email"
                           placeholder="Enter email address"
                           {...register("shipping.email")}
+                          value={userData?.email}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                           required
                         />
@@ -760,6 +761,7 @@ const Checkout = () => {
                           type="tel"
                           placeholder="Enter phone number"
                           {...register("shipping.phone")}
+                          value={userData?.phone}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -1206,20 +1208,31 @@ const Checkout = () => {
                         onChange={(e) => {
                           const next = e.target.checked;
                           setBillingSameAsShipping(next);
+
                           if (next) {
+                            // Copy only the common fields from shipping to billing
                             const shippingVals = getValues("shipping");
-                            Object.keys(shippingVals || {}).forEach((key) => {
-                              setValue(
-                                `billing.${key}`,
-                                shippingVals[key] || ""
-                              );
+                            const billingFields = [
+                              "firstName",
+                              "lastName",
+                              "companyName",
+                              "address",
+                              "country",
+                              "region",
+                              "city",
+                              "zip",
+                            ];
+
+                            billingFields.forEach((field) => {
+                              if (shippingVals[field] !== undefined) {
+                                setValue(
+                                  `billing.${field}`,
+                                  shippingVals[field] || ""
+                                );
+                              }
                             });
                           } else {
-                            setBillingSameAsShipping(false);
-                            const shippingVals = getValues("shipping");
-                            Object.keys(shippingVals || {}).forEach((key) => {
-                              setValue(`billing.${key}`, "");
-                            });
+                            console.log("Billing same as shipping disabled");
                           }
                         }}
                         className="h-4 w-4 text-smallHeader"
