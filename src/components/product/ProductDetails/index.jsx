@@ -34,6 +34,7 @@ import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
 import { LoadingBar } from "@/components/Common";
 import LoadingOverlay from "@/components/Common/LoadingOverlay";
+import { FaMoneyBillWave } from "react-icons/fa";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -266,7 +267,7 @@ const ProductDetails = () => {
   );
 
   const marginEntry = marginApi[productId] || { marginFlat: 0 };
-  const perUnitWithMargin = unitPrice
+  const perUnitWithMargin = unitPrice;
 
   const discountPct = totalDiscount[productId] || 0;
   const discountMultiplier = 1 - discountPct / 100;
@@ -294,8 +295,13 @@ const ProductDetails = () => {
       );
 
       // Initialize quantity and price based on first price break
-      if ((allGroups.length === 1 ? allGroups[0] : allGroups[1])?.price_breaks?.length > 0) {
-        const firstBreak = (allGroups.length === 1 ? allGroups[0] : allGroups[1])?.price_breaks[0];
+      if (
+        (allGroups.length === 1 ? allGroups[0] : allGroups[1])?.price_breaks
+          ?.length > 0
+      ) {
+        const firstBreak = (
+          allGroups.length === 1 ? allGroups[0] : allGroups[1]
+        )?.price_breaks[0];
         setCurrentQuantity(firstBreak.qty);
         setUnitPrice(firstBreak.price);
         setCurrentPrice(
@@ -433,7 +439,7 @@ const ProductDetails = () => {
     discountPct,
     sortedPriceBreaks,
   ]);
-  
+
   const handleColorClick = (color) => {
     setSelectedColor(color);
     setActiveImage(colorImages[color] || noimage);
@@ -1205,9 +1211,9 @@ const ProductDetails = () => {
                 <div className="space-y-3 mt-2">
                   <div
                     onClick={() => setShowQuoteForm(!showQuoteForm)}
-                    className="flex items-center justify-center gap-2 py-2 text-white cursor-pointer bg-smallHeader rounded-sm"
+                    className="flex items-center justify-center gap-2 py-2 text-primary cursor-pointer border border-primary transition-all duration-300 rounded-sm hover:shadow-md"
                   >
-                    <img src="/money.png" alt="" />
+                    <FaMoneyBillWave className="text-primary" />
                     <button className="text-sm">Get Express Quote</button>
                   </div>
                   <div
@@ -1250,7 +1256,7 @@ const ProductDetails = () => {
 
                       navigate("/cart");
                     }}
-                    className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-buy rounded-sm"
+                    className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-primary hover:bg-primary/80 transition-all duration-300 rounded-sm"
                   >
                     <img src="/buy2.png" alt="" />
                     <button className="text-sm">BUY 1 SAMPLE</button>
@@ -1269,7 +1275,7 @@ const ProductDetails = () => {
 
                 <div className="pb-4 mt-2 mb-4 border-b">
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     <p className="text-sm">
@@ -1278,7 +1284,7 @@ const ProductDetails = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     <p className="text-sm">
@@ -1287,7 +1293,7 @@ const ProductDetails = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     <p className="text-sm">
@@ -1296,7 +1302,7 @@ const ProductDetails = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     <p className="text-sm">
@@ -1304,7 +1310,7 @@ const ProductDetails = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     {/* <p className='text-sm'>Quantity: {quantity2[activeIndex]?.sell || 50}</p> */}
@@ -1312,7 +1318,7 @@ const ProductDetails = () => {
                   </div>
 
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     <p className="text-sm">
@@ -1321,7 +1327,7 @@ const ProductDetails = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-gren p-1 rounded-[50%] text-xs ">
+                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
                     </p>
                     <p className="text-sm">

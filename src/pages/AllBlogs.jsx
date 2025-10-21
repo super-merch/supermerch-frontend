@@ -1,111 +1,89 @@
 import React, { useContext } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
-import { IoArrowBackOutline } from "react-icons/io5";
-import { IoMdArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "@/context/AppContext";
+import { FaArrowRight } from "react-icons/fa";
 
 const AllBlogs = () => {
   const { blogs, options } = useContext(AppContext);
   const navigate = useNavigate();
 
   return (
-    <section className="Mycontainer">
-      <div className="px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="text-center mb-14">
-          <h2 className="font-manrope text-4xl font-bold text-gray-900 mb-4">
-            Our Popular Blogs
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Stay updated with our latest insights on fintech and digital
-            payments
+    <section className="min-h-screen bg-white py-16">
+      <div className="Mycontainer px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-12">
+          <p className="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
+            INSIGHTS & UPDATES
           </p>
+          <h1 className="text-4xl md:text-5xl font-bold text-secondary">
+            Blog & Articles
+          </h1>
         </div>
 
-        <div className="mb-14 gap-y-8 lg:gap-y-0 lg:gap-x-8">
-          <Swiper
-            navigation={{
-              prevEl: ".custom-prev2",
-              nextEl: ".custom-next2",
-            }}
-            modules={[Navigation]}
-            className="mySwiper"
-            breakpoints={{
-              0: {
-                slidesPerView: 1,
-                spaceBetween: 0,
-              },
-              400: {
-                slidesPerView: 2,
-                spaceBetween: 15,
-              },
-              580: {
-                slidesPerView: 3,
-                spaceBetween: 10,
-              },
-              768: { slidesPerView: 3, spaceBetween: 15 },
-              1024: { slidesPerView: 4, spaceBetween: 10 },
-            }}
-          >
-            {blogs?.length > 0 ? (
-              blogs?.map((blog, index) => (
-                <SwiperSlide key={blog._id || index}>
-                  <div
-                    onClick={() => navigate(`/blogs/${blog?._id}`)}
-                    className="group cursor-pointer border border-gray-300 rounded-2xl p-5 transition-all duration-300 hover:border-indigo-600 hover:shadow-lg"
-                  >
-                    <div className="flex items-center mb-6">
-                      <img
-                        src={blog.image}
-                        alt={blog.title || "blog image"}
-                        className="rounded-lg w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="block">
-                      <h4 className="text-gray-900 font-medium leading-8 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-300">
-                        {blog?.title}
-                      </h4>
-                      <div className="flex items-center justify-between font-medium">
-                        <span className="text-sm text-indigo-600 font-semibold">
-                          Read More →
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {new Date(blog?.createdAt).toLocaleDateString(
-                            undefined,
-                            options
-                          )}
-                        </span>
-                      </div>
-                    </div>
+        {blogs?.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {blogs.map((blog) => (
+              <div
+                key={blog._id}
+                onClick={() => navigate(`/blogs/${blog._id}`)}
+                className="group cursor-pointer bg-white rounded-xl border border-secondary/10 overflow-hidden hover:shadow-xl transition-all duration-300"
+              >
+                {/* Image Section */}
+                <div className="relative h-80 overflow-hidden bg-gray-100">
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+
+                {/* Content Section */}
+                <div className="p-6">
+                  <p className="text-sm font-semibold text-primary uppercase tracking-wide mb-3">
+                    ARTICLE
+                  </p>
+                  <h2 className="text-xl font-bold text-secondary mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                    {blog.title}
+                  </h2>
+                  <p className="text-sm text-secondary/60 mb-4">
+                    {new Date(blog.createdAt).toLocaleDateString(
+                      undefined,
+                      options
+                    )}
+                  </p>
+                  <div className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
+                    Read More
+                    <FaArrowRight className="w-4 h-4" />
                   </div>
-                </SwiperSlide>
-              ))
-            ) : (
-              <div className="flex justify-center">
-                <h1 className="mx-auto">
-                  No blogs found. Please keep checking back later.
-                </h1>
+                </div>
               </div>
-            )}
-          </Swiper>
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-center items-center gap-4 mb-8">
-          <div className="lg:-left-6 md:-left-6 -left-0 lg:top-[83%] md:top-[83%] top-[76%] transform -translate-y-1/2 z-10">
-            <button className="custom-prev2 disabled:opacity-40 bg-smallHeader text-white lg:p-2 md:p-2 p-1 rounded-full transition-all duration-300 hover:bg-opacity-80">
-              <IoArrowBackOutline className="lg:text-2xl md:text-2xl text-lg" />
-            </button>
+            ))}
           </div>
-          <div className="lg:-right-6 md:-right-6 -right-0 lg:top-[83%] md:top-[83%] top-[76%] transform -translate-y-1/2 z-10">
-            <button className="custom-next2 disabled:opacity-40 bg-smallHeader text-white lg:p-2 md:p-2 p-1 rounded-full transition-all duration-300 hover:bg-opacity-80">
-              <IoMdArrowForward className="lg:text-2xl md:text-2xl text-lg" />
-            </button>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
+              <svg
+                className="w-10 h-10 text-secondary/40"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-secondary mb-3">
+              No Articles Yet
+            </h3>
+            <p className="text-secondary/60 text-lg">
+              Check back soon for new content and insights
+            </p>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

@@ -147,7 +147,7 @@ const Cards = ({ category = "dress" }) => {
         category: "search",
         page: pageFromURL,
         searchTerm: searchParams.get("search"),
-        productTypeId:searchParams.get("categoryId"),
+        productTypeId: searchParams.get("categoryId"),
       });
     } else {
       setPaginationData({
@@ -423,10 +423,15 @@ const Cards = ({ category = "dress" }) => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1 cursor-pointer transition-all duration-200 hover:border-red-500 max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 hover:border-primary max-h-[320px] sm:max-h-[400px] h-full group"
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
-                      onClick={() => handleViewProduct(product.meta.id, product.overview.name)}
+                      onClick={() =>
+                        handleViewProduct(
+                          product.meta.id,
+                          product.overview.name
+                        )
+                      }
                     >
                       <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
                         {(productionIds.has(product?.meta?.id) ||
@@ -457,9 +462,9 @@ const Cards = ({ category = "dress" }) => {
                           className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                         >
                           {favSet.has(product?.meta?.id) ? (
-                            <IoIosHeart className="text-lg text-red-500" />
+                            <IoIosHeart className="text-lg text-primary" />
                           ) : (
-                            <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                            <CiHeart className="text-lg text-gray-700 hover:text-primary transition-colors" />
                           )}
                         </div>
                       </div>
@@ -503,39 +508,39 @@ const Cards = ({ category = "dress" }) => {
                             })()}
                         </div>
                         <div className="relative flex justify-center items-center text-center">
-                            <div className="flex-1 justify-center">
-                              <p
-                                className={`text-sm transition-all duration-300 ${
-                                  cardHover === product.meta.id &&
-                                  product.overview.name.length > 20
-                                    ? "sm:text-[18px]"
-                                    : "sm:text-lg"
-                                } font-semibold text-brand sm:leading-[18px] lg:leading-[20px]`}
-                              >
-                                {(product.overview.name &&
-                                  // product.overview.name.length > 20 && cardHover!==product.meta.id
-                                  //   ? product.overview.name.slice(0, 20) + "..."
-                                  product.overview.name) ||
-                                  "No Name"}
-                              </p>
-                              <p className="text-xs text-gray-500 pt-1">
-                                Min Qty:{" "}
-                                {product.product?.prices?.price_groups[0]
-                                  ?.base_price?.price_breaks[0]?.qty || 1}{" "}
-                              </p>
-                              <div className="">
-                                <h2 className="text-base sm:text-lg font-bold text-heading">
-                                  From $
-                                  {getProductPrice(
-                                    product,
-                                    product.meta.id
-                                  ).toFixed(2)}
-                                </h2>
-                              </div>
+                          <div className="flex-1 justify-center">
+                            <p
+                              className={`text-sm transition-all duration-300 ${
+                                cardHover === product.meta.id &&
+                                product.overview.name.length > 20
+                                  ? "sm:text-[18px]"
+                                  : "sm:text-lg"
+                              } font-semibold text-brand sm:leading-[18px] lg:leading-[20px]`}
+                            >
+                              {(product.overview.name &&
+                                // product.overview.name.length > 20 && cardHover!==product.meta.id
+                                //   ? product.overview.name.slice(0, 20) + "..."
+                                product.overview.name) ||
+                                "No Name"}
+                            </p>
+                            <p className="text-xs text-gray-500 pt-1">
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
+                                ?.base_price?.price_breaks[0]?.qty || 1}{" "}
+                            </p>
+                            <div className="">
+                              <h2 className="text-base sm:text-lg font-bold text-primary">
+                                From $
+                                {getProductPrice(
+                                  product,
+                                  product.meta.id
+                                ).toFixed(2)}
+                              </h2>
                             </div>
+                          </div>
                           {discountPct > 0 && (
                             <div className="absolute top-1 sm:top-0 right-1 sm:right-2 z-20">
-                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
+                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded">
                                 {discountPct}%
                               </span>
                               {isGlobalDiscount && (

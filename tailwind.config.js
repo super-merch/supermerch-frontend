@@ -9,8 +9,10 @@ export default {
         sans: ["Red Hat Text", "sans-serif"],
       },
       colors: {
-        primary: "rgba(17,24,39)",
+        primary: "#009688",
+        secondary: "#333333",
         customBlue: "rgba(12, 0, 71, 1)",
+        white: "#ffffff",
         linkColor: "rgba(53, 53, 53, 1)",
         smallHeader: "rgba(8, 10, 84, 1)",
         header: "rgba(45, 165, 243, 1)",
@@ -57,26 +59,7 @@ export default {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
+
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         chart: {

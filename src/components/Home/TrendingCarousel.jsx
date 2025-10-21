@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import { FaFire } from "react-icons/fa";
+import { FaFire, FaArrowRight } from "react-icons/fa";
 import { AppContext } from "../../context/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
@@ -92,7 +92,7 @@ const TrendingCarousel = () => {
   }
 
   return (
-    <div className="w-full py-2">
+    <div className="w-full py-20 bg-primary/10">
       <div className="Mycontainer">
         {/* Trending Heading - Outside the carousel */}
         <div className="flex items-center justify-center gap-3 mb-6 ">
@@ -135,10 +135,13 @@ const TrendingCarousel = () => {
                       )}?ref=${encodedId}`}
                       key={product.meta.id}
                     >
-                      <div className="bg-white border border-1 rounded-xl shadow-lg hover:shadow-xl hover:border-blue-500 transition-all duration-300 cursor-pointer group overflow-hidden mr-2">
+                      <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden mr-2">
                         {" "}
                         {/* Product Image */}
                         <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">
+                          <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                            Hot
+                          </span>
                           <img
                             src={
                               product.overview.hero_image
@@ -151,16 +154,16 @@ const TrendingCarousel = () => {
                         </div>
                         {/* Product Info */}
                         <div className="p-3 rounded-b-xl text-center">
-                          <h3 className="text-base font-semibold text-brand group-hover:text-blue-600 transition-colors duration-300 line-clamp-2 truncate">
+                          <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
                             {product.overview.name || "No Name"}
                           </h3>
-                          <p className="text-xs text-gray-500 pt-1">
+                          <p className="text-xs text-secondary/60">
                             Min Qty:{" "}
                             {product.product?.prices?.price_groups[0]
                               ?.base_price?.price_breaks[0]?.qty || 1}
                           </p>
-                          <div className="pt-2">
-                            <h4 className="text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors duration-300">
+                          <div className="mt-1">
+                            <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
                               From $
                               {minPrice === maxPrice
                                 ? minPrice.toFixed(2)

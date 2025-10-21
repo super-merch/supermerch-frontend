@@ -13,16 +13,21 @@ import paypal from "../../assets/paypal.png";
 import supermerch from "../../assets/supermerch.png";
 import visa from "../../assets/visa.png";
 import PopUps from "./PopUps";
+import { FaFacebookF, FaInstagram, FaMailchimp } from "react-icons/fa6";
+import { FaMailBulk } from "react-icons/fa";
 
 const Footer = () => {
   const miniNav = [
-    { img: facebook, path: "https://www.facebook.com/share/1DztGRWqfA/" },
     {
-      img: insta,
+      img: <FaFacebookF className="w-5 h-5" />,
+      path: "https://www.facebook.com/share/1DztGRWqfA/",
+    },
+    {
+      img: <FaInstagram className="w-5 h-5" />,
       path: "https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw",
     },
   ];
-  const paymethod = [visa, paypal, amex, gpay, discover, colors, apple, pay];
+  const paymethod = [visa, paypal, gpay, apple];
   const navigate = useNavigate();
   const goToCheckout = () => {
     if (!localStorage.getItem("token")) {
@@ -42,7 +47,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white pt-8 md:pt-0">
+    <footer className="bg-secondary pt-8 md:pt-0">
       {/* Main Footer Content */}
       <div className="Mycontainer py-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
@@ -55,7 +60,7 @@ const Footer = () => {
                 alt="Super Merch"
               />
             </div>
-            <p className="text-gray-300 text-sm leading-relaxed mb-6">
+            <p className="text-white/80 text-sm leading-relaxed mb-6">
               Quality promotional products with fast delivery and competitive
               pricing. Your trusted partner for custom branded merchandise.
             </p>
@@ -64,13 +69,13 @@ const Footer = () => {
                 <button
                   key={i}
                   onClick={() => window.open(icon.path, "_blank")}
-                  className="sm:w-10 sm:h-10 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
+                  className="text-white sm:w-10 sm:h-10 w-8 h-8 bg-primary rounded-lg flex items-center justify-center hover:bg-primary/80 transition-colors"
                 >
-                  <img src={icon.img} alt="social" className="w-5 h-5" />
+                  {icon.img}
                 </button>
               ))}
               <button
-                className="sm:w-10 sm:h-10 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="text-white sm:w-10 sm:h-10 w-8 h-8 bg-primary rounded-lg flex items-center justify-center hover:bg-primary/80 transition-colors"
                 onClick={() =>
                   window.open(
                     "https://mail.google.com/mail/?view=cm&to=Info@supermerch.com.au",
@@ -78,19 +83,21 @@ const Footer = () => {
                   )
                 }
               >
-                <IoMail className="text-lg" />
+                <FaMailBulk className="text-lg" />
               </button>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Quick Links
+            </h3>
             <ul className="space-y-1 sm:space-y-3">
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   About Us
                 </Link>
@@ -98,7 +105,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Contact
                 </Link>
@@ -106,7 +113,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/all-blogs"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Blog
                 </Link>
@@ -114,7 +121,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/faqs"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   FAQ
                 </Link>
@@ -122,7 +129,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/clearance"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Clearance
                 </Link>
@@ -130,7 +137,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/shop"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Shop
                 </Link>
@@ -140,12 +147,14 @@ const Footer = () => {
 
           {/* Customer Service */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Customer Service
+            </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/artwork-policy"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Artwork Policy
                 </Link>
@@ -153,7 +162,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/refund-policy"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Refund Policy
                 </Link>
@@ -161,7 +170,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/privacy"
-                  className="text-gray-300 hover:text-white hover:underline transition-colors"
+                  className="text-white/80 hover:text-white hover:underline transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -169,7 +178,7 @@ const Footer = () => {
               <li>
                 <button
                   onClick={goToTrack}
-                  className="text-gray-300 hover:text-white hover:underline transition-colors text-left"
+                  className="text-white/80 hover:text-white hover:underline transition-colors text-left"
                 >
                   Track Order
                 </button>
@@ -177,7 +186,7 @@ const Footer = () => {
               <li>
                 <button
                   onClick={goToCheckout}
-                  className="text-gray-300 hover:text-white hover:underline transition-colors text-left"
+                  className="text-white/80 hover:text-white hover:underline transition-colors text-left"
                 >
                   Pay Invoice
                 </button>
@@ -187,28 +196,32 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Contact Us
+            </h3>
             <div className="space-y-3">
               <div>
-                <p className="text-gray-300 text-sm">Phone</p>
+                <p className="text-white/80 text-sm">Phone</p>
                 <a
                   href="tel:+61466468528"
-                  className="text-white hover:text-gray-300 transition-colors"
+                  className="text-white hover:text-white/80 transition-colors"
                 >
                   +61 466 468 528
                 </a>
               </div>
               <div>
-                <p className="text-gray-300 text-sm">Email</p>
+                <p className="text-white/80 text-sm">Email</p>
                 <a
                   href="mailto:Info@supermerch.com.au"
-                  className="text-white hover:text-gray-300 transition-colors"
+                  className="text-white hover:text-white/80 transition-colors"
                 >
-                  Info@supermerch<br className="block sm:hidden" />.com.au
+                  Info@supermerch
+                  <br className="block sm:hidden" />
+                  .com.au
                 </a>
               </div>
               <div>
-                <p className="text-gray-300 text-sm">Business Hours</p>
+                <p className="text-white/80 text-sm">Business Hours</p>
                 <p className="text-white text-sm">Mon–Fri: 7am–6pm CST</p>
                 <p className="text-white text-sm">Sat: 8am–5pm CST</p>
               </div>
@@ -217,10 +230,10 @@ const Footer = () => {
         </div>
 
         {/* Payment Methods */}
-        <div className="border-t border-gray-800 mt-2 pt-2">
+        <div className="border-t border-white/10 mt-2 pt-2">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
-              <p className="text-gray-300 text-sm mb-3">We Accept</p>
+              <p className="text-white/80 text-sm mb-3">We Accept</p>
               <div className="sm:flex grid grid-cols-4 items-center gap-3">
                 {paymethod.map((p, i) => (
                   <img
@@ -232,9 +245,9 @@ const Footer = () => {
                 ))}
               </div>
             </div>
-            <div className=" border-gray-800">
+            <div>
               <div className="max-w-2xl mx-auto text-left">
-                <p className="text-gray-300 mb-2">
+                <p className="text-white/80 mb-2">
                   Subscribe to our newsletter for exclusive offers and new
                   product updates
                 </p>
@@ -242,9 +255,9 @@ const Footer = () => {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1  px-3 sm:px-4 py-3 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-3 sm:px-4 py-3 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder:text-white/60"
                   />
-                  <button className= "px-3 sm:px-6 py-3 bg-smallHeader text-white rounded-r-lg hover:opacity-90 transition-opacity font-medium">
+                  <button className="px-3 sm:px-6 py-3 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors font-medium">
                     Subscribe
                   </button>
                 </div>
@@ -258,23 +271,23 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="border-t border-gray-800 bg-gray-950 py-4 md:py-0">
+      <div className="border-t border-white/10 bg-secondary/90 py-4 md:py-0">
         <div className="Mycontainer py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-400 text-sm text-center md:text-left">
+            <p className="text-white/80 text-sm text-center md:text-left">
               © {new Date().getFullYear()} Super Merch. All rights reserved. |
               Developed by DEVSRANK
             </p>
             <div className="flex items-center gap-6 text-sm">
               <Link
                 to="/privacy"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
               >
                 Privacy Policy
               </Link>
               <Link
                 to="/terms"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
               >
                 Terms of Service
               </Link>

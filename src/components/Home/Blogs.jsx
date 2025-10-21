@@ -9,6 +9,7 @@ import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { AppContext } from "../../context/AppContext";
 import BlogCard from "../card/BlogCard";
+import { Heading } from "../Common";
 const Blogs = () => {
   const { blogs, setBlogs, options } = useContext(AppContext);
   // Function to inject images into content
@@ -71,28 +72,21 @@ const Blogs = () => {
   };
 
   return (
-    <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50">
+    <section className="bg-white">
       <div className="Mycontainer">
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <FaEye className="w-4 h-4" />
-            Latest Insights
-          </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Our Popular{" "}
-            <span className="bg-blue-600 bg-clip-text text-transparent">
-              Blogs
-            </span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Stay updated with the latest trends, tips, and insights in
-            promotional products and business marketing.
-          </p>
-        </div>
+        <Heading
+          title="Our Popular Blogs"
+          align="center"
+          size="default"
+          titleClassName="uppercase"
+          containerClassName=""
+          description="Stay updated with the latest trends, tips, and insights in promotional products and business marketing."
+          showUnderline={true}
+        />
 
         {/* Blog Carousel */}
-        <div className="relative">
+        <div className="relative mt-4">
           <Swiper
             navigation={{
               prevEl: ".blog-prev",
@@ -129,12 +123,12 @@ const Blogs = () => {
               <div className="col-span-full flex justify-center py-16">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FaEye className="w-8 h-8 text-gray-400" />
+                    <FaEye className="w-8 h-8 text-secondary" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-secondary mb-2">
                     No blogs available
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-secondary/70">
                     Check back later for the latest blog posts.
                   </p>
                 </div>
@@ -144,12 +138,12 @@ const Blogs = () => {
 
           {/* Navigation Buttons */}
           <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10">
-            <button className="blog-prev bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-blue-600 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-blue-200">
+            <button className="blog-prev bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
               <IoArrowBackOutline className="w-6 h-6" />
             </button>
           </div>
           <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10">
-            <button className="blog-next bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-blue-600 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-blue-200">
+            <button className="blog-next bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
               <IoMdArrowForward className="w-6 h-6" />
             </button>
           </div>
@@ -158,8 +152,8 @@ const Blogs = () => {
         {/* View All Button */}
         <div className="text-center mt-12">
           <Link
-            to="/blogs"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            to="/all-blogs"
+            className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             View All Blogs
             <FaArrowRight className="w-4 h-4" />

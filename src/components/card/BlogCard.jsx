@@ -65,33 +65,50 @@ const BlogCard = ({ blog, options }) => {
     <Link
       key={blog._id}
       to={`/blogs/${blog._id}`}
-      className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="group flex flex-col bg-white rounded-2xl border border-secondary/10 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden hover:border-primary h-full"
     >
-      <div className="relative overflow-hidden">
-        <img
-          src={blog.image}
-          alt={blog.title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      {/* Image Container */}
+      <div className="relative w-full bg-gradient-to-br from-primary/5 to-secondary/5 p-6">
+        <div className="aspect-video w-full flex items-center justify-center">
+          <img
+            src={blog.image}
+            alt={blog.title}
+            className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-500"
+          />
+        </div>
       </div>
-      <div className="p-6">
-        <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-          {blog.title}
-        </h3>{" "}
-        <div
-          className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-blockquote:border-l-blue-600 prose-blockquote:bg-blue-50 prose-blockquote:p-4 prose-blockquote:rounded-r-lg prose-img:rounded-lg prose-img:shadow-md"
-          dangerouslySetInnerHTML={{
-            __html: getContentWithImages(blog)?.slice(0, 100),
-          }}
-        />
-        <p className="text-sm text-gray-600 mb-3">
-          {new Date(blog.createdAt).toLocaleDateString(undefined, options)}
-        </p>
-        <span className="text-blue-600 font-medium text-sm group-hover:gap-2 transition-all duration-300 inline-flex items-center gap-1">
-          Read More{" "}
-          <FaArrowLeft className="w-3 h-3 rotate-180 group-hover:translate-x-1 transition-transform" />
-        </span>
+
+      {/* Content Section */}
+      <div className="flex flex-col flex-grow p-6">
+        <div className="flex-grow">
+          <h3 className="text-xl font-bold text-secondary mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+            {blog.title}
+          </h3>
+          <p className="text-sm text-secondary/60 mb-4 flex items-center gap-2">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            {new Date(blog.createdAt).toLocaleDateString(undefined, options)}
+          </p>
+        </div>
+
+        {/* Read More Button */}
+        <div className="pt-4 border-t border-secondary/10">
+          <span className="text-primary font-semibold text-sm group-hover:gap-2 transition-all duration-300 inline-flex items-center gap-1">
+            Read Full Article
+            <FaArrowLeft className="w-3.5 h-3.5 rotate-180 group-hover:translate-x-1 transition-transform" />
+          </span>
+        </div>
       </div>
     </Link>
   );

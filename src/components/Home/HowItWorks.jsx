@@ -8,6 +8,7 @@ import {
   FaHeadset,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { Heading } from "../Common";
 
 export default function HowItWorks({ className = "" }) {
   const steps = [
@@ -63,28 +64,37 @@ export default function HowItWorks({ className = "" }) {
 
   return (
     <section
-      className={`bg-gradient-to-br from-gray-50 to-white py-16 lg:py-20 ${className}`}
+      className={`bg-primary/10 py-16 lg:py-20 ${className}`}
       aria-labelledby="how-it-works-heading"
     >
       <div className="Mycontainer mx-auto px-4">
         {/* Header Section */}
-        <header className="text-center mb-16">
-          <h2
-            id="how-it-works-heading"
-            className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-          >
-            Simple Steps to
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {" "}
-              Success
-            </span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Our streamlined process makes it easy to get exactly what you need,
-            when you need it. From browsing to delivery, we've got you covered
-            every step of the way.
-          </p>
-        </header>
+        <Heading
+          title={
+            <>
+              Simple Steps to{" "}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Success
+              </span>
+            </>
+          }
+          align="center"
+          size="default"
+          titleClassName="uppercase"
+          description={
+            <>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Our streamlined process
+              </span>
+              {` `}
+              makes it easy to get exactly what you need, when you need it.{" "}
+              <br /> From browsing to delivery, we've got you covered every step
+              of the way.
+            </>
+          }
+          containerClassName="mb-12 py-0 !py-0"
+          showUnderline={true}
+        />
 
         {/* Steps Grid */}
         <div className="relative">
@@ -149,7 +159,7 @@ export default function HowItWorks({ className = "" }) {
               promotional product needs.
             </p>
             <Link to="/Spromotional">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Start Shopping Now
               </button>
             </Link>

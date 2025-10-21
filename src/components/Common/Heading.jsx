@@ -41,7 +41,7 @@ const Heading = ({
       title: "text-xl md:text-2xl lg:text-3xl",
       subtitle: "text-base md:text-lg",
       description: "text-base md:text-lg",
-      container: "py-6 md:py-8",
+      container: "py-2 md:py-4",
     },
     large: {
       title: "text-2xl md:text-3xl lg:text-4xl",
@@ -107,9 +107,8 @@ const Heading = ({
 
   return (
     <div className={containerClasses} {...props}>
-      {subtitle && <h3 className={subtitleClasses}>{subtitle}</h3>}
-
       {title && <h3 className={titleClasses}>{title}</h3>}
+      {subtitle && <h3 className={subtitleClasses}>{subtitle}</h3>}
 
       {showUnderline && <div className={underlineClasses}></div>}
 

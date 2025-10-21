@@ -25,7 +25,10 @@ import { AppContext } from "../../context/AppContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
 
 import { useCoupons } from "@/hooks/useCoupons";
-import { clearCurrentUser, currentUserCartAmount } from "@/redux/slices/cartSlice";
+import {
+  clearCurrentUser,
+  currentUserCartAmount,
+} from "@/redux/slices/cartSlice";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import {
   applyFilters,
@@ -63,9 +66,21 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   // Create menu items from categories
   const createMenuItems = () => {
     const baseMenuItems = [
-      { name: "Promotional", path: "/Spromotional?categoryName=Promotional&category=A", hasSubmenu: true },
-      { name: "Clothing", path: "/Spromotional?categoryName=Clothing&category=B", hasSubmenu: true },
-      { name: "Headwear", path: "/Spromotional?categoryName=Headwear&category=G", hasSubmenu: true },
+      {
+        name: "Promotional",
+        path: "/Spromotional?categoryName=Promotional&category=A",
+        hasSubmenu: true,
+      },
+      {
+        name: "Clothing",
+        path: "/Spromotional?categoryName=Clothing&category=B",
+        hasSubmenu: true,
+      },
+      {
+        name: "Headwear",
+        path: "/Spromotional?categoryName=Headwear&category=G",
+        hasSubmenu: true,
+      },
       { name: "Return Gifts", path: "/ReturnGifts" },
       { name: "24hr Prod", path: "/production" },
       { name: "Sale", path: "/sales" },
@@ -161,7 +176,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleSearch = (searchTerm) => {
-    navigate(`/search?search=${searchTerm}${selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ''}`);
+    navigate(
+      `/search?search=${searchTerm}${
+        selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""
+      }`
+    );
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());

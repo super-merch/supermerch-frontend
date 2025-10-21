@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IoMdArrowForward } from "react-icons/io";
+import { FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import HotDeals from "./HotDeals";
 import ImageCarousel from "./TrendingCarousel";
@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 
 import { Autoplay, Navigation } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 const HeroWithHotDeals = () => {
   const navigate = useNavigate();
@@ -20,28 +21,31 @@ const HeroWithHotDeals = () => {
   const slider = [
     {
       id: 1,
-      span: "THE BEST PLACE Australia made products",
-      title: "15% OFF on your first order",
-      description: "Enjoy 15% off on your first order with us.",
+      span: "Premium Australian Made Products",
+      title: "Get 15% Off Your First Order",
+      description:
+        "Discover our collection of premium promotional products made right here in Australia. Quality you can trust, delivered fast.",
       buttonText: "Shop Now",
       // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",
     },
     {
       id: 2,
-      span: "THE BEST PLACE Australia made products",
-      title: "Get Your Customized Merch Today",
-      description: "Personalize your clothing with logos, designs, and colors.",
-      buttonText: "Explore Now",
+      span: "Custom Branded Merchandise",
+      title: "Bring Your Brand to Life",
+      description:
+        "Create memorable experiences with our custom printing and embroidery services. Perfect for businesses, events, and teams.",
+      buttonText: "Get Quote",
       // slide 2: image in public/pgHome.jpg
       imageUrl: `/pgHome.jpg`,
     },
     {
       id: 3,
-      span: "THE BEST PLACE Australia made products",
-      title: "Special Discount on Bulk Orders",
-      description: "Perfect for businesses, events, and giveaways.",
-      buttonText: "Learn More",
+      span: "Bulk Orders & Corporate Solutions",
+      title: "Special Pricing for Volume Orders",
+      description:
+        "Scale your promotional campaigns with our competitive bulk pricing. Ideal for corporate events, conferences, and marketing campaigns.",
+      buttonText: "Contact Us",
       // slide 3: image in public/phHome1.jpg
       imageUrl: `/pgHome1.jpg`,
     },
@@ -50,60 +54,53 @@ const HeroWithHotDeals = () => {
   return (
     <div className="mt-8">
       <style jsx>{`
-        .mySwiper .swiper-slide {
-          opacity: 0 !important;
-          transition: opacity 0.8s ease-in-out !important;
-          transform: scale(1.05);
+        .swiper-pagination-bullet-active {
+          background: #3b82f6 !important;
+          transform: scale(1.2);
         }
-        .mySwiper .swiper-slide-active {
+        .swiper-pagination-bullet {
+          background: rgba(255, 255, 255, 0.5) !important;
           opacity: 1 !important;
-          transform: scale(1);
-        }
-        .mySwiper .swiper-slide-prev {
-          opacity: 0.3 !important;
-          transform: scale(0.95);
-        }
-        .mySwiper .swiper-slide-next {
-          opacity: 0.3 !important;
-          transform: scale(0.95);
-        }
-        .swiper-button-prev-custom:hover,
-        .swiper-button-next-custom:hover {
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
       `}</style>
       {/* Main Hero Section with Slider and Hot Deals */}
       <div className="Mycontainer md:h-[55vh] h-full">
-        <div className="flex flex-col xl:flex-row  gap-4 h-full">
+        <div className="flex flex-col xl:flex-row gap-6 h-full">
           {/* Image Slider - 75% width */}
-          <div className="w-full xl:w-3/4 h-64 sm:h-96 md:h-full relative">
-            {/* Navigation Arrow - Right Only */}
-            <div className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
-              <button className="swiper-button-next-custom p-2 sm:p-3 bg-white/80 hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+          <div className="w-full xl:w-3/4 h-full min-h-[400px] relative rounded-2xl overflow-hidden shadow-2xl">
+            {/* Navigation Arrows */}
+            <div className="absolute md:left-4 -left-2 top-1/2 transform -translate-y-1/2 z-20">
+              <button className="swiper-button-prev-custom md:w-12 md:h-12 w-8 h-8 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                <FaChevronLeft className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="absolute md:right-4 -right-2 top-1/2 transform -translate-y-1/2 z-20">
+              <button className="swiper-button-next-custom md:w-12 md:h-12 w-8 h-8 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                <FaChevronRight className="w-5 h-5" />
               </button>
             </div>
 
+            {/* Pagination Dots */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+              <div className="swiper-pagination-custom flex gap-2"></div>
+            </div>
+
             <Swiper
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
               navigation={{
                 nextEl: ".swiper-button-next-custom",
+                prevEl: ".swiper-button-prev-custom",
+              }}
+              pagination={{
+                el: ".swiper-pagination-custom",
+                clickable: true,
+                renderBullet: function (index, className) {
+                  return `<span class="${className} w-3 h-3 bg-white/50 rounded-full transition-all duration-300 cursor-pointer"></span>`;
+                },
               }}
               loop={true}
               modules={[Autoplay, Navigation]}
-              className="mySwiper rounded-lg overflow-hidden h-full"
+              className="mySwiper h-full"
             >
               {slider.map((slide) => {
                 // decide inline style only if imageUrl is present
@@ -114,41 +111,54 @@ const HeroWithHotDeals = () => {
                 return (
                   <SwiperSlide key={slide.id}>
                     <div
-                      // apply either bgClass or nothing, plus common cover/center sizing
                       className={`${
                         slide.bgClass ?? ""
-                      } bg-cover bg-center w-full h-full flex justify-start items-end`}
+                      } bg-cover bg-center w-full h-full flex justify-start items-end relative`}
                       style={style}
                     >
-                      <div className="pt-4 pb-4 sm:pt-6 sm:pb-6 text-line px-4 sm:px-6 xl:pt-12 md:pt-12 xl:pb-12 md:pb-12 mt-auto">
-                        <div className="flex items-center gap-2 text-xs sm:text-sm">
-                          <span className="w-4 sm:w-5 bg-line h-[2px]" />
-                          <h3 className="uppercase">{slide.span}</h3>
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 via-black/30 to-transparent"></div>
+
+                      {/* Content */}
+                      <div className="relative z-10 pt-8 pb-8 px-6 sm:px-8 lg:px-12 xl:px-16 mt-auto max-w-2xl">
+                        {/* Category Badge */}
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-8 h-1 bg-blue-500 rounded-full"></div>
+                          <span className="text-sm font-semibold text-blue-300 uppercase tracking-wider">
+                            {slide.span}
+                          </span>
                         </div>
-                        <h2 className="text-lg sm:text-xl md:text-2xl xl:text-4xl max-w-[280px] sm:max-w-[350px] md:max-w-[400px] pt-2 sm:pt-3 text-heading leading-tight">
+
+                        {/* Title */}
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
                           {slide.title}
-                        </h2>
-                        <p className="text-sm sm:text-base max-w-[250px] sm:max-w-[300px] pt-2 sm:pt-3 font-normal text-line leading-relaxed">
+                        </h1>
+
+                        {/* Description */}
+                        <p className="text-lg sm:text-xl text-white/90 leading-relaxed mb-8 max-w-lg">
                           {slide.description}
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-3 sm:mt-4">
-                          <div
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <Button
+                            variant="primary"
+                            size="lg"
                             onClick={() => navigate("/shop")}
-                            className="flex items-center justify-center w-full sm:w-40 gap-2 font-bold text-white cursor-pointer bg-heading h-11 sm:h-12 rounded-lg min-h-[44px] transition-all duration-300 hover:bg-heading/90"
+                            className="rounded-lg"
                           >
-                            <button className="text-sm sm:text-base">
-                              {slide.buttonText}
-                            </button>
-                            <IoMdArrowForward className="text-sm sm:text-base" />
-                          </div>
-                          <div
+                            {slide.buttonText}
+                            <FaArrowRight className="w-4 h-4" />
+                          </Button>
+
+                          <Button
+                            variant="white"
+                            size="lg"
                             onClick={() => setIsHelpModalOpen(true)}
-                            className="flex items-center justify-center w-full sm:w-40 font-bold text-heading cursor-pointer border-2 border-heading h-11 sm:h-12 rounded-lg hover:bg-heading hover:text-white transition-all duration-300 min-h-[44px]"
+                            className="rounded-lg"
                           >
-                            <button className="text-sm sm:text-base">
-                              Help me Pick
-                            </button>
-                          </div>
+                            Help me Pick
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -159,7 +169,7 @@ const HeroWithHotDeals = () => {
           </div>
 
           {/* Hot Deals Section - 25% width */}
-          <div className="w-full xl:w-1/4 h-auto xl:h-full">
+          <div className="w-full xl:w-1/4 h-full">
             <HotDeals />
           </div>
         </div>
