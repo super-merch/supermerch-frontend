@@ -46,7 +46,7 @@ const ProductCard = ({
         to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
         className="text-center"
       >
-        <div className="relative border border-border2 hover:border-1 transition-all duration-200 hover:border-red-500  max-h-[320px] sm:max-h-[400px] h-full group">
+        <div className="relative border border-border2 hover:border-1 transition-all duration-200 hover:border-primary  max-h-[320px] sm:max-h-[400px] h-full group rounded-lg">
           <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
             {(productionIds?.has(productId) ||
               productionIds?.has(String(productId))) && (
@@ -114,9 +114,9 @@ const ProductCard = ({
               className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
             >
               {favSet?.has(productId) ? (
-                <IoIosHeart className="text-lg text-red-500" />
+                <IoIosHeart className="text-lg text-primary" />
               ) : (
-                <CiHeart className="text-lg text-gray-700 hover:text-red-500 transition-colors" />
+                <CiHeart className="text-lg text-gray-700 hover:text-primary transition-colors" />
               )}
             </div>
           </div>
@@ -152,7 +152,7 @@ const ProductCard = ({
             <p className="text-xs text-gray-500 pt-1">Min Qty: {minQty} </p>
 
             <div className="">
-              <h2 className="text-base sm:text-lg font-bold text-heading ">
+              <h2 className="text-base sm:text-lg font-bold text-primary ">
                 From $
                 {minPrice?.toFixed
                   ? minPrice.toFixed(2)
@@ -165,7 +165,7 @@ const ProductCard = ({
                   {discountPct}%
                 </span>
                 {isGlobalDiscount && (
-                  <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                  <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded mt-1">
                     Sale
                   </span>
                 )}

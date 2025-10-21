@@ -9,6 +9,7 @@ import GoogleReviewsComponent from "./GoogleReviews";
 import BannerSection from "./BannerSection";
 import { Heading } from "../Common";
 import ImageCarousel from "./TrendingCarousel";
+import HowItWorks from "./HowItWorks";
 
 const HomeContent = () => {
   return (
@@ -20,7 +21,7 @@ const HomeContent = () => {
       </div>
 
       {/* Australia's most loved brands - moved above Shop by Category */}
-      <div className="py-8 my-4" style={{ backgroundColor: "#ffffff" }}>
+      <div className="" style={{ backgroundColor: "#ffffff" }}>
         <Brands />
       </div>
 
@@ -41,24 +42,6 @@ const HomeContent = () => {
         <Blogs />
       </div>
 
-      {/* Easy Ways to Order - blank section for now */}
-      {/* <div className="py-4">
-        <div className="Mycontainer">
-          <Heading
-            title="EASY WAYS TO ORDER"
-            align="center"
-            size="default"
-            titleClassName="uppercase"
-            containerClassName="mb-8"
-          />
-          <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg">
-            <span className="text-lg text-gray-500">
-              Content will be added here later
-            </span>
-          </div>
-        </div>
-      </div> */}
-
       {/* Let's Connect - Instagram Posts */}
       <div className="pt-2 pb-4">
         <LetsConnect />
@@ -68,6 +51,7 @@ const HomeContent = () => {
       <div className="pt-2 pb-4">
         <GoogleReviewsComponent />
       </div>
+      <HowItWorks />
     </div>
   );
 };

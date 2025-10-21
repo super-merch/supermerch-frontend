@@ -53,7 +53,6 @@ const Home = () => {
     }
   }, [cookieModalShown, openCookieModal]);
 
-
   useEffect(() => {
     if (!discountModalShown) {
       openDiscountModal();
@@ -81,7 +80,6 @@ const Home = () => {
         }}
         openEmailModal={openEmailModal}
       />
-      <HowItWorks />
       {/* <WhyUs /> */}
     </div>
   );

@@ -10,7 +10,6 @@ const HotDeals = () => {
   const {
     fetchDiscountedProducts,
     discountedProducts,
-    fetchProducts,
     products,
     skeletonLoading,
   } = useContext(AppContext);
@@ -19,14 +18,8 @@ const HotDeals = () => {
     if (discountedProducts.length === 0 && products.length === 0) {
       fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
       // Fallback: also fetch regular products in case discounted products are empty
-      fetchProducts(1, "", 6);
     }
-  }, [
-    discountedProducts.length,
-    products.length,
-    fetchDiscountedProducts,
-    fetchProducts,
-  ]);
+  }, [discountedProducts.length, products.length, fetchDiscountedProducts]);
 
   // Use discounted products if available, otherwise fall back to regular products
   const displayProducts =
@@ -42,8 +35,9 @@ const HotDeals = () => {
     const slug = slugify(name);
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
+
   return (
-    <div className="bg-white border border-blue-500 rounded-lg p-4 h-full flex flex-col shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/30 min-h-96">
+    <div className="border border-primary rounded-lg p-4 h-full flex flex-col shadow-lg shadow-primary/20 min-h-96 bg-white">
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <FaFire className="text-orange-500 text-lg animate-pulse hover:animate-bounce transition-all duration-300" />
@@ -116,7 +110,7 @@ const HotDeals = () => {
                           {product.overview?.name || "No Name"}
                         </h4>
                         {/* Price */}
-                        <span className="text-lg font-bold text-blue-600">
+                        <span className="text-lg font-bold text-primary">
                           ${price}
                         </span>
                       </div>
@@ -131,7 +125,7 @@ const HotDeals = () => {
       <div className="mt-4 pt-3 border-t border-gray-200">
         <Link
           to="/hot-deals"
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+          className="text-sm text-secondary hover:text-primary font-medium transition-colors"
         >
           View All Hot Deals →
         </Link>

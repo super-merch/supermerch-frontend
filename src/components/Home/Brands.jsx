@@ -13,11 +13,10 @@ const Brands = () => {
     { id: 2, img: "/brands/brand6.jpg" },
     { id: 3, img: "/brands/brand11.jpg" },
     { id: 4, img: "/brands/brand13.jpg" },
-    { id: 5, img: "/brands/brand10.svg" },
     { id: 6, img: "/brands/brand2.jpg" },
     { id: 7, img: "/brands/brand3.jpg" },
     { id: 9, img: "/brands/brand5.jpg" },
-    { id: 10, img: "/brands/brand8.jpg" },
+    { id: 10, img: "/brands/chamb.png" },
     { id: 11, img: "/brands/brand9.jpg" },
     { id: 12, img: "/brands/brand7.jpg" },
   ];
@@ -33,56 +32,60 @@ const Brands = () => {
   };
 
   return (
-    <div className="Mycontainer relative">
+    <div className="Mycontainer relative py-8">
       <style jsx>{`
         .scroll-container::-webkit-scrollbar {
           display: none;
         }
       `}</style>
-      <Heading
-        title="AUSTRALIA'S MOST LOVED BRANDS"
-        align="center"
-        size="default"
-        titleClassName="uppercase"
-        containerClassName="pb-4 !pt-0"
-      />
 
-      {/* Navigation buttons */}
-      <div className="absolute flex justify-between w-full h-32 md:h-36 xl:h-40 items-center pointer-events-none">
-        <button
-          onClick={() => scroll("left")}
-          className="absolute -left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center pointer-events-auto"
-        >
-          <IoArrowBackOutline className="text-lg" />
-        </button>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row items-center justify-between md:mb-6 mb-0">
+        <div className="gap-3 flex-1 self-center">
+          <Heading
+            title="Trusted by Leading Australian Brands"
+            align="center"
+            size="default"
+            titleClassName="uppercase self-center"
+            description="We proudly serve top names across Australia"
+            showUnderline={true}
+          />
+        </div>
 
-        <button
-          onClick={() => scroll("right")}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 w-10 h-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center pointer-events-auto"
-        >
-          <IoMdArrowForward className="text-lg" />
-        </button>
+        {/* Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => scroll("left")}
+            className="md:p-2 p-1 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+          >
+            <IoArrowBackOutline className="md:text-lg text-base" />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="md:p-2 p-1 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+          >
+            <IoMdArrowForward className="md:text-lg text-base" />
+          </button>
+        </div>
       </div>
 
       {/* Scrollable container */}
       <motion.div
         ref={containerRef}
-        className="flex overflow-x-scroll w-[90%] mx-auto scroll-smooth gap-4 scroll-container"
+        className="flex overflow-x-scroll w-full py-8 mx-auto scroll-smooth gap-4 scroll-container"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {slide.map((item, index) => (
           <motion.div
             key={item.id}
-            ref={index === 0 ? itemRef : null} // measure only first item
-            // add negative margin on first / last items so they peek out of the container
-            className={`min-w-[50%] xs:min-w-[45%] sm:min-w-[40%] md:min-w-[25%] xl:min-w-[15%] flex-shrink-0
-      ${index === 0 ? "-ml-6" : ""} ${
-              index === slide.length - 1 ? "-mr-6 md:-mr-8" : ""
-            }`}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 200 }}
+            ref={index === 0 ? itemRef : null}
+            className={`min-w-[48%] xs:min-w-[42%] sm:min-w-[36%] md:min-w-[24%] xl:min-w-[14%] flex-shrink-0 ${
+              index === 0 ? "-ml-4" : ""
+            } ${index === slide.length - 1 ? "-mr-4 md:-mr-6" : ""}`}
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 220 }}
           >
-            <div className="w-full h-32 sm:h-28 md:h-32 lg:h-36 flex items-center justify-center bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-2">
+            <div className="w-full h-28 md:h-48 lg:h-50 flex items-center justify-center bg-white rounded-lg border border-gray-200 hover:border-primary shadow-sm hover:shadow-md transition-all duration-200 p-3">
               <img
                 src={item.img}
                 alt={`brand-${item.id}`}

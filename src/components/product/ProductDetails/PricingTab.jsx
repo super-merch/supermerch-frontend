@@ -187,9 +187,7 @@ const PricingTab = ({
                     }}
                   />
                 </td>
-                <td className="py-2 pr-4 align-middle">
-                   {item.qty}+
-                </td>
+                <td className="py-2 pr-4 align-middle">{item.qty}+</td>
                 <td className="py-2 pr-4 align-middle">
                   ${unitDiscounted.toFixed(2)}
                 </td>
@@ -277,7 +275,7 @@ const PricingTab = ({
         onClick={(e) => {
           handleAddToCart(e);
         }}
-        className="flex items-center justify-center w-full gap-3 px-2 py-3 mt-4 text-white rounded-sm cursor-pointer bg-smallHeader"
+        className="flex items-center justify-center w-full gap-3 px-2 py-3 mt-6 text-white rounded-sm cursor-pointer bg-primary hover:bg-primary/80 transition-all duration-300"
       >
         <button className="text-lg uppercase">Add to cart</button>
         <IoCartOutline className="text-xl" />

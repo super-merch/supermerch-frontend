@@ -3,6 +3,7 @@ import { AppContext } from "@/context/AppContext";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heading } from "../Common";
+import { FaArrowRight, FaBoxOpen } from "react-icons/fa";
 // Assume megaMenu is imported or defined somewhere in your code
 // import megaMenu from './megaMenuData';
 import collection2 from "../../assets/pen.jpg";
@@ -76,26 +77,31 @@ const TabsCategory = () => {
           }
         }
       `}</style>
-      <div className="bg-gray-100 pb-12">
-        <div className="Mycontainer mb-12 ">
-          <Heading
-            title="MORE WAY'S TO SHOP"
-            align="center"
-            size="default"
-            titleClassName="uppercase"
-            containerClassName=""
-          />
-          {/* <div className="TabsCategory"> */}
-          {/* Main Category Tabs */}
-          <div className="xl:mt-6 md:mt-6 mt-0 flex sm:flex-row xl:grid md:grid sm:grid xl:grid-cols-4 md:grid-cols-4 sm:grid-cols-4 items-center xl:gap-6 md:gap-6 sm:gap-4 gap-2 sm:gap-1 border-b-4 border-blue-300">
+      <div className="bg-primary/10 py-4 pb-12">
+        <div className="Mycontainer">
+          {/* Header Section */}
+          <div className="mb-8 flex items-center justify-center">
+            <Heading
+              title="Shop by Category"
+              align="center"
+              size="default"
+              titleClassName="uppercase py-0"
+              containerClassName=""
+              description="Explore our wide range of promotional products"
+              showUnderline={true}
+            />
+          </div>
+
+          {/* Main Category Pills */}
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
             {megaMenu.slice(0, 4).map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category.id)}
-                className={`py-3 sm:py-4 max-sm:pb-1 text-start focus:outline-none text-xs sm:text-sm xl:text-xl md:text-xl font-medium transition-colors duration-300 min-h-[44px] w-full sm:w-auto ${
+                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 min-h-[44px] ${
                   category.id === activeTab
-                    ? "border-b-2 max-sm:border-b-[2px] border-blue-600 text-blue-600 px-2"
-                    : "text-gray-600 hover:text-blue-500"
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-secondary/10 text-secondary hover:bg-secondary/20"
                 }`}
               >
                 {category.name}
@@ -116,14 +122,21 @@ const TabsCategory = () => {
                 <div
                   key={`${activeTab}-${subCategory.label}`}
                   onClick={() => handleSubCategoryClick(subCategory)}
-                  className="bg-white rounded-xl lg:p-5 md:p-5 p-3 sm:p-4 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group min-h-[44px]"
+                  className="relative bg-white rounded-2xl overflow-hidden cursor-pointer border border-secondary/10 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-primary group min-h-[44px]"
                   style={{
                     animation: isAnimating
                       ? "none"
                       : `fadeInUp 0.4s ease-out ${index * 50}ms both`,
                   }}
                 >
-                  <div className="overflow-hidden rounded-lg">
+                  {/* Category Badge */}
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className="bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                      New
+                    </span>
+                  </div>
+
+                  <div className="overflow-hidden">
                     <img
                       src={
                         (subCategory.label === "Pens" && collection2) ||
@@ -148,12 +161,23 @@ const TabsCategory = () => {
                         (subCategory.label == "Keyrings" && keyring)
                       }
                       alt=""
-                      className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
-                  <h3 className="text-blue-800 xl:pt-3 md:pt-3 sm:pt-3 pt-2 xl:text-lg md:text-lg sm:text-lg text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">
-                    {subCategory.label}
-                  </h3>
+
+                  <div className="p-4">
+                    <h3 className="text-secondary text-base font-semibold group-hover:text-primary transition-colors duration-300 mb-2">
+                      {subCategory.label}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-secondary/60">
+                        Explore collection
+                      </span>
+                      <div className="w-7 h-7 rounded-full bg-primary/10 group-hover:bg-primary flex items-center justify-center transition-colors duration-300">
+                        <FaArrowRight className="w-3 h-3 text-primary group-hover:text-white transition-colors duration-300" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
           </div>

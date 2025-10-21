@@ -147,9 +147,8 @@ const BlogDetails = () => {
               <img
                 src={blogData?.image}
                 alt={blogData?.title}
-                className="w-full h-64 md:h-80 lg:h-96 object-cover"
+                className="w-full h-64 md:h-96 object-contain"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
             </div>
           </div>
 

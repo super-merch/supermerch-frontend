@@ -8,7 +8,7 @@ const PopUp = () => {
     <div className="flex items-center mt-1">
       <button
         onClick={() => setIsOpen(true)}
-        className="px-4 py-1.5 bg-blue-500 text-white font-normal rounded hover:bg-blue-600 transition duration-300"
+        className="px-4 py-1.5 bg-primary text-white font-normal rounded hover:bg-primary/90 transition duration-300"
       >
         Help me Pick
       </button>

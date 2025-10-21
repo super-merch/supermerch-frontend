@@ -97,14 +97,20 @@ const App = () => {
             />
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
-            <Route path="hot-deals" element={<HotDeals />} />
+            <Route
+              path="hot-deals"
+              element={<ShopPage category="hot-deals" />}
+            />
             <Route path="/favourites" element={<FavouritePage />} />
             <Route path="/Clothing" element={<ShopPage category="dress" />} />
             <Route
               path="/Headwear"
               element={<ShopPage category="headwear" />}
             />
-            <Route path="/ReturnGifts" element={<ShopPage category="allProducts" />} />
+            <Route
+              path="/ReturnGifts"
+              element={<ShopPage category="allProducts" />}
+            />
             <Route path="/production" element={<HourProduction24Products />} />
             <Route path="/sales" element={<ShopPage category="sales" />} />
             <Route path="/Australia" element={<Australia />} />

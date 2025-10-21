@@ -49,12 +49,12 @@ const DiscountModal = ({
       {/* modal content — stopPropagation prevents clicks inside from bubbling */}
       <motion.div
         onClick={(e) => e.stopPropagation()}
-        className="w-[90%] md:max-w-[30%] sm:w-full text-gray-800 bg-white rounded-lg relative"
+        className="w-[90%] md:max-w-md sm:w-full text-gray-800 bg-white rounded-lg relative"
         initial={{ opacity: 0.2, z: 50 }}
         animate={{ opacity: 1, z: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="relative w-full max-w-md mx-auto ">
+        <div className="relative w-full">
           <div className="absolute -inset-2 -z-10 rotate-2 rounded-lg bg-gradient-to-r from-fuchsia-500 to-indigo-500 opacity-20 blur-2xl" />
           <div className="relative rounded-lg bg-white p-4 shadow-2xl ring-1 ring-slate-100">
             <button
@@ -73,10 +73,14 @@ const DiscountModal = ({
 
               <div
                 className={`mt-5 ${
-                  coupenLoading ? "text-xl font-semibold" : "text-5xl font-extrabold"
+                  coupenLoading
+                    ? "text-xl font-semibold"
+                    : "text-5xl font-extrabold"
                 } text-slate-900`}
               >
-                {coupenLoading ? "Loading..." : `${selectedCoupon?.discount ?? 0} % OFF`}
+                {coupenLoading
+                  ? "Loading..."
+                  : `${selectedCoupon?.discount ?? 0} % OFF`}
               </div>
 
               <button
