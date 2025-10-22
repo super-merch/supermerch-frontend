@@ -109,9 +109,9 @@ const App = () => {
               path="/ReturnGifts"
               element={<ShopPage category="allProducts" />}
             />
-            <Route path="/production" element={<HourProduction24Products />} />
+            <Route path="/production" element={<ShopPage category="24hr-production" />} />
             <Route path="/sales" element={<ShopPage category="sales" />} />
-            <Route path="/Australia" element={<Australia />} />
+            <Route path="/Australia" element={<ShopPage category="australia" />} />
             {/* SHOPPAGE  */}
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
