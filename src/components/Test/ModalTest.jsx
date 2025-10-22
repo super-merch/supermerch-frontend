@@ -20,15 +20,24 @@ const ModalTest = () => {
       <h2 className="text-2xl font-bold">Modal Test</h2>
 
       <div className="space-x-4">
-        <button onClick={openDiscountModal} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        <button
+          onClick={openDiscountModal}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-primary"
+        >
           Open Discount Modal
         </button>
 
-        <button onClick={openEmailModal} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+        <button
+          onClick={openEmailModal}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
           Open Email Modal
         </button>
 
-        <button onClick={openCookieModal} className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
+        <button
+          onClick={openCookieModal}
+          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+        >
           Open Cookie Modal
         </button>
       </div>
@@ -57,7 +66,12 @@ const ModalTest = () => {
         loading={false}
       />
 
-      <CookieModal isOpen={cookieModal} onClose={closeCookieModal} onAccept={closeCookieModal} onDecline={closeCookieModal} />
+      <CookieModal
+        isOpen={cookieModal}
+        onClose={closeCookieModal}
+        onAccept={closeCookieModal}
+        onDecline={closeCookieModal}
+      />
     </div>
   );
 };

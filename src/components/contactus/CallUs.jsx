@@ -271,7 +271,7 @@ export default function CallUs() {
                           <FaUser
                             className={`w-5 h-5 ${
                               formData.type === "customer"
-                                ? "text-blue-600"
+                                ? "text-primary"
                                 : "text-gray-400"
                             }`}
                           />
@@ -308,7 +308,7 @@ export default function CallUs() {
                           <FaStore
                             className={`w-5 h-5 ${
                               formData.type === "merchant"
-                                ? "text-blue-600"
+                                ? "text-primary"
                                 : "text-gray-400"
                             }`}
                           />
@@ -397,7 +397,7 @@ export default function CallUs() {
                     )
                   }
                 >
-                  <FaEnvelope className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                  <FaEnvelope className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                   <div>
                     <p className="font-medium text-gray-900">Email</p>
                     <p className="text-sm text-gray-600">
@@ -415,7 +415,7 @@ export default function CallUs() {
                     )
                   }
                 >
-                  <FaFacebook className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                  <FaFacebook className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                   <div>
                     <p className="font-medium text-gray-900">Facebook</p>
                     <p className="text-sm text-gray-600">
@@ -433,7 +433,7 @@ export default function CallUs() {
                     )
                   }
                 >
-                  <FaInstagram className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                  <FaInstagram className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                   <div>
                     <p className="font-medium text-gray-900">Instagram</p>
                     <p className="text-sm text-gray-600">

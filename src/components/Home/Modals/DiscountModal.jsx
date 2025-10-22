@@ -67,9 +67,8 @@ const DiscountModal = ({
 
             <div className="text-center">
               <h3 className="text-2xl font-bold text-slate-900">
-                Celebrate Savings
+                First time user?
               </h3>
-              <p className="mt-1 text-slate-600">Your reward is ready</p>
 
               <div
                 className={`mt-5 ${
@@ -80,17 +79,15 @@ const DiscountModal = ({
               >
                 {coupenLoading
                   ? "Loading..."
-                  : `${selectedCoupon?.discount ?? 0} % OFF`}
+                  : `${selectedCoupon?.discount ?? 0}% OFF`}
               </div>
 
               <button
                 onClick={onSubscribe}
-                className="mt-6 inline-flex w-max items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-800 transition-colors"
+                className="mt-6 inline-flex w-max items-center justify-center rounded-lg bg-primary px-5 py-3 text-white font-semibold hover:bg-primary/90 transition-colors"
               >
                 Subscribe & Redeem
               </button>
-
-              <p className="mt-3 text-xs text-slate-500">Limited time offer.</p>
 
               <p
                 onClick={() => navigate("/terms")}

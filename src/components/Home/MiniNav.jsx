@@ -357,7 +357,7 @@ const MiniNav = () => {
               <h2 className="text-xl font-semibold text-gray-800">
                 🎁 Get Your Coupon!
               </h2>
-              <p className="text-lg font-bold text-blue-600">
+              <p className="text-lg font-bold text-primary">
                 {coupenLoading
                   ? "Loading..."
                   : coupen
@@ -376,7 +376,7 @@ const MiniNav = () => {
                 .
                 {coupen && (
                   <p
-                    className="text-blue-600 block cursor-pointer"
+                    className="text-primary block cursor-pointer"
                     onClick={() => {
                       navigator.clipboard.writeText(coupen);
                       toast.success("Copied to clipboard");
@@ -388,7 +388,7 @@ const MiniNav = () => {
               </p>
               <button
                 onClick={() => setCoupenModel(false)}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
+                className="mt-4 px-4 py-2 bg-primary hover:bg-blue-700 text-white rounded-md transition duration-200"
               >
                 Got It
               </button>
@@ -428,18 +428,18 @@ const MiniNav = () => {
                   {totalQuantity > 999 ? "+999" : totalQuantity}
                 </span>
               )}
-              <HiOutlineShoppingCart className="text-3xl text-customBlue hover:text-blue-600 transition-colors" />
+              <HiOutlineShoppingCart className="text-3xl text-customBlue hover:text-primary transition-colors" />
             </Link>
             <HiOutlineHeart className="text-3xl text-customBlue hover:text-red-500 transition-colors cursor-pointer" />
             {!token ? (
               <Link to={"/signup"}>
-                <HiOutlineUser className="text-3xl text-customBlue hover:text-blue-600 transition-colors" />
+                <HiOutlineUser className="text-3xl text-customBlue hover:text-primary transition-colors" />
               </Link>
             ) : (
               <div className="relative" ref={dropdownRef}>
                 <HiOutlineUser
                   onClick={toggleLogout}
-                  className="text-3xl cursor-pointer text-customBlue hover:text-blue-600 transition-colors"
+                  className="text-3xl cursor-pointer text-customBlue hover:text-primary transition-colors"
                 />
                 {isDropdownOpen && (
                   <div className="absolute right-0 w-48 mt-2 bg-white border rounded shadow-lg">

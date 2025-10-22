@@ -32,7 +32,7 @@ const Brands = () => {
   };
 
   return (
-    <div className="Mycontainer relative py-8">
+    <div className="Mycontainer relative py-4">
       <style jsx>{`
         .scroll-container::-webkit-scrollbar {
           display: none;
@@ -49,6 +49,7 @@ const Brands = () => {
             titleClassName="uppercase self-center"
             description="We proudly serve top names across Australia"
             showUnderline={true}
+            containerClassName="py-0"
           />
         </div>
 
@@ -79,13 +80,13 @@ const Brands = () => {
           <motion.div
             key={item.id}
             ref={index === 0 ? itemRef : null}
-            className={`min-w-[48%] xs:min-w-[42%] sm:min-w-[36%] md:min-w-[24%] xl:min-w-[14%] flex-shrink-0 ${
+            className={`min-w-[33%] xs:min-w-[42%] sm:min-w-[36%] md:min-w-[24%] xl:min-w-[14%] flex-shrink-0 ${
               index === 0 ? "-ml-4" : ""
             } ${index === slide.length - 1 ? "-mr-4 md:-mr-6" : ""}`}
             whileHover={{ scale: 1.03 }}
             transition={{ type: "spring", stiffness: 220 }}
           >
-            <div className="w-full h-28 md:h-48 lg:h-50 flex items-center justify-center bg-white rounded-lg border border-gray-200 hover:border-primary shadow-sm hover:shadow-md transition-all duration-200 p-3">
+            <div className="w-full h-28 md:h-36 lg:h-50 flex items-center justify-center bg-white rounded-lg border border-gray-200 hover:border-primary shadow-sm hover:shadow-md transition-all duration-200 p-3">
               <img
                 src={item.img}
                 alt={`brand-${item.id}`}

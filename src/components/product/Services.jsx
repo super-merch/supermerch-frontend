@@ -61,7 +61,7 @@ const Services = () => {
               </svg>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">
-              Zero Setup Fees
+              Minimum Setup Fees
             </h3>
             <p className="text-gray-600 leading-relaxed">
               No hidden charges or surprise costs

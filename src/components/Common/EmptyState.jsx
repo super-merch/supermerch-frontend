@@ -142,7 +142,7 @@ const EmptyState = ({
           {primaryAction && (
             <button
               onClick={primaryAction.onClick}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+              className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
             >
               {primaryAction.label}
             </button>
@@ -183,7 +183,7 @@ const EmptyState = ({
           </p>
           <button
             onClick={() => navigate("/contact")}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm underline"
+            className="text-primary hover:text-blue-700 font-medium text-sm underline"
           >
             Contact our support team
           </button>

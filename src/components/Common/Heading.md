@@ -37,7 +37,7 @@ import { Heading } from "../Common";
 <Heading
   title="Custom Title"
   titleClassName="text-red-500 font-black"
-  descriptionClassName="text-blue-600 italic"
+  descriptionClassName="text-primary italic"
   containerClassName="bg-gray-100 p-6 rounded-lg"
 />
 ```
@@ -116,7 +116,12 @@ import { Heading } from "../Common";
 ### Product Section Headers
 
 ```jsx
-<Heading title="SHOP OUR BEST SELLERS" align="left" size="default" titleClassName="uppercase" />
+<Heading
+  title="SHOP OUR BEST SELLERS"
+  align="left"
+  size="default"
+  titleClassName="uppercase"
+/>
 ```
 
 ### Feature Headings
@@ -146,7 +151,9 @@ import { Heading } from "../Common";
 ### Before (Old Way)
 
 ```jsx
-<h1 className="text-2xl font-semibold text-brand text-left lg:pt-8 md:pt-8 sm:pt-8 pt-4 pb-4 uppercase">MORE WAY'S TO SHOP</h1>
+<h1 className="text-2xl font-semibold text-brand text-left lg:pt-8 md:pt-8 sm:pt-8 pt-4 pb-4 uppercase">
+  MORE WAY'S TO SHOP
+</h1>
 ```
 
 ### After (New Way)

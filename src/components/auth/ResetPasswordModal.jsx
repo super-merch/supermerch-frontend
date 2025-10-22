@@ -5,7 +5,11 @@ import { IoIosEyeOff } from "react-icons/io";
 
 // Helper component for password toggle icons
 const PasswordToggleIcon = ({ showPassword }) => {
-  return showPassword ? <IoMdEye className="h-5 w-5 text-gray-400" /> : <IoIosEyeOff className="h-5 w-5 text-gray-400" />;
+  return showPassword ? (
+    <IoMdEye className="h-5 w-5 text-gray-400" />
+  ) : (
+    <IoIosEyeOff className="h-5 w-5 text-gray-400" />
+  );
 };
 
 const ResetPasswordModal = ({
@@ -42,7 +46,10 @@ const ResetPasswordModal = ({
             <h3 className="text-xl font-bold text-gray-900">Reset Password</h3>
             <p className="text-sm text-gray-500 mt-1">Step {resetStep} of 3</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <FaTimes className="w-5 h-5 text-gray-400" />
           </button>
         </div>
@@ -51,10 +58,14 @@ const ResetPasswordModal = ({
           {/* Step 1: Enter Email */}
           {resetStep === 1 && (
             <>
-              <p className="text-gray-600 mb-6">Enter your email address and we&apos;ll send you a reset code.</p>
+              <p className="text-gray-600 mb-6">
+                Enter your email address and we&apos;ll send you a reset code.
+              </p>
               <form onSubmit={onResetStep1} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address *
+                  </label>
                   <input
                     type="email"
                     value={resetEmail}
@@ -65,7 +76,11 @@ const ResetPasswordModal = ({
                   />
                 </div>
 
-                {resetError && <div className="text-red-500 text-sm text-center">{resetError}</div>}
+                {resetError && (
+                  <div className="text-red-500 text-sm text-center">
+                    {resetError}
+                  </div>
+                )}
 
                 <div className="flex gap-3">
                   <button
@@ -78,7 +93,7 @@ const ResetPasswordModal = ({
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     disabled={resetLoading}
                   >
                     {resetLoading ? "Sending..." : "Send Code"}
@@ -93,11 +108,16 @@ const ResetPasswordModal = ({
           {resetStep === 2 && (
             <>
               <p className="text-gray-600 mb-6 text-center">
-                Enter the 6-digit code sent to <span className="font-semibold text-gray-900">{resetEmail}</span>
+                Enter the 6-digit code sent to{" "}
+                <span className="font-semibold text-gray-900">
+                  {resetEmail}
+                </span>
               </p>
               <form onSubmit={onResetStep2} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Reset Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Reset Code *
+                  </label>
                   <input
                     type="text"
                     value={resetCode}
@@ -109,7 +129,11 @@ const ResetPasswordModal = ({
                   />
                 </div>
 
-                {resetError && <div className="text-red-500 text-sm text-center">{resetError}</div>}
+                {resetError && (
+                  <div className="text-red-500 text-sm text-center">
+                    {resetError}
+                  </div>
+                )}
 
                 <div className="flex gap-3">
                   <button
@@ -122,7 +146,7 @@ const ResetPasswordModal = ({
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     disabled={resetLoading}
                   >
                     {resetLoading ? "Verifying..." : "Verify Code"}
@@ -136,10 +160,14 @@ const ResetPasswordModal = ({
           {/* Step 3: Set New Password */}
           {resetStep === 3 && (
             <>
-              <p className="text-gray-600 mb-6 text-center">Enter your new password below.</p>
+              <p className="text-gray-600 mb-6 text-center">
+                Enter your new password below.
+              </p>
               <form onSubmit={onResetStep3} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">New Password *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password *
+                  </label>
                   <div className="relative">
                     <input
                       type={showNewPassword ? "text" : "password"}
@@ -160,7 +188,9 @@ const ResetPasswordModal = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm New Password *
+                  </label>
                   <div className="relative">
                     <input
                       type={showConfirmNewPassword ? "text" : "password"}
@@ -173,14 +203,22 @@ const ResetPasswordModal = ({
                     <button
                       type="button"
                       className="absolute inset-y-0 right-0 flex items-center pr-3"
-                      onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                      onClick={() =>
+                        setShowConfirmNewPassword(!showConfirmNewPassword)
+                      }
                     >
-                      <PasswordToggleIcon showPassword={showConfirmNewPassword} />
+                      <PasswordToggleIcon
+                        showPassword={showConfirmNewPassword}
+                      />
                     </button>
                   </div>
                 </div>
 
-                {resetError && <div className="text-red-500 text-sm text-center">{resetError}</div>}
+                {resetError && (
+                  <div className="text-red-500 text-sm text-center">
+                    {resetError}
+                  </div>
+                )}
 
                 <div className="flex gap-3">
                   <button
@@ -193,7 +231,7 @@ const ResetPasswordModal = ({
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     disabled={resetLoading}
                   >
                     {resetLoading ? "Resetting..." : "Reset Password"}

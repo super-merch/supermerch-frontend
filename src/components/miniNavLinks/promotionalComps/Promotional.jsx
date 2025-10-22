@@ -211,7 +211,7 @@ const Promotional = () => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-smallHeader shadow-sm hover:bg-smallHeader-dark transition-colors"
+                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-primary shadow-sm hover:bg-primary-dark transition-colors"
               >
                 <IoMenu className="text-xl" />
               </button>
@@ -457,7 +457,7 @@ const Promotional = () => {
                           <p className="bg-heading text-white w-fit px-2 rounded-sm text-xs py-1.5">
                             {product.off}
                           </p>
-                          <p className="bg-smallHeader text-white w-fit px-2 rounded-sm text-xs py-1.5 mt-2">
+                          <p className="bg-primary text-white w-fit px-2 rounded-sm text-xs py-1.5 mt-2">
                             {product.hot}
                           </p>
                         </div>
@@ -473,7 +473,7 @@ const Promotional = () => {
                               {" "}
                               Code: {product.overview.code}
                             </p>
-                            <h2 className="pt-2 text-xl font-semibold text-heading">
+                            <h2 className="pt-2 text-xl font-semibold text-primary">
                               From $:<span>{realPrice}</span>
                             </h2>
                             <p className="pt-2 text-base font-normal text-brand">
@@ -503,7 +503,7 @@ const Promotional = () => {
                             <p className="p-3 text-2xl rounded-sm bg-icons">
                               <CiHeart />
                             </p>
-                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-primary">
                               <p className="text-xl">
                                 <IoCartOutline />
                               </p>
@@ -543,7 +543,7 @@ const Promotional = () => {
                     onClick={() => setCurrentPage(page)}
                     className={`w-10 h-10 border rounded-full ${
                       currentPage === page
-                        ? "bg-smallHeader text-white"
+                        ? "bg-primary text-white"
                         : "hover:bg-gray-100"
                     }`}
                   >

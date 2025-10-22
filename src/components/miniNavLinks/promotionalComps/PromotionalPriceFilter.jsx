@@ -143,7 +143,11 @@
 
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setMinPrice, setMaxPrice, applyFilters } from "../../../redux/slices/filterSlice";
+import {
+  setMinPrice,
+  setMaxPrice,
+  applyFilters,
+} from "../../../redux/slices/filterSlice";
 import { Range } from "react-range";
 import { toast } from "react-toastify";
 
@@ -170,10 +174,7 @@ const PromotionalPriceFilter = () => {
     setTimeout(() => setIsApplying(false), 1000);
   };
 
-  const priceRanges = [
-    { label: "All Prices", min: 0, max: 1000 },
-
-  ];
+  const priceRanges = [{ label: "All Prices", min: 0, max: 1000 }];
 
   const handleApplyCustomRange = () => {
     const minValue = Number(localMin);
@@ -217,14 +218,18 @@ const PromotionalPriceFilter = () => {
 
   return (
     <>
-      <h1 className="mb-2 text-base font-medium uppercase text-brand">Price Range</h1>
+      <h1 className="mb-2 text-base font-medium uppercase text-brand">
+        Price Range
+      </h1>
 
       {/* Show current filter status */}
       {(minPrice !== 0 || maxPrice !== 1000) && (
         <div className="mb-4 p-2 bg-blue-100 border border-blue-300 rounded text-sm">
           <p className="text-blue-800">
             Active Filter: ${minPrice} - ${maxPrice}
-            {isApplying && <span className="ml-2 text-blue-600">(Applying...)</span>}
+            {isApplying && (
+              <span className="ml-2 text-primary">(Applying...)</span>
+            )}
           </p>
         </div>
       )}
@@ -250,7 +255,9 @@ const PromotionalPriceFilter = () => {
           onClick={handleApplyCustomRange}
           disabled={isApplying}
           className={`px-4 max-w-44 py-2 text-white rounded ${
-            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+            isApplying
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary hover:bg-primary-dark"
           }`}
         >
           {isApplying ? "Applying..." : "Apply"}
@@ -267,11 +274,17 @@ const PromotionalPriceFilter = () => {
               <p
                 onClick={() => handlePresetRangeClick(range)}
                 className={`hover:underline ${
-                  minPrice === range.min && maxPrice === range.max ? "underline text-smallHeader font-semibold" : ""
+                  minPrice === range.min && maxPrice === range.max
+                    ? "underline text-smallHeader font-semibold"
+                    : ""
                 } ${isApplying ? "pointer-events-none opacity-50" : ""}`}
               >
                 {range.label}
-                {isApplying && minPrice === range.min && maxPrice === range.max && <span className="ml-2 text-xs">(Applying...)</span>}
+                {isApplying &&
+                  minPrice === range.min &&
+                  maxPrice === range.max && (
+                    <span className="ml-2 text-xs">(Applying...)</span>
+                  )}
               </p>
             </div>
           ))}

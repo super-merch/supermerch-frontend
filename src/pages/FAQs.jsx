@@ -41,8 +41,8 @@ const FAQS = [
     a: "After dispatch you can track you order from our website in 'Track Order' page and adding the order id.",
   },
   {
-    q: "I can\'t find a product or supplier — what now?",
-    a: "Use the global search (type keywords), try different filters, or contact our support team with the product name — we\'ll help locate it or suggest alternatives.",
+    q: "I can't find a product or supplier — what now?",
+    a: "Use the global search (type keywords), try different filters, or contact our support team with the product name — we'll help locate it or suggest alternatives.",
   },
   {
     q: "How do coupons and discounts work?",
@@ -69,8 +69,12 @@ export default function FAQs() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h1>
-          <p className="text-lg text-gray-600">Quick answers for shopping, orders and suppliers</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-lg text-gray-600">
+            Quick answers for shopping, orders and suppliers
+          </p>
         </div>
 
         <div className="divide-y divide-gray-200">
@@ -85,7 +89,9 @@ export default function FAQs() {
                   className="w-full flex items-center justify-between text-left focus:outline-none"
                 >
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900">{item.q}</h3>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {item.q}
+                    </h3>
                   </div>
 
                   <div className="ml-4 flex-shrink-0">
@@ -101,7 +107,10 @@ export default function FAQs() {
                 <motion.div
                   id={`faq-panel-${idx}`}
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+                  animate={{
+                    height: isOpen ? "auto" : 0,
+                    opacity: isOpen ? 1 : 0,
+                  }}
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
@@ -115,10 +124,10 @@ export default function FAQs() {
         </div>
 
         <div className="mt-8 text-center text-sm text-gray-500">
-          Can\'t find your question? Reach out at{' '}
+          Can\'t find your question? Reach out at{" "}
           <button
             onClick={() => window.open("mailto:Info@supermerch.com.au")}
-            className="text-blue-600 hover:underline"
+            className="text-primary hover:underline"
           >
             Info@supermerch.com.au
           </button>

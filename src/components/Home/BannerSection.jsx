@@ -18,7 +18,7 @@ const BannerSection = () => {
   ];
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-0">
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-2">
           {banners.map((banner) => (

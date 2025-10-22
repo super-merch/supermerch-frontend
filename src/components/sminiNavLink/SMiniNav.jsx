@@ -50,7 +50,7 @@ const SMiniNav = () => {
     fetchV1Categories,
     setSidebarActiveCategory,
     setSidebarActiveLabel,
-    userEmail
+    userEmail,
   } = useContext(AppContext);
 
   // const getNav = async () => {
@@ -122,9 +122,11 @@ const SMiniNav = () => {
 
   let totalQuantity = useSelector((state) => state.cart.items.length);
   const myItems = useSelector((state) => state.cart.items);
-  if(!userEmail){
-    const guest = myItems.filter(item => item.userEmail === "guest@gmail.com");
-    totalQuantity = guest.length
+  if (!userEmail) {
+    const guest = myItems.filter(
+      (item) => item.userEmail === "guest@gmail.com"
+    );
+    totalQuantity = guest.length;
   }
   const { favouriteQuantity } = useSelector((state) => state.favouriteProducts);
   const [isOpen, setIsOpen] = useState(false);
@@ -435,7 +437,7 @@ const SMiniNav = () => {
                       key={coupon._id}
                       className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
                     >
-                      <p className="text-lg font-bold text-blue-600">
+                      <p className="text-lg font-bold text-primary">
                         {coupon.coupen}
                       </p>
                       <p className="text-sm text-gray-600 mb-2">
@@ -443,7 +445,7 @@ const SMiniNav = () => {
                         order
                       </p>
                       <p
-                        className="text-blue-600 text-sm cursor-pointer hover:underline"
+                        className="text-primary text-sm cursor-pointer hover:underline"
                         onClick={() => {
                           navigator.clipboard.writeText(coupon.coupen);
                           toast.success(`${coupon.coupen} copied!`);
@@ -468,7 +470,7 @@ const SMiniNav = () => {
 
               <button
                 onClick={() => setCoupenModel(false)}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
+                className="mt-4 px-4 py-2 bg-primary hover:bg-blue-700 text-white rounded-md transition duration-200"
               >
                 Got It
               </button>
@@ -636,13 +638,13 @@ const SMiniNav = () => {
                 </div>
               </SheetContent>
             </Sheet>
-          <Link to={"/"} className="relative z-10 flex-shrink-0">
-            <img
-              src={supermerch}
-              className="object-contain w-24 lg:w-36 pl-2 lg:pl-8"
-              alt=""
-            />
-          </Link>
+            <Link to={"/"} className="relative z-10 flex-shrink-0">
+              <img
+                src={supermerch}
+                className="object-contain w-24 lg:w-36 pl-2 lg:pl-8"
+                alt=""
+              />
+            </Link>
           </div>
 
           {/* Logo */}
@@ -876,7 +878,7 @@ const SMiniNav = () => {
                     handleSearch();
                     setShowSearchModal(false);
                   }}
-                  className="text-2xl cursor-pointer text-blue-600 ml-3 hover:scale-110 transition-transform"
+                  className="text-2xl cursor-pointer text-primary ml-3 hover:scale-110 transition-transform"
                 />
               </motion.div>
             </div>
@@ -1306,11 +1308,11 @@ const SMiniNav = () => {
                   setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
                 }
               >
-                <span className="text-blue-600 font-semibold text-sm">
+                <span className="text-primary font-semibold text-sm">
                   {selectedCategory}
                 </span>
                 <svg
-                  className={`w-3 h-3 text-blue-600 transition-transform ${
+                  className={`w-3 h-3 text-primary transition-transform ${
                     isCategoryDropdownOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -1343,7 +1345,7 @@ const SMiniNav = () => {
               {/* Search icon */}
               <IoSearchSharp
                 onClick={handleSearch}
-                className="text-blue-600 text-xl cursor-pointer hover:text-blue-700 transition-colors ml-2"
+                className="text-primary text-xl cursor-pointer hover:text-blue-700 transition-colors ml-2"
               />
             </div>
 
@@ -1402,7 +1404,7 @@ const SMiniNav = () => {
             )}
           </div>
         </div>
-      </div> 
+      </div>
 
       {navbarLogout && (
         <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">

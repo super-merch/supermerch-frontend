@@ -903,13 +903,13 @@ const ProductDetails = () => {
                   </div>
 
                   <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
                     <div
-                      className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                      className="w-2 h-2 bg-primary rounded-full animate-bounce"
                       style={{ animationDelay: "0.1s" }}
                     ></div>
                     <div
-                      className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                      className="w-2 h-2 bg-primary rounded-full animate-bounce"
                       style={{ animationDelay: "0.2s" }}
                     ></div>
                   </div>
@@ -953,13 +953,13 @@ const ProductDetails = () => {
               }}
             >
               <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
-                <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-1 sm:p-1">
+                <button className="p-1 text-white rounded-full custom-prev bg-primary lg:p-2 md:p-1 sm:p-1">
                   <IoArrowBackOutline className="text-base text-md" />
                 </button>
               </div>
 
               <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
-                <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-1 sm:p-1">
+                <button className="p-1 text-white rounded-full custom-next bg-primary lg:p-2 md:p-1 sm:p-1">
                   <IoMdArrowForward className="text-base text-md" />
                 </button>
               </div>
@@ -1378,7 +1378,11 @@ const ProductDetails = () => {
       )}
       {/* Services */}
       <Services />
-
+      <img
+        src="/public/BANNER/cuo.jpg"
+        alt="Home"
+        className="w-full h-auto my-10"
+      />
       {/* Size Guide Modal */}
       {showSizeGuide && (
         <SizeGuideModal

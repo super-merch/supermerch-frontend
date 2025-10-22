@@ -36,7 +36,7 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
             <div className="flex items-start gap-4 flex-1">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                 <svg
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6 text-primary"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -72,7 +72,7 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
                   onAccept();
                   setTimeout(() => onClose(), 500);
                 }}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-semibold transition-colors duration-200 shadow-lg"
+                className="px-8 py-3 bg-primary hover:bg-blue-700 text-white rounded-lg text-base font-semibold transition-colors duration-200 shadow-lg"
               >
                 Accept All
               </button>

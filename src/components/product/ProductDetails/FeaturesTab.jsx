@@ -84,7 +84,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                 key={i}
                 className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-smallHeader" />
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 {f}
               </span>
             ))}

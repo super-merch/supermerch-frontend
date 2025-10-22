@@ -22,13 +22,19 @@ const ColorFilter = () => {
   ];
 
   // Filter colors based on search term
-  const filteredColors = availableColors.filter((color) => color.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredColors = availableColors.filter((color) =>
+    color.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Selected colors state
   const [selectedColors, setSelectedColors] = useState([]);
 
   // Determine which colors to display
-  const colorsToShow = searchTerm ? filteredColors : showAllColors ? availableColors : availableColors.slice(0, 10);
+  const colorsToShow = searchTerm
+    ? filteredColors
+    : showAllColors
+    ? availableColors
+    : availableColors.slice(0, 10);
 
   const handleColorToggle = useCallback((colorName) => {
     setSelectedColors((prev) => {
@@ -48,7 +54,9 @@ const ColorFilter = () => {
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       {/* Search Colors */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Search Colors</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Search Colors
+        </label>
         <input
           type="text"
           placeholder="Search for colors..."
@@ -60,7 +68,9 @@ const ColorFilter = () => {
 
       {/* Color Swatches Grid */}
       <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Select Colors</h3>
+        <h3 className="text-sm font-medium text-gray-700 mb-3">
+          Select Colors
+        </h3>
         <div className="grid grid-cols-5 gap-1">
           {colorsToShow.map((color) => (
             <button
@@ -70,8 +80,14 @@ const ColorFilter = () => {
             >
               <div
                 className={`w-8 h-8 rounded-full border transition-transform duration-200 hover:scale-110 ${
-                  color.name.toLowerCase() === "white" ? "border-gray-300" : "border-gray-200"
-                } ${selectedColors.includes(color.name) ? "ring-2 ring-blue-500 ring-offset-1" : ""}`}
+                  color.name.toLowerCase() === "white"
+                    ? "border-gray-300"
+                    : "border-gray-200"
+                } ${
+                  selectedColors.includes(color.name)
+                    ? "ring-2 ring-blue-500 ring-offset-1"
+                    : ""
+                }`}
                 style={{ backgroundColor: color.hex }}
               />
               <span className="text-xs text-gray-700">{color.name}</span>
@@ -82,7 +98,10 @@ const ColorFilter = () => {
         {/* View More Colors Button - only show when not searching and not showing all */}
         {!searchTerm && !showAllColors && availableColors.length > 10 && (
           <div className="mt-3 text-center">
-            <button onClick={() => setShowAllColors(true)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <button
+              onClick={() => setShowAllColors(true)}
+              className="text-primary hover:text-blue-800 text-sm font-medium"
+            >
               View More Colors ({availableColors.length - 10} more)
             </button>
           </div>
@@ -91,14 +110,19 @@ const ColorFilter = () => {
         {/* Show Less Button - only show when showing all colors */}
         {!searchTerm && showAllColors && (
           <div className="mt-3 text-center">
-            <button onClick={() => setShowAllColors(false)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <button
+              onClick={() => setShowAllColors(false)}
+              className="text-primary hover:text-blue-800 text-sm font-medium"
+            >
               Show Less
             </button>
           </div>
         )}
 
         {colorsToShow.length === 0 && (
-          <p className="text-sm text-gray-500 text-center py-3">No colors found matching &ldquo;{searchTerm}&rdquo;</p>
+          <p className="text-sm text-gray-500 text-center py-3">
+            No colors found matching &ldquo;{searchTerm}&rdquo;
+          </p>
         )}
       </div>
     </div>

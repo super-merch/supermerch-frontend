@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Red Hat Text", "sans-serif"],
+        sans: ["Poppins", "sans-serif"],
       },
       colors: {
         primary: "#009688",

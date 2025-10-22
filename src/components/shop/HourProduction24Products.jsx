@@ -8,7 +8,7 @@ import React, {
 import { IoSearchOutline } from "react-icons/io5";
 import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
@@ -403,7 +403,7 @@ const HourProduction24Products = () => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-smallHeader shadow-sm hover:bg-smallHeader-dark transition-colors"
+                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-primary shadow-sm hover:bg-primary-dark transition-colors"
               >
                 <IoMenu className="text-xl" />
               </button>
@@ -632,16 +632,16 @@ const HourProduction24Products = () => {
                   const isGlobalDiscount =
                     product.discountInfo?.isGlobal || false;
 
+                  const slug = slugify(product.overview.name);
+                  const encodedId = btoa(product.meta.id);
+
                   return (
-                    <div
+                    <Link
                       key={productId}
-                      className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                      onClick={() =>
-                        handleViewProduct(
-                          product.meta.id,
-                          product.overview.name
-                        )
-                      }
+                      className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-primary cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                      to={`/product/${encodeURIComponent(
+                        slug
+                      )}?ref=${encodedId}`}
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                     >
@@ -812,7 +812,7 @@ const HourProduction24Products = () => {
                           </p>
 
                           <div className="">
-                            <h2 className="text-base sm:text-lg font-bold text-heading">
+                            <h2 className="text-base sm:text-lg font-bold text-primary">
                               From $
                               {minPrice === maxPrice ? (
                                 <span>{minPrice.toFixed(2)}</span>
@@ -828,7 +828,7 @@ const HourProduction24Products = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -861,7 +861,7 @@ const HourProduction24Products = () => {
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 border rounded-full flex items-center justify-center ${
                     currentPage === page
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : "hover:bg-gray-200"
                   }`}
                 >

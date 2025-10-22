@@ -404,14 +404,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     key={coupon._id}
                     className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-3"
                   >
-                    <p className="text-lg font-bold text-blue-600">
+                    <p className="text-lg font-bold text-primary">
                       {coupon.coupen}
                     </p>
                     <p className="text-sm text-gray-600 mb-2">
                       Get <strong>{coupon.discount}% OFF</strong> on your order
                     </p>
                     <p
-                      className="text-blue-600 text-sm cursor-pointer hover:underline"
+                      className="text-primary text-sm cursor-pointer hover:underline"
                       onClick={() => {
                         navigator.clipboard.writeText(coupon.coupen);
                         toast.success(`${coupon.coupen} copied!`);
@@ -436,7 +436,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
             <button
               onClick={() => setCoupenModel(false)}
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200"
+              className="mt-4 px-4 py-2 bg-primary hover:bg-blue-700 text-white rounded-md transition duration-200"
             >
               Got It
             </button>

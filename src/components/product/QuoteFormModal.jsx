@@ -237,7 +237,7 @@ const QuoteFormModal = ({
                       <button
                         type="button"
                         onClick={handleDivClick2}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        className="text-sm text-primary hover:text-blue-700 font-medium"
                       >
                         browse files
                       </button>
@@ -280,13 +280,13 @@ const QuoteFormModal = ({
                   id="not-robot"
                   checked={notRobot}
                   onChange={() => setNotRobot(!notRobot)}
-                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
+                  className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-blue-500 mt-0.5"
                 />
                 <label htmlFor="not-robot" className="text-sm text-gray-700">
                   I confirm that I'm not a robot and agree to the{" "}
                   <a
                     href="/privacy"
-                    className="text-blue-600 hover:text-blue-700 underline"
+                    className="text-primary hover:text-blue-700 underline"
                   >
                     Privacy Policy
                   </a>
@@ -305,7 +305,7 @@ const QuoteFormModal = ({
                   type="button"
                   onClick={onSubmitHandler}
                   disabled={!notRobot || quoteLoading}
-                  className="flex-1 px-6 py-3 bg-smallHeader text-white rounded-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  className="flex-1 px-6 py-3 bg-primary text-white rounded-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                 >
                   {quoteLoading ? (
                     <div className="flex items-center justify-center gap-2">

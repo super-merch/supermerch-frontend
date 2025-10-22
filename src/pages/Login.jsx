@@ -120,14 +120,18 @@ const Login = () => {
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300 relative z-10">
         {/* Welcome Text */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Hello Again!</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Hello Again!
+          </h1>
           <p className="text-gray-600">Login to get great deals.</p>
         </div>
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email *
+            </label>
             <input
               type="email"
               name="email"
@@ -156,7 +160,7 @@ const Login = () => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-2 text-sm text-gray-700">Remember me</span>
             </label>
@@ -170,13 +174,15 @@ const Login = () => {
           </div>
 
           {/* Error Message */}
-          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
 
           {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-smallHeader text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -198,7 +204,7 @@ const Login = () => {
         <div className="mt-6">
           <button
             onClick={() => googleLogin()}
-            className="w-full flex items-center justify-center px-4 py-3 border border-smallHeader rounded-lg shadow-sm bg-white text-smallHeader hover:bg-smallHeader hover:text-white focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-colors"
+            className="w-full flex items-center justify-center px-4 py-3 border border-smallHeader rounded-lg shadow-sm bg-white text-smallHeader hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-colors"
           >
             <FcGoogle className="h-5 w-5 mr-3" />
             Login with Google
@@ -252,7 +258,10 @@ const Login = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have account yet?{" "}
-            <Link to="/signup" className="font-medium text-smallHeader hover:text-smallHeader/80">
+            <Link
+              to="/signup"
+              className="font-medium text-smallHeader hover:text-smallHeader/80"
+            >
               Sign Up
             </Link>
           </p>

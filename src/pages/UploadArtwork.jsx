@@ -15,13 +15,12 @@ const UploadArtwork = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { totalDiscount,shippingCharges,setupFee } = useContext(AppContext);
-  
+  const { totalDiscount, shippingCharges, setupFee } = useContext(AppContext);
+
   // Get cart data from Redux
   const items = useSelector(selectCurrentUserCartItems);
   // Get data passed from cart page
-  const { cartTotal, appliedCoupon, couponDiscount } =
-    location.state || {};
+  const { cartTotal, appliedCoupon, couponDiscount } = location.state || {};
 
   // State for artwork uploads
   const [artworkFile, setArtworkFile] = useState(null);
@@ -47,11 +46,13 @@ const UploadArtwork = () => {
 
   // Apply coupon discount to the product-discounted amount
   const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
-  const finalDiscountedAmount = productDiscountedAmount - (couponDiscountAmount || 0);
+  const finalDiscountedAmount =
+    productDiscountedAmount - (couponDiscountAmount || 0);
 
   // Calculate GST and final total (same as cart)
   const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
-  const total = finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
+  const total =
+    finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
   const handleFileUpload = (file) => {
     // file size less then 5 mb
@@ -103,9 +104,9 @@ const UploadArtwork = () => {
   };
 
   const handleProceedToCheckout = () => {
-    if(setupFee === undefined){
+    if (setupFee === undefined) {
       toast.error("Invalid amount please go back to cart page and proceed.");
-      return
+      return;
     }
     // Validate based on selected option
     if (artworkOption === "upload") {
@@ -121,7 +122,7 @@ const UploadArtwork = () => {
         return;
       }
     }
-    
+
     // Navigate to checkout with artwork data
     navigate("/checkout", {
       state: {
@@ -132,7 +133,7 @@ const UploadArtwork = () => {
         artworkFile,
         artworkInstructions,
         artworkOption,
-        setupFee
+        setupFee,
       },
     });
   };
@@ -163,7 +164,7 @@ const UploadArtwork = () => {
         {/* Left Side - Artwork Upload */}
         <div className="w-full lg:w-[70%]">
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="bg-smallHeader px-6 py-4">
+            <div className="bg-primary px-6 py-4">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
                   <FaUpload className="w-5 h-5 text-white" />
@@ -269,7 +270,7 @@ const UploadArtwork = () => {
                   <div
                     className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                       isDragging
-                        ? "border-smallHeader bg-smallHeader/5"
+                        ? "border-smallHeader bg-primary/5"
                         : "border-gray-300 hover:border-gray-400"
                     }`}
                     onDragOver={handleDragOver}
@@ -375,7 +376,7 @@ const UploadArtwork = () => {
         {/* Right Side - Cart Summary */}
         <div className="w-full lg:w-[30%]">
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-6">
-            <div className="bg-smallHeader px-6 py-4">
+            <div className="bg-primary px-6 py-4">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
                   <FaShoppingCart className="w-5 h-5 text-white" />
@@ -465,11 +466,7 @@ const UploadArtwork = () => {
                 </div>
                 <div className="flex justify-between text-lg">
                   <span>Total Setup Charges:</span>
-                  <span>
-                    {setupFee > 0
-                      ? `$${setupFee.toFixed(2)}`
-                      : "-"}
-                  </span>
+                  <span>{setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}</span>
                 </div>
                 {/* <div className="flex justify-between text-lg">
                   <span>Product Discount:</span>
@@ -522,7 +519,7 @@ const UploadArtwork = () => {
 
                 <button
                   onClick={handleProceedToCheckout}
-                  className="w-full bg-smallHeader text-white py-4 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
+                  className="w-full bg-primary text-white py-4 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
                 >
                   <span>Proceed to Checkout</span>
                   <FaArrowRight className="w-4 h-4" />

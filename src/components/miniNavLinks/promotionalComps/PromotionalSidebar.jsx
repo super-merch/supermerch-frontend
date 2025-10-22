@@ -176,7 +176,7 @@
 //             {isMobile && (
 //                 <button
 //                     onClick={toggleSidebar}
-//                     className="absolute  top-4   bg-smallHeader text-white px-2 py-1 rounded"
+//                     className="absolute  top-4   bg-primary text-white px-2 py-1 rounded"
 //                 >
 //                     {isSidebarOpen ? (
 //                         <IoClose className="text-xl" />
@@ -301,7 +301,10 @@ import { AppContext } from "../../../context/AppContext";
 import PromotionalBrandFilter from "./PromotionalBrandFilter";
 import PromotionalPriceFilter from "./PromotionalPriceFilter";
 import PromotionalPopularTags from "./PromotionalPopularTags";
-import { fetchcategoryProduct, matchProduct } from "@/redux/slices/categorySlice";
+import {
+  fetchcategoryProduct,
+  matchProduct,
+} from "@/redux/slices/categorySlice";
 import { Link } from "react-router-dom";
 
 const PromotionalSidebar = () => {
@@ -309,7 +312,9 @@ const PromotionalSidebar = () => {
   // Although you might be using AppContext for some data,
   // for filtering we now rely on Redux’s category slice.
   const { categoryProducts } = useContext(AppContext);
-  const checkcatPro = useSelector((state) => state.categoryProduct.categoryProduct);
+  const checkcatPro = useSelector(
+    (state) => state.categoryProduct.categoryProduct
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -363,7 +368,12 @@ const PromotionalSidebar = () => {
         const sidebar = document.querySelector("[data-sidebar-content]");
         const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
 
-        if (sidebar && !sidebar.contains(event.target) && hamburgerButton && !hamburgerButton.contains(event.target)) {
+        if (
+          sidebar &&
+          !sidebar.contains(event.target) &&
+          hamburgerButton &&
+          !hamburgerButton.contains(event.target)
+        ) {
           setIsSidebarOpen(false);
         }
       }
@@ -390,7 +400,12 @@ const PromotionalSidebar = () => {
   return (
     <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
       {/* Hidden toggle button for external control */}
-      <button data-sidebar-toggle onClick={toggleSidebar} className="hidden" aria-hidden="true" />
+      <button
+        data-sidebar-toggle
+        onClick={toggleSidebar}
+        className="hidden"
+        aria-hidden="true"
+      />
 
       {/* Sidebar */}
       <div
@@ -403,14 +418,28 @@ const PromotionalSidebar = () => {
       >
         <div className="h-full overflow-y-auto pr-3">
           <div className="border-b-2 pb-6">
-            <h1 className="font-medium text-base mb-1 uppercase text-brand">Promotional</h1>
+            <h1 className="font-medium text-base mb-1 uppercase text-brand">
+              Promotional
+            </h1>
             {promotionalCategories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="lg:min-w-[180px] max-lg:min-w-[140px]">
+              <div
+                key={categoryIndex}
+                className="lg:min-w-[180px] max-lg:min-w-[140px]"
+              >
                 <ul>
                   {category.map((item, index) => (
-                    <li key={index} className="max-lg:border-b py-1 hover:underline rounded">
-                      <p className="text-lg font-semibold text-blue-500 cursor-pointer">{item?.title}</p>
-                      <Link onClick={() => handleSubCategories(item.label)} className="font-semibold text-[13px] block" to={item.path}>
+                    <li
+                      key={index}
+                      className="max-lg:border-b py-1 hover:underline rounded"
+                    >
+                      <p className="text-lg font-semibold text-blue-500 cursor-pointer">
+                        {item?.title}
+                      </p>
+                      <Link
+                        onClick={() => handleSubCategories(item.label)}
+                        className="font-semibold text-[13px] block"
+                        to={item.path}
+                      >
                         {item.label}
                       </Link>
                     </li>

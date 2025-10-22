@@ -40,7 +40,7 @@ const Heading = ({
     default: {
       title: "text-xl md:text-2xl lg:text-3xl",
       subtitle: "text-base md:text-lg",
-      description: "text-base md:text-lg",
+      description: "text-base md:text-lg !mt-1",
       container: "py-2 md:py-4",
     },
     large: {
@@ -101,7 +101,7 @@ const Heading = ({
   `.trim();
 
   const underlineClasses = `
-    w-16 h-1 bg-smallHeader mx-auto mt-4
+    w-16 h-1 bg-primary mx-auto mt-4
     ${underlineClassName}
   `.trim();
 
@@ -110,11 +110,11 @@ const Heading = ({
       {title && <h3 className={titleClasses}>{title}</h3>}
       {subtitle && <h3 className={subtitleClasses}>{subtitle}</h3>}
 
-      {showUnderline && <div className={underlineClasses}></div>}
+      {/* {showUnderline && <div className={underlineClasses}></div>} */}
 
       {description && <p className={descriptionClasses}>{description}</p>}
 
-      {children && <div className="mt-4">{children}</div>}
+      {children && <div className="mt-2">{children}</div>}
     </div>
   );
 };

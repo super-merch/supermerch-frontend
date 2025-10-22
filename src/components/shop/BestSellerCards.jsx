@@ -691,7 +691,7 @@ const BestSellerCards = () => {
                     return (
                       <div
                         key={productId}
-                        className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                        className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-primary cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                         onClick={() =>
                           handleViewProduct(
                             product.meta.id,
@@ -932,7 +932,7 @@ const BestSellerCards = () => {
 
                             {/* Updated Price display with better font */}
                             <div className="">
-                              <h2 className="text-base sm:text-lg font-bold text-heading ">
+                              <h2 className="text-base sm:text-lg font-bold text-primary ">
                                 From $
                                 {minPrice === maxPrice ? (
                                   <span>{minPrice.toFixed(2)}</span>
@@ -976,7 +976,7 @@ const BestSellerCards = () => {
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 border rounded-full flex items-center justify-center ${
                     currentPage === page
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : "hover:bg-gray-200"
                   }`}
                 >

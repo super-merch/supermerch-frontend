@@ -169,7 +169,7 @@ const MetricSec = () => {
               Be part of our growing community of satisfied clients and
               experience the difference that quality and expertise make.
             </p>
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+            <button className="bg-white text-primary px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
               Start Your Project
             </button>
           </div>

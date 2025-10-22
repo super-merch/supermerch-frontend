@@ -47,14 +47,16 @@ const CreditCard = () => {
     <div className="flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-5 w-full max-w-lg border">
         <div className="flex items-center gap-2 mb-3">
-          {/* <CreditCard className="text-blue-600" size={24} /> */}
-          <FiCreditCard className="text-blue-600" size={24} />
+          {/* <CreditCard className="text-primary" size={24} /> */}
+          <FiCreditCard className="text-primary" size={24} />
           <h2 className="text-xl font-semibold text-gray-800">Card Details</h2>
         </div>
 
         <form className="space-y-3">
           <div className="space-y-2">
-            <label className="block text-xs font-medium text-gray-700">Card number</label>
+            <label className="block text-xs font-medium text-gray-700">
+              Card number
+            </label>
             <div className="relative">
               <input
                 type="text"
@@ -74,7 +76,9 @@ const CreditCard = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Expiration date</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Expiration date
+              </label>
               <input
                 type="text"
                 value={expiryDate}
@@ -86,7 +90,9 @@ const CreditCard = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Security code</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Security code
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -98,13 +104,18 @@ const CreditCard = () => {
                   onBlur={() => setIsFlipped(false)}
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
-                <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <Lock
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={16}
+                />
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-xs font-medium text-gray-700">Country</label>
+            <label className="block text-xs font-medium text-gray-700">
+              Country
+            </label>
             <div className="relative">
               <select
                 value={country}
@@ -118,13 +129,16 @@ const CreditCard = () => {
                 <option value="CA">Canada</option>
                 {/* <option value="PK">Pakistan</option> */}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              <ChevronDown
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={16}
+              />
             </div>
           </div>
 
           {/* <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                         Save Card Details
                     </button> */}

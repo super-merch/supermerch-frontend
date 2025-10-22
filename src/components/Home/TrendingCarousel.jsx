@@ -92,7 +92,7 @@ const TrendingCarousel = () => {
   }
 
   return (
-    <div className="w-full py-20 bg-primary/10">
+    <div className="w-full py-10 bg-primary/10">
       <div className="Mycontainer">
         {/* Trending Heading - Outside the carousel */}
         <div className="flex items-center justify-center gap-3 mb-6 ">

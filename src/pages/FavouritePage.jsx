@@ -12,16 +12,13 @@ import { AppContext } from "@/context/AppContext";
 
 const FavouritePage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const {productionIds,
-    australiaIds,} = useContext(AppContext)
+  const { productionIds, australiaIds } = useContext(AppContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
   const [cardHover, setCardHover] = useState(null);
 
   const navigate = useNavigate();
-
-  
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -116,7 +113,7 @@ const FavouritePage = () => {
                 return (
                   <div
                     key={product.id}
-                    className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                    className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-primary cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                     onClick={() =>
                       handleViewProduct(product.meta.id, product.overview.name)
                     }
@@ -336,7 +333,7 @@ const FavouritePage = () => {
 
                         {/* Price display - using original pricing without margin additions */}
                         <div className="">
-                          <h2 className="text-base sm:text-lg font-bold text-heading">
+                          <h2 className="text-base sm:text-lg font-bold text-primary">
                             From $
                             {minPrice === maxPrice ? (
                               <span>{minPrice.toFixed(2)}</span>

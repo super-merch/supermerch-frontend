@@ -2,7 +2,15 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 
-const EmailModal = ({ isOpen, onClose, onSubmit, emailInput, setEmailInput, error, loading }) => {
+const EmailModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  emailInput,
+  setEmailInput,
+  error,
+  loading,
+}) => {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -75,7 +83,7 @@ const EmailModal = ({ isOpen, onClose, onSubmit, emailInput, setEmailInput, erro
           <button
             onClick={onSubmit}
             disabled={loading}
-            className={`px-4 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors ${
+            className={`px-4 py-2 rounded bg-primary text-white font-medium hover:bg-blue-700 transition-colors ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             style={{ zIndex: 9999 }}

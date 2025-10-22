@@ -55,7 +55,7 @@ const ABoutHero = () => {
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">15+</div>
+                  <div className="text-2xl font-bold text-primary">15+</div>
                   <div className="text-sm text-gray-600">Years Experience</div>
                 </div>
                 <div className="text-center">
@@ -139,10 +139,10 @@ const ABoutHero = () => {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                  <button className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300">
+                  <button className="bg-white text-primary px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300">
                     Learn More
                   </button>
-                  <button className="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-colors duration-300">
+                  <button className="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-primary transition-colors duration-300">
                     Get Quote
                   </button>
                 </div>

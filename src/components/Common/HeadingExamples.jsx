@@ -4,7 +4,9 @@ import { Heading } from "./Heading";
 const HeadingExamples = () => {
   return (
     <div className="space-y-12 p-8">
-      <h2 className="text-3xl font-bold text-center mb-8">Heading Component Examples</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">
+        Heading Component Examples
+      </h2>
 
       {/* Basic Examples */}
       <div className="space-y-8">
@@ -14,34 +16,69 @@ const HeadingExamples = () => {
         <Heading title="Simple Title" />
 
         {/* Title with Description */}
-        <Heading title="Title with Description" description="This is a description that explains what this section is about." />
+        <Heading
+          title="Title with Description"
+          description="This is a description that explains what this section is about."
+        />
 
         {/* Title with Subtitle */}
-        <Heading subtitle="SUBTITLE" title="Main Title" description="This is a description that explains what this section is about." />
+        <Heading
+          subtitle="SUBTITLE"
+          title="Main Title"
+          description="This is a description that explains what this section is about."
+        />
       </div>
 
       {/* Alignment Examples */}
       <div className="space-y-8">
         <h3 className="text-xl font-semibold">Alignment Examples</h3>
 
-        <Heading title="Left Aligned" description="This heading is aligned to the left." align="left" />
+        <Heading
+          title="Left Aligned"
+          description="This heading is aligned to the left."
+          align="left"
+        />
 
-        <Heading title="Center Aligned" description="This heading is centered (default)." align="center" />
+        <Heading
+          title="Center Aligned"
+          description="This heading is centered (default)."
+          align="center"
+        />
 
-        <Heading title="Right Aligned" description="This heading is aligned to the right." align="right" />
+        <Heading
+          title="Right Aligned"
+          description="This heading is aligned to the right."
+          align="right"
+        />
       </div>
 
       {/* Size Examples */}
       <div className="space-y-8">
         <h3 className="text-xl font-semibold">Size Examples</h3>
 
-        <Heading title="Small Size" description="This is a small heading." size="small" />
+        <Heading
+          title="Small Size"
+          description="This is a small heading."
+          size="small"
+        />
 
-        <Heading title="Default Size" description="This is the default size heading." size="default" />
+        <Heading
+          title="Default Size"
+          description="This is the default size heading."
+          size="default"
+        />
 
-        <Heading title="Large Size" description="This is a large heading." size="large" />
+        <Heading
+          title="Large Size"
+          description="This is a large heading."
+          size="large"
+        />
 
-        <Heading title="Extra Large Size" description="This is an extra large heading." size="xl" />
+        <Heading
+          title="Extra Large Size"
+          description="This is an extra large heading."
+          size="xl"
+        />
       </div>
 
       {/* Custom Styling Examples */}
@@ -52,7 +89,7 @@ const HeadingExamples = () => {
           title="Custom Styled Title"
           description="This heading has custom styling applied."
           titleClassName="text-red-500 font-black"
-          descriptionClassName="text-blue-600 italic"
+          descriptionClassName="text-primary italic"
           containerClassName="bg-gray-100 p-6 rounded-lg"
         />
 
@@ -78,7 +115,12 @@ const HeadingExamples = () => {
         />
 
         {/* Shop Our Best Sellers Style */}
-        <Heading title="SHOP OUR BEST SELLERS" align="left" size="default" titleClassName="uppercase" />
+        <Heading
+          title="SHOP OUR BEST SELLERS"
+          align="left"
+          size="default"
+          titleClassName="uppercase"
+        />
 
         {/* Centered Hero Style */}
         <Heading
@@ -105,7 +147,9 @@ const HeadingExamples = () => {
           containerClassName="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-xl"
         >
           <div className="flex justify-center mt-6">
-            <button className="bg-brand text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all">Shop Now</button>
+            <button className="bg-brand text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all">
+              Shop Now
+            </button>
           </div>
         </Heading>
       </div>

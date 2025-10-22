@@ -85,12 +85,12 @@ const BlogCards = () => {
         </div>
         <div className="flex justify-center items-center gap-2">
           <div className="lg:-left-6 md:-left-6 -left-0 lg:top-[83%] md:top-[83%] top-[76%] transform -translate-y-1/2 z-10">
-            <button className="custom-prev2 disabled:opacity-40 bg-smallHeader text-white lg:p-2 md:p-2 p-1 rounded-full">
+            <button className="custom-prev2 disabled:opacity-40 bg-primary text-white lg:p-2 md:p-2 p-1 rounded-full">
               <IoArrowBackOutline className="lg:text-2xl md:text-2xl text-lg" />
             </button>
           </div>
           <div className="lg:-right-6 md:-right-6 -right-0 lg:top-[83%] md:top-[83%] top-[76%] transform -translate-y-1/2 z-10">
-            <button className="custom-next2 disabled:opacity-40 bg-smallHeader text-white lg:p-2 md:p-2 p-1 rounded-full">
+            <button className="custom-next2 disabled:opacity-40 bg-primary text-white lg:p-2 md:p-2 p-1 rounded-full">
               <IoMdArrowForward className="lg:text-2xl md:text-2xl text-lg" />
             </button>
           </div>
