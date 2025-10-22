@@ -1,5 +1,5 @@
 import React from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaCalendar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const BlogCard = ({ blog, options }) => {
@@ -84,27 +84,15 @@ const BlogCard = ({ blog, options }) => {
           <h3 className="md:text-xl text-base font-bold text-secondary mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
             {blog.title}
           </h3>
-          <p className="text-sm text-secondary/60 mb-4 flex items-center gap-2">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
+          <p className="md:text-sm text-xs text-secondary/60 mb-4 flex items-center gap-2">
+            <FaCalendar />
             {new Date(blog.createdAt).toLocaleDateString(undefined, options)}
           </p>
         </div>
 
         {/* Read More Button */}
         <div className="pt-4 border-t border-secondary/10">
-          <span className="text-primary font-semibold text-sm group-hover:gap-2 transition-all duration-300 inline-flex items-center gap-1">
+          <span className="text-primary font-semibold md:text-sm text-xs group-hover:gap-2 transition-all duration-300 inline-flex items-center gap-1">
             Read Full Article
             <FaArrowLeft className="w-3.5 h-3.5 rotate-180 group-hover:translate-x-1 transition-transform" />
           </span>

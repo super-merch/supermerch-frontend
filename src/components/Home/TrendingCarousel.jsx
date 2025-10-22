@@ -1,13 +1,23 @@
-import { useState, useEffect, useContext, useMemo } from "react";
-import { FaFire, FaArrowRight } from "react-icons/fa";
-import { AppContext } from "../../context/AppContext";
+import { slugify } from "@/utils/utils";
+import { useContext, useEffect } from "react";
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { FaFire } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
+import "swiper/css";
+import "swiper/css/navigation";
 import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import { AppContext } from "../../context/AppContext";
 import noimage from "/noimage.png";
-import { slugify } from "@/utils/utils";
-import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  A11y,
+  Autoplay,
+  Navigation,
+  Pagination,
+  Scrollbar,
+} from "swiper/modules";
 
 const TrendingCarousel = () => {
   const navigate = useNavigate();
@@ -30,7 +40,6 @@ const TrendingCarousel = () => {
     autoplay: true,
     speed: 1000,
     autoplaySpeed: 3000,
-    initialSlide: 0,
     arrows: true,
     infinite: true,
     nextArrow: <BiChevronRight />,
@@ -38,23 +47,38 @@ const TrendingCarousel = () => {
     pauseOnHover: true,
     responsive: [
       {
+        breakpoint: 1280,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+          dots: false,
+        },
+      },
+      {
         breakpoint: 1024,
         settings: {
           slidesToShow: 3,
+          slidesToScroll: 1,
           dots: true,
+          arrows: true,
         },
       },
       {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 480,
+        breakpoint: 768,
         settings: {
           slidesToShow: 2,
-          initialSlide: 2,
+          slidesToScroll: 1,
+          dots: true,
+          arrows: false,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          dots: true,
+          arrows: false,
         },
       },
     ],
@@ -113,70 +137,119 @@ const TrendingCarousel = () => {
         {/* React Slick Carousel Container */}
         <div className="relative w-full">
           {trendingProducts.length > 0 ? (
-            <Slider {...settings}>
-              {trendingProducts.map((product, slideIndex) => {
-                const priceGroups = product.product?.prices?.price_groups || [];
-                const basePrice =
-                  priceGroups.find((group) => group?.base_price) || {};
-                const priceBreaks = basePrice.base_price?.price_breaks || [];
-                const prices = priceBreaks
-                  .map((breakItem) => breakItem.price)
-                  .filter((price) => price !== undefined);
-                const minPrice = Math.min(...prices);
-                const maxPrice = Math.max(...prices);
-                const encodedId = btoa(product.meta?.id); // base64 encode
-                const slug = slugify(product.overview?.name);
+            <>
+              <div className="relative w-full">
+                <Swiper
+                  breakpoints={{
+                    0: {
+                      slidesPerView: 2,
+                      spaceBetween: 20,
+                    },
+                    640: {
+                      slidesPerView: 2,
+                      spaceBetween: 24,
+                    },
+                    1024: {
+                      slidesPerView: 3,
+                      spaceBetween: 24,
+                    },
+                    1280: {
+                      slidesPerView: 4,
+                      spaceBetween: 24,
+                    },
+                  }}
+                  pagination={{ clickable: true }}
+                  scrollbar={{ draggable: true }}
+                  navigation={{
+                    prevEl: ".blog-prev",
+                    nextEl: ".blog-next",
+                  }}
+                  autoplay={{
+                    delay: 3000,
+                    disableOnInteraction: false,
+                  }}
+                  speed={1000}
+                  loop={true}
+                  modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
+                  className="blog-swiper"
+                >
+                  {trendingProducts.map((product, slideIndex) => {
+                    const priceGroups =
+                      product.product?.prices?.price_groups || [];
+                    const basePrice =
+                      priceGroups.find((group) => group?.base_price) || {};
+                    const priceBreaks =
+                      basePrice.base_price?.price_breaks || [];
+                    const prices = priceBreaks
+                      .map((breakItem) => breakItem.price)
+                      .filter((price) => price !== undefined);
+                    const minPrice = Math.min(...prices);
+                    const maxPrice = Math.max(...prices);
+                    const encodedId = btoa(product.meta?.id); // base64 encode
+                    const slug = slugify(product.overview?.name);
 
-                return (
-                  <div key={slideIndex} className="w-full">
-                    <Link
-                      to={`/product/${encodeURIComponent(
-                        slug
-                      )}?ref=${encodedId}`}
-                      key={product.meta.id}
-                    >
-                      <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden mr-2">
-                        {" "}
-                        {/* Product Image */}
-                        <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">
-                          <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                            Hot
-                          </span>
-                          <img
-                            src={
-                              product.overview.hero_image
-                                ? product.overview.hero_image
-                                : noimage
-                            }
-                            alt={product.overview.name || "Product"}
-                            className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-110"
-                          />
-                        </div>
-                        {/* Product Info */}
-                        <div className="p-3 rounded-b-xl text-center">
-                          <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
-                            {product.overview.name || "No Name"}
-                          </h3>
-                          <p className="text-xs text-secondary/60">
-                            Min Qty:{" "}
-                            {product.product?.prices?.price_groups[0]
-                              ?.base_price?.price_breaks[0]?.qty || 1}
-                          </p>
-                          <div className="mt-1">
-                            <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
-                              From $
-                              {minPrice === maxPrice
-                                ? minPrice.toFixed(2)
-                                : minPrice.toFixed(2)}
-                            </h4>
+                    return (
+                      <SwiperSlide key={slideIndex} className="w-full">
+                        <Link
+                          to={`/product/${encodeURIComponent(
+                            slug
+                          )}?ref=${encodedId}`}
+                          key={product.meta.id}
+                        >
+                          <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden mr-2">
+                            {" "}
+                            {/* Product Image */}
+                            <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">
+                              <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                Hot
+                              </span>
+                              <img
+                                src={
+                                  product.overview.hero_image
+                                    ? product.overview.hero_image
+                                    : noimage
+                                }
+                                alt={product.overview.name || "Product"}
+                                className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-110"
+                              />
+                            </div>
+                            {/* Product Info */}
+                            <div className="p-3 rounded-b-xl text-center">
+                              <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
+                                {product.overview.name || "No Name"}
+                              </h3>
+                              <p className="text-xs text-secondary/60">
+                                Min Qty:{" "}
+                                {product.product?.prices?.price_groups[0]
+                                  ?.base_price?.price_breaks[0]?.qty || 1}
+                              </p>
+                              <div className="mt-1">
+                                <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
+                                  From $
+                                  {minPrice === maxPrice
+                                    ? minPrice.toFixed(2)
+                                    : minPrice.toFixed(2)}
+                                </h4>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                );
-              })}
-            </Slider>
+                        </Link>
+                      </SwiperSlide>
+                    );
+                  })}
+                </Swiper>
+                <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10">
+                  <button className="blog-prev bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
+                    <BiChevronLeft className="w-6 h-6" />
+                  </button>
+                </div>
+                <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10">
+                  <button className="blog-next bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
+                    <BiChevronRight className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-600">No products available to display</p>

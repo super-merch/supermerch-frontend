@@ -101,13 +101,13 @@ export default function HowItWorks({ className = "" }) {
           {/* Desktop Connection Lines */}
           <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-green-200 via-purple-200 via-orange-200 via-indigo-200 to-teal-200"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               return (
                 <div key={step.number} className="relative group">
                   {/* Step Card */}
-                  <article className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100">
+                  <article className="relative bg-white rounded-2xl md:p-8 p-4 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100">
                     {/* Step Number Badge */}
                     <div
                       className={`absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-r ${step.color} rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`}
@@ -117,16 +117,16 @@ export default function HowItWorks({ className = "" }) {
 
                     {/* Icon */}
                     <div
-                      className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                      className={`md:w-16 w-12 md:h-16 h-12 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 mx-auto md:mx-0`}
                     >
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
 
                     {/* Content */}
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors">
+                    <h3 className="md:text-xl text-sm font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors">
                       {step.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="md:text-sm text-xs text-gray-600 leading-relaxed">
                       {step.description}
                     </p>
 
@@ -135,13 +135,6 @@ export default function HowItWorks({ className = "" }) {
                       className={`absolute inset-0 bg-gradient-to-r ${step.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}
                     ></div>
                   </article>
-
-                  {/* Mobile Connection Line */}
-                  {index < steps.length - 1 && (
-                    <div className="lg:hidden flex justify-center mt-8 mb-8">
-                      <div className="w-0.5 h-8 bg-gradient-to-b from-gray-300 to-gray-200"></div>
-                    </div>
-                  )}
                 </div>
               );
             })}
