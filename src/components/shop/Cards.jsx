@@ -75,7 +75,7 @@ const Cards = ({ category = "dress" }) => {
     refetchProducts,
   } = useContext(AppContext);
   const [productsData, setProductsData] = useState(getProducts?.data);
-
+  const normalizedCategory = category === "hot-deals" ? "sales" : category;
   useEffect(() => {
     if (getProducts?.data) {
       setProductsData(getProducts?.data);
@@ -156,7 +156,7 @@ const Cards = ({ category = "dress" }) => {
     } else {
       setPaginationData({
         ...paginationData,
-        category: category,
+        category: normalizedCategory || category,
         page: pageFromURL,
       });
     }
@@ -248,7 +248,7 @@ const Cards = ({ category = "dress" }) => {
   return (
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[280px]">
+        <div className="lg:w-[255px]">
           <UnifiedSidebar pageType={pageType} />
         </div>
 
@@ -416,10 +416,16 @@ const Cards = ({ category = "dress" }) => {
                 <SkeletonLoadingCards key={index} />
               ))
             ) : productsData?.length > 0 ? (
-              <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
+              <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1 items-start overflow-visible">
                 {productsData?.map((product) => {
                   const productId = product.meta.id;
                   const discountPct = product.discountInfo?.discount || 0;
+                  let unDiscountedPrice;
+                  if (discountPct > 0) {
+                    unDiscountedPrice =
+                      getProductPrice(product, product.meta.id) /
+                      (1 - discountPct / 100);
+                  }
                   const isGlobalDiscount =
                     product.discountInfo?.isGlobal || false;
                   const encodedId = btoa(productId);
@@ -427,7 +433,7 @@ const Cards = ({ category = "dress" }) => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 max-h-[320px] sm:max-h-[400px] h-full group hover:rounded-lg"
+                      className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 max-h-[320px] sm:max-h-[400px] group hover:rounded-lg hover:z-10 self-start"
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                       onClick={() =>
@@ -526,18 +532,26 @@ const Cards = ({ category = "dress" }) => {
                         <div className="relative flex justify-center items-center text-center">
                           <div className="flex-1 justify-center">
                             <p
-                              className={`text-sm transition-all duration-300 ${
-                                cardHover === product.meta.id &&
+                              className={`text-sm overflow-hidden ${
                                 product.overview.name.length > 20
                                   ? "sm:text-[18px]"
                                   : "sm:text-lg"
                               } font-semibold text-brand sm:leading-[18px] lg:leading-[20px]`}
+                              style={{
+                                maxHeight:
+                                  cardHover === product.meta.id
+                                    ? "200px"
+                                    : "40px",
+                                transition: "max-height 0.5s ease-in-out",
+                                lineHeight: "1.2em",
+                                overflow: "hidden",
+                              }}
                             >
-                              {(product.overview.name &&
-                                // product.overview.name.length > 20 && cardHover!==product.meta.id
-                                //   ? product.overview.name.slice(0, 20) + "..."
-                                product.overview.name) ||
-                                "No Name"}
+                              {cardHover === product.meta.id
+                                ? product.overview.name
+                                : product.overview.name.length > 20
+                                ? product.overview.name.slice(0, 20) + "..."
+                                : product.overview.name || "No Name"}
                             </p>
                             <p className="text-sm font-medium text-gray-500 pt-1">
                               Min Qty:{" "}
@@ -546,11 +560,29 @@ const Cards = ({ category = "dress" }) => {
                             </p>
                             <div className="">
                               <h2 className="text-base sm:text-base font-bold text-primary">
-                                Starting from $
-                                {getProductPrice(
-                                  product,
-                                  product.meta.id
-                                ).toFixed(2)}
+                                Starting From{" "}
+                                {discountPct > 0 ? (
+                                  <>
+                                    <span className="text-sm text-gray-500 line-through mr-2">
+                                      ${unDiscountedPrice.toFixed(2)}
+                                    </span>
+                                    <span className="text-base sm:text-lg font-bold text-primary">
+                                      $
+                                      {getProductPrice(
+                                        product,
+                                        product.meta.id
+                                      ).toFixed(2)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-base sm:text-lg font-bold text-primary">
+                                    $
+                                    {getProductPrice(
+                                      product,
+                                      product.meta.id
+                                    ).toFixed(2)}
+                                  </span>
+                                )}
                               </h2>
                             </div>
                           </div>
