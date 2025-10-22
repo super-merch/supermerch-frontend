@@ -216,7 +216,7 @@ const AllProducts = ({ activeTab }) => {
                             <p className="font-normal text-brand">
                               Code: {product.overview.code}
                             </p>
-                            <h2 className="pt-2 text-xl font-semibold text-heading">
+                            <h2 className="pt-2 text-xl font-semibold text-primary">
                               ${displayPrice}
                             </h2>
                           </div>
@@ -230,7 +230,7 @@ const AllProducts = ({ activeTab }) => {
                             >
                               <CiHeart />
                             </p>
-                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader">
+                            <div className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-primary">
                               <p className="text-xl">
                                 <IoCartOutline />
                               </p>

@@ -136,7 +136,7 @@ const SizeGuideModal = ({ setShowSizeGuide, parseSizing }) => {
             <button
               type="button"
               onClick={() => setShowSizeGuide(false)}
-              className="w-full inline-flex justify-center rounded-md bg-smallHeader px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 sm:ml-3 sm:w-auto"
+              className="w-full inline-flex justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 sm:ml-3 sm:w-auto"
             >
               Close
             </button>

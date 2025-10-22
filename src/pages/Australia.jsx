@@ -1,4 +1,4 @@
-import TabsButtons from "@/components/Home/ProducsTabs/TabsButtons";
+import TabsButtons from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 import AusProducts from "@/components/shop/AusProducts";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 import { AppContext } from "@/context/AppContext";

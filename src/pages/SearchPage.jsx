@@ -3,7 +3,7 @@ import Navigate from "../components/shop/Navigate";
 import Cards from "../components/shop/Cards";
 import TabsBtns from "../components/shop/ProducsTabs/TabsBtns";
 import SearchCard from "@/components/shop/SearchCard";
-import TabsButtons from "@/components/Home/ProducsTabs/TabsButtons";
+import TabsButtons from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 const SearchPage = () => {
   return (
     <div>

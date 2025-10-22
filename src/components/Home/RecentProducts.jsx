@@ -14,7 +14,9 @@ export default function RecentProducts() {
 
   const dispatch = useDispatch();
   const { marginApi, productionIds, australiaIds } = useContext(AppContext);
-  const { favouriteItems } = useSelector((state) => state.favouriteProducts || {});
+  const { favouriteItems } = useSelector(
+    (state) => state.favouriteProducts || {}
+  );
   const slugify = (s) =>
     String(s || "")
       .trim()
@@ -60,15 +62,19 @@ export default function RecentProducts() {
         {products
           ?.filter((product) => {
             const priceGroups = product.product?.prices?.price_groups || [];
-            const basePrice = priceGroups.find((group) => group?.base_price) || {};
+            const basePrice =
+              priceGroups.find((group) => group?.base_price) || {};
             const priceBreaks = basePrice.base_price?.price_breaks || [];
             // Check if there's at least one valid price
-            return priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined;
+            return (
+              priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
+            );
           })
           .slice(0, 4) // <= changed to 4
           .map((product) => {
             const priceGroups = product.product?.prices?.price_groups || [];
-            const basePrice = priceGroups.find((group) => group?.base_price) || {};
+            const basePrice =
+              priceGroups.find((group) => group?.base_price) || {};
             const priceBreaks = basePrice.base_price?.price_breaks || [];
 
             // Get an array of prices from priceBreaks (these are already discounted)
@@ -84,7 +90,9 @@ export default function RecentProducts() {
             const productId = product.meta.id;
             const marginEntry = marginApi?.[productId] || {};
             const marginFlat =
-              typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
+              typeof marginEntry.marginFlat === "number"
+                ? marginEntry.marginFlat
+                : 0;
             const baseMarginPrice =
               typeof marginEntry.baseMarginPrice === "number"
                 ? marginEntry.baseMarginPrice
@@ -101,8 +109,10 @@ export default function RecentProducts() {
             return (
               <div
                 key={productId}
-                className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
-                onClick={() =>handleViewProduct(product.meta.id, product.overview.name)}
+                className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-primary cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                onClick={() =>
+                  handleViewProduct(product.meta.id, product.overview.name)
+                }
                 onMouseEnter={() => setCardHover(product.meta.id)}
                 onMouseLeave={() => setCardHover(null)}
               >
@@ -189,7 +199,11 @@ export default function RecentProducts() {
                     className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
                     role="button"
                     aria-pressed={favSet.has(productId)}
-                    aria-label={favSet.has(productId) ? "Remove favourite" : "Add to favourite"}
+                    aria-label={
+                      favSet.has(productId)
+                        ? "Remove favourite"
+                        : "Add to favourite"
+                    }
                   >
                     {favSet.has(productId) ? (
                       <IoIosHeart className="text-lg text-red-500" />
@@ -202,7 +216,11 @@ export default function RecentProducts() {
                 {/* Enlarged image section */}
                 <div className="max-h-[65%] sm:max-h-[70%] h-full border-b overflow-hidden relative">
                   <img
-                    src={product.overview?.hero_image ? product.overview.hero_image : noimage}
+                    src={
+                      product.overview?.hero_image
+                        ? product.overview.hero_image
+                        : noimage
+                    }
                     alt={product.overview?.name || "Product image"}
                     loading="lazy"
                     className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
@@ -285,7 +303,8 @@ export default function RecentProducts() {
                   <div className="text-center">
                     <h2
                       className={`text-sm transition-all duration-300 ${
-                        cardHover === product.meta.id && product.overview?.name?.length > 20
+                        cardHover === product.meta.id &&
+                        product.overview?.name?.length > 20
                           ? "sm:text-[18px]"
                           : "sm:text-lg"
                       } font-semibold text-brand sm:leading-[19px] `}
@@ -296,13 +315,13 @@ export default function RecentProducts() {
                     {/* Minimum quantity */}
                     <p className="text-xs text-gray-500 pt-1">
                       Min Qty:{" "}
-                      {product.product?.prices?.price_groups?.[0]?.base_price?.price_breaks?.[0]
-                        ?.qty || 1}
+                      {product.product?.prices?.price_groups?.[0]?.base_price
+                        ?.price_breaks?.[0]?.qty || 1}
                     </p>
 
                     {/* Updated Price display with better font */}
                     <div className="">
-                      <h2 className="text-base sm:text-lg font-bold text-heading ">
+                      <h2 className="text-base sm:text-lg font-bold text-primary ">
                         From ${minPrice.toFixed(2)}
                       </h2>
                     </div>

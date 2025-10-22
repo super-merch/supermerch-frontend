@@ -20,7 +20,8 @@ import {
 } from "../../redux/slices/cartSlice";
 
 const CartComponent = () => {
-  const { totalDiscount,shippingCharges,userData,setupFee } = useContext(AppContext);
+  const { totalDiscount, shippingCharges, userData, setupFee } =
+    useContext(AppContext);
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const { totalQuantity } = useSelector((state) => state.cart);
@@ -63,7 +64,6 @@ const CartComponent = () => {
   //   checkUserAuth();
   // }, []);
 
-
   useEffect(() => {
     const quantities = {};
     items.forEach((item) => {
@@ -80,7 +80,7 @@ const CartComponent = () => {
   );
 
   // Base total calculation
-  const totalAmount =  items.reduce(
+  const totalAmount = items.reduce(
     (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
     0
   );
@@ -94,8 +94,9 @@ const CartComponent = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; 
-  const total = finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
+  const total =
+    finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
   const [uploadedImage, setUploadedImage] = useState("/drag.png");
   const fileInputRef = useRef(null);
@@ -225,7 +226,7 @@ const CartComponent = () => {
         <div className="flex items-center gap-3">
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 px-4 py-2 text-smallHeader border border-smallHeader rounded-lg hover:bg-smallHeader hover:text-white transition-colors font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 text-smallHeader border border-smallHeader rounded-lg hover:bg-primary hover:text-white transition-colors font-medium"
           >
             <IoArrowBack className="w-4 h-4" />
             Continue Shopping
@@ -308,7 +309,7 @@ const CartComponent = () => {
                                   <div className="space-y-1 text-sm text-gray-600">
                                     {item.color && (
                                       <div className="flex items-center space-x-2">
-                                        <div className="w-2 h-2 bg-smallHeader rounded-full"></div>
+                                        <div className="w-2 h-2 bg-primary rounded-full"></div>
                                         <span>
                                           Color:{" "}
                                           <span className="font-medium text-gray-900">
@@ -459,7 +460,7 @@ const CartComponent = () => {
                             {/* Product Attributes */}
                             <div className="space-y-1 text-xs text-gray-600 mb-3">
                               <div className="flex items-center space-x-2">
-                                <div className="w-2 h-2 bg-smallHeader rounded-full"></div>
+                                <div className="w-2 h-2 bg-primary rounded-full"></div>
                                 <span>
                                   Color:{" "}
                                   <span className="font-medium text-gray-900">
@@ -591,7 +592,7 @@ const CartComponent = () => {
                       Total Setup Charges
                     </span>
                     <span className="text-lg font-bold text-gray-900">
-                      { setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-" }
+                      {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
                     </span>
                   </div>
 
@@ -680,7 +681,7 @@ const CartComponent = () => {
                       <button
                         onClick={handleApplyCoupon}
                         disabled={isApplyingCoupon || !value.trim()}
-                        className="px-4 py-2 bg-smallHeader text-white rounded-lg text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity font-medium"
+                        className="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity font-medium"
                       >
                         {isApplyingCoupon ? "..." : "Apply"}
                       </button>
@@ -698,9 +699,9 @@ const CartComponent = () => {
                         appliedCoupon: appliedCoupon,
                         couponDiscount: couponDiscount,
                         shippingCharges: shippingCharges,
-                        setupFee: setupFee
+                        setupFee: setupFee,
                       }}
-                      className="bg-smallHeader text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center space-x-2"
+                      className="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center space-x-2"
                     >
                       <span>Proceed to Artwork</span>
                       <FaArrowRight className="w-4 h-4" />
@@ -744,7 +745,7 @@ const CartComponent = () => {
           </p>
           <Link
             to="/shop"
-            className="inline-flex items-center px-6 py-3 bg-smallHeader text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+            className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
           >
             Continue Shopping
           </Link>

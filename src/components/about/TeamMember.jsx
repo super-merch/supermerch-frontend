@@ -79,10 +79,10 @@ const TeamMember = () => {
               {/* Member Info */}
               <div className="p-6">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors">
                     {member.name}
                   </h3>
-                  <p className="text-sm font-semibold text-blue-600 mb-3">
+                  <p className="text-sm font-semibold text-primary mb-3">
                     {member.role}
                   </p>
                   <p className="text-gray-600 text-sm leading-relaxed">

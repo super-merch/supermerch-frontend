@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { setMinPrice, setMaxPrice, applyFilters } from "../../redux/slices/filterSlice";
+import {
+  setMinPrice,
+  setMaxPrice,
+  applyFilters,
+} from "../../redux/slices/filterSlice";
 import { toast } from "react-toastify";
 
 const PriceFilter = () => {
@@ -62,7 +66,13 @@ const PriceFilter = () => {
       const maxValue = Number(localMax);
 
       // Check if both are valid numbers and meet criteria
-      if (!isNaN(minValue) && !isNaN(maxValue) && maxValue >= 0 && minValue >= 0 && minValue < maxValue) {
+      if (
+        !isNaN(minValue) &&
+        !isNaN(maxValue) &&
+        maxValue >= 0 &&
+        minValue >= 0 &&
+        minValue < maxValue
+      ) {
         // Set debounce timer
         debounceTimer.current = setTimeout(() => {
           setIsApplying(true);
@@ -94,7 +104,9 @@ const PriceFilter = () => {
       <div className="mb-4">
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              From
+            </label>
             <input
               type="text"
               placeholder="0"
@@ -104,7 +116,9 @@ const PriceFilter = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              To
+            </label>
             <input
               type="text"
               placeholder="1000"
@@ -121,7 +135,7 @@ const PriceFilter = () => {
         onClick={handleApplyCustomRange}
         disabled={isApplying}
         className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 mb-3 ${
-          isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-smallHeader hover:bg-smallHeader-dark"
+          isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
         }`}
       >
         {isApplying ? (
@@ -138,7 +152,10 @@ const PriceFilter = () => {
 
       {/* All Prices Link */}
       <div className="text-center">
-        <button onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })} className="text-blue-600 hover:text-blue-800 text-sm">
+        <button
+          onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
+          className="text-primary hover:text-blue-800 text-sm"
+        >
           All Prices
         </button>
       </div>

@@ -17,7 +17,9 @@ const ClothingGenderToggle = () => {
         <button
           onClick={() => handleGenderChange("all")}
           className={`flex-1 py-2 px-4 text-sm font-medium rounded transition-colors duration-200 ${
-            selectedGender === "all" ? "bg-smallHeader text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            selectedGender === "all"
+              ? "bg-primary text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
           All
@@ -25,7 +27,9 @@ const ClothingGenderToggle = () => {
         <button
           onClick={() => handleGenderChange("men")}
           className={`flex-1 py-2 px-4 text-sm font-medium rounded transition-colors duration-200 ${
-            selectedGender === "men" ? "bg-smallHeader text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            selectedGender === "men"
+              ? "bg-primary text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
           Men
@@ -33,7 +37,9 @@ const ClothingGenderToggle = () => {
         <button
           onClick={() => handleGenderChange("women")}
           className={`flex-1 py-2 px-4 text-sm font-medium rounded transition-colors duration-200 ${
-            selectedGender === "women" ? "bg-smallHeader text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            selectedGender === "women"
+              ? "bg-primary text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
           Women

@@ -101,7 +101,9 @@ const Signup = () => {
         {/* Name and Email Fields - Same Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Full Name *
+            </label>
             <input
               type="text"
               name="name"
@@ -114,7 +116,9 @@ const Signup = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address *
+            </label>
             <input
               type="email"
               name="email"
@@ -144,7 +148,9 @@ const Signup = () => {
             onChange={handleInputChange}
             placeholder="Confirm your password"
             showPassword={showConfirmPassword}
-            onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+            onTogglePassword={() =>
+              setShowConfirmPassword(!showConfirmPassword)
+            }
           />
         </div>
 
@@ -155,15 +161,21 @@ const Signup = () => {
               type="checkbox"
               checked={agreeToTerms}
               onChange={(e) => setAgreeToTerms(e.target.checked)}
-              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="mt-1 h-4 w-4 text-primary focus:ring-blue-500 border-gray-300 rounded"
             />
             <span className="ml-2 text-sm text-gray-600">
               I agree to Super Merch's{" "}
-              <Link to="/terms" className="text-smallHeader hover:text-smallHeader/80 font-medium">
+              <Link
+                to="/terms"
+                className="text-smallHeader hover:text-smallHeader/80 font-medium"
+              >
                 Terms & Conditions
               </Link>{" "}
               and{" "}
-              <Link to="/privacy" className="text-smallHeader hover:text-smallHeader/80 font-medium">
+              <Link
+                to="/privacy"
+                className="text-smallHeader hover:text-smallHeader/80 font-medium"
+              >
                 Privacy Policy
               </Link>
             </span>
@@ -171,13 +183,15 @@ const Signup = () => {
         </div>
 
         {/* Error Message */}
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
+        )}
 
         {/* Signup Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-smallHeader text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Creating Account..." : "Create Account"}
         </button>
@@ -199,7 +213,7 @@ const Signup = () => {
       <div className="mt-6">
         <button
           onClick={() => googleLogin()}
-          className="w-full flex items-center justify-center px-4 py-3 border border-smallHeader rounded-lg shadow-sm bg-white text-smallHeader hover:bg-smallHeader hover:text-white focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-colors"
+          className="w-full flex items-center justify-center px-4 py-3 border border-smallHeader rounded-lg shadow-sm bg-white text-smallHeader hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-colors"
         >
           <FcGoogle className="h-5 w-5 mr-3" />
           Sign up with Google

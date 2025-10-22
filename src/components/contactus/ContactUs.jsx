@@ -83,13 +83,13 @@ const ContactUs = () => {
         >
           <Link
             to={"/"}
-            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 group"
+            className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors duration-200 group"
           >
             <MdHomeFilled className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
             <span className="font-medium">Home</span>
           </Link>
           <MdKeyboardDoubleArrowRight className="text-gray-400 w-4 h-4" />
-          <div className="flex items-center gap-2 text-blue-600">
+          <div className="flex items-center gap-2 text-primary">
             <span className="font-semibold">Contact Us</span>
           </div>
         </nav>
@@ -131,7 +131,7 @@ const ContactUs = () => {
                 </div>
 
                 {/* Content */}
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
                   {card.title}
                 </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
@@ -145,7 +145,7 @@ const ContactUs = () => {
 
                 {/* Arrow */}
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <MdKeyboardDoubleArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-300" />
+                  <MdKeyboardDoubleArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
                 </div>
               </Link>
             );
@@ -165,7 +165,7 @@ const ContactUs = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaTruck className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">
@@ -176,7 +176,7 @@ const ContactUs = () => {
               </p>
               <Link
                 to="/track-order"
-                className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="inline-block bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
               >
                 Track Now
               </Link>

@@ -92,7 +92,7 @@ const Feature = () => {
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
 
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
                       {feature.title}
                     </h3>
 

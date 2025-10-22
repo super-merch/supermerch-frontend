@@ -136,7 +136,7 @@ const Spromotional = () => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-smallHeader shadow-sm hover:bg-smallHeader-dark transition-colors"
+                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-primary shadow-sm hover:bg-primary-dark transition-colors"
               >
                 <IoMenu className="text-xl" />
               </button>
@@ -305,7 +305,7 @@ const Spromotional = () => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-red-500 cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-border2 hover:border-1 hover:rounded-md transition-all duration-200 hover:border-primary cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                       onClick={() =>
                         handleViewProduct(
                           product.meta.id,
@@ -411,7 +411,7 @@ const Spromotional = () => {
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
                             <div className="">
-                              <h2 className="text-base sm:text-lg font-bold text-heading">
+                              <h2 className="text-base sm:text-lg font-bold text-primary">
                                 From $
                                 {getProductPrice(product, product.meta.id)}
                               </h2>
@@ -468,7 +468,7 @@ const Spromotional = () => {
                 }
                 className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                   currentPage === 1
-                    ? "bg-blue-600 text-white border-blue-600"
+                    ? "bg-primary text-white border-blue-600"
                     : "border-gray-300 hover:bg-gray-100"
                 }`}
               >
@@ -492,7 +492,7 @@ const Spromotional = () => {
                     }
                     className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                       currentPage === page
-                        ? "bg-blue-600 text-white border-blue-600"
+                        ? "bg-primary text-white border-blue-600"
                         : "border-gray-300 hover:bg-gray-100"
                     }`}
                   >
@@ -514,7 +514,7 @@ const Spromotional = () => {
                   }
                   className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                     currentPage === totalPages
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-primary text-white border-blue-600"
                       : "border-gray-300 hover:bg-gray-100"
                   }`}
                 >

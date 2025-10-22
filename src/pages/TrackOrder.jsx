@@ -24,13 +24,21 @@ export default function TrackOrder() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Track Your Order</h1>
-          <p className="text-sm text-gray-500">Enter your order ID below to view tracking information. (Feature coming soon)</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            Track Your Order
+          </h1>
+          <p className="text-sm text-gray-500">
+            Enter your order ID below to view tracking information. (Feature
+            coming soon)
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="order-id" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="order-id"
+              className="block text-sm font-medium text-gray-700"
+            >
               Order ID
             </label>
             <input
@@ -47,14 +55,14 @@ export default function TrackOrder() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-500 transition"
             >
               Check Status
             </button>
 
             <button
               type="button"
-              onClick={() => navigate('/contact')}
+              onClick={() => navigate("/contact")}
               className="px-4 py-2 border rounded hover:bg-gray-50 transition"
             >
               Need help? Contact us
@@ -64,14 +72,20 @@ export default function TrackOrder() {
           {submitted && (
             <div className="mt-4 p-3 rounded-md bg-yellow-50 border border-yellow-200 text-yellow-800">
               <p className="font-medium">Tracking feature coming soon</p>
-              <p className="text-sm">We received your request for Order ID: <span className="font-mono">{orderId}</span>. We will add live tracking shortly — in the meantime use the Contact page for urgent order inquiries.</p>
+              <p className="text-sm">
+                We received your request for Order ID:{" "}
+                <span className="font-mono">{orderId}</span>. We will add live
+                tracking shortly — in the meantime use the Contact page for
+                urgent order inquiries.
+              </p>
             </div>
           )}
         </form>
 
         <div className="mt-6 text-sm text-gray-500">
           <p>
-            Note: For re-ordering go to user admin and find the order you want to order again and click on re-order.
+            Note: For re-ordering go to user admin and find the order you want
+            to order again and click on re-order.
           </p>
         </div>
       </div>

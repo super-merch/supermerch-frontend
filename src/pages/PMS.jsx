@@ -24,7 +24,7 @@ export default function PMSColorChart() {
     try {
       await navigator.clipboard.writeText(hex);
       setCopied(hex);
-      setTimeout(() => setCopied("") , 1500);
+      setTimeout(() => setCopied(""), 1500);
     } catch (err) {
       console.error("Clipboard error:", err);
     }
@@ -34,9 +34,12 @@ export default function PMSColorChart() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">PMS Color Chart</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            PMS Color Chart
+          </h1>
           <p className="text-sm text-gray-500">
-            A small set of common Pantone (PMS) colors with approximate on-screen HEX values for web previews.
+            A small set of common Pantone (PMS) colors with approximate
+            on-screen HEX values for web previews.
           </p>
         </div>
 
@@ -54,8 +57,12 @@ export default function PMSColorChart() {
               />
 
               <div className="p-3 bg-white">
-                <div className="text-sm font-medium text-gray-800">{c.code}</div>
-                <div className="text-xs text-gray-500">Approx HEX: <span className="font-mono">{c.hex}</span></div>
+                <div className="text-sm font-medium text-gray-800">
+                  {c.code}
+                </div>
+                <div className="text-xs text-gray-500">
+                  Approx HEX: <span className="font-mono">{c.hex}</span>
+                </div>
                 <div className="mt-2 flex items-center justify-between">
                   <button
                     onClick={() => copyHex(c.hex)}
@@ -64,7 +71,9 @@ export default function PMSColorChart() {
                     Copy HEX
                   </button>
 
-                  <div className="text-xs text-gray-400">{copied === c.hex ? "Copied!" : ""}</div>
+                  <div className="text-xs text-gray-400">
+                    {copied === c.hex ? "Copied!" : ""}
+                  </div>
                 </div>
               </div>
             </div>
@@ -73,11 +82,21 @@ export default function PMSColorChart() {
 
         <div className="mt-6 prose prose-sm text-gray-700">
           <p>
-            <strong>Note:</strong> These HEX values are <em>approximate</em> screen conversions of Pantone (PMS) colors. For accurate print matching use official Pantone guides or request a printed proof. Colors may vary between screens and printers.
+            <strong>Note:</strong> These HEX values are <em>approximate</em>{" "}
+            screen conversions of Pantone (PMS) colors. For accurate print
+            matching use official Pantone guides or request a printed proof.
+            Colors may vary between screens and printers.
           </p>
 
           <p>
-            Need a full Pantone list or downloadable swatch PDF? Contact <button onClick={() => window.open('mailto:Info@supermerch.com.au')} className="text-blue-600 hover:underline">Info@supermerch.com.au</button> and we can provide printable templates or official references.
+            Need a full Pantone list or downloadable swatch PDF? Contact{" "}
+            <button
+              onClick={() => window.open("mailto:Info@supermerch.com.au")}
+              className="text-primary hover:underline"
+            >
+              Info@supermerch.com.au
+            </button>{" "}
+            and we can provide printable templates or official references.
           </p>
         </div>
       </div>

@@ -103,7 +103,7 @@ const PopularTags = () => {
                   <div className="inline-block bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium mb-3">
                     {topic.category}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight">
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors leading-tight">
                     {topic.title}
                   </h3>
                 </div>
@@ -125,7 +125,7 @@ const PopularTags = () => {
               Can't find what you're looking for? Our support team is here to
               help you 24/7.
             </p>
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+            <button className="bg-white text-primary px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
               Contact Support
             </button>
           </div>

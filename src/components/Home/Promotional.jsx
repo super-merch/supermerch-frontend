@@ -21,7 +21,7 @@ const Promotional = () => {
   ];
   return (
     <div className="relative">
-      <div className="bg-smallHeader relative text-white h-[100%] lg:pb-72 md:pb-72 pb-16">
+      <div className="bg-primary relative text-white h-[100%] lg:pb-72 md:pb-72 pb-16">
         <div className="Mycontainer flex flex-wrap items-center justify-between">
           <div className=" lg:hidden md:hidden block mt-24">
             <img src="/curcle.png" alt="" className="    " />

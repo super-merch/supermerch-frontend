@@ -55,7 +55,7 @@ const CategoryGrid = ({ activeTab }) => {
     setLoading(true);
     try {
       if (activeTab === "All Product") {
-        await fetchProducts(1, "", 6);
+        await fetchProducts(1, "", 8);
       } else {
         const cat = tabToCategory[activeTab];
 

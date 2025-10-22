@@ -80,9 +80,9 @@ const TabsCategory = () => {
       <div className="bg-primary/10 py-4 pb-12">
         <div className="Mycontainer">
           {/* Header Section */}
-          <div className="mb-8 flex items-center justify-center">
+          <div className="mb-0 flex items-center justify-center">
             <Heading
-              title="Shop by Category"
+              title="Top Selling Categories"
               align="center"
               size="default"
               titleClassName="uppercase py-0"

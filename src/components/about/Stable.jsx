@@ -54,7 +54,7 @@ const Stable = () => {
 
             {/* Floating Quote */}
             <div className="absolute -top-6 -left-6 bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-              <FaQuoteLeft className="w-8 h-8 text-blue-600 mb-2" />
+              <FaQuoteLeft className="w-8 h-8 text-primary mb-2" />
               <p className="text-sm font-medium text-gray-700 italic">
                 "Diverse workforces produce superior innovation and business
                 results."
@@ -129,7 +129,7 @@ const Stable = () => {
         <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div className="text-3xl font-bold text-blue-600 mb-1">10</div>
+              <div className="text-3xl font-bold text-primary mb-1">10</div>
               <div className="text-sm text-gray-600">
                 Business Resource Groups
               </div>

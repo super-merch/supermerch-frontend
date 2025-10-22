@@ -90,13 +90,11 @@ const App = () => {
             {/* Product details page */}
             {/* Akash */}
             {/* Other routes */}
-            <Route path="/Promotional" element={<PromotionalPage />} />
             <Route
               path="/Spromotional"
               element={<ShopPage category="promotional" />}
             />
-            <Route path="/success" element={<Success />} />
-            <Route path="/cancel" element={<Cancel />} />
+
             <Route
               path="hot-deals"
               element={<ShopPage category="hot-deals" />}
@@ -123,6 +121,8 @@ const App = () => {
             <Route path="/hour-production" element={<HourProduction24 />} />
             <Route path="/search" element={<ShopPage category="search" />} />
             <Route path="/new-arrivals" element={<NewArrival />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/cancel" element={<Cancel />} />
             {/* <Route path="/sales" element={<SalesPage />} /> */}
             <Route path="/bestSellers" element={<BestSellerPage />} />
             {!token && <Route path="/signup" element={<Signup />} />}

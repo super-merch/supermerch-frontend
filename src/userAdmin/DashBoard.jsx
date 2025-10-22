@@ -4,7 +4,15 @@ import { AppContext } from "../context/AppContext";
 import { FaBullseye } from "react-icons/fa";
 
 const DashBoard = () => {
-  const { backednUrl, handleLogout,setNewId, activeTab, setActiveTab, userOrder,userEmail } = useContext(AppContext);
+  const {
+    backednUrl,
+    handleLogout,
+    setNewId,
+    activeTab,
+    setActiveTab,
+    userOrder,
+    userEmail,
+  } = useContext(AppContext);
   // const [loading, setLoading] = useState(FaBullseye);
   // useEffect(() => {
   //   const fetchUserEmail = async () => {
@@ -33,16 +41,15 @@ const DashBoard = () => {
   //   fetchUserEmail();
   // }, []);
   const handleSetView = (id) => {
-
     setNewId(id);
-    setActiveTab('ordersDetails')
-  }
+    setActiveTab("ordersDetails");
+  };
 
   return (
     <>
       <div className="w-full px-4 pt-2 pb-4 text-xl lg:px-8 md:px-8 lg:pt-6 md:pt-6 ">
-        { userEmail ? (
-          <h1 className="max-sm:text-[17px]" >
+        {userEmail ? (
+          <h1 className="max-sm:text-[17px]">
             Welcome{" "}
             <span className="font-semibold text-black ">{userEmail}</span> (not{" "}
             <span className="font-semibold text-black">{userEmail}? </span>{" "}
@@ -58,7 +65,7 @@ const DashBoard = () => {
         )}
 
         {/* Dashboard Stats Cards */}
-        { userOrder  && (
+        {userOrder && (
           <div className="w-full  mt-10 pb-8">
             {/* Stats Cards Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-6 mb-8">
@@ -75,7 +82,7 @@ const DashBoard = () => {
                   </div>
                   <div className="p-3 bg-blue-100 rounded-full">
                     <svg
-                      className="w-6 h-6 text-blue-600"
+                      className="w-6 h-6 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

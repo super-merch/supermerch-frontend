@@ -70,7 +70,7 @@ const UserActions = ({
           </span>
         )}
         <HiOutlineShoppingCart
-          className={`${currentSize.icon} text-customBlue hover:text-blue-600 transition-colors`}
+          className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors`}
         />
       </Link>
 
@@ -100,14 +100,14 @@ const UserActions = ({
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <HiOutlineUser
-            className={`${currentSize.icon} text-customBlue hover:text-blue-600 transition-colors`}
+            className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors`}
           />
         </Link>
       ) : (
         <div className="relative" ref={dropdownRef}>
           <HiOutlineUser
             onClick={toggleLogout}
-            className={`${currentSize.icon} cursor-pointer text-customBlue hover:text-blue-600 transition-colors  hover:bg-gray-100 rounded-lg`}
+            className={`${currentSize.icon} cursor-pointer text-customBlue hover:text-primary transition-colors  hover:bg-gray-100 rounded-lg`}
           />
           {isDropdownOpen && (
             <div className="absolute right-0 w-48 mt-2 bg-white border rounded-lg shadow-lg z-50">

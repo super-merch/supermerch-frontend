@@ -18,7 +18,8 @@ const Hero = () => {
       id: 1,
       span: "THE BEST PLACE Australia made products",
       title: "20% OFF +FREE SHIPPING",
-      description: "Rep your brand in style with custom hats, caps, and beanies.",
+      description:
+        "Rep your brand in style with custom hats, caps, and beanies.",
       buttonText: "Shop Now",
       // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",
@@ -46,14 +47,20 @@ const Hero = () => {
   return (
     <div className="relative">
       <Swiper
-        pagination={{ dynamicBullets: true, el: ".custom-pagination", clickable: true }}
+        pagination={{
+          dynamicBullets: true,
+          el: ".custom-pagination",
+          clickable: true,
+        }}
         autoplay={{ delay: 2000, disableOnInteraction: false }}
         modules={[Pagination, Autoplay]}
         // className="mySwiper"
       >
         {slider.map((slide) => {
           // decide inline style only if imageUrl is present
-          const style = slide.imageUrl ? { backgroundImage: `url(${slide.imageUrl})` } : {};
+          const style = slide.imageUrl
+            ? { backgroundImage: `url(${slide.imageUrl})` }
+            : {};
 
           return (
             <SwiperSlide key={slide.id}>
@@ -67,8 +74,12 @@ const Hero = () => {
                     <span className="w-5 bg-line h-[2px]" />
                     <h3 className="uppercase">{slide.span}</h3>
                   </div>
-                  <h2 className="lg:text-5xl md:text-5xl text-3xl max-w-[500px] pt-3 text-heading">{slide.title}</h2>
-                  <p className="text-lg max-w-[350px] pt-5 font-normal text-line">{slide.description}</p>
+                  <h2 className="lg:text-5xl md:text-5xl text-3xl max-w-[500px] pt-3 text-primary">
+                    {slide.title}
+                  </h2>
+                  <p className="text-lg max-w-[350px] pt-5 font-normal text-line">
+                    {slide.description}
+                  </p>
                   <div
                     onClick={() => navigate("/shop")}
                     className="flex items-center justify-center w-48 gap-2 mt-6 font-bold text-white cursor-pointer bg-heading h-14"
@@ -78,7 +89,7 @@ const Hero = () => {
                   </div>
                   <div
                     onClick={() => navigate("/help-center")}
-                    className="flex items-center justify-center w-48 gap-2 mt-4 font-bold text-white cursor-pointer bg-smallHeader h-14"
+                    className="flex items-center justify-center w-48 gap-2 mt-4 font-bold text-white cursor-pointer bg-primary h-14"
                   >
                     <button>Help me Pick</button>
                     <IoMdArrowForward />

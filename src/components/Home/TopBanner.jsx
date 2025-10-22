@@ -13,7 +13,7 @@ const TopBanner = ({ onCouponClick }) => {
   };
 
   return (
-    <div className="w-full sm:py-2 pt-3 sm:pt-2 bg-primary">
+    <div className="w-full sm:py-2 py-3 sm:pt-2 bg-primary">
       <div className="Mycontainer flex flex-wrap md:flex-nowrap md:items-center justify-between gap-2 md:gap-0  md:px-0">
         {/* Left side - Super Merch Logo */}
         <div className="flex items-center order-1 min-w-0 md:min-w-fit">
@@ -27,7 +27,7 @@ const TopBanner = ({ onCouponClick }) => {
             className="flex items-center text-white text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
             onClick={handleCouponClick}
           >
-            15% off on your First Order
+            Free Shipping over $999
           </span>
 
           {/* Vertical separator */}

@@ -143,7 +143,7 @@ const LatestDeals = () => {
                         <p className="bg-heading text-white w-fit px-2 rounded-sm text-xs py-1.5">
                           {product.off}
                         </p>
-                        <p className="bg-smallHeader text-white w-fit px-2 rounded-sm text-xs py-1.5 mt-2">
+                        <p className="bg-primary text-white w-fit px-2 rounded-sm text-xs py-1.5 mt-2">
                           {product.hot}
                         </p>
                       </div>
@@ -157,7 +157,7 @@ const LatestDeals = () => {
                           <p className="font-normal text-brand">
                             Code: {product.overview.code}
                           </p>
-                          <h2 className="pt-2 text-xl font-semibold text-heading">
+                          <h2 className="pt-2 text-xl font-semibold text-primary">
                             Price: <span>${realPrice}</span>
                             <span>{product.endPrice}</span>
                           </h2>
@@ -190,7 +190,7 @@ const LatestDeals = () => {
                           </p>
                           <div
                             onClick={() => handleViewProduct(product.meta.id)}
-                            className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-smallHeader"
+                            className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-primary"
                           >
                             <p className="text-xl">
                               <IoCartOutline />

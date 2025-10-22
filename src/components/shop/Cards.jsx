@@ -97,9 +97,13 @@ const Cards = ({ category = "dress" }) => {
       behavior: "smooth",
     });
   };
+
   const itemsPerPage = getProducts?.items_per_page;
   const totalPages = getProducts?.total_pages || getProducts?.totalPages;
-  const itemCount = getProducts?.item_count || getProducts?.totalCount;
+  const itemCount =
+    getProducts?.item_count ||
+    getProducts?.totalCount ||
+    getProducts?.data?.length;
   const currentPage = paginationData?.page || paginationData?.currentPage;
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
@@ -261,7 +265,7 @@ const Cards = ({ category = "dress" }) => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-smallHeader shadow-sm hover:bg-smallHeader-dark transition-colors"
+                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-primary shadow-sm hover:bg-primary-dark transition-colors"
               >
                 <IoMenu className="text-xl" />
               </button>
@@ -423,7 +427,7 @@ const Cards = ({ category = "dress" }) => {
                   return (
                     <div
                       key={productId}
-                      className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 hover:border-primary max-h-[320px] sm:max-h-[400px] h-full group"
+                      className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 max-h-[320px] sm:max-h-[400px] h-full group hover:rounded-lg"
                       onMouseEnter={() => setCardHover(product.meta.id)}
                       onMouseLeave={() => setCardHover(null)}
                       onClick={() =>
@@ -478,7 +482,19 @@ const Cards = ({ category = "dress" }) => {
                           }
                           alt=""
                           className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
-                        />
+                        />{" "}
+                        {discountPct > 0 && (
+                          <div className="absolute bottom-2  right-1 sm:right-2 z-20">
+                            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded-full">
+                              {discountPct}% OFF
+                            </span>
+                            {isGlobalDiscount && (
+                              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                                Sale
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <div className="p-2">
@@ -523,14 +539,14 @@ const Cards = ({ category = "dress" }) => {
                                 product.overview.name) ||
                                 "No Name"}
                             </p>
-                            <p className="text-xs text-gray-500 pt-1">
+                            <p className="text-sm font-medium text-gray-500 pt-1">
                               Min Qty:{" "}
                               {product.product?.prices?.price_groups[0]
                                 ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                             </p>
                             <div className="">
-                              <h2 className="text-base sm:text-lg font-bold text-primary">
-                                From $
+                              <h2 className="text-base sm:text-base font-bold text-primary">
+                                Starting from $
                                 {getProductPrice(
                                   product,
                                   product.meta.id
@@ -538,18 +554,6 @@ const Cards = ({ category = "dress" }) => {
                               </h2>
                             </div>
                           </div>
-                          {discountPct > 0 && (
-                            <div className="absolute top-1 sm:top-0 right-1 sm:right-2 z-20">
-                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded">
-                                {discountPct}%
-                              </span>
-                              {isGlobalDiscount && (
-                                <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
-                                  Sale
-                                </span>
-                              )}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -598,7 +602,7 @@ const Cards = ({ category = "dress" }) => {
                 }}
                 className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                   currentPage === 1
-                    ? "bg-blue-600 text-white border-blue-600"
+                    ? "bg-primary text-white border-blue-600"
                     : "border-gray-300 hover:bg-gray-100"
                 }`}
               >
@@ -623,7 +627,7 @@ const Cards = ({ category = "dress" }) => {
                     }}
                     className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                       currentPage === page
-                        ? "bg-blue-600 text-white border-blue-600"
+                        ? "bg-primary text-white border-blue-600"
                         : "border-gray-300 hover:bg-gray-100"
                     }`}
                   >
@@ -649,7 +653,7 @@ const Cards = ({ category = "dress" }) => {
                   }}
                   className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
                     currentPage === totalPages
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-primary text-white border-blue-600"
                       : "border-gray-300 hover:bg-gray-100"
                   }`}
                 >

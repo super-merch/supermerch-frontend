@@ -41,7 +41,7 @@ const ProductNotFound = () => {
                 setErrorFetching(false);
                 fetchSingleProduct();
               }}
-              className="flex-1 bg-smallHeader text-white px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-200 flex items-center justify-center gap-2"
+              className="flex-1 bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <svg
                 className="w-4 h-4"

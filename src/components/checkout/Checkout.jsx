@@ -599,7 +599,7 @@ const Checkout = () => {
                       onClick={() => {
                         setOpenLoginModal(true);
                       }}
-                      className="text-blue-600 hover:text-blue-500 hover:underline cursor-pointer"
+                      className="text-primary hover:text-blue-500 hover:underline cursor-pointer"
                     >
                       Login
                     </span>
@@ -668,7 +668,7 @@ const Checkout = () => {
                           <Link
                             to="/login"
                             onClick={() => setOpenLoginModal(false)}
-                            className="text-sm text-blue-600 hover:underline"
+                            className="text-sm text-primary hover:underline"
                           >
                             Full login page
                           </Link>
@@ -688,7 +688,7 @@ const Checkout = () => {
                             <button
                               type="submit"
                               disabled={loginLoading}
-                              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {loginLoading ? "Logging in..." : "Login"}
                             </button>
@@ -773,7 +773,7 @@ const Checkout = () => {
                           setOpenCustomer(false);
                           setOpenShipping(true);
                         }}
-                        className="bg-smallHeader text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                        className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
                       >
                         Continue to Shipping
                       </button>
@@ -1131,7 +1131,7 @@ const Checkout = () => {
                           setOpenShipping(false);
                           setOpenBilling(true);
                         }}
-                        className="bg-smallHeader text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                        className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
                       >
                         Continue to Billing
                       </button>
@@ -1532,7 +1532,7 @@ const Checkout = () => {
                           setOpenBilling(false);
                           setOpenPayment(true);
                         }}
-                        className="bg-smallHeader text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                        className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
                       >
                         Continue to Payment
                       </button>
@@ -1631,7 +1631,7 @@ const Checkout = () => {
                       className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
                         loading || items.length === 0
                           ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-smallHeader hover:opacity-90 shadow-lg hover:shadow-xl"
+                          : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
                       }`}
                     >
                       {loading ? (
@@ -1722,7 +1722,7 @@ const Checkout = () => {
                     className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
                       loading || items?.length === 0
                         ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-smallHeader hover:opacity-90 shadow-lg hover:shadow-xl"
+                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
                     }`}
                   >
                     {loading ? (
@@ -1847,7 +1847,7 @@ const Checkout = () => {
                     <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <div className="flex items-center space-x-2 mb-3">
                         <svg
-                          className="w-5 h-5 text-blue-600"
+                          className="w-5 h-5 text-primary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -1897,7 +1897,7 @@ const Checkout = () => {
                               <p className="text-base font-medium text-blue-900">
                                 {artworkFile.name}
                               </p>
-                              <p className="text-xs text-blue-600">
+                              <p className="text-xs text-primary">
                                 {artworkFile.file.type.startsWith("image/")
                                   ? "Image File"
                                   : "PDF Document"}

@@ -87,7 +87,7 @@ const UnifiedSidebar = ({
 
   // Get configuration for this page type
   const categories = v1categories || [];
-  const config = { title: "Categories" }; 
+  const config = { title: "Categories" };
 
   // Get URL parameters for active state
   const urlSubCategory = searchParams.get("subCategory");
@@ -221,78 +221,83 @@ const UnifiedSidebar = ({
             <CollapsibleSection title={config.title} defaultExpanded={true}>
               {/* Categories List */}
               <div className="space-y-0.5">
-                {categories.filter((category) => category.name !== "Capital Equipment").map((category) => {
-                  const IconComponent = getCategoryIcon(category.name);
-                  return (
-                    <div key={category.id} className="w-full">
-                      {/* Main Category */}
-                      <div
-                        className={`group flex items-center justify-between py-1.5 px-1 cursor-pointer transition-all duration-200 ${
-                          openCategory === category.id
-                            ? "bg-gray-100 text-gray-800"
-                            : "hover:bg-gray-50 text-gray-600"
-                        }`}
-                        onClick={() =>
-                          handleMainCategoryClick(category.id, category.name)
-                        }
-                      >
-                        <div className="flex items-center gap-2 flex-1">
-                          <div className="transition-colors duration-200 text-gray-500">
-                            <IconComponent size={14} />
-                          </div>
-                          <span className="text-sm font-medium">
-                            {category.name}
-                          </span>
-                        </div>
-
-                        {/* Expand/Collapse Icon */}
+                {categories
+                  .filter((category) => category.name !== "Capital Equipment")
+                  .map((category) => {
+                    const IconComponent = getCategoryIcon(category.name);
+                    return (
+                      <div key={category.id} className="w-full">
+                        {/* Main Category */}
                         <div
-                          className={`transition-transform duration-200 ${
+                          className={`group flex items-center justify-between py-1.5 px-1 cursor-pointer transition-all duration-200 ${
                             openCategory === category.id
-                              ? "rotate-180 text-blue-600"
-                              : "text-gray-400 group-hover:text-gray-600"
+                              ? "bg-gray-100 text-gray-800"
+                              : "hover:bg-gray-50 text-gray-600"
                           }`}
+                          onClick={() =>
+                            handleMainCategoryClick(category.id, category.name)
+                          }
                         >
-                          <FaCaretDown size={12} />
+                          <div className="flex items-center gap-2 flex-1">
+                            <div className="transition-colors duration-200 text-gray-500">
+                              <IconComponent size={14} />
+                            </div>
+                            <span className="text-sm font-medium">
+                              {category.name}
+                            </span>
+                          </div>
+
+                          {/* Expand/Collapse Icon */}
+                          <div
+                            className={`transition-transform duration-200 ${
+                              openCategory === category.id
+                                ? "rotate-180 text-primary"
+                                : "text-gray-400 group-hover:text-gray-600"
+                            }`}
+                          >
+                            <FaCaretDown size={12} />
+                          </div>
                         </div>
+
+                        {/* Subcategories */}
+                        {openCategory === category.id && category.subTypes && (
+                          <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
+                            {category.subTypes.map((subType) => {
+                              // Check if this subcategory is active based on URL parameters or local state
+                              const isActive =
+                                (urlSubCategory === subType.name &&
+                                  urlCategoryName === category.name) ||
+                                (activeSub === subType.name &&
+                                  openCategory == category.id);
+
+                              return (
+                                <button
+                                  key={subType.id}
+                                  onClick={() =>
+                                    handleSubCategoryClick(
+                                      subType.name,
+                                      subType.id,
+                                      category.name
+                                    )
+                                  }
+                                  className={`w-full text-left py-1 px-1 transition-all duration-200 ${
+                                    isActive ||
+                                    selectedCategory === subType.name
+                                      ? "bg-gray-100 text-gray-800 font-medium"
+                                      : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="text-xs">
+                                    {subType.name}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-
-                      {/* Subcategories */}
-                      {openCategory === category.id && category.subTypes && (
-                        <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
-                          {category.subTypes.map((subType) => {
-                            // Check if this subcategory is active based on URL parameters or local state
-                            const isActive =
-                              (urlSubCategory === subType.name &&
-                                urlCategoryName === category.name) ||
-                              (activeSub === subType.name &&
-                                openCategory == category.id);
-
-                            return (
-                              <button
-                                key={subType.id}
-                                onClick={() =>
-                                  handleSubCategoryClick(
-                                    subType.name,
-                                    subType.id,
-                                    category.name
-                                  )
-                                }
-                                className={`w-full text-left py-1 px-1 transition-all duration-200 ${
-                                  isActive || selectedCategory === subType.name
-                                    ? "bg-gray-100 text-gray-800 font-medium"
-                                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-                                }`}
-                              >
-                                <span className="text-xs">{subType.name}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </CollapsibleSection>
           )}

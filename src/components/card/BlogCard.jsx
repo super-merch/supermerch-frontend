@@ -81,7 +81,7 @@ const BlogCard = ({ blog, options }) => {
       {/* Content Section */}
       <div className="flex flex-col flex-grow p-6">
         <div className="flex-grow">
-          <h3 className="text-xl font-bold text-secondary mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+          <h3 className="md:text-xl text-base font-bold text-secondary mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
             {blog.title}
           </h3>
           <p className="text-sm text-secondary/60 mb-4 flex items-center gap-2">

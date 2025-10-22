@@ -1,4 +1,4 @@
-import TabsButtons from "@/components/Home/ProducsTabs/TabsButtons";
+import TabsButtons from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 import ProductNavigate from "../components/product/ProductNavigate";
 import ProductDetails from "@/components/product/ProductDetails/index";
 

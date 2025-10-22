@@ -178,7 +178,7 @@ const FAQS = () => {
                     </div>
                     <div className="flex-shrink-0">
                       {activeFAQ === index ? (
-                        <FaChevronUp className="w-5 h-5 text-blue-600" />
+                        <FaChevronUp className="w-5 h-5 text-primary" />
                       ) : (
                         <FaChevronDown className="w-5 h-5 text-gray-400" />
                       )}
@@ -216,7 +216,7 @@ const FAQS = () => {
                   setSearchTerm("");
                   setSelectedCategory("All");
                 }}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Clear Filters
               </button>
@@ -239,7 +239,7 @@ const FAQS = () => {
               <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Contact Support
               </button>
-              <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-600 hover:text-white transition-all duration-300">
+              <button className="border-2 border-blue-600 text-primary px-8 py-3 rounded-full font-semibold hover:bg-primary hover:text-white transition-all duration-300">
                 Live Chat
               </button>
             </div>

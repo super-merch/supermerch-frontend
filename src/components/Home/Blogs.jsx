@@ -13,66 +13,9 @@ import { Heading } from "../Common";
 const Blogs = () => {
   const { blogs, setBlogs, options } = useContext(AppContext);
   // Function to inject images into content
-  const getContentWithImages = (blogData) => {
-    if (!blogData?.content || !blogData?.additionalImages?.length) {
-      return blogData?.content || "";
-    }
-
-    const content = blogData.content;
-    const images = blogData.additionalImages;
-
-    // Split content into paragraphs
-    const paragraphs = content.split("</p>").filter((p) => p.trim());
-
-    if (paragraphs.length === 0) return content;
-
-    let result = "";
-    let imageIndex = 0;
-
-    paragraphs.forEach((paragraph, index) => {
-      // Add the paragraph
-      result += paragraph + (index < paragraphs.length - 1 ? "</p>" : "");
-
-      // Add an image after every 2-3 paragraphs if we have images left
-      if (imageIndex < images.length && (index + 1) % 2 === 0) {
-        const side = imageIndex % 2 === 0 ? "right" : "left";
-        result += `
-                    <div class="my-6 ${
-                      side === "right" ? "float-right ml-6" : "float-left mr-6"
-                    } max-w-xs w-full sm:w-80">
-                        <img 
-                            src="${images[imageIndex]}" 
-                            alt="Blog image ${imageIndex + 1}"
-                            class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-                        />
-                    </div>
-                `;
-        imageIndex++;
-      }
-    });
-
-    // If there are remaining images, add them at the end
-    while (imageIndex < images.length) {
-      const side = imageIndex % 2 === 0 ? "right" : "left";
-      result += `
-                <div class="my-6 ${
-                  side === "right" ? "float-right ml-6" : "float-left mr-6"
-                } max-w-xs w-full sm:w-80">
-                    <img 
-                        src="${images[imageIndex]}" 
-                        alt="Blog image ${imageIndex + 1}"
-                        class="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-                    />
-                </div>
-            `;
-      imageIndex++;
-    }
-
-    return result;
-  };
 
   return (
-    <section className="bg-white">
+    <section className="bg-white py-8">
       <div className="Mycontainer">
         {/* Header Section */}
         <Heading
@@ -96,7 +39,7 @@ const Blogs = () => {
             className="blog-swiper"
             breakpoints={{
               0: {
-                slidesPerView: 1,
+                slidesPerView: 2,
                 spaceBetween: 20,
               },
               640: {
@@ -115,7 +58,7 @@ const Blogs = () => {
           >
             {blogs?.length > 0 ? (
               blogs?.map((blog, index) => (
-                <SwiperSlide key={blog._id || index}>
+                <SwiperSlide key={blog._id || index} className="my-10">
                   <BlogCard key={index} blog={blog} options={options} />
                 </SwiperSlide>
               ))
@@ -150,7 +93,7 @@ const Blogs = () => {
         </div>
 
         {/* View All Button */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8">
           <Link
             to="/all-blogs"
             className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"

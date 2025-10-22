@@ -11,7 +11,7 @@ import { Heading } from "../../Common";
 import { AppContext } from "../../../context/AppContext";
 // import Promotional from './Promotional';
 
-const TabsButtons = ({ changeBg = false }) => {
+const ShopOurBestSellers = ({ changeBg = false }) => {
   const [activeTab, setActiveTab] = useState("All Product");
   const { setProducts, setProductsCategory } = useContext(AppContext);
   const handleTabChange = (tab) => {
@@ -107,4 +107,4 @@ const TabsButtons = ({ changeBg = false }) => {
   );
 };
 
-export default TabsButtons;
+export default ShopOurBestSellers;

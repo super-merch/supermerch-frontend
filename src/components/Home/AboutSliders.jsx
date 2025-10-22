@@ -93,12 +93,12 @@ const AboutSliders = () => {
   return (
     <div className="relative Mycontainer">
       <div className="absolute lg:-left-6 md:-left-6 -left-3 top-[38%] z-10">
-        <button className="p-1 text-white rounded-full custom-prev bg-smallHeader lg:p-2 md:p-2">
+        <button className="p-1 text-white rounded-full custom-prev bg-primary lg:p-2 md:p-2">
           <IoArrowBackOutline className="text-lg lg:text-2xl md:text-2xl" />
         </button>
       </div>
       <div className="absolute lg:-right-6 md:-right-6 -right-3 top-[38%] z-10">
-        <button className="p-1 text-white rounded-full custom-next bg-smallHeader lg:p-2 md:p-2">
+        <button className="p-1 text-white rounded-full custom-next bg-primary lg:p-2 md:p-2">
           <IoMdArrowForward className="text-lg lg:text-2xl md:text-2xl" />
         </button>
       </div>
@@ -117,7 +117,10 @@ const AboutSliders = () => {
       >
         {categories.map((category) => (
           <SwiperSlide key={category.id}>
-            <div onClick={() => handleCategoryClick(category.name, category.url)} className="w-full h-full cursor-pointer group">
+            <div
+              onClick={() => handleCategoryClick(category.name, category.url)}
+              className="w-full h-full cursor-pointer group"
+            >
               <div className="w-full h-full m-auto text-center border rounded bg-line lg:min-h-48 xl:min-h-64 md:min-h-48 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105">
                 <div className="relative h-32 lg:h-40 xl:h-48 md:h-40 overflow-hidden">
                   <img
@@ -128,7 +131,7 @@ const AboutSliders = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                 </div>
                 <div className="p-3 bg-white">
-                  <h3 className="text-lg font-semibold md:text-xl text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+                  <h3 className="text-lg font-semibold md:text-xl text-gray-800 group-hover:text-primary transition-colors duration-300">
                     {category.name}
                   </h3>
                   {/* <p className='text-xs md:text-sm text-gray-500 mt-1'>

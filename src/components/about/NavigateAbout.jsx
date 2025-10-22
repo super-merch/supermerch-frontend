@@ -13,7 +13,7 @@ const NavigateAbout = () => {
         >
           <Link
             to={"/"}
-            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 group"
+            className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors duration-200 group"
           >
             <MdHome className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
             <span className="font-medium">Home</span>
@@ -21,7 +21,7 @@ const NavigateAbout = () => {
 
           <MdKeyboardArrowRight className="text-gray-400 w-4 h-4" />
 
-          <div className="flex items-center gap-2 text-blue-600">
+          <div className="flex items-center gap-2 text-primary">
             <FaUserFriends className="w-4 h-4" />
             <span className="font-semibold">About Us</span>
           </div>

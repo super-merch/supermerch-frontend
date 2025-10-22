@@ -296,9 +296,9 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
                     handleMainCategorySelect(category);
                     handleNext();
                   }}
-                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-4 lg:px-8 lg:py-4 xl:px-10 xl:py-5 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 break-words text-sm sm:text-base md:text-lg ${
+                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-4 lg:px-8 lg:py-4 xl:px-10 xl:py-5 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-primary hover:text-primary break-words text-sm sm:text-base md:text-lg ${
                     selectedMainCategory?.id === category.id
-                      ? "border-blue-500 text-blue-600 bg-blue-50"
+                      ? "border-primary text-primary bg-primary/10"
                       : "border-gray-300 text-gray-700 hover:bg-blue-50"
                   }`}
                 >
@@ -318,7 +318,7 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
               <button
                 onClick={handleNext}
                 disabled={!selectedMainCategory}
-                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -349,10 +349,10 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
                     handlePriceSelect(range);
                     handleNext();
                   }}
-                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 text-sm sm:text-base break-words ${
+                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-primary hover:text-primary text-sm sm:text-base break-words ${
                     selectedPrice === range
-                      ? "border-blue-500 text-blue-600 bg-blue-50"
-                      : "border-gray-300 text-gray-700 hover:bg-blue-50"
+                      ? "border-primary text-primary bg-primary/10"
+                      : "border-gray-300 text-gray-700 hover:bg-primary/10"
                   }`}
                 >
                   {range.label}
@@ -371,7 +371,7 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
               <button
                 onClick={handleNext}
                 disabled={!selectedPrice}
-                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -399,10 +399,10 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
                 <button
                   key={category.id}
                   onClick={() => handleSubCategorySelect(category)}
-                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-blue-500 hover:text-blue-600 text-sm sm:text-base break-words ${
+                  className={`px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-lg border-2 font-semibold text-center transition-all duration-200 hover:border-primary hover:text-primary text-sm sm:text-base break-words ${
                     selectedSubCategory?.id === category.id
-                      ? "border-blue-500 text-blue-600 bg-blue-50"
-                      : "border-gray-300 text-gray-700 hover:bg-blue-50"
+                      ? "border-primary text-primary bg-primary/10"
+                      : "border-gray-300 text-gray-700 hover:bg-primary/10"
                   }`}
                 >
                   {category.name}
@@ -421,7 +421,7 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
               <button
                 onClick={handleApplyFilters}
                 disabled={!selectedSubCategory}
-                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 sm:px-6 text-sm sm:text-base bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Apply Filter
               </button>

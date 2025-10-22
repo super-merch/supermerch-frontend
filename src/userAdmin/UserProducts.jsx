@@ -138,7 +138,6 @@ const UserProducts = () => {
     // Step 4: Final total
     const total = discountedAmount + gstAmount;
 
-
     // 5) Build your payload
     const reOrderData = {
       user: checkoutData.user,
@@ -162,7 +161,6 @@ const UserProducts = () => {
       gst: gstAmount,
       total: total,
     };
-
 
     try {
       const res = await axios.post(
@@ -316,8 +314,8 @@ const UserProducts = () => {
     <div className="w-full px-2 lg:px-8 md:px-8">
       <div className="flex items-center justify-between">
         <button
-          onClick={() => setActiveTab('dashboard')}
-          className='bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase'
+          onClick={() => setActiveTab("dashboard")}
+          className="bg-black flex items-center gap-1 mt-6 text-white w-fit px-3 text-lg py-1.5 hover:bg-red-600 transition duration-75 rounded cursor-pointer uppercase"
         >
           <IoMdArrowRoundBack />
           Back
@@ -325,7 +323,7 @@ const UserProducts = () => {
         <div className="mt-6">
           <button
             onClick={handleReOrder}
-            className="px-4 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700"
+            className="px-4 py-2 font-semibold text-white bg-primary rounded hover:bg-blue-700"
           >
             Re-order
           </button>

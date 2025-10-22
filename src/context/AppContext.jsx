@@ -40,9 +40,12 @@ const AppContextProvider = (props) => {
   const [setupFee, setSetupFee] = useState(0);
   const items = useSelector(selectCurrentUserCartItems);
   useEffect(() => {
-    const setup = items.reduce((total, item) => total + (item.setupFee || 0), 0);
+    const setup = items.reduce(
+      (total, item) => total + (item.setupFee || 0),
+      0
+    );
     setSetupFee(setup);
-  },[items]);
+  }, [items]);
 
   const getGlobalDiscount = async () => {
     try {
@@ -177,14 +180,11 @@ const AppContextProvider = (props) => {
       url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
       url = `${backednUrl}/api/client-products?${params.toString()}`;
-    }
-     else if (paginationData.category === "search") {
+    } else if (paginationData.category === "search") {
       url = `${backednUrl}/api/client-products/search?${params.toString()}`;
-    }
-     else if (paginationData.category === "allProducts") {
+    } else if (paginationData.category === "allProducts") {
       url = `${backednUrl}/api/client-products?${params.toString()}`;
-    }
-     else if (paginationData.category) {
+    } else if (paginationData.category) {
       url = `${backednUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {
       url = `${backednUrl}/api/params-products?${params.toString()}`;
@@ -297,7 +297,6 @@ const AppContextProvider = (props) => {
         if (data.user.defaultAddress) {
           setAddressData(data.user.defaultAddress);
         }
-        console.log(data);
         if (data.user.defaultShippingAddress) {
           setShippingAddressData(data.user.defaultShippingAddress);
         }
@@ -349,34 +348,34 @@ const AppContextProvider = (props) => {
   };
 
   const [shippingCharges, setShippingCharges] = useState(0);
-    const getShippingCharges = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              // Add authorization headers if needed
-            },
-          }
-        );
-  
-        const data = await response.json();
-        setShippingCharges(data.shipping || 0);
-  
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch shipping charges");
+  const getShippingCharges = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/shipping/get`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization headers if needed
+          },
         }
-  
-        return { data };
-      } catch (error) {
-        throw error;
+      );
+
+      const data = await response.json();
+      setShippingCharges(data.shipping || 0);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch shipping charges");
       }
-    };
-    useEffect(() => {
-      getShippingCharges();
-    }, []);
+
+      return { data };
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getShippingCharges();
+  }, []);
 
   // *************************************************Client paginate api
 
