@@ -22,7 +22,7 @@ const ModalTest = () => {
       <div className="space-x-4">
         <button
           onClick={openDiscountModal}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-primary"
+          className="px-4 py-2 bg-primary text-white rounded hover:bg-primary"
         >
           Open Discount Modal
         </button>

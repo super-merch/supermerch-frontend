@@ -103,7 +103,7 @@ export default function HelpCenter() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/contact")}
-              className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-500 transition"
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary transition"
             >
               Go to Contact Page
             </button>

@@ -8,7 +8,7 @@ const ShopPage = ({ category }) => {
     <div>
       <Breadcrumb />
       <Cards category={category} />
-      <div className="mt-10">
+      <div className="mt-10 bg-primary/10 py-10">
         <TabsButtons />
       </div>
     </div>

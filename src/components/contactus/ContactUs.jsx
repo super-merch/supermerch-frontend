@@ -96,13 +96,13 @@ const ContactUs = () => {
 
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-primary border border-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
             Support Center
           </div>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             How can we{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
               help you today?
             </span>
           </h1>
@@ -176,7 +176,7 @@ const ContactUs = () => {
               </p>
               <Link
                 to="/track-order"
-                className="inline-block bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="inline-block bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
               >
                 Track Now
               </Link>

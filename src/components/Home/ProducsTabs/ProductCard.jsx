@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
+import { Clock, Flag } from "lucide-react";
+import Tooltip from "@/components/Common/Tooltip";
 
 const ProductCard = ({
   product,
@@ -46,35 +48,12 @@ const ProductCard = ({
         to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
         className="text-center"
       >
-        <div className="relative border border-border2 hover:border-1 transition-all duration-200 hover:border-primary  max-h-[320px] sm:max-h-[400px] h-full group rounded-lg">
+        <div className="bg-white relative border border-border2 hover:border-1 transition-all duration-200 hover:border-primary  max-h-[320px] sm:max-h-[400px] h-full group rounded-lg">
           <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
             {(productionIds?.has(productId) ||
               productionIds?.has(String(productId))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                <svg
-                  className="w-3 h-3 flex-shrink-0"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden
-                >
-                  <path
-                    d="M12 7v5l3 1"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="8"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <Clock />
                 <span>24Hr Production</span>
               </span>
             )}
@@ -82,24 +61,7 @@ const ProductCard = ({
             {(australiaIds?.has(productId) ||
               australiaIds?.has(String(productId))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                <svg
-                  className="w-3 h-3 flex-shrink-0"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden
-                >
-                  <path d="M3 6h10l-2 3 2 3H3V6z" fill="currentColor" />
-                  <rect
-                    x="3"
-                    y="4"
-                    width="1"
-                    height="16"
-                    rx="0.5"
-                    fill="currentColor"
-                    opacity="0.9"
-                  />
-                </svg>
+                <Flag />
                 <span>Australia Made</span>
               </span>
             )}
@@ -134,20 +96,23 @@ const ProductCard = ({
           </div>
 
           <div className="p-2 relative">
-            <p
-              className={`text-sm transition-all duration-300 ${
-                cardHover === product.meta.id &&
-                product.overview.name.length > 20
-                  ? "sm:text-[18px]"
-                  : "sm:text-lg"
-              } font-semibold text-brand sm:leading-[18px] `}
+            <Tooltip
+              content={
+                product.overview.name.length > 30 ? product.overview.name : ""
+              }
+              placement="top"
             >
-              {(product.overview.name &&
-                // product.overview.name.length > 20 && cardHover!==product.meta.id
-                //   ? product.overview.name.slice(0, 20) + "..."
-                product.overview.name) ||
-                "No Name"}
-            </p>
+              <p
+                className={`text-sm transition-all duration-300 truncate w-full max-w-[250px] md:max-w-[300px] mx-auto ${
+                  cardHover === product.meta.id &&
+                  product.overview.name.length > 20
+                    ? "sm:text-[18px]"
+                    : "sm:text-lg"
+                } font-semibold text-brand sm:leading-[18px] lg:leading-[20px]`}
+              >
+                {product.overview.name}
+              </p>
+            </Tooltip>
 
             <p className="text-xs text-gray-500 pt-1">Min Qty: {minQty} </p>
 

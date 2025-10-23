@@ -123,7 +123,7 @@ const HeroWithHotDeals = () => {
                       <div className="relative z-10 pt-8 pb-8 px-6 sm:px-8 lg:px-12 xl:px-16 mt-auto max-w-2xl">
                         {/* Category Badge */}
                         <div className="flex items-center gap-3 mb-6">
-                          <div className="w-8 h-1 bg-blue-500 rounded-full"></div>
+                          <div className="w-8 h-1 bg-primary rounded-full"></div>
                           <span className="text-sm font-semibold text-blue-300 uppercase tracking-wider">
                             {slide.span}
                           </span>

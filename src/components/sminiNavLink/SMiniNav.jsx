@@ -470,7 +470,7 @@ const SMiniNav = () => {
 
               <button
                 onClick={() => setCoupenModel(false)}
-                className="mt-4 px-4 py-2 bg-primary hover:bg-blue-700 text-white rounded-md transition duration-200"
+                className="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition duration-200"
               >
                 Got It
               </button>

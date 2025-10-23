@@ -1443,7 +1443,7 @@ const AppContextProvider = (props) => {
 
   useEffect(() => {
     fetchDiscountedProducts(1, "", 6);
-    fetchProducts(1, "", 6);
+    fetchProducts(1, "", 8);
     fetchTrendingProducts(1, "", 16);
   }, []);
 

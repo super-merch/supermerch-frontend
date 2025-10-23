@@ -388,7 +388,7 @@ const MiniNav = () => {
               </p>
               <button
                 onClick={() => setCoupenModel(false)}
-                className="mt-4 px-4 py-2 bg-primary hover:bg-blue-700 text-white rounded-md transition duration-200"
+                className="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition duration-200"
               >
                 Got It
               </button>
@@ -488,7 +488,7 @@ const MiniNav = () => {
                     <li key={index} onClick={() => setIsOpen(false)}>
                       <Link
                         to={link.path}
-                        className="block px-4 py-2 text-gray-700 capitalize hover:bg-blue-500 hover:text-white"
+                        className="block px-4 py-2 text-gray-700 capitalize hover:bg-primary hover:text-white"
                       >
                         <p className="capitalize ">{link.name}</p>
                       </Link>

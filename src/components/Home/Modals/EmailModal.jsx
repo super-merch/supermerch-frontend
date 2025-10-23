@@ -83,7 +83,7 @@ const EmailModal = ({
           <button
             onClick={onSubmit}
             disabled={loading}
-            className={`px-4 py-2 rounded bg-primary text-white font-medium hover:bg-blue-700 transition-colors ${
+            className={`px-4 py-2 rounded bg-primary text-white font-medium hover:bg-primary/90 transition-colors ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             style={{ zIndex: 9999 }}

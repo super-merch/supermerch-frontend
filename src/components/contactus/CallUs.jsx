@@ -122,15 +122,12 @@ export default function CallUs() {
       <div className="Mycontainer mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-primary border border-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <FaEnvelope className="w-4 h-4" />
             Get in Touch
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Send us a{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Message
-            </span>
+            Send us a <span className="text-primary bg-clip-text">Message</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             We'd love to hear from you. Send us a message and we'll respond as
@@ -144,7 +141,7 @@ export default function CallUs() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 lg:p-10">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                   <FaEdit className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900">
@@ -355,7 +352,7 @@ export default function CallUs() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                    className="w-full bg-primary text-white py-4 px-8 rounded-xl font-semibold hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
                   >
                     {isSubmitting ? (
                       <>
@@ -445,7 +442,7 @@ export default function CallUs() {
             </div>
 
             {/* Response Time Card */}
-            <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-2xl p-8 text-white">
+            <div className="bg-primary rounded-2xl p-8 text-white">
               <div className="flex items-center gap-3 mb-4">
                 <FaCheckCircle className="w-8 h-8 text-yellow-300" />
                 <h3 className="text-xl font-bold">Quick Response</h3>
