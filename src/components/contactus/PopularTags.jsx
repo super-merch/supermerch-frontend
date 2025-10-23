@@ -25,7 +25,7 @@ const popularTopics = [
   {
     title: "What is the Promotional Campaign?",
     category: "Promotions",
-    color: "from-pink-500 to-pink-600",
+    color: "from-primary to-primary/70",
   },
   {
     title: "What is the Voucher & Gift Offer?",
@@ -35,7 +35,7 @@ const popularTopics = [
   {
     title: "How to cancel SuperMerch Order",
     category: "Orders",
-    color: "from-teal-500 to-teal-600",
+    color: "from-primary to-primary/70",
   },
   {
     title: "Ask the Community",
@@ -45,7 +45,7 @@ const popularTopics = [
   {
     title: "How to change my account settings?",
     category: "Account",
-    color: "from-yellow-500 to-yellow-600",
+    color: "from-primary to-primary/70",
   },
 ];
 
@@ -55,15 +55,13 @@ const PopularTags = () => {
       <div className="Mycontainer mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-primary border border-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <FaQuestionCircle className="w-4 h-4" />
             Help Topics
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Popular{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Help Topics
-            </span>
+            <span className="text-primary bg-clip-text">Help Topics</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Find quick answers to the most commonly asked questions. Browse our
@@ -119,7 +117,7 @@ const PopularTags = () => {
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl p-8 text-white max-w-2xl mx-auto">
+          <div className="bg-primary rounded-2xl p-8 text-white max-w-2xl mx-auto">
             <h3 className="text-2xl font-bold mb-3">Still Need Help?</h3>
             <p className="text-blue-100 mb-6">
               Can't find what you're looking for? Our support team is here to

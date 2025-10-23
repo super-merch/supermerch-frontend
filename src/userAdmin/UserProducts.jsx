@@ -323,7 +323,7 @@ const UserProducts = () => {
         <div className="mt-6">
           <button
             onClick={handleReOrder}
-            className="px-4 py-2 font-semibold text-white bg-primary rounded hover:bg-blue-700"
+            className="px-4 py-2 font-semibold text-white bg-primary rounded hover:bg-primary/90"
           >
             Re-order
           </button>

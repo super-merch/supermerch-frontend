@@ -142,7 +142,7 @@ const EmptyState = ({
           {primaryAction && (
             <button
               onClick={primaryAction.onClick}
-              className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+              className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md"
             >
               {primaryAction.label}
             </button>
@@ -167,7 +167,7 @@ const EmptyState = ({
           <ul className="space-y-2 text-sm text-gray-600">
             {suggestions.map((suggestion, index) => (
               <li key={index} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                 {suggestion}
               </li>
             ))}

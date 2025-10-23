@@ -14,7 +14,7 @@ const ABoutHero = () => {
       title: "24/7 Customer Service",
       description:
         "Round-the-clock support to help you whenever you need assistance.",
-      color: "from-blue-500 to-blue-600",
+      color: "from-primary to-primary/70",
     },
     {
       icon: FaUsers,
@@ -73,8 +73,8 @@ const ABoutHero = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Features List */}
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
               Our Strengths
             </div>
 
@@ -107,7 +107,7 @@ const ABoutHero = () => {
 
           {/* About Content */}
           <div className="relative">
-            <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-br from-primary to-primary/70 rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 "></div>
 

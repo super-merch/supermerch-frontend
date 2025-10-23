@@ -97,7 +97,7 @@ const HeadingExamples = () => {
           title="With Underline"
           description="This heading has an underline decoration."
           showUnderline={true}
-          underlineClassName="bg-blue-500 w-24"
+          underlineClassName="bg-primary w-24"
         />
       </div>
 

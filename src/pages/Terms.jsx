@@ -1,17 +1,21 @@
-import React from 'react';
+import React from "react";
 
 export default function Terms({
-  companyName = 'SuperMerch',
-  contactEmail = 'info@supermerch.com',
-  effectiveDate = 'October 20, 2025',
+  companyName = "SuperMerch",
+  contactEmail = "info@supermerch.com",
+  effectiveDate = "October 20, 2025",
 }) {
   return (
     <div className="min-h-screen bg-white text-gray-800">
       {/* Header */}
-      <header className="bg-blue-700 text-white py-8">
+      <header className="bg-primary/90 text-white py-8">
         <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-3xl font-semibold">{companyName} — Terms &amp; Conditions</h1>
-          <p className="mt-2 text-sm opacity-90">Effective date: {effectiveDate}</p>
+          <h1 className="text-3xl font-semibold">
+            {companyName} — Terms &amp; Conditions
+          </h1>
+          <p className="mt-2 text-sm opacity-90">
+            Effective date: {effectiveDate}
+          </p>
         </div>
       </header>
 
@@ -19,8 +23,8 @@ export default function Terms({
       <main className="max-w-4xl mx-auto p-6 space-y-6">
         <section className="bg-white shadow rounded-lg p-6">
           <p className="text-gray-700">
-            Welcome to <strong>{companyName}</strong>. By using our website, app or
-            placing an order you agree to these Terms. If you don’t agree,
+            Welcome to <strong>{companyName}</strong>. By using our website, app
+            or placing an order you agree to these Terms. If you don’t agree,
             please don’t use our services.
           </p>
         </section>
@@ -40,8 +44,8 @@ export default function Terms({
           <p className="text-gray-700 text-sm">
             We use <strong>Stripe</strong> to process payments. By paying you
             authorize charges to your payment method. Stripe and your card
-            issuer rules apply. We do not store full card data — Stripe
-            handles that securely (PCI-compliant).
+            issuer rules apply. We do not store full card data — Stripe handles
+            that securely (PCI-compliant).
           </p>
         </section>
 
@@ -55,7 +59,9 @@ export default function Terms({
         </section>
 
         <section className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium mb-2">Returns &amp; Cancellations</h2>
+          <h2 className="text-lg font-medium mb-2">
+            Returns &amp; Cancellations
+          </h2>
           <p className="text-gray-700 text-sm">
             Our Returns Policy (linked on the site) describes eligibility and
             timelines. Bulk or custom orders may have different policies listed
@@ -91,7 +97,7 @@ export default function Terms({
         <section className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium mb-2">Contact</h2>
           <p className="text-gray-700 text-sm">
-            Questions or disputes? Email us at{' '}
+            Questions or disputes? Email us at{" "}
             <a
               href={`mailto:${contactEmail}`}
               target="_blank"
@@ -104,8 +110,13 @@ export default function Terms({
         </section>
 
         <footer className="text-center text-xs text-gray-500">
-          <p>These Terms are a concise summary and do not constitute legal advice.</p>
-          <p className="mt-2">Replace placeholders with your company details before publishing.</p>
+          <p>
+            These Terms are a concise summary and do not constitute legal
+            advice.
+          </p>
+          <p className="mt-2">
+            Replace placeholders with your company details before publishing.
+          </p>
         </footer>
       </main>
     </div>

@@ -8,6 +8,7 @@ const Tooltip = ({
   offset = 8,
   className = "",
 }) => {
+  console.log(show);
   const [hovered, setHovered] = useState(false);
   const isVisible = show !== undefined ? show : hovered;
 
@@ -35,6 +36,7 @@ const Tooltip = ({
         "right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-900",
     },
   };
+  console.log(content);
 
   return (
     <div
@@ -46,7 +48,7 @@ const Tooltip = ({
 
       {isVisible && (
         <div
-          className={`absolute z-50 px-3 py-2 text-sm bg-gray-900 text-white rounded-md shadow-lg whitespace-nowrap max-w-xs ${positions[placement].tooltip} ${className}`}
+          className={`absolute z-50 px-3 py-2 text-sm bg-gray-900 text-white rounded-md shadow-lg whitespace-nowrap ${positions[placement].tooltip} ${className}`}
         >
           {content}
           <div
