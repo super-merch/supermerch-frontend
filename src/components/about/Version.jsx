@@ -14,7 +14,7 @@ const Version = () => {
       icon: FaGlobe,
       title: "Global Reach",
       description: "Making quality products accessible to everyone, everywhere",
-      color: "from-blue-500 to-blue-600",
+      color: "from-primary to-primary/70",
     },
     {
       icon: FaLightbulb,
@@ -37,10 +37,10 @@ const Version = () => {
   ];
 
   return (
-    <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <section className="py-16 lg:py-20 bg-primary relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg- opacity-50"></div>
-      <div className="absolute top-20 right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-20 right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"></div>
 
       <div className="Mycontainer mx-auto px-4 relative z-10">
@@ -48,14 +48,14 @@ const Version = () => {
           {/* Content Section */}
           <div className="space-y-8">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 bg-blue-500/20 backdrop-blur-sm text-blue-300 px-4 py-2 rounded-full text-sm font-medium">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium">
                 <FaEye className="w-4 h-4" />
                 Our Vision
               </div>
 
               <h2 className="text-3xl lg:text-5xl font-bold text-white leading-tight">
                 Our Vision for the{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="text-white bg-clip-text text-transparent">
                   Future
                 </span>
               </h2>
@@ -106,7 +106,7 @@ const Version = () => {
 
             {/* CTA Button */}
             <div className="pt-4">
-              <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
+              <button className="bg-white text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
                 <FaRocket className="w-4 h-4" />
                 Join Our Journey
               </button>
@@ -125,7 +125,7 @@ const Version = () => {
             </div>
 
             {/* Floating Elements */}
-            <div className="absolute -top-6 -right-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full p-4 shadow-xl">
+            <div className="absolute -top-6 -right-6 border border-white bg-primary rounded-full p-4 shadow-xl">
               <FaRocket className="w-8 h-8 text-white" />
             </div>
 

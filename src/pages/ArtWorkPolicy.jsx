@@ -135,7 +135,7 @@ const ArtWorkPolicy = () => {
                     "_blank"
                   )
                 }
-                className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-500"
+                className="px-4 py-2 bg-primary text-white rounded hover:bg-primary"
               >
                 Contact Artwork Support
               </button>

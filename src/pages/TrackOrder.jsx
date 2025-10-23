@@ -55,7 +55,7 @@ export default function TrackOrder() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-500 transition"
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary transition"
             >
               Check Status
             </button>

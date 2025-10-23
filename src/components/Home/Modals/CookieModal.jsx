@@ -72,7 +72,7 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
                   onAccept();
                   setTimeout(() => onClose(), 500);
                 }}
-                className="px-8 py-3 bg-primary hover:bg-blue-700 text-white rounded-lg text-base font-semibold transition-colors duration-200 shadow-lg"
+                className="px-8 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg text-base font-semibold transition-colors duration-200 shadow-lg"
               >
                 Accept All
               </button>

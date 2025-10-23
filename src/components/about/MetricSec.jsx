@@ -81,7 +81,7 @@ const MetricSec = () => {
   return (
     <section
       id="metrics-section"
-      className="py-16 lg:py-20 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800 relative overflow-hidden"
+      className="py-16 lg:py-20 bg-primary relative overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-50"></div>

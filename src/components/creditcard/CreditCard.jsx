@@ -138,7 +138,7 @@ const CreditCard = () => {
 
           {/* <button
                         type="submit"
-                        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                         Save Card Details
                     </button> */}

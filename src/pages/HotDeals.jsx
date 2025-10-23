@@ -25,7 +25,7 @@ const HotDeals = () => {
   useEffect(() => {
     fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
     // Fallback: also fetch regular products in case discounted products are empty
-    fetchProducts(1, "", 6);
+    fetchProducts(1, "", 8);
   }, []);
 
   const displayProducts =
@@ -86,7 +86,7 @@ const HotDeals = () => {
           <div className="grid justify-center grid-cols-1 gap-6 mt-6 custom-card:grid-cols-2 lg:grid-cols-3">
             {filteredProducts.map((product) => {
               const productId = product.meta?.id;
-              const minPrice = getProductPrice(product,product?.meta?.id);
+              const minPrice = getProductPrice(product, product?.meta?.id);
               const discountPct = product.discountInfo?.discount || 0;
               const isGlobalDiscount = product.discountInfo?.isGlobal || false;
 

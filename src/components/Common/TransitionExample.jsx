@@ -6,7 +6,15 @@ const TransitionExample = () => {
   const [currentAnimation, setCurrentAnimation] = useState("fade");
   const [showLoading, setShowLoading] = useState(false);
 
-  const animationTypes = ["fade", "slideUp", "slideDown", "slideLeft", "slideRight", "scale", "flip"];
+  const animationTypes = [
+    "fade",
+    "slideUp",
+    "slideDown",
+    "slideLeft",
+    "slideRight",
+    "scale",
+    "flip",
+  ];
 
   const handleAnimationChange = (type) => {
     setCurrentAnimation(type);
@@ -28,7 +36,9 @@ const TransitionExample = () => {
               key={type}
               onClick={() => handleAnimationChange(type)}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                currentAnimation === type ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                currentAnimation === type
+                  ? "bg-primary text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               {type}
@@ -40,8 +50,12 @@ const TransitionExample = () => {
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 min-h-[300px]">
         <TransitionWrapper type={currentAnimation} duration={0.6}>
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Current Animation: {currentAnimation}</h3>
-            <p className="text-gray-600 mb-4">This content is animated using the {currentAnimation} transition.</p>
+            <h3 className="text-2xl font-bold mb-4">
+              Current Animation: {currentAnimation}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              This content is animated using the {currentAnimation} transition.
+            </p>
             <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-lg">
               <p>✨ Smooth transitions make your app feel more polished!</p>
             </div>

@@ -104,15 +104,13 @@ const FAQS = () => {
       <div className="Mycontainer mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-primary/20 text-primary border border-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <FaQuestionCircle className="w-4 h-4" />
             Help Center
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Questions
-            </span>
+            <span className="text-primary bg-clip-text">Questions</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Find quick answers to common questions about our products, services,
@@ -131,7 +129,7 @@ const FAQS = () => {
               placeholder="Search FAQs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-white shadow-sm"
+              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all duration-200 bg-white shadow-sm"
             />
           </div>
 
@@ -143,7 +141,7 @@ const FAQS = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
                   selectedCategory === category
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                    ? "bg-primary text-white shadow-lg"
                     : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-gray-300"
                 }`}
               >
@@ -168,7 +166,7 @@ const FAQS = () => {
                   <div className="flex justify-between items-center">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                        <span className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-medium">
                           {item.category}
                         </span>
                       </div>
@@ -236,10 +234,10 @@ const FAQS = () => {
               soon as possible.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Contact Support
               </button>
-              <button className="border-2 border-blue-600 text-primary px-8 py-3 rounded-full font-semibold hover:bg-primary hover:text-white transition-all duration-300">
+              <button className="border-2 border-primary text-primary px-8 py-3 rounded-full font-semibold hover:bg-primary hover:text-white transition-all duration-300">
                 Live Chat
               </button>
             </div>

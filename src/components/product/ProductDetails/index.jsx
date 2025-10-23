@@ -35,6 +35,7 @@ import noimage from "/noimage.png";
 import { LoadingBar } from "@/components/Common";
 import LoadingOverlay from "@/components/Common/LoadingOverlay";
 import { FaMoneyBillWave } from "react-icons/fa";
+import banner from "../../../../public/BANNER/cuo.jpg";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -853,8 +854,8 @@ const ProductDetails = () => {
     const result =
       chestValues &&
       sizes?.map((size, index) => {
-        const chest = chestValues[index];
-        const length = lengthValues[index];
+        const chest = chestValues?.[index] || "";
+        const length = lengthValues?.[index] || "";
         return `${size} (Half Chest ${chest} cm, Length ${length} cm)`;
       });
 
@@ -1378,11 +1379,7 @@ const ProductDetails = () => {
       )}
       {/* Services */}
       <Services />
-      <img
-        src="/public/BANNER/cuo.jpg"
-        alt="Home"
-        className="w-full h-auto my-10"
-      />
+      <img src={banner} alt="Home" className="w-full h-auto my-10" />
       {/* Size Guide Modal */}
       {showSizeGuide && (
         <SizeGuideModal
