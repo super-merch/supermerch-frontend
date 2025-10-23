@@ -88,7 +88,7 @@ const SearchBar = ({
       return;
     }
     onSearch(inputValue.trim());
-    setInputValue("");
+    // setInputValue("");
     // Close search bar if collapsible
     if (collapsible && onToggle) {
       onToggle(false);

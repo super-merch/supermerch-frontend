@@ -330,7 +330,7 @@ const Cards = ({ category = "dress" }) => {
                   {!productsLoading && (itemCount || 0)}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {productsLoading ? "Loading..." : `product found `}
+                  {productsLoading ? "Loading..." : ``}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
@@ -345,7 +345,7 @@ const Cards = ({ category = "dress" }) => {
                   {!productsLoading && (itemCount || 0)}
                 </span>
                 <p className="">
-                  {productsLoading ? "Loading..." : `product found`}
+                  {productsLoading ? "Loading..." : ` ${isSearch ? `Search Results for '${searchParams.get("search")}'` : "products found" }`}
                   {productsLoading && " Please wait a while..."}
                 </p>
               </div>
