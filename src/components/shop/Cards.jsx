@@ -422,7 +422,7 @@ const Cards = ({ category = "dress" }) => {
                   const productId = product.meta.id;
                   const discountPct = product.discountInfo?.discount || 0;
                   const isGlobalDiscount =
-                    product.discountInfo?.isGlobal || false;
+                    product.discountInfo?.type == 'global' || false;
                   const encodedId = btoa(productId);
                   const slug = slugify(product.overview.name);
                   let unDiscountedPrice;

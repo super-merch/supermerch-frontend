@@ -17,8 +17,6 @@ export const getProductPrice = (product, id) => {
   const marginEntry = marginApi[productId] || {};
   const marginFlat =
     typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
-  minPrice += marginFlat;
-  maxPrice += marginFlat;
   return Number(minPrice?.toFixed(2));
 };
 

@@ -1455,9 +1455,9 @@ const AppContextProvider = (props) => {
     // listDiscount();
   }, []);
 
-  useEffect(() => {
-    marginAdd();
-  }, []);
+  // useEffect(() => {
+  //   marginAdd();
+  // }, []);car
 
   useEffect(() => {
     if (!products.length) return;
