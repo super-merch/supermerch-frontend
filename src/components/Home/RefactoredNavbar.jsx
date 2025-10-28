@@ -1,7 +1,6 @@
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -11,13 +10,6 @@ import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronRight } from "lucide-react";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { toast } from "react-toastify";
 
 // Import reusable components
@@ -83,7 +75,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       },
       { name: "Return Gifts", path: "/ReturnGifts" },
       { name: "24hr Prod", path: "/production" },
-      { name: "Sale", path: "/sales" },
+      { name: "Deals", path: "/sales" },
       { name: "Australia Made", path: "/Australia" },
     ];
 

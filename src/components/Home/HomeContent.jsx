@@ -1,15 +1,13 @@
-import React from "react";
-import HeroWithHotDeals from "./HeroWithHotDeals";
-import Brands from "./Brands";
-import TabsCategory from "./TabsCategory";
-import ShopOurBestSellers from "./ProducsTabs/ShopOurBestSellers";
-import Blogs from "./Blogs";
-import LetsConnect from "./LetsConnect";
-import GoogleReviewsComponent from "./GoogleReviews";
+import banner from "../../../public/BANNER/summer.jpg";
 import BannerSection from "./BannerSection";
-import { Heading } from "../Common";
-import ImageCarousel from "./TrendingCarousel";
+import Blogs from "./Blogs";
+import Brands from "./Brands";
+import GoogleReviewsComponent from "./GoogleReviews";
+import HeroWithHotDeals from "./HeroWithHotDeals";
 import HowItWorks from "./HowItWorks";
+import LetsConnect from "./LetsConnect";
+import TabsCategory from "./TabsCategory";
+import TrendingCarousel from "./TrendingCarousel";
 
 const HomeContent = () => {
   return (
@@ -17,11 +15,11 @@ const HomeContent = () => {
       <HeroWithHotDeals />
       {/* Trending Products Section */}
       <div className="mt-8">
-        <ImageCarousel />
+        <TrendingCarousel />
       </div>
 
       {/* Australia's most loved brands - moved above Shop by Category */}
-      <div className="my-8">
+      <div className="py-10">
         <Brands />
       </div>
 
@@ -30,30 +28,23 @@ const HomeContent = () => {
 
       {/* Top selling categories */}
       <TabsCategory />
-      <img
-        src="/public/BANNER/summer.jpg"
-        alt="Home"
-        className="w-full h-auto"
-      />
+
+      <img src={banner} alt="Home" className="w-full h-2/3" />
       {/* SHOP OUR BEST SELLERS - moved above Shop by Category */}
       {/* <div className="my-4">
         <ShopOurBestSellers />
       </div> */}
 
       {/* Our Popular Blogs - moved after banner */}
-      <div className="pt-2 pb-4">
+      <div className="my-8">
         <Blogs />
       </div>
 
       {/* Let's Connect - Instagram Posts */}
-      <div className="pt-2 pb-4">
-        <LetsConnect />
-      </div>
+      <LetsConnect />
 
       {/* Google Reviews */}
-      <div className="pt-2 pb-4">
-        <GoogleReviewsComponent />
-      </div>
+      <GoogleReviewsComponent />
       <HowItWorks />
     </div>
   );

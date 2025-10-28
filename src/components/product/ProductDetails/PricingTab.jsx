@@ -32,10 +32,13 @@ const PricingTab = ({
   );
 
   return (
-    <div className="overflow-x-auto space-y-1">
+    <div className="overflow-x-auto space-y-1 !text-black">
       {availablePriceGroups?.length > 0 && (
         <div className="flex justify-between items-center gap-4">
-          <label htmlFor="print-method" className="w-full my-2  font-medium">
+          <label
+            htmlFor="print-method"
+            className="w-full my-2  font-medium text-black"
+          >
             Print Method:
           </label>
           <select
@@ -109,14 +112,14 @@ const PricingTab = ({
             </select>
           </div>
           <p
-            className="w-full text-right hover:underline text-sm text-gray-600 cursor-pointer"
+            className="w-full text-right hover:underline text-sm text-black cursor-pointer"
             onClick={() => setShowSizeGuide(true)}
           >
             * See Size Guide
           </p>
         </div>
       )}
-      <span className="text-sm text-gray-600 mt-3">
+      <span className="text-sm text-black mt-3">
         * The pricing includes 1 col - 1 position
       </span>
       {/* <div className="flex justify-between items-center gap-4 mb-4 ">
@@ -139,7 +142,7 @@ const PricingTab = ({
       {/* Custom Quantity Input */}
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="text-left text-gray-600">
+          <tr className="text-left text-black">
             <th className="py-2 pr-4">Select</th>
             <th className="py-2 pr-4">Qty</th>
             <th className="py-2 pr-4">Unit</th>
@@ -167,7 +170,7 @@ const PricingTab = ({
             return (
               <tr
                 key={item.qty}
-                className={`border-t cursor-pointer hover:bg-blue-50/80 ${
+                className={`border-t cursor-pointer hover:bg-blue-50/80 text-black ${
                   isSelected ? "bg-blue-50/80" : "hover:bg-gray-50"
                 }`}
                 onClick={() => {
@@ -175,7 +178,7 @@ const PricingTab = ({
                   setActiveIndex(i);
                 }}
               >
-                <td className="py-2 pr-4 align-middle">
+                <td className="py-2 pr-4 align-middle text-md text-black">
                   <input
                     type="radio"
                     name="priceTier"
@@ -187,11 +190,15 @@ const PricingTab = ({
                     }}
                   />
                 </td>
-                <td className="py-2 pr-4 align-middle">{item.qty}+</td>
-                <td className="py-2 pr-4 align-middle">
+                <td className="py-2 pr-4 align-middle text-md text-black">
+                  {item.qty}+
+                </td>
+                <td className="py-2 pr-4 align-middle text-md text-black">
                   ${unitDiscounted.toFixed(2)}
                 </td>
-                <td className="py-2 align-middle">${total.toFixed(2)}</td>
+                <td className="py-2 align-middle text-md text-black">
+                  ${total.toFixed(2)}
+                </td>
               </tr>
             );
           })}
@@ -227,9 +234,9 @@ const PricingTab = ({
               className="w-24 px-3 py-2 border border-gray-300 rounded-md text-md md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter qty"
             />
-            <span className="text-md md:text-lg text-gray-600">pieces</span>
+            <span className="text-md md:text-lg text-black">pieces</span>
           </div>
-          {/* <div className="ml-auto text-sm text-gray-600">
+          {/* <div className="ml-auto text-sm text-black">
                           <Button>Large Order?</Button>
                         </div> */}
         </div>

@@ -84,7 +84,7 @@ const GoogleReviewsComponent = () => {
   };
 
   return (
-    <div className="w-full py-12 bg-white">
+    <div className="w-full py-10 bg-white">
       <div className="Mycontainer">
         <Heading
           title="What Our Customers Say"

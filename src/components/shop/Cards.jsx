@@ -253,9 +253,9 @@ const Cards = ({ category = "dress" }) => {
           <UnifiedSidebar pageType={pageType} />
         </div>
 
-        <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-4">
+        <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-0">
           {/* Mobile Layout */}
-          <div className="lg:hidden px-4 py-3">
+          <div className="lg:hidden">
             {/* Hamburger Menu and Sort By - Properly aligned */}
             <div className="flex items-center justify-between w-full mb-4">
               {/* Hamburger Menu Button */}
@@ -266,7 +266,7 @@ const Cards = ({ category = "dress" }) => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center w-12 h-12 text-white rounded-lg bg-primary shadow-sm hover:bg-primary-dark transition-colors"
+                className="flex items-center justify-center rounded-md text-primary shadow-sm hover:bg-primary-dark transition-colors"
               >
                 <IoMenu className="text-xl" />
               </button>
@@ -276,7 +276,7 @@ const Cards = ({ category = "dress" }) => {
                 <p className="text-sm font-medium text-gray-700">Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 transition-colors"
+                    className="flex items-center justify-between gap-2 px-2 py-1 border w-48 border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 transition-colors"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
                     {sortOption === "lowToHigh"
@@ -325,7 +325,7 @@ const Cards = ({ category = "dress" }) => {
             </div>
 
             {/* Results Count - Below Sort By */}
-            <div className="mb-6 px-2">
+            <div className="mb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
                   {!productsLoading && (itemCount || 0)}
@@ -408,7 +408,7 @@ const Cards = ({ category = "dress" }) => {
           <div
             className={`${
               productsLoading
-                ? "grid grid-cols-3 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
+                ? "grid grid-cols-3 gap-6 mt-4md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
                 : ""
             }`}
           >
@@ -417,7 +417,7 @@ const Cards = ({ category = "dress" }) => {
                 <SkeletonLoadingCards key={index} />
               ))
             ) : productsData?.length > 0 ? (
-              <div className="grid justify-center grid-cols-1 gap-6 mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-1">
+              <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2">
                 {productsData?.map((product) => {
                   const productId = product.meta.id;
                   const discountPct = product.discountInfo?.discount || 0;
@@ -435,7 +435,7 @@ const Cards = ({ category = "dress" }) => {
                     <Link to={`/product/${slug}?ref=${encodedId}`}>
                       <div
                         key={productId}
-                        className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 max-h-[320px] sm:max-h-[400px] h-full group hover:rounded-lg"
+                        className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200  h-full group hover:rounded-lg hover:shadow-md"
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                         onClick={() =>
@@ -481,7 +481,7 @@ const Cards = ({ category = "dress" }) => {
                           </div>
                         </div>
 
-                        <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
+                        <div className="max-h-[160px] sm:max-h-[280px] h-full border-b overflow-hidden relative">
                           <img
                             src={
                               product?.overview?.hero_image
@@ -505,7 +505,7 @@ const Cards = ({ category = "dress" }) => {
                           )}
                         </div>
 
-                        <div className="p-2">
+                        <div className="p-2 py-1">
                           <div className=" flex justify-center mb-1 gap-1  z-10">
                             {product?.product?.colours?.list.length > 1 &&
                               (() => {
@@ -541,31 +541,26 @@ const Cards = ({ category = "dress" }) => {
                                 }
                                 placement="top"
                               >
-                                <p
-                                  className={`text-sm transition-all duration-300 truncate w-full max-w-[250px] md:max-w-[300px] mx-auto ${
-                                    cardHover === product.meta.id &&
-                                    product.overview.name.length > 20
-                                      ? "sm:text-[18px]"
-                                      : "sm:text-lg"
-                                  } font-semibold text-brand sm:leading-[18px] lg:leading-[20px]`}
+                                <span
+                                  className={`text-sm sm:text-lg transition-all duration-300 truncate w-full mx-auto text font-semibold text-brand text-wrap`}
                                 >
                                   {product.overview.name}
-                                </p>
+                                </span>
                               </Tooltip>
-                              <p className="text-sm font-medium text-gray-500 pt-1">
+                              <p className="text-xs sm:text-sm font-medium text-gray-500 pt-1">
                                 Min Qty:{" "}
                                 {product.product?.prices?.price_groups[0]
                                   ?.base_price?.price_breaks[0]?.qty || 1}{" "}
                               </p>
                               <div className="">
-                                <h2 className="text-base sm:text-base font-bold text-primary">
+                                <h2 className="text-xs sm:text-base font-bold text-primary">
                                   Starting From{" "}
                                   {discountPct > 0 ? (
                                     <>
-                                      <span className="text-sm text-red-500 line-through mr-2">
+                                      <span className="text-xs sm:text-sm text-red-500 line-through mr-2">
                                         ${unDiscountedPrice.toFixed(2)}
                                       </span>
-                                      <span className="text-base sm:text-base font-bold text-primary">
+                                      <span className="text-xs sm:text-sm font-bold text-primary">
                                         $
                                         {getProductPrice(
                                           product,
@@ -574,7 +569,7 @@ const Cards = ({ category = "dress" }) => {
                                       </span>
                                     </>
                                   ) : (
-                                    <span className="text-base sm:text-base font-bold text-primary">
+                                    <span className="text-xs sm:text-sm font-bold text-primary">
                                       $
                                       {getProductPrice(
                                         product,

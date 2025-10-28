@@ -84,7 +84,7 @@ const Breadcrumb = () => {
   return (
     <div className="Mycontainer">
       {/* Mobile Layout */}
-      <div className="lg:hidden px-4 py-8">
+      <div className="lg:hidden px-0 md:py-8 py-4">
         <div className="flex flex-wrap items-center gap-1 text-smallHeader text-xs">
           {/* Home */}
           <Link

@@ -29,7 +29,9 @@ const NavigateAbout = () => {
 
         {/* Page Title */}
         <div className="mt-4">
-          <h1 className="text-2xl font-bold text-gray-900">About SuperMerch</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            About Super Merch
+          </h1>
           <p className="text-gray-600 mt-1">
             Discover our story, values, and commitment to excellence
           </p>

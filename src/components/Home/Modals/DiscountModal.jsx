@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { IoClose } from "react-icons/io5";
 
 const DiscountModal = ({
   isOpen,
@@ -62,7 +63,7 @@ const DiscountModal = ({
               onClick={onClose}
               aria-label="Close modal"
             >
-              ×
+              <IoClose />
             </button>
 
             <div className="text-center">
