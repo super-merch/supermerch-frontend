@@ -5,7 +5,7 @@ import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoMdArrowForward } from "react-icons/io";
-import { IoArrowBackOutline } from "react-icons/io5";
+import { IoArrowBackOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,7 +59,6 @@ const ProductDetails = () => {
     fetchProducts,
     skeletonLoading,
     error,
-    marginApi,
     totalDiscount,
     shippingCharges: freightFee,
     userData,
@@ -232,6 +231,7 @@ const ProductDetails = () => {
 
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
+  const [imageModel, setImageModel] = useState(false);
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
@@ -267,7 +267,6 @@ const ProductDetails = () => {
       : 0
   );
 
-  const marginEntry = marginApi[productId] || { marginFlat: 0 };
   const perUnitWithMargin = unitPrice;
 
   const discountPct = totalDiscount[productId] || 0;
@@ -422,9 +421,7 @@ const ProductDetails = () => {
 
     setUnitPrice(finalUnitPrice);
 
-    // Calculate pricing with margin and discount
-    const marginEntry = marginApi[productId] || { marginFlat: 0 };
-    const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
+    const rawPerUnit = finalUnitPrice;
     const discountedPerUnit = rawPerUnit * (1 - discountPct / 100);
 
     // Calculate total: (discounted per-unit × qty) + setup + freight
@@ -436,7 +433,6 @@ const ProductDetails = () => {
     selectedPrintMethod,
     freightFee,
     productId,
-    marginApi,
     discountPct,
     sortedPriceBreaks,
   ]);
@@ -770,8 +766,7 @@ const ProductDetails = () => {
     return formatDeliveryDate(twoWeeksLater);
   })();
 
-  // Calculate final per unit price with margin and discount
-  const rawPerUnit = unitPrice + marginEntry.marginFlat;
+  const rawPerUnit = unitPrice;
   const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
 
   const handleAddToCart = (e) => {
@@ -812,10 +807,9 @@ const ProductDetails = () => {
             // For decoration, add decoration price to base product price
             finalUnitPrice = baseProductPrice + selectedBreak.price;
           }
-          const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
+          const rawPerUnit = finalUnitPrice;
           return rawPerUnit * (1 - discountPct / 100);
         })(),
-        marginFlat: marginEntry.marginFlat,
         totalPrice: currentPrice,
         discountPct,
         size: selectedSize,
@@ -882,7 +876,35 @@ const ProductDetails = () => {
 
   return (
     <>
-      <div className="Mycontainer ">
+      <div className="Mycontainer relative ">
+        {/* model to show active image enlarged with a cross button to close it and also when clicked outside model should close */}
+        {imageModel && (
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50"
+            onClick={() => setImageModel(false)}
+          >
+            {/* Close button */}
+
+            {/* Image container - prevent click from closing */}
+            <div
+              className="w-[90%] md:w-[70%] h-[90vh] md:h-[70vh] flex justify-center items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setImageModel(false)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full text-gray-800 hover:text-gray-900 transition-all duration-200 shadow-lg"
+                aria-label="Close"
+              >
+                <IoClose className="text-2xl" />
+              </button>
+              <img
+                src={activeImage}
+                alt="Product Image"
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              />
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-2">
           {/* 1st culmn  */}
           {/* {loading && (
@@ -936,8 +958,15 @@ const ProductDetails = () => {
             ))
           ) : ( */}
           <div>
-            <div className="mb-4 ">
-              <img src={activeImage} alt={product?.name} className="w-full" />
+            <div
+              className="mb-4 border border-border2 overflow-hidden"
+              onClick={() => setImageModel(true)}
+            >
+              <img
+                src={activeImage}
+                alt={product?.name}
+                className="w-full cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-125"
+              />
             </div>
 
             <Swiper
@@ -1003,8 +1032,7 @@ const ProductDetails = () => {
                 <div className="flex flex-wrap items-center gap-2 py-1">
                   {!loading && (
                     <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200">
-                      SKU: SM-{single_product?.supplier.supplier_id}-
-                      {single_product?.meta.id}
+                      SKU: {single_product?.overview?.sku_number}
                     </span>
                   )}
                   <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-200">
@@ -1140,7 +1168,6 @@ const ProductDetails = () => {
                       handleAddToCart,
                       setShowSizeGuide,
                       getPriceForQuantity,
-                      marginApi,
                       discountMultiplier,
                       setSelectedSize,
                     }}
@@ -1236,7 +1263,6 @@ const ProductDetails = () => {
                               ?.price_breaks || [],
                           // price optional — reducer currently ignores passed-in price for computation
                           price: perUnitWithMargin,
-                          marginFlat: marginEntry.marginFlat,
                           discountPct,
                           totalPrice: perUnitWithMargin * 1, // optional: a helpful hint, reducer recalculates
                           code: product.code,

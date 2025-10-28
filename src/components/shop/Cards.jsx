@@ -111,7 +111,7 @@ const Cards = ({ category = "dress" }) => {
 
   useEffect(() => {
     const pageFromURL = parseInt(searchParams.get("page")) || 1;
-
+    setSortOption("")
     if (searchParams.get("category")) {
       const category = searchParams.get("category");
       if (category === "australia") {
@@ -119,24 +119,28 @@ const Cards = ({ category = "dress" }) => {
           ...paginationData,
           category: "australia",
           page: pageFromURL,
+          sortOption:""
         });
       } else if (category === "24hr-production") {
         setPaginationData({
           ...paginationData,
           category: "24hr-production",
           page: pageFromURL,
+          sortOption:""
         });
       } else if (category === "sales") {
         setPaginationData({
           ...paginationData,
           category: "sales",
           page: pageFromURL,
+          sortOption:""
         });
       } else if (category === "allProducts") {
         setPaginationData({
           ...paginationData,
           category: "allProducts",
           page: pageFromURL,
+          sortOption:""
         });
       } else {
         setPaginationData({
@@ -144,21 +148,24 @@ const Cards = ({ category = "dress" }) => {
           productTypeId: searchParams.get("category"),
           category: null,
           page: pageFromURL,
+          sortOption:""
         });
       }
-    } else if (searchParams.get("search")) {
+    } else if (location.pathname.includes("/search")) {
       setPaginationData({
         ...paginationData,
         category: "search",
         page: pageFromURL,
         searchTerm: searchParams.get("search"),
         productTypeId: searchParams.get("categoryId"),
+        sortOption:""
       });
     } else {
       setPaginationData({
         ...paginationData,
         category: category,
         page: pageFromURL,
+        sortOption:""
       });
     }
   }, [searchParams, category]);
@@ -206,25 +213,12 @@ const Cards = ({ category = "dress" }) => {
 
   const handleSortSelection = (option) => {
     setSortOption(option);
-    if (option === "lowToHigh") {
-      const sortedProducts = [...getProductsData].sort((a, b) => {
-        const priceA = getRealPrice(a);
-        const priceB = getRealPrice(b);
-        return priceA - priceB;
-      });
-      setProductsData(sortedProducts);
-    }
-    if (option === "highToLow") {
-      const sortedProducts = [...getProductsData].sort((a, b) => {
-        const priceA = getRealPrice(a);
-        const priceB = getRealPrice(b);
-        return priceB - priceA;
-      });
-      setProductsData(sortedProducts);
-    }
-    if (option === "revelancy") {
-      setProductsData(getProductsData);
-    }
+
+    setPaginationData((prev) => ({
+      ...prev,
+      sortOption: option === "revelancy" ? "" : option,
+      page: 1,
+    }));
 
     setIsDropdownOpen(false);
   };
