@@ -32,7 +32,7 @@ const Brands = () => {
   };
 
   return (
-    <div className="Mycontainer relative py-4">
+    <div className="Mycontainer relative">
       <style jsx>{`
         .scroll-container::-webkit-scrollbar {
           display: none;
@@ -73,7 +73,7 @@ const Brands = () => {
       {/* Scrollable container */}
       <motion.div
         ref={containerRef}
-        className="flex overflow-x-scroll w-full py-8 mx-auto scroll-smooth gap-4 scroll-container"
+        className="flex overflow-x-scroll w-full py-4 mx-auto scroll-smooth gap-4 scroll-container"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {slide.map((item, index) => (

@@ -18,6 +18,7 @@ import {
   Pagination,
   Scrollbar,
 } from "swiper/modules";
+import Tooltip from "../Common/Tooltip";
 
 const TrendingCarousel = () => {
   const navigate = useNavigate();
@@ -215,9 +216,14 @@ const TrendingCarousel = () => {
                             </div>
                             {/* Product Info */}
                             <div className="p-3 rounded-b-xl text-center">
-                              <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
-                                {product.overview.name || "No Name"}
-                              </h3>
+                              <Tooltip
+                                content={product.overview.name || "No Name"}
+                                placement="top"
+                              >
+                                <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
+                                  {product.overview.name || "No Name"}
+                                </h3>
+                              </Tooltip>
                               <p className="text-xs text-secondary/60">
                                 Min Qty:{" "}
                                 {product.product?.prices?.price_groups[0]

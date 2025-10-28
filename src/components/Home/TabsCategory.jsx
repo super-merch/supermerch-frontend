@@ -77,7 +77,7 @@ const TabsCategory = () => {
           }
         }
       `}</style>
-      <div className="bg-primary/10 py-4 pb-12">
+      <div className="bg-primary/10 py-10">
         <div className="Mycontainer">
           {/* Header Section */}
           <div className="mb-0 flex items-center justify-center">

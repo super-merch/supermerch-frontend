@@ -15,7 +15,7 @@ const Blogs = () => {
   // Function to inject images into content
 
   return (
-    <section className="bg-white py-8">
+    <section className="bg-white">
       <div className="Mycontainer">
         {/* Header Section */}
         <Heading
@@ -29,7 +29,7 @@ const Blogs = () => {
         />
 
         {/* Blog Carousel */}
-        <div className="relative mt-4">
+        <div className="relative mt-4 md:mt-0">
           <Swiper
             navigation={{
               prevEl: ".blog-prev",

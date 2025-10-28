@@ -41,7 +41,7 @@ const Heading = ({
       title: "text-xl md:text-2xl lg:text-3xl",
       subtitle: "text-base md:text-lg",
       description: "text-base md:text-lg !mt-1",
-      container: "py-2 md:py-4",
+      container: "pb-2 md:pb-4",
     },
     large: {
       title: "text-2xl md:text-3xl lg:text-4xl",

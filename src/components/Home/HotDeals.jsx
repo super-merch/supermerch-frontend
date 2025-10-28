@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import noimage from "/noimage.png";
 import { getProductPrice, slugify } from "@/utils/utils";
+import Tooltip from "../Common/Tooltip";
 
 const HotDeals = () => {
   const navigate = useNavigate();
@@ -81,6 +82,13 @@ const HotDeals = () => {
                 const isLastItem = index === 3;
                 const encodedId = btoa(product.meta?.id); // base64 encode
                 const slug = slugify(product.overview?.name);
+                const discountPct = product.discountInfo?.discount || 0;
+                let unDiscountedPrice;
+                if (discountPct > 0) {
+                  unDiscountedPrice =
+                    getProductPrice(product, product.meta.id) /
+                    (1 - discountPct / 100);
+                }
 
                 return (
                   <Link
@@ -101,18 +109,42 @@ const HotDeals = () => {
                       </div>
 
                       {/* Product Info */}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex flex-col flex-1 min-w-0">
                         {/* Product Name */}
-                        <h4
-                          className="text-sm font-semibold text-gray-800 truncate mb-1"
-                          style={{ whiteSpace: "nowrap" }}
+
+                        <Tooltip
+                          content={product.overview?.name || "No Name"}
+                          placement="top"
                         >
-                          {product.overview?.name || "No Name"}
-                        </h4>
+                          <h4
+                            className="text-sm font-semibold text-gray-800 truncate mb-1"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {product.overview?.name || "No Name"}
+                          </h4>
+                        </Tooltip>
                         {/* Price */}
-                        <span className="text-lg font-bold text-primary">
-                          ${price}
-                        </span>
+                        {discountPct > 0 ? (
+                          <div className="flex items-center gap-0">
+                            <span className="text-base text-red-500 line-through mr-2">
+                              ${unDiscountedPrice.toFixed(2)}
+                            </span>
+                            <span className="text-base sm:text-base font-bold text-primary">
+                              $
+                              {getProductPrice(
+                                product,
+                                product.meta.id
+                              ).toFixed(2)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-base sm:text-base font-bold text-primary">
+                            $
+                            {getProductPrice(product, product.meta.id).toFixed(
+                              2
+                            )}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </Link>
@@ -124,7 +156,7 @@ const HotDeals = () => {
       {/* View All Link */}
       <div className="mt-4 pt-3 border-t border-gray-200">
         <Link
-          to="/hot-deals"
+          to="/sales"
           className="text-sm text-secondary hover:text-primary font-medium transition-colors"
         >
           View All Hot Deals →

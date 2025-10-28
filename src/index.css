@@ -42,7 +42,7 @@ select {
 }
 
 .Mycontainer {
-  width: 90%;
+  width: 100%;
   max-width: 1500px;
   margin: auto;
 }
@@ -123,7 +123,7 @@ select {
 /* Standard phones (iPhone 13–15, Samsung Galaxy, Pixel) */
 @media (max-width: 414px) {
   .Mycontainer {
-    width: 95%;
+    width: 100%;
     padding: 0 1rem;
   }
 
@@ -144,7 +144,7 @@ select {
 /* Large phones / phablets */
 @media (max-width: 480px) {
   .Mycontainer {
-    width: 95%;
+    width: 100%;
     padding: 0 1rem;
   }
 
@@ -157,7 +157,7 @@ select {
 /* Portrait tablets (iPad Mini, Android tablets) */
 @media (max-width: 768px) {
   .Mycontainer {
-    width: 95%;
+    width: 100%;
     padding: 0 1rem;
   }
 

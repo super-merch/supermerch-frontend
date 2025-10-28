@@ -49,7 +49,6 @@ const HomeModals = ({
         isOpen={discountModal}
         onClose={() => {
           closeDiscountModal();
-          setDiscountModalShown(true);
         }}
         onSubscribe={() => {
           openEmailModal();

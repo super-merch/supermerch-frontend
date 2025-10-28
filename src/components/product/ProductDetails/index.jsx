@@ -306,7 +306,7 @@ const ProductDetails = () => {
         setUnitPrice(firstBreak.price);
         setCurrentPrice(
           firstBreak.price * firstBreak.qty +
-            (allGroups[0].setup || 0) +
+            (allGroups[0].setup * 1.5 || 0) +
             freightFee
         );
       }
@@ -694,7 +694,7 @@ const ProductDetails = () => {
       formData1.append("printMethodKey", selectedPrintMethod?.key || "");
       formData1.append(
         "setupFee",
-        Number((selectedPrintMethod?.setup || 0).toFixed(2))
+        Number((selectedPrintMethod?.setup * 1.5 || 0).toFixed(2))
       );
       formData1.append("freightFee", Number(freightFee.toFixed(2)));
       formData1.append("color", selectedColor || "");
@@ -819,7 +819,7 @@ const ProductDetails = () => {
         print: selectedPrintMethod.description,
         logoColor: logoColor,
         freightFee: freightFee,
-        setupFee: selectedPrintMethod.setup || 0,
+        setupFee: selectedPrintMethod.setup * 1.5 || 0,
         dragdrop: selectedFile,
         deliveryDate,
         priceBreaks: selectedPrintMethod.price_breaks,
@@ -890,13 +890,13 @@ const ProductDetails = () => {
               className="w-[90%] md:w-[70%] h-[90vh] md:h-[70vh] flex justify-center items-center"
               onClick={(e) => e.stopPropagation()}
             >
-            <button
-              onClick={() => setImageModel(false)}
-              className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full text-gray-800 hover:text-gray-900 transition-all duration-200 shadow-lg"
-              aria-label="Close"
-            >
-              <IoClose className="text-2xl" />
-            </button>
+              <button
+                onClick={() => setImageModel(false)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full text-gray-800 hover:text-gray-900 transition-all duration-200 shadow-lg"
+                aria-label="Close"
+              >
+                <IoClose className="text-2xl" />
+              </button>
               <img
                 src={activeImage}
                 alt="Product Image"
@@ -1063,8 +1063,8 @@ const ProductDetails = () => {
                                 key={index}
                                 className={`w-5 h-5 text-xs font-medium rounded-full cursor-pointer border ${
                                   selectedColor === color
-                                    ? "border-1 border-blue-500"
-                                    : "border-slate-900"
+                                    ? "border-2 border-primary"
+                                    : "bo"
                                 }`}
                                 style={{
                                   backgroundColor: matchedColor?.hex,
@@ -1134,9 +1134,9 @@ const ProductDetails = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveInfoTab(tab.key)}
-                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                    className={`px-4 py-2 text-md font-medium border-b-2 -mb-px transition-colors ${
                       activeInfoTab === tab.key
-                        ? "border-smallHeader text-smallHeader"
+                        ? "border-primary text-primary"
                         : "border-transparent text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -1146,7 +1146,7 @@ const ProductDetails = () => {
               </div>
 
               {/* Tab content */}
-              <div className="mt-3 rounded-lg border border-border bg-perUnit p-4">
+              <div className="mt-3">
                 {activeInfoTab === "features" && (
                   <FeaturesTab
                     single_product={single_product}
@@ -1271,7 +1271,7 @@ const ProductDetails = () => {
                           print: selectedPrintMethod?.description || "",
                           logoColor: logoColor,
                           size: selectedSize,
-                          setupFee: selectedPrintMethod?.setup || 0,
+                          setupFee: selectedPrintMethod?.setup * 1.5 || 0,
                           dragdrop: selectedFile,
                           deliveryDate,
                           priceBreaks: selectedPrintMethod?.price_breaks || [],
@@ -1350,7 +1350,7 @@ const ProductDetails = () => {
                     </p>
                     <p className="text-sm">
                       Setup Charge: $
-                      {selectedPrintMethod?.setup?.toFixed(2) || "0.00"}
+                      {selectedPrintMethod?.setup?.toFixed(2) * 1.5 || "0.00"}
                     </p>
                   </div>
                   <div className="flex items-start gap-2 pt-3 ">

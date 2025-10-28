@@ -44,7 +44,7 @@ const ABoutHero = () => {
           <div className="relative rounded-3xl overflow-hidden shadow-2xl">
             <img
               src="/group2.png"
-              alt="SuperMerch Team"
+              alt="Super Merch Team"
               className="w-full h-auto object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -118,7 +118,7 @@ const ABoutHero = () => {
                 </div>
 
                 <h1 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight">
-                  Welcome to <span className="text-white">SuperMerch</span>
+                  Welcome to <span className="text-white">Super Merch</span>
                 </h1>
 
                 <p className="text-lg text-blue-100 leading-relaxed mb-6">
