@@ -97,7 +97,7 @@ const App = () => {
 
             <Route
               path="hot-deals"
-              element={<ShopPage category="hot-deals" />}
+              element={<ShopPage category="sales" />}
             />
             <Route path="/favourites" element={<FavouritePage />} />
             <Route path="/Clothing" element={<ShopPage category="dress" />} />
