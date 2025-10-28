@@ -15,7 +15,6 @@ const PricingTab = ({
   handleAddToCart,
   setShowSizeGuide,
   getPriceForQuantity,
-  marginApi,
   discountMultiplier,
   setSelectedSize,
 }) => {
@@ -148,15 +147,12 @@ const PricingTab = ({
         </thead>
         <tbody>
           {selectedPrintMethod?.price_breaks?.map((item, i) => {
-            const marginEntry = marginApi[productId];
             const baseProductPrice = getPriceForQuantity(item.qty);
             const methodUnit =
               selectedPrintMethod.type === "base"
                 ? item.price
                 : baseProductPrice + item.price;
-            const unitWithMargin = marginEntry
-              ? methodUnit + marginEntry.marginFlat
-              : methodUnit;
+            const unitWithMargin = methodUnit;
             const unitDiscounted = unitWithMargin * discountMultiplier;
             const total = unitDiscounted * item.qty;
             // Check if this price tier applies to the current quantity

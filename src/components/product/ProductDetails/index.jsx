@@ -59,7 +59,6 @@ const ProductDetails = () => {
     fetchProducts,
     skeletonLoading,
     error,
-    marginApi,
     totalDiscount,
     shippingCharges: freightFee,
     userData,
@@ -267,7 +266,6 @@ const ProductDetails = () => {
       : 0
   );
 
-  const marginEntry = marginApi[productId] || { marginFlat: 0 };
   const perUnitWithMargin = unitPrice;
 
   const discountPct = totalDiscount[productId] || 0;
@@ -422,9 +420,7 @@ const ProductDetails = () => {
 
     setUnitPrice(finalUnitPrice);
 
-    // Calculate pricing with margin and discount
-    const marginEntry = marginApi[productId] || { marginFlat: 0 };
-    const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
+    const rawPerUnit = finalUnitPrice
     const discountedPerUnit = rawPerUnit * (1 - discountPct / 100);
 
     // Calculate total: (discounted per-unit × qty) + setup + freight
@@ -436,7 +432,6 @@ const ProductDetails = () => {
     selectedPrintMethod,
     freightFee,
     productId,
-    marginApi,
     discountPct,
     sortedPriceBreaks,
   ]);
@@ -770,8 +765,7 @@ const ProductDetails = () => {
     return formatDeliveryDate(twoWeeksLater);
   })();
 
-  // Calculate final per unit price with margin and discount
-  const rawPerUnit = unitPrice + marginEntry.marginFlat;
+  const rawPerUnit = unitPrice
   const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
 
   const handleAddToCart = (e) => {
@@ -812,10 +806,9 @@ const ProductDetails = () => {
             // For decoration, add decoration price to base product price
             finalUnitPrice = baseProductPrice + selectedBreak.price;
           }
-          const rawPerUnit = finalUnitPrice + marginEntry.marginFlat;
+          const rawPerUnit = finalUnitPrice
           return rawPerUnit * (1 - discountPct / 100);
         })(),
-        marginFlat: marginEntry.marginFlat,
         totalPrice: currentPrice,
         discountPct,
         size: selectedSize,
@@ -1140,7 +1133,6 @@ const ProductDetails = () => {
                       handleAddToCart,
                       setShowSizeGuide,
                       getPriceForQuantity,
-                      marginApi,
                       discountMultiplier,
                       setSelectedSize,
                     }}
@@ -1236,7 +1228,6 @@ const ProductDetails = () => {
                               ?.price_breaks || [],
                           // price optional — reducer currently ignores passed-in price for computation
                           price: perUnitWithMargin,
-                          marginFlat: marginEntry.marginFlat,
                           discountPct,
                           totalPrice: perUnitWithMargin * 1, // optional: a helpful hint, reducer recalculates
                           code: product.code,
