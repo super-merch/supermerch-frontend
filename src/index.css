@@ -388,3 +388,7 @@ select {
   color: #1f1f1f !important;
   z-index: 999999;
 }
+
+.carousel__card {
+  height: 300px !important;
+}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import noimage from "/noimage.png";
-import { slugify } from "@/utils/utils";
+import { getProductPrice, slugify } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
@@ -38,7 +38,11 @@ const ProductCard = ({
     dispatch(addToFavourite(product));
     toast.success("Product added to favourites");
   };
-
+  let unDiscountedPrice;
+  if (discountPct > 0) {
+    unDiscountedPrice =
+      getProductPrice(product, product.meta.id) / (1 - discountPct / 100);
+  }
   return (
     <div
       onMouseEnter={() => setCardHover(product.meta.id)}
@@ -83,7 +87,7 @@ const ProductCard = ({
             </div>
           </div>
 
-          <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
+          <div className="max-h-[160px] sm:max-h-[280px] h-full border-b overflow-hidden relative">
             <img
               src={
                 product?.overview?.hero_image
@@ -114,14 +118,25 @@ const ProductCard = ({
               </p>
             </Tooltip>
 
-            <p className="text-xs text-gray-500 pt-1">Min Qty: {minQty} </p>
+            <p className="text-xs text-gray-500">Min Qty: {minQty} </p>
 
             <div className="">
-              <h2 className="text-base sm:text-lg font-bold text-primary ">
-                From $
-                {minPrice?.toFixed
-                  ? minPrice.toFixed(2)
-                  : Number(minPrice || 0).toFixed(2)}
+              <h2 className="text-xs sm:text-base font-bold text-primary">
+                Starting From{" "}
+                {discountPct > 0 ? (
+                  <>
+                    <span className="text-xs sm:text-sm text-red-500 line-through mr-2">
+                      ${unDiscountedPrice.toFixed(2)}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-primary">
+                      ${getProductPrice(product, product.meta.id).toFixed(2)}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xs sm:text-sm font-bold text-primary">
+                    ${getProductPrice(product, product.meta.id).toFixed(2)}
+                  </span>
+                )}
               </h2>
             </div>
             {discountPct > 0 && (
