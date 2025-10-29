@@ -30,6 +30,30 @@ const SearchBar = ({
 
   const suggestionTimerRef = useRef(null);
   const wrapperRef = categoryDropdownRef;
+  // Close category dropdown & suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target)
+      ) {
+        setIsCategoryDropdownOpen(false);
+
+        // <-- NEW: also close suggestions when clicking outside
+        if (isSuggestionsOpen) {
+          setIsSuggestionsOpen(false);
+          setSuggestions([]);
+          setHighlightedIndex(-1);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSuggestionsOpen]);
+
   const fetchSuggestions = async (q) => {
     if (!q || q.trim().length === 0) {
       setSuggestions([]);
@@ -42,7 +66,9 @@ const SearchBar = ({
       const resp = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/search-suggestion?q=${encodeURIComponent(q)}&limit=${limit}${selectedCategory.id ? `&category=${selectedCategory.id}` : ""}`
+        }/api/search-suggestion?q=${encodeURIComponent(q)}&limit=${limit}${
+          selectedCategory.id ? `&category=${selectedCategory.id}` : ""
+        }`
       );
       const json = await resp.json();
       const items = (json?.data || []).map((it) => ({
@@ -136,7 +162,7 @@ const SearchBar = ({
     if (value.trim()) {
       debounceTimerRef.current = setTimeout(() => {
         handleSearch(value.trim());
-      }, 500); // 500ms delay
+      }, 1000); // 1000ms delay
     } else {
       handleSearch("");
     }
