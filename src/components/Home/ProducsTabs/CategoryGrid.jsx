@@ -55,11 +55,11 @@ const CategoryGrid = ({ activeTab }) => {
     setLoading(true);
     try {
       if (activeTab === "All Product") {
-        await fetchProducts(1, "", 8);
+        await fetchProducts(1, "", 4);
       } else {
         const cat = tabToCategory[activeTab];
 
-        await fetchProductsCategory(cat, 1, "", 8);
+        await fetchProductsCategory(cat, 1, "", 4);
       }
     } catch (e) {
       if (!ignore) setError(e?.message || "Error fetching products");
@@ -156,7 +156,7 @@ const CategoryGrid = ({ activeTab }) => {
             )
           : renderGrid(
               activeTab === "All Product"
-                ? finalProducts?.slice(0, 8)
+                ? finalProducts?.slice(0, 4)
                 : finalProducts
             )}
       </div>

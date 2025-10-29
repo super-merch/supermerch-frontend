@@ -111,6 +111,7 @@ const Cards = ({ category = "dress" }) => {
 
   useEffect(() => {
     const pageFromURL = parseInt(searchParams.get("page")) || 1;
+    setSortOption("");
     if (searchParams.get("category")) {
       const category = searchParams.get("category");
       if (category === "australia") {
@@ -118,28 +119,28 @@ const Cards = ({ category = "dress" }) => {
           ...paginationData,
           category: "australia",
           page: pageFromURL,
-          sortOption:""
+          sortOption: "",
         });
       } else if (category === "24hr-production") {
         setPaginationData({
           ...paginationData,
           category: "24hr-production",
           page: pageFromURL,
-          sortOption:""
+          sortOption: "",
         });
       } else if (category === "sales") {
         setPaginationData({
           ...paginationData,
           category: "sales",
           page: pageFromURL,
-          sortOption:""
+          sortOption: "",
         });
       } else if (category === "allProducts") {
         setPaginationData({
           ...paginationData,
           category: "allProducts",
           page: pageFromURL,
-          sortOption:""
+          sortOption: "",
         });
       } else {
         setPaginationData({
@@ -147,7 +148,7 @@ const Cards = ({ category = "dress" }) => {
           productTypeId: searchParams.get("category"),
           category: null,
           page: pageFromURL,
-          sortOption:""
+          sortOption: "",
         });
       }
     } else if (location.pathname.includes("/search")) {
@@ -157,14 +158,14 @@ const Cards = ({ category = "dress" }) => {
         page: pageFromURL,
         searchTerm: searchParams.get("search"),
         productTypeId: searchParams.get("categoryId"),
-        sortOption:""
+        sortOption: "",
       });
     } else {
       setPaginationData({
         ...paginationData,
         category: category,
         page: pageFromURL,
-        sortOption:""
+        sortOption: "",
       });
     }
   }, [searchParams, category]);
@@ -428,7 +429,7 @@ const Cards = ({ category = "dress" }) => {
                     <Link to={`/product/${slug}?ref=${encodedId}`}>
                       <div
                         key={productId}
-                        className="relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200  h-full group hover:rounded-lg hover:shadow-md"
+                        className="w-full relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200  h-full group hover:rounded-lg hover:shadow-md"
                         onMouseEnter={() => setCardHover(product.meta.id)}
                         onMouseLeave={() => setCardHover(null)}
                         onClick={() =>
@@ -525,7 +526,7 @@ const Cards = ({ category = "dress" }) => {
                               })()}
                           </div>
                           <div className="relative flex justify-center items-center text-center">
-                            <div className="flex-1 justify-center">
+                            <div className="flex-1 justify-center w-[300px]">
                               <Tooltip
                                 content={
                                   product.overview.name.length > 30
@@ -534,13 +535,13 @@ const Cards = ({ category = "dress" }) => {
                                 }
                                 placement="top"
                               >
-                                <span
-                                  className={`text-sm sm:text-lg transition-all duration-300 truncate w-full mx-auto text font-semibold text-brand text-wrap`}
+                                <p
+                                  className={`text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand text-wrap md:text-nowrap truncate md:w-[300px] w-full`}
                                 >
                                   {product.overview.name}
-                                </span>
+                                </p>
                               </Tooltip>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500 pt-1">
+                              <p className="text-xs sm:text-sm font-medium text-gray-500">
                                 Min Qty:{" "}
                                 {product.product?.prices?.price_groups[0]
                                   ?.base_price?.price_breaks[0]?.qty || 1}{" "}

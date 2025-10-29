@@ -2,70 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Heading } from "../Common";
 import { ReactGoogleReviews } from "react-google-reviews";
 import "react-google-reviews/dist/index.css";
-import { FaGoogle } from "react-icons/fa6";
+import { FaGoogle, FaQuoteLeft } from "react-icons/fa6";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 
 const GoogleReviewsComponent = () => {
   const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [expandedReviews, setExpandedReviews] = useState({});
   const featurableWidgetId = "d2b1b65c-56fe-4764-a228-58d2820cf5ff";
 
-  // Fallback review data
-  const fallbackReviews = [
-    {
-      id: "review-1",
-      author: "Sarah Johnson",
-      rating: 5,
-      text: "Excellent quality products and fast delivery! Super Merch exceeded our expectations with their custom merchandise.",
-      date: "2024-01-15",
-      avatar: "/team1.png",
-    },
-    {
-      id: "review-2",
-      author: "Mike Chen",
-      rating: 5,
-      text: "Outstanding customer service and amazing promotional products. Highly recommend for any business needs!",
-      date: "2024-01-10",
-      avatar: "/team2.png",
-    },
-    {
-      id: "review-3",
-      author: "Emily Davis",
-      rating: 5,
-      text: "Professional team, great prices, and top-notch quality. Will definitely use Super Merch again!",
-      date: "2024-01-08",
-      avatar: "/team3.png",
-    },
-    {
-      id: "review-4",
-      author: "David Wilson",
-      rating: 5,
-      text: "Fantastic experience from start to finish. The custom designs were exactly what we wanted!",
-      date: "2024-01-05",
-      avatar: "/team4.png",
-    },
-  ];
-
-  useEffect(() => {
-    fetchGoogleReviews();
-  }, []);
-
-  const fetchGoogleReviews = async () => {
-    try {
-      setLoading(true);
-
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Use fallback data for now
-      setReviews(fallbackReviews);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching Google reviews:", err);
-      setError("Failed to load reviews");
-      setReviews(fallbackReviews);
-      setLoading(false);
-    }
+  const toggleExpanded = (reviewId) => {
+    setExpandedReviews((prev) => ({
+      ...prev,
+      [reviewId]: !prev[reviewId],
+    }));
   };
 
   const renderStars = (rating) => {
@@ -119,14 +75,13 @@ const GoogleReviewsComponent = () => {
             ))}
           </div>
         ) : (
-          <div className="w-full">
-            <div className="relative">
-              <ReactGoogleReviews
-                layout="carousel"
-                featurableId={featurableWidgetId}
-                showDots={false}
-              />
-            </div>
+          <div className="w-full relative">
+            <ReactGoogleReviews
+              layout="carousel"
+              featurableId={featurableWidgetId}
+              maxCharacters={100}
+              maxItems={3}
+            />
           </div>
         )}
 
