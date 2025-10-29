@@ -52,7 +52,7 @@ const TopBanner = ({ onCouponClick }) => {
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition-opacity"
           >
-            <FaFacebookF className="text-base sm:text-xl" />
+            <FaFacebookF className="text-base sm:text-2xl" />
           </a>
 
           <a
@@ -61,7 +61,7 @@ const TopBanner = ({ onCouponClick }) => {
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition-opacity"
           >
-            <FaInstagram className="text-base sm:text-xl" />
+            <FaInstagram className="text-base sm:text-2xl" />
           </a>
 
           <a
@@ -70,7 +70,7 @@ const TopBanner = ({ onCouponClick }) => {
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition-opacity"
           >
-            <FaEnvelope className="text-base sm:text-xl" />
+            <FaEnvelope className="text-base sm:text-2xl" />
           </a>
         </div>
       </div>

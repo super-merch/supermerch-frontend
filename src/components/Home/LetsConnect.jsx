@@ -70,7 +70,7 @@ const LetsConnect = () => {
   };
 
   return (
-    <div className="w-full py-12 bg-primary/10">
+    <div className="w-full py-10 bg-primary/10">
       <div className="Mycontainer">
         <Heading
           title="Let's Connect"

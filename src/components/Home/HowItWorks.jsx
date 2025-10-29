@@ -64,7 +64,7 @@ export default function HowItWorks({ className = "" }) {
 
   return (
     <section
-      className={`bg-primary/10 py-16 lg:py-20 ${className}`}
+      className={`bg-primary/10 py-10 ${className}`}
       aria-labelledby="how-it-works-heading"
     >
       <div className="Mycontainer mx-auto px-4">

@@ -35,7 +35,7 @@ const HeroWithHotDeals = () => {
       title: "Bring Your Brand to Life",
       description:
         "Create memorable experiences with our custom printing and embroidery services. Perfect for businesses, events, and teams.",
-      buttonText: "Get Quote",
+      buttonText: "Contact Us",
       // slide 2: image in public/pgHome.jpg
       imageUrl: `/pgHome.jpg`,
     },

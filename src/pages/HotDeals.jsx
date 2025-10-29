@@ -4,6 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import { AppContext } from "../context/AppContext";
 import noimage from "/noimage.png";
 import { getProductPrice } from "@/utils/utils";
+import { Clock, Flag } from "lucide-react";
 
 const HotDeals = () => {
   const navigate = useNavigate();
@@ -89,7 +90,11 @@ const HotDeals = () => {
               const minPrice = getProductPrice(product, product?.meta?.id);
               const discountPct = product.discountInfo?.discount || 0;
               const isGlobalDiscount = product.discountInfo?.isGlobal || false;
-
+              if (discountPct > 0) {
+                unDiscountedPrice =
+                  getProductPrice(product, product.meta.id) /
+                  (1 - discountPct / 100);
+              }
               return (
                 <div
                   key={productId}
@@ -115,30 +120,7 @@ const HotDeals = () => {
                     {(productionIds.has(productId) ||
                       productionIds.has(String(productId))) && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                        <svg
-                          className="w-3 h-3 flex-shrink-0"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          aria-hidden
-                        >
-                          <path
-                            d="M12 7v5l3 1"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="8"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <Clock />
                         <span>24Hr Production</span>
                       </span>
                     )}
@@ -146,24 +128,7 @@ const HotDeals = () => {
                     {(australiaIds.has(productId) ||
                       australiaIds.has(String(productId))) && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                        <svg
-                          className="w-3 h-3 flex-shrink-0"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          aria-hidden
-                        >
-                          <path d="M3 6h10l-2 3 2 3H3V6z" fill="currentColor" />
-                          <rect
-                            x="3"
-                            y="4"
-                            width="1"
-                            height="16"
-                            rx="0.5"
-                            fill="currentColor"
-                            opacity="0.9"
-                          />
-                        </svg>
+                        <Flag />
                         <span>Australia Made</span>
                       </span>
                     )}
@@ -191,7 +156,28 @@ const HotDeals = () => {
 
                       <div>
                         <h2 className="text-base sm:text-lg font-bold text-primary">
-                          From ${minPrice?.toFixed(2)}
+                          {discountPct > 0 ? (
+                            <>
+                              <span className="text-sm text-red-500 line-through mr-2">
+                                ${unDiscountedPrice.toFixed(2)}
+                              </span>
+                              <span className="text-base sm:text-base font-bold text-primary">
+                                $
+                                {getProductPrice(
+                                  product,
+                                  product.meta.id
+                                ).toFixed(2)}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-base sm:text-base font-bold text-primary">
+                              $
+                              {getProductPrice(
+                                product,
+                                product.meta.id
+                              ).toFixed(2)}
+                            </span>
+                          )}
                         </h2>
                         {discountPct > 0 && (
                           <p className="text-xs text-green-600 font-medium">

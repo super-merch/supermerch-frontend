@@ -17,6 +17,8 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
       "Gender",
       "Qty Per Carton",
       "Product Materials",
+      "Product Material",
+      "Product Size",
       "Product Item Size",
       "Product Packaging Inner",
       "Fabric Types",
@@ -40,7 +42,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
       {single_product?.product?.description && (
         <div className=" border-gray-200 pb-2">
           {single_product.product.description.includes("Features:") && (
-            <div className="text-sm leading-6 text-gray-800 mb-2 border-b border-gray-200 pb-2">
+            <div className="text-sm leading-6 text-black mb-2 border-b border-gray-200 pb-2">
               <span className="font-semibold">Features:</span>
               <ul className="mt-2 space-y-1 list-disc list-inside">
                 {single_product.product.description
@@ -62,7 +64,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
           {single_product.product.description.split("Features:")[0] && (
             <>
               <span className="font-semibold">Description:</span>
-              <p className="text-sm leading-6 text-gray-800">
+              <p className="text-sm leading-6 text-black">
                 {single_product.product.description
                   .split("Features:")[0]
                   .split("\n")
@@ -82,7 +84,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
             {single_product.product.features.slice(0, 8).map((f, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200"
+                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-black ring-1 ring-inset ring-gray-200"
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 {f}
@@ -98,7 +100,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                 <p className="font-semibold capitalize">{d.method || d.name}</p>
 
                 {d?.detail && (
-                  <div className="text-gray-600">
+                  <div className="text-black">
                     {d?.detail?.split("\n").map((line, index) => (
                       <p key={index} className="mb-1">
                         - {line}
@@ -113,67 +115,6 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
           )}
         </div>
       )}
-      {/* Specifications Table */}
-      {/* <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mt-2">
-                      <div className="bg-gray-50 pl-6 py-3 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Specifications
-                        </h3>
-                      </div>
-
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <tbody className="divide-y divide-gray-200">
-                            {Array.isArray(single_product?.product?.details) &&
-                              filterByNames(
-                                single_product?.product?.details
-                              ).map((item, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50">
-                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3 capitalize">
-                                    {item?.name || "Detail"}
-                                  </td>
-                                  <td className="px-6 py-4 text-sm text-gray-600 whitespace-pre-line">
-                                    {item?.detail?.split(";").join("\n") || "-"}
-                                  </td>
-                                </tr>
-                              ))}
-
-                            {single_product?.product?.material && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Material
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.material}
-                                </td>
-                              </tr>
-                            )}
-
-                            {single_product?.product?.dimensions && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Dimensions
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.dimensions}
-                                </td>
-                              </tr>
-                            )}
-
-                            {single_product?.product?.packaging && (
-                              <tr className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900 w-1/3">
-                                  Packaging
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600">
-                                  {single_product.product.packaging}
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div> */}
     </div>
   );
 };
