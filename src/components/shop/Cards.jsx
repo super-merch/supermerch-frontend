@@ -111,7 +111,6 @@ const Cards = ({ category = "dress" }) => {
 
   useEffect(() => {
     const pageFromURL = parseInt(searchParams.get("page")) || 1;
-    setSortOption("")
     if (searchParams.get("category")) {
       const category = searchParams.get("category");
       if (category === "australia") {
