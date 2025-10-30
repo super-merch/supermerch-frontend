@@ -7,7 +7,7 @@ const SkeletonLoading = ({ index }) => {
       key={index}
       className="relative p-2 sm:p-4 border rounded-lg shadow-md border-border2 bg-white"
     >
-      <Skeleton height={150} className="sm:h-[200px] rounded-md" />
+      <Skeleton height={100} className="sm:h-[200px] rounded-md" />
       <div className="p-2 sm:p-4">
         <Skeleton
           height={16}

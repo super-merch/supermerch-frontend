@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -6,24 +6,20 @@ import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { Clock } from "lucide-react";
 import { Flag } from "lucide-react";
-import { addToFavourite } from "../../redux/slices/favouriteSlice";
+import {
+  addToFavourite,
+  removeFromFavourite,
+} from "../../redux/slices/favouriteSlice";
 import Tooltip from "./Tooltip";
 import noimage from "/noimage.png";
+import { backgroundColor, getProductPrice, slugify } from "@/utils/utils";
+import { AppContext } from "@/context/AppContext";
 
-const ProductCard = ({
-  product,
-  productionIds = new Set(),
-  australiaIds = new Set(),
-  favSet = new Set(),
-  getProductPrice,
-  backgroundColor,
-  //   discountPct = 0,
-  //   unDiscountedPrice = 0,
-  //   isGlobalDiscount = false,
-  onViewProduct,
-}) => {
+const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { productionIds, australiaIds } = useContext(AppContext);
+
   const discountPct = product.discountInfo?.discount || 0;
   const isGlobalDiscount = product.discountInfo?.isGlobal || false;
   let unDiscountedPrice;
@@ -31,10 +27,19 @@ const ProductCard = ({
     unDiscountedPrice =
       getProductPrice(product, product.meta.id) / (1 - discountPct / 100);
   }
+  const handleRemoveFavourite = (product) => {
+    toast.success("Product removed from favourites");
+    dispatch(removeFromFavourite(product));
+  };
+
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
-    dispatch(addToFavourite(product));
-    toast.success("Product added to favourites");
+    if (favSet.has(product?.meta?.id)) {
+      handleRemoveFavourite(product);
+    } else {
+      dispatch(addToFavourite(product));
+      toast.success("Product added to favourites");
+    }
   };
 
   const handleCardClick = () => {
@@ -73,7 +78,7 @@ const ProductCard = ({
   return (
     <div
       key={productId}
-      className="w-full relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 h-full group hover:rounded-lg hover:shadow-md"
+      className="w-full relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 h-full group hover:rounded-lg hover:shadow-md bg-white"
       onClick={handleCardClick}
     >
       {/* Badges - Top Left */}
