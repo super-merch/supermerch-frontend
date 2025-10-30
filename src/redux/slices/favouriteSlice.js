@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const favouriteSlice = createSlice({
-  name: 'favouriteProducts',
+  name: "favouriteProducts",
   initialState: {
     favouriteItems: [],
     favouriteQuantity: 0,
@@ -14,15 +14,15 @@ const favouriteSlice = createSlice({
       state.favouriteItems = action.payload;
       state.favouriteQuantity = action.payload.length;
     },
-    
+
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
-    
+
     setError: (state, action) => {
       state.error = action.payload;
     },
-    
+
     addToFavouriteLocal: (state, action) => {
       const exists = state.favouriteItems.find(
         (item) => item.meta.id === action.payload.meta.id
@@ -40,7 +40,7 @@ const favouriteSlice = createSlice({
       );
       state.favouriteQuantity = state.favouriteItems.length;
     },
-    
+
     clearFavourites: (state) => {
       state.favouriteItems = [];
       state.favouriteQuantity = 0;
@@ -55,7 +55,7 @@ export const loadFavouritesFromDB = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       dispatch(setLoading(false));
       return;
@@ -70,41 +70,48 @@ export const loadFavouritesFromDB = () => async (dispatch) => {
 
     if (userResponse.data.success) {
       const userId = userResponse.data.email;
-      
+
       // Get user's favourites
-      const favResponse = await axios.get(`${backendUrl}/api/favourites/get-favourite`, {
-        params: { userId },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const favResponse = await axios.get(
+        `${backendUrl}/api/favourites/get-favourite`,
+        {
+          params: { userId },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (favResponse.data.success) {
         dispatch(setFavouriteItems(favResponse.data.favouriteProducts));
       }
     }
   } catch (error) {
-    console.error('Error loading favourites:', error);
-    dispatch(setError(error.response?.data?.message || 'Failed to load favourites'));
+    console.error("Error loading favourites:", error);
+    dispatch(
+      setError(error.response?.data?.message || "Failed to load favourites")
+    );
   } finally {
     dispatch(setLoading(false));
   }
 };
 
-export const addToFavourite = (product ) => async (dispatch, getState) => {
+export const addToFavourite = (product) => async (dispatch, getState) => {
   try {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       dispatch(addToFavouriteLocal(product));
-      console.error('User not authenticated');
+      console.error("User not authenticated");
       return;
     }
 
     // Check if already exists locally
     const { favouriteItems } = getState().favouriteProducts;
-    const exists = favouriteItems.find(item => item.meta.id === product.meta.id);
-    
+    const exists = favouriteItems.find(
+      (item) => item.meta.id === product.meta.id
+    );
+
     if (exists) {
       return;
     }
@@ -121,31 +128,39 @@ export const addToFavourite = (product ) => async (dispatch, getState) => {
 
     if (userResponse.data.success) {
       const userId = userResponse.data.email;
-      
+
       // Save to database
-      await axios.post(`${backendUrl}/api/favourites/save-favourite`, {
-        userId,
-        favouriteProduct: product
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.post(
+        `${backendUrl}/api/favourites/save-favourite`,
+        {
+          userId,
+          favouriteProduct: product,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
     }
   } catch (error) {
-    console.error('Error adding to favourites:', error);
+    console.error("Error adding to favourites:", error);
     // Remove from local state if DB save failed
     dispatch(removeFromFavouriteLocal(product));
-    dispatch(setError(error.response?.data?.message || 'Failed to add to favourites'));
+    dispatch(
+      setError(error.response?.data?.message || "Failed to add to favourites")
+    );
   }
 };
 
-export const removeFromFavourite = (product, ) => async (dispatch) => {
+export const removeFromFavourite = (product) => async (dispatch) => {
   try {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
-      console.error('User not authenticated');
+      dispatch(removeFromFavouriteLocal(product));
+
+      console.error("User not authenticated");
       return;
     }
 
@@ -161,12 +176,12 @@ export const removeFromFavourite = (product, ) => async (dispatch) => {
 
     if (userResponse.data.success) {
       const userId = userResponse.data.email;
-      
+
       // Remove from database
       await axios.delete(`${backendUrl}/api/favourites/delete-favourite`, {
         data: {
           userId,
-          productId: product.meta.id
+          productId: product.meta.id,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -174,20 +189,24 @@ export const removeFromFavourite = (product, ) => async (dispatch) => {
       });
     }
   } catch (error) {
-    console.error('Error removing from favourites:', error);
+    console.error("Error removing from favourites:", error);
     // Add back to local state if DB removal failed
     dispatch(addToFavouriteLocal(product));
-    dispatch(setError(error.response?.data?.message || 'Failed to remove from favourites'));
+    dispatch(
+      setError(
+        error.response?.data?.message || "Failed to remove from favourites"
+      )
+    );
   }
 };
 
-export const { 
-  setFavouriteItems, 
-  setLoading, 
-  setError, 
-  addToFavouriteLocal, 
-  removeFromFavouriteLocal, 
-  clearFavourites 
+export const {
+  setFavouriteItems,
+  setLoading,
+  setError,
+  addToFavouriteLocal,
+  removeFromFavouriteLocal,
+  clearFavourites,
 } = favouriteSlice.actions;
 
 export default favouriteSlice.reducer;

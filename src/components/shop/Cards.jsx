@@ -408,11 +408,7 @@ const Cards = ({ category = "dress" }) => {
                     <ProductCard
                       key={product.meta.id}
                       product={product}
-                      productionIds={productionIds}
-                      australiaIds={australiaIds}
                       favSet={favSet}
-                      getProductPrice={getProductPrice}
-                      backgroundColor={backgroundColor}
                       onViewProduct={handleViewProduct}
                     />
                   );
