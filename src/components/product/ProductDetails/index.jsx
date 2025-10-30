@@ -5,7 +5,7 @@ import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoMdArrowForward } from "react-icons/io";
-import { IoArrowBackOutline, IoClose } from "react-icons/io5";
+import { IoArrowBackOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ import DecorationTab from "./DecorationTab";
 import FeaturesTab from "./FeaturesTab";
 import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
+import ImageGalleryModal from "./ImageGalleryModal";
 import noimage from "/noimage.png";
 import { LoadingBar } from "@/components/Common";
 import LoadingOverlay from "@/components/Common/LoadingOverlay";
@@ -117,7 +118,7 @@ const ProductDetails = () => {
           setSingle_Product(data.data, "fetchSingleProduct");
           setTimeout(() => {
             setLoading(false);
-          }, 1000);
+          }, 200);
           setErrorFetching(false);
         }
 
@@ -877,34 +878,15 @@ const ProductDetails = () => {
   return (
     <>
       <div className="Mycontainer relative ">
-        {/* model to show active image enlarged with a cross button to close it and also when clicked outside model should close */}
-        {imageModel && (
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50"
-            onClick={() => setImageModel(false)}
-          >
-            {/* Close button */}
-
-            {/* Image container - prevent click from closing */}
-            <div
-              className="w-[90%] md:w-[70%] h-[90vh] md:h-[70vh] flex justify-center items-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setImageModel(false)}
-                className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full text-gray-800 hover:text-gray-900 transition-all duration-200 shadow-lg"
-                aria-label="Close"
-              >
-                <IoClose className="text-2xl" />
-              </button>
-              <img
-                src={activeImage}
-                alt="Product Image"
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-              />
-            </div>
-          </div>
-        )}
+        {/* Image Gallery Modal */}
+        <ImageGalleryModal
+          isOpen={imageModel}
+          onClose={() => setImageModel(false)}
+          activeImage={activeImage}
+          setActiveImage={setActiveImage}
+          images={product?.images || []}
+          productName={product?.name}
+        />
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-2">
           {/* 1st culmn  */}
           {/* {loading && (
@@ -959,13 +941,25 @@ const ProductDetails = () => {
           ) : ( */}
           <div>
             <div
-              className="mb-4 border border-border2 overflow-hidden"
+              className="mb-4 border border-border2 overflow-hidden relative group cursor-zoom-in"
               onClick={() => setImageModel(true)}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                e.currentTarget.querySelector(
+                  "img"
+                ).style.transformOrigin = `${x}% ${y}%`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.querySelector("img").style.transformOrigin =
+                  "center center";
+              }}
             >
               <img
                 src={activeImage}
                 alt={product?.name}
-                className="w-full cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-125"
+                className="w-full transition-transform duration-300 ease-out group-hover:scale-150"
               />
             </div>
 
@@ -1174,7 +1168,10 @@ const ProductDetails = () => {
                   />
                 )}
                 {activeInfoTab === "decoration" && (
-                  <DecorationTab single_product={single_product} />
+                  <DecorationTab
+                    single_product={single_product}
+                    availablePriceGroups={availablePriceGroups}
+                  />
                 )}
                 {activeInfoTab === "shipping" && (
                   <ShippingTab single_product={single_product} />
