@@ -5,7 +5,7 @@ const SkeletonLoadingCards = ({ index }) => {
   return (
     <div
       key={index}
-      className="relative p-4 border rounded-lg shadow-md border-border2"
+      className="relative p-4 border rounded-lg shadow-md border-border2 md:mt-10 mt-3"
     >
       <div className="p-4">
         <Skeleton height={20} width={120} className="rounded" />
