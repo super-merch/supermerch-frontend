@@ -1,31 +1,22 @@
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { backgroundColor, getProductPrice, slugify } from "@/utils/utils";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { CiHeart } from "react-icons/ci";
 import {
   IoIosArrowDown,
   IoIosArrowUp,
-  IoIosHeart,
   IoMdArrowBack,
   IoMdArrowForward,
 } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { AppContext } from "../../context/AppContext";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
-import noimage from "/noimage.png";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import EmptyState from "../Common/EmptyState";
-import { Clock, Flag } from "lucide-react";
-import Tooltip from "../Common/Tooltip";
+import ProductCard from "../Common/ProductCard";
 
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -350,7 +341,7 @@ const Cards = ({ category = "dress" }) => {
                 <p>Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2"
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2 rounded-lg"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
                     {sortOption === "lowToHigh"
@@ -402,7 +393,7 @@ const Cards = ({ category = "dress" }) => {
           <div
             className={`${
               productsLoading
-                ? "grid grid-cols-3 gap-6 mt-4md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
+                ? "grid grid-cols-3 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
                 : ""
             }`}
           >
@@ -413,171 +404,17 @@ const Cards = ({ category = "dress" }) => {
             ) : productsData?.length > 0 ? (
               <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2">
                 {productsData?.map((product) => {
-                  const productId = product.meta.id;
-                  const discountPct = product.discountInfo?.discount || 0;
-                  const isGlobalDiscount =
-                    product.discountInfo?.isGlobal || false;
-                  const encodedId = btoa(productId);
-                  const slug = slugify(product.overview.name);
-                  let unDiscountedPrice;
-                  if (discountPct > 0) {
-                    unDiscountedPrice =
-                      getProductPrice(product, product.meta.id) /
-                      (1 - discountPct / 100);
-                  }
                   return (
-                    <Link to={`/product/${slug}?ref=${encodedId}`}>
-                      <div
-                        key={productId}
-                        className="w-full relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200  h-full group hover:rounded-lg hover:shadow-md"
-                        onMouseEnter={() => setCardHover(product.meta.id)}
-                        onMouseLeave={() => setCardHover(null)}
-                        onClick={() =>
-                          handleViewProduct(
-                            product.meta.id,
-                            product.overview.name
-                          )
-                        }
-                      >
-                        <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-                          {(productionIds.has(product?.meta?.id) ||
-                            productionIds.has(String(product?.meta?.id))) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                              <Clock />
-                              <span>24Hr Production</span>
-                            </span>
-                          )}
-
-                          {(australiaIds.has(product?.meta?.id) ||
-                            australiaIds.has(String(product?.meta?.id))) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                              <Flag />
-                              <span>Australia Made</span>
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="absolute top-2 right-2 z-20">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              dispatch(addToFavourite(product));
-                              toast.success("Product added to favourites");
-                              // Add your favorite logic here
-                            }}
-                            className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
-                          >
-                            {favSet.has(product?.meta?.id) ? (
-                              <IoIosHeart className="text-lg text-primary" />
-                            ) : (
-                              <CiHeart className="text-lg text-gray-700 hover:text-primary transition-colors" />
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="max-h-[160px] sm:max-h-[280px] h-full border-b overflow-hidden relative">
-                          <img
-                            src={
-                              product?.overview?.hero_image
-                                ? product.overview.hero_image
-                                : noimage
-                            }
-                            alt=""
-                            className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
-                          />{" "}
-                          {discountPct > 0 && (
-                            <div className="absolute bottom-2  right-1 sm:right-2 z-20">
-                              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded-full">
-                                {discountPct}% OFF
-                              </span>
-                              {isGlobalDiscount && (
-                                <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
-                                  Sale
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="p-2 py-1">
-                          <div className=" flex justify-center mb-1 gap-1  z-10">
-                            {product?.product?.colours?.list.length > 1 &&
-                              (() => {
-                                // Extract unique colors and filter out colors with spaces/multiple words
-                                const uniqueColors = [
-                                  ...new Set(
-                                    product?.product?.colours?.list
-                                      .flatMap((colorObj) => colorObj.colours)
-                                      .filter((color) => !color.includes(" ")) // Remove colors with spaces
-                                  ),
-                                ];
-
-                                return uniqueColors
-                                  .slice(0, 12)
-                                  .map((color, index) => (
-                                    <div
-                                      key={index}
-                                      style={{
-                                        backgroundColor: backgroundColor(color),
-                                      }}
-                                      className="w-4 h-4 rounded-full border border-slate-900"
-                                    />
-                                  ));
-                              })()}
-                          </div>
-                          <div className="relative flex justify-center items-center text-center">
-                            <div className="flex-1 justify-center w-[300px]">
-                              <Tooltip
-                                content={
-                                  product.overview.name.length > 30
-                                    ? product.overview.name
-                                    : ""
-                                }
-                                placement="top"
-                              >
-                                <p
-                                  className={`text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand text-wrap md:text-nowrap truncate md:w-[300px] w-full`}
-                                >
-                                  {product.overview.name}
-                                </p>
-                              </Tooltip>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Min Qty:{" "}
-                                {product.product?.prices?.price_groups[0]
-                                  ?.base_price?.price_breaks[0]?.qty || 1}{" "}
-                              </p>
-                              <div className="">
-                                <h2 className="text-xs sm:text-base font-bold text-primary">
-                                  Starting From{" "}
-                                  {discountPct > 0 ? (
-                                    <>
-                                      <span className="text-xs sm:text-sm text-red-500 line-through mr-2">
-                                        ${unDiscountedPrice.toFixed(2)}
-                                      </span>
-                                      <span className="text-xs sm:text-sm font-bold text-primary">
-                                        $
-                                        {getProductPrice(
-                                          product,
-                                          product.meta.id
-                                        ).toFixed(2)}
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <span className="text-xs sm:text-sm font-bold text-primary">
-                                      $
-                                      {getProductPrice(
-                                        product,
-                                        product.meta.id
-                                      ).toFixed(2)}
-                                    </span>
-                                  )}
-                                </h2>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
+                    <ProductCard
+                      key={product.meta.id}
+                      product={product}
+                      productionIds={productionIds}
+                      australiaIds={australiaIds}
+                      favSet={favSet}
+                      getProductPrice={getProductPrice}
+                      backgroundColor={backgroundColor}
+                      onViewProduct={handleViewProduct}
+                    />
                   );
                 })}
               </div>

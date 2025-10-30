@@ -27,6 +27,7 @@
     "country-data-list": "^1.4.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
+    "lightgallery": "^2.9.0",
     "lucide-react": "^0.476.0",
     "motion": "^12.4.3",
     "nearest-color": "^0.4.4",

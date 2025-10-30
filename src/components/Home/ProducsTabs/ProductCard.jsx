@@ -97,6 +97,18 @@ const ProductCard = ({
               alt=""
               className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
             />
+            {discountPct > 0 && (
+              <div className="absolute bottom-2  right-1 sm:right-2 z-20">
+                <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded-full">
+                  {discountPct}% OFF
+                </span>
+                {isGlobalDiscount && (
+                  <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+                    Sale
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="p-2 relative">
@@ -139,18 +151,6 @@ const ProductCard = ({
                 )}
               </h2>
             </div>
-            {discountPct > 0 && (
-              <div className="block absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
-                <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-red-500 rounded">
-                  {discountPct}%
-                </span>
-                {isGlobalDiscount && (
-                  <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded mt-1">
-                    Sale
-                  </span>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </Link>

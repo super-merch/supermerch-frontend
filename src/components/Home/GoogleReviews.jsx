@@ -9,6 +9,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { StarOffIcon, StarsIcon } from "lucide-react";
+import { MdStarRate } from "react-icons/md";
+import { FaStar } from "react-icons/fa";
 
 const GoogleReviewsComponent = () => {
   const [reviews, setReviews] = useState([]);
@@ -75,12 +78,136 @@ const GoogleReviewsComponent = () => {
             ))}
           </div>
         ) : (
-          <div className="w-full relative">
+          <div className="w-full relative px-8">
             <ReactGoogleReviews
-              layout="carousel"
+              layout="custom"
               featurableId={featurableWidgetId}
-              maxCharacters={100}
-              maxItems={3}
+              renderer={(reviews) => (
+                <>
+                  <Swiper
+                    modules={[Navigation, Pagination, Autoplay]}
+                    spaceBetween={16}
+                    slidesPerView={2}
+                    navigation={{
+                      prevEl: ".review-prev",
+                      nextEl: ".review-next",
+                    }}
+                    pagination={{
+                      clickable: true,
+                      dynamicBullets: true,
+                    }}
+                    autoplay={{
+                      delay: 5000,
+                      disableOnInteraction: false,
+                    }}
+                    loop={reviews.length > 4}
+                    breakpoints={{
+                      1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 16,
+                      },
+                    }}
+                    className="reviews-swiper !pb-12"
+                  >
+                    {reviews.map(
+                      ({
+                        reviewId,
+                        reviewer,
+                        comment,
+                        starRating,
+                        createTime,
+                      }) => {
+                        const displayText = comment;
+
+                        return (
+                          <SwiperSlide key={reviewId}>
+                            <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col h-[280px]">
+                              {/* Author Info at Top (Google Style) */}
+                              <div className="flex items-start mb-2">
+                                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mr-2 bg-gray-200">
+                                  {reviewer?.profilePhotoUrl ? (
+                                    <img
+                                      src={reviewer.profilePhotoUrl}
+                                      alt={reviewer?.displayName}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        e.target.style.display = "none";
+                                        e.target.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-600 font-medium text-sm">${
+                                          reviewer?.displayName?.charAt(0) ||
+                                          "U"
+                                        }</div>`;
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-600 font-medium text-sm">
+                                      {reviewer?.displayName?.charAt(0) || "U"}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 text-xs truncate">
+                                    {reviewer?.displayName || "Anonymous"}
+                                  </h4>
+                                  <p className="text-[10px] text-gray-500 mt-0.5">
+                                    {createTime
+                                      ? new Date(createTime).toLocaleDateString(
+                                          "en-US",
+                                          {
+                                            month: "short",
+                                            year: "numeric",
+                                          }
+                                        )
+                                      : "Recent"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Stars (Google Style - Yellow) */}
+                              <div className="flex mb-2">
+                                {Array.from({ length: 5 }, (_, index) => (
+                                  <FaStar
+                                    key={index}
+                                    size={16}
+                                    style={{
+                                      color:
+                                        index < starRating
+                                          ? "#FFD700"
+                                          : "#808080",
+                                    }}
+                                  />
+                                ))}
+                              </div>
+
+                              {/* Review Text (Google Style) - Flexible height */}
+                              <div className="flex-1 overflow-hidden">
+                                <p className="text-gray-700 text-xs leading-relaxed line-clamp-6">
+                                  {displayText}
+                                </p>
+                              </div>
+
+                              {/* Google Logo Badge */}
+                              <div className="flex items-center mt-3 pt-2 border-t border-gray-100">
+                                <FaGoogle className="text-blue-500 text-md mr-1" />
+                                <span className="text-sm text-gray-500">
+                                  Posted on Google
+                                </span>
+                              </div>
+                            </div>
+                          </SwiperSlide>
+                        );
+                      }
+                    )}
+                  </Swiper>
+
+                  {/* Custom Navigation Arrows */}
+                  <button className="review-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
+                    <BiChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button className="review-next absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
+                    <BiChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
             />
           </div>
         )}
