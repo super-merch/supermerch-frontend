@@ -27,7 +27,7 @@ const NavigationMenu = ({
     default: {
       item: "text-lg px-3 py-2",
       submenu: "text-base px-3 py-1",
-      megaMenu: "w-[900px]",
+      megaMenu: "w-[1000px]",
     },
     large: {
       item: "text-xl px-4 py-3",
@@ -121,7 +121,7 @@ const NavigationMenu = ({
                       <button
                         key={subItem.id}
                         className={cn(
-                          "flex items-center justify-between gap-2 px-5 py-3 text-sm font-medium transition-all duration-200",
+                          "flex items-center justify-between gap-2 px-5 py-[9px] text-sm font-medium transition-all duration-200 text-left", // Added text-left
                           activeItem === subItem.id
                             ? "bg-primary text-white shadow-sm"
                             : "text-secondary hover:bg-primary/10 hover:text-primary"
@@ -129,10 +129,11 @@ const NavigationMenu = ({
                         onMouseEnter={() => setActiveItem(subItem.id)}
                         onClick={() => handleItemClick(subItem)}
                       >
-                        {subItem.name}
+                        <span className="flex-1 text-left">{subItem.name}</span>{" "}
+                        {/* Wrapped in span with flex-1 */}
                         <ChevronRight
                           className={cn(
-                            "w-4 h-4 transition-transform",
+                            "w-4 h-4 transition-transform flex-shrink-0", // Added flex-shrink-0
                             activeItem === subItem.id && "translate-x-1"
                           )}
                         />
@@ -141,19 +142,71 @@ const NavigationMenu = ({
                   </nav>
                 </div>
                 <div className="w-full p-6 bg-white">
-                  <div className="grid grid-cols-3 gap-3">
-                    {item.submenu
-                      .find((subItem) => subItem.id === activeItem)
-                      ?.subItems?.map((subSubItem, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleItemClick(subSubItem)}
-                          className="text-sm text-secondary font-medium text-start p-3 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200 border border-transparent hover:border-primary/20"
+                  {(() => {
+                    const activeSubItem = item.submenu.find(
+                      (subItem) => subItem.id === activeItem
+                    );
+
+                    if (!activeSubItem) return null;
+
+                    // Check if this is a promotional item with columns
+                    if (activeSubItem.columns) {
+                      return (
+                        <div
+                          className={`grid gap-4`}
+                          style={{
+                            gridTemplateColumns: `repeat(${activeSubItem.columns.length}, 1fr)`,
+                          }}
                         >
-                          {subSubItem.name}
-                        </button>
-                      ))}
-                  </div>
+                          {activeSubItem.columns.map((column, colIndex) => (
+                            <div key={colIndex} className="space-y-2">
+                              <h4 className="text-sm font-bold text-primary mb-3 pb-2 border-b border-primary/20">
+                                {column.title}
+                              </h4>
+                              <div className="space-y-1">
+                                {column.items.map((itemName, itemIndex) => {
+                                  const subSubItem =
+                                    activeSubItem.subItems.find(
+                                      (si) =>
+                                        si.name === itemName &&
+                                        si.columnTitle === column.title
+                                    );
+
+                                  return (
+                                    <button
+                                      key={itemIndex}
+                                      onClick={() =>
+                                        subSubItem &&
+                                        handleItemClick(subSubItem)
+                                      }
+                                      className="text-sm text-secondary font-medium text-start p-2 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200 w-full"
+                                    >
+                                      {itemName}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }
+
+                    // Default 3-column grid for non-promotional items
+                    return (
+                      <div className="grid grid-cols-3 gap-3">
+                        {activeSubItem.subItems?.map((subSubItem, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleItemClick(subSubItem)}
+                            className="text-sm text-secondary font-medium text-start p-3 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200 border border-transparent hover:border-primary/20"
+                          >
+                            {subSubItem.name}
+                          </button>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             ) : (
@@ -298,7 +351,10 @@ const NavigationMenu = ({
                   className={`flex capitalize items-center text-secondary hover:text-primary transition-all duration-200 rounded-lg px-3 py-2 hover:bg-primary/5 ${currentSize.item}`}
                   onMouseEnter={() => {
                     handleMouseEnter(item);
-                    if (item.name === "Promotional") {
+                    if (
+                      item.name === "Promotional" ||
+                      item.name === "Clothing"
+                    ) {
                       setActiveItem(item.submenu[0].id);
                     }
                   }}
