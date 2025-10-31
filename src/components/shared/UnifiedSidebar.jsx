@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
-import { IoMenu, IoClose } from "react-icons/io5";
+import { IoMenu, IoClose, IoGolfSharp } from "react-icons/io5";
+import { HiMiniBuildingOffice } from "react-icons/hi2";
 import {
   FaShoppingBag,
   FaWater,
@@ -16,7 +17,16 @@ import {
   FaCapsules,
   FaCar,
   FaHeadset,
+  FaTools,
+  FaTshirt,
 } from "react-icons/fa";
+import {
+  GiClothes,
+  GiConverseShoe,
+  GiMonclerJacket,
+  GiRunningShoe,
+  GiWrappedSweet,
+} from "react-icons/gi";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
@@ -34,6 +44,11 @@ import PriceFilter from "../shop/PriceFilter";
 import ColorFilter from "./ColorFilter";
 import ClothingGenderToggle from "./ClothingGenderToggle";
 import CollapsibleSection from "./CollapsibleSection";
+import { PiBaseballCapFill, PiPantsFill } from "react-icons/pi";
+import { BiDrink } from "react-icons/bi";
+import { CiGlass } from "react-icons/ci";
+import { MdOutlinePhoneIphone, MdSportsGymnastics } from "react-icons/md";
+import { FaChildDress } from "react-icons/fa6";
 
 // Category icon mapping
 const getCategoryIcon = (categoryName) => {
@@ -41,24 +56,37 @@ const getCategoryIcon = (categoryName) => {
     Writing: FaPen,
     "Pens & Pencils": FaPen,
     Bags: FaShoppingBag,
-    Drinkware: FaWater,
     Print: FaPrint,
     "Printing and Magnets": FaPrint,
     "Fun & Games": FaGamepad,
     "Leisure & Outdoors": FaGamepad,
     "Health & Personal": FaHeart,
-    "Home & Office": FaHome,
+    "Office & Business": HiMiniBuildingOffice,
     "Home & Living": FaHome,
     "USB & Tech": FaUsb,
     Tech: FaUsb,
     "Office Stationery": FaUserTie,
     Food: FaUtensils,
     "Food & Drink": FaUtensils,
-    "Keyrings & Tools": FaCar,
     "Exhibitions & Events": FaHeadset,
     Clothing: FaUserTie,
-    Headwear: FaCapsules,
     "Capital Equipment": FaUsb,
+    Bottoms: PiPantsFill,
+    "Clothing Accessories": GiClothes,
+    Confectionery: GiWrappedSweet,
+    Drinkware: BiDrink,
+    Footwear: GiConverseShoe,
+    Glassware: CiGlass,
+    Golf: IoGolfSharp,
+    Headwear: PiBaseballCapFill,
+    Jackets: GiMonclerJacket,
+    Jumpers: GiMonclerJacket,
+    "Keyrings & Tools": FaTools,
+    "Phone & Technology": MdOutlinePhoneIphone,
+    Shirts: FaTshirt,
+    "Sports Uniforms": MdSportsGymnastics,
+    Uniforms: FaChildDress,
+    Workwear: GiClothes,
   };
 
   return iconMap[categoryName] || FaShoppingBag;
@@ -77,6 +105,9 @@ const UnifiedSidebar = ({
   const [openCategory, setOpenCategory] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
   const [searchParams] = useSearchParams();
+  useEffect(() => {
+    console.log("type", searchParams.get("type"));
+  }, []);
   const {
     setSelectedParamCategoryId,
     setCurrentPage,
@@ -86,8 +117,54 @@ const UnifiedSidebar = ({
   } = useContext(AppContext);
 
   // Get configuration for this page type
-  const categories = v1categories || [];
+  const allCategories = v1categories || [];
   const config = { title: "Categories" };
+
+  // Map dropdown type -> category names (must match v1categories.name values)
+  const dropdownCategoryMap = {
+    promotional: [
+      "Writing",
+      "Bags",
+      "Drinkware",
+      "Exhibitions & Events",
+      "Home & Living",
+      "Print",
+      "Phone & Technology",
+      "Leisure & Outdoors",
+      "Confectionery",
+      "Fun & Games",
+      "Glassware",
+      "Golf",
+      "Keyrings & Tools",
+      "Health & Personal",
+      "Office & Business",
+      // add any other promotional categories you included in RefactoredNavbar
+    ],
+    clothing: [
+      "Footwear",
+      "Jackets",
+      "Shirts",
+      "Jumpers",
+      "Bottoms",
+      "Clothing Accessories",
+      "Uniforms",
+      "Workwear",
+      "Sports Uniforms",
+    ],
+    headwear: ["Headwear"],
+  };
+
+  // Determine which dropdown/type was used (case-insensitive)
+  const rawType = (searchParams.get("type") || "").trim();
+  const typeKey = rawType ? rawType.toLowerCase() : "";
+
+  // Filter categories to show in sidebar based on type param (fallback -> all)
+  const displayedCategories =
+    typeKey && dropdownCategoryMap[typeKey]
+      ? allCategories.filter((c) =>
+          dropdownCategoryMap[typeKey].includes(c.name)
+        )
+      : allCategories;
 
   // Get URL parameters for active state
   const urlSubCategory = searchParams.get("subCategory");
@@ -136,29 +213,29 @@ const UnifiedSidebar = ({
     };
   }, [isMobile, isSidebarOpen]);
 
-  // Auto-expand category that contains the active subcategory
   useEffect(() => {
-    if (urlSubCategory && urlCategoryName && categories.length > 0) {
-      // Find the category that contains this subcategory
-      const categoryWithSubcategory = categories.find(
-        (category) =>
-          category.name === urlCategoryName &&
-          category.subTypes?.some((subType) => subType.name === urlSubCategory)
-      );
+    if (!urlCategoryName || displayedCategories.length === 0) return;
+    const categoryMatch = displayedCategories.find(
+      (category) => category.name === urlCategoryName
+    );
 
-      if (categoryWithSubcategory) {
-        setOpenCategory(categoryWithSubcategory.id);
-        setActiveSub(urlSubCategory);
-      }
+    if (!categoryMatch) return;
+    setOpenCategory(categoryMatch.id);
+    if (
+      urlSubCategory &&
+      categoryMatch.subTypes?.some((subType) => subType.name === urlSubCategory)
+    ) {
+      setActiveSub(urlSubCategory);
+    } else {
+      setActiveSub(null);
     }
-  }, [urlSubCategory, urlCategoryName, categories]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [urlSubCategory, urlCategoryName, displayedCategories]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
   const handleMainCategoryClick = (categoryId, categoryName) => {
-    // Toggle expansion: if clicking the same category, collapse it; otherwise expand the new one
     setOpenCategory((prev) => (prev === categoryId ? null : categoryId));
     setActiveSub(null); // reset subcategory highlight when switching groups
     dispatch(setSelectedCategory(categoryName));
@@ -221,7 +298,7 @@ const UnifiedSidebar = ({
             <CollapsibleSection title={config.title} defaultExpanded={true}>
               {/* Categories List */}
               <div className="space-y-0.5">
-                {categories
+                {displayedCategories
                   .filter((category) => category.name !== "Capital Equipment")
                   .map((category) => {
                     const IconComponent = getCategoryIcon(category.name);

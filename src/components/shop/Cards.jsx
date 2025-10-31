@@ -100,66 +100,109 @@ const Cards = ({ category = "dress" }) => {
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
+  const prevCategoryKeyRef = useRef(null);
+
   useEffect(() => {
     const pageFromURL = parseInt(searchParams.get("page")) || 1;
-    setSortOption("");
-    if (searchParams.get("category")) {
-      const category = searchParams.get("category");
-      if (category === "australia") {
-        setPaginationData({
-          ...paginationData,
-          category: "australia",
+    const urlCategoryParam = searchParams.get("category");
+    const urlType = searchParams.get("type");
+    const isSearchRoute = location.pathname.includes("/search");
+
+    const currentCategoryKey = urlCategoryParam
+      ? `cat:${urlCategoryParam}:type:${urlType || ""}`
+      : isSearchRoute
+      ? `search:${searchParams.get("search") || ""}`
+      : `route:${category || ""}`;
+
+    const categoryChanged = prevCategoryKeyRef.current !== currentCategoryKey;
+    prevCategoryKeyRef.current = currentCategoryKey;
+
+    if (categoryChanged) {
+      setSortOption("");
+
+      if (urlCategoryParam) {
+        if (
+          urlCategoryParam === "australia" ||
+          urlCategoryParam === "24hr-production" ||
+          urlCategoryParam === "sales" ||
+          urlCategoryParam === "allProducts"
+        ) {
+          setPaginationData((prev) => ({
+            ...prev,
+            category: urlCategoryParam,
+            page: pageFromURL,
+            sortOption: "",
+          }));
+        } else {
+          setPaginationData((prev) => ({
+            ...prev,
+            productTypeId: urlCategoryParam,
+            category: null,
+            page: pageFromURL,
+            sortOption: "",
+          }));
+        }
+      } else if (isSearchRoute) {
+        setPaginationData((prev) => ({
+          ...prev,
+          category: "search",
           page: pageFromURL,
+          searchTerm: searchParams.get("search"),
+          productTypeId: searchParams.get("categoryId"),
           sortOption: "",
-        });
-      } else if (category === "24hr-production") {
-        setPaginationData({
-          ...paginationData,
-          category: "24hr-production",
-          page: pageFromURL,
-          sortOption: "",
-        });
-      } else if (category === "sales") {
-        setPaginationData({
-          ...paginationData,
-          category: "sales",
-          page: pageFromURL,
-          sortOption: "",
-        });
-      } else if (category === "allProducts") {
-        setPaginationData({
-          ...paginationData,
-          category: "allProducts",
-          page: pageFromURL,
-          sortOption: "",
-        });
+        }));
       } else {
-        setPaginationData({
-          ...paginationData,
-          productTypeId: searchParams.get("category"),
+        setPaginationData((prev) => ({
+          ...prev,
+          category: category,
+          page: pageFromURL,
+          sortOption: "",
+        }));
+      }
+
+      return;
+    }
+    if (urlCategoryParam) {
+      if (
+        urlCategoryParam === "australia" ||
+        urlCategoryParam === "24hr-production" ||
+        urlCategoryParam === "sales" ||
+        urlCategoryParam === "allProducts"
+      ) {
+        setPaginationData((prev) => ({
+          ...prev,
+          category: urlCategoryParam,
+          page: pageFromURL,
+          // preserve prev.sortOption
+          sortOption: prev?.sortOption ?? "",
+        }));
+      } else {
+        setPaginationData((prev) => ({
+          ...prev,
+          productTypeId: urlCategoryParam,
           category: null,
           page: pageFromURL,
-          sortOption: "",
-        });
+          sortOption: prev?.sortOption ?? "",
+        }));
       }
-    } else if (location.pathname.includes("/search")) {
-      setPaginationData({
-        ...paginationData,
+    } else if (isSearchRoute) {
+      setPaginationData((prev) => ({
+        ...prev,
         category: "search",
         page: pageFromURL,
         searchTerm: searchParams.get("search"),
         productTypeId: searchParams.get("categoryId"),
-        sortOption: "",
-      });
+        sortOption: prev?.sortOption ?? "",
+      }));
     } else {
-      setPaginationData({
-        ...paginationData,
+      setPaginationData((prev) => ({
+        ...prev,
         category: category,
         page: pageFromURL,
-        sortOption: "",
-      });
+        sortOption: prev?.sortOption ?? "",
+      }));
     }
-  }, [searchParams, category]);
+  }, [searchParams, category, location.pathname]);
 
   favouriteItems.map((item) => {
     favSet.add(item.meta.id);
