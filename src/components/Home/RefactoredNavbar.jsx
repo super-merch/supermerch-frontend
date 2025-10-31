@@ -60,17 +60,17 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     const baseMenuItems = [
       {
         name: "Promotional",
-        path: "/Spromotional?categoryName=Promotional&category=A",
+        path: "/Spromotional?categoryName=Promotional&category=PA",
         hasSubmenu: true,
       },
       {
         name: "Clothing",
-        path: "/Spromotional?categoryName=Clothing&category=B",
+        path: "/Spromotional?categoryName=Clothing&category=PB",
         hasSubmenu: true,
       },
       {
         name: "Headwear",
-        path: "/Spromotional?categoryName=Headwear&category=G",
+        path: "/Spromotional?categoryName=Headwear&category=PK",
         hasSubmenu: true,
       },
       { name: "Return Gifts", path: "/ReturnGifts" },
@@ -81,558 +81,810 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
     return baseMenuItems.map((item) => {
       if (item.name === "Promotional") {
-      // Define the promotional structure based on the sheet using v2Categories
-      const promotionalStructure = [
-        {
-          id: "PY", // Writing from v2Categories
-          name: "Writing",
-          columns: [
-            {
-              title: "Pens",
-              items: ["Metal Pens", "Plastic Pens", "Stylus Pens", "Other Pens","Wooden Pens"],
-            },
-            {
-              title: "Pencil",
-              items: ["Grey-Lead Pencils", "Coloured Pencils"],
-            },
-            {
-              title: "Highlighter",
-              items: ["Highlighters", "Markers"],
-            },
-            {
-              title: "Misc",
-              items: [
-                "Pencil Sharpeners",
-                "Erasers",
-                "Pen Packaging",
-                "Misc Writing",
-                // "Rulers",
-              ],
-            },
-          ],
-        },
-        {
-          id: "PA", // Bags from v2Categories
-          name: "Bags",
-          columns: [
-            {
-              title: "Tote Bag",
-              items: ["Tote Bags", "Reusable Grocery Bags"],
-            },
-            {
-              title: "Outdoor Bag",
-              items: [
-                "Cooler Bags",
-                "Lunch Bags/Lunch Boxes",
-                "Duffle Bags",
-                "Dry Bags",
-                "Drawstring Bags",
-                "Backpacks",
-                "Bum Bags"
-              ],
-            },
-            {
-              title: "Business Bag",
-              items: ["Laptop Bags", "Paper Bags", "Satchels", "Wheeled Bags"],
-            },
-            {
-              title: "Misc",
-              items: [
-                "Wallets & Purses",
-                "Toiletry Bags & Accessories",
-                "Luggage Tags",
-                "Misc Bags"
-              ],
-            },
-          ],
-        },
-        {
-          id: "PE", // Drinkware from v2Categories
-          name: "Drinkware",
-          columns: [
-            {
-              title: "Bottles",
-              items: ["Drink Bottles", "Thermoses"],
-            },
-            {
-              title: "Mugs",
-              items: ["Coffee Mugs", "Reusable Coffee Cups", "Travel Mugs"],
-            },
-            // {
-            //   title: "Glasses",
-            //   items: ["Beer Glasses", "Cocktail Glasses", "Shot Glasses", "Wine Glasses"],
-            // },
-            {
-              title: "Tumblers",
-              items: ["Plastic Cups & Tumblers", "Protein Shakers"],
-            },
-            {
-              title: "Misc",
-              items: [
-                "Misc Drinkware",
-                // "Coasters",
-                // "Bottle Openers",
-                "Stubby Holders",
-                "Drinking Straws",
-                "Flasks",
-              ],
-            },
-          ],
-        },
-        {
-          id: "PF", // Exhibitions & Events from v2Categories
-          name: "Exhibitions & Events",
-          columns: [
-            {
-              title: "Awards and Trophies",
-              items: ["Awards & Trophies"],
-            },
-            {
-              title: "Lanyards, Badges and Pins",
-              items: [
-                "Lanyards",
-                "Name Badges",
-                "Lapel Pins",
-                "Badge Reels",
-                "Button Badges",
-                "Badge Holders",
-              ],
-            },
-            {
-              title: "Wristbands",
-              items: ["Event Wristbands", "Silicon Wristbands"],
-            },
-            // {
-            //   title: "Keyrings",
-            //   items: ["Bottle Opener Keyrings", "Keyrings"],
-            // },
-            {
-              title: "Misc",
-              items: [
-                "Misc Events",
-                "Flags & Bunting",
-                "Balloons",
-                "Banners",
-                "Marquees",
-                "Signs",
-                "Table Covers",
-              ],
-            },
-          ],
-        },
-        {
-          id: "PM", // Home & Living from v2Categories
-          name: "Home & Living",
-          columns: [
-            {
-              title: "Candles",
-              items: ["Candles"],
-            },
-            {
-              title: "Kitchen",
-              items: [
-                "Cheese Boards & Knives",
-                "Tea Towels",
-                "Chopping Boards",
-                "Cutlery Sets",
-                "Bottle Coolers",
-                "Hampers"
-              ],
-            },
-            {
-              title: "Blanket and Mats",
-              items: ["Blankets", "Bar Mats","Coasters"],
-            },
-            {
-              title: "Decorative",
-              items: ["Money Boxes", "Photo Frames", "Picture Frames", "Watches"],
-            },
-            {
-              title: "Misc",
-              items: ["Tea & Coffee Accessories", "Pet Accessories","Misc Homeware"],
-            },
-          ],
-        },
-        {
-          id: "PT", // Print from v2Categories
-          name: "Print",
-          columns: [
-            // {
-            //   title: "Diaries",
-            //   items: ["Diaries", "Notepads", "Notebooks"],
-            // },
-            {
-              title: "Cards and Calendar",
-              items: [
-                "Business Cards",
-                "Magnet Calendars",
-                "Wall Calendars",
-                "Desk Calendars",
-              ],
-            },
-            {
-              title: "Stickers",
-              items: [
-                "Sticky Notes & Flags",
-                "Combo Pads",
-                "Pads & Planners",
-                "Stickers",
-                // "Compendiums & Portfolios",
-              ],
-            },
-            // {
-            //   title: "Gift Sets",
-            //   items: ["Gift Sets"],
-            // },
-            {
-              title: "Magnetic",
-              items: ["Magnets", "Magnetic To-Do Lists", "Magnetic Photo Frames"],
-            },
-            {
-              title: "More",
-              items: ["Misc Print", "Packaging", "Ribbons"],
-            },
-          ],
-        },
-        {
-          id: "PS", // Phone & Technology from v2Categories
-          name: "Phone & Technology",
-          columns: [
-            {
-              title: "Flashdrives",
-              items: ["Flashdrives", "USB Hubs"],
-            },
-            {
-              title: "Mobile",
-              items: [
-                "Wireless Chargers",
-                "Powerbanks",
-                "Phone Wallets",
-                "USB Car Chargers",
-                "Cable Tidies",
-                "Car Phone Holders",
-                "Charging Cables",
-                "Phone Stands",
-              ],
-            },
-            {
-              title: "Speakers and Headphones",
-              items: ["Speakers", "Earbuds", "Headphones"],
-            },
-            {
-              title: "Misc",
-              items: ["Cleaning Cloths", "Tablet Covers", "Travel Adapters"],
-            },
-          ],
-        },
-        {
-          id: "PQ", // Leisure & Outdoors from v2Categories
-          name: "Leisure & Outdoors",
-          columns: [
-            {
-              title: "Umbrellas",
-              items: ["Umbrellas", "Beach Umbrellas"],
-            },
-            {
-              title: "Towels",
-              items: [
-                "Gym Towels",
-                // "Bath Towels",
-                // "Hand Towels",
-                "Cooling Towels",
-                // "Golf Towels",
-              ],
-            },
-            {
-              title: "Picnic",
-              items: [
-                "Bottled Water",
-                "Blankets",
-                "Picnic Rugs",
-                "BBQ Sets",
-                "Picnic Sets",
-                "Ice Buckets",
-              ],
-            },
-            // {
-            //   title: "Medical",
-            //   items: ["Hand Sanitisers", "Face Masks", "First Aid Kits"],
-            // },
-            {
-              title: "Shades",
-              items: ["Sunglasses & Accessories", "Sunshades"],
-            },
-            {
-              title: "Misc",
-              items: ["Chairs","Misc Outdoors","Seeds","Sports Balls","Sports Gear","Tables", "Wine & Beer"],
-            },
-          ],
-        },
-        {
-          id: "PD", // Confectionery from v2Categories
-          name: "Confectionery",
-          columns: [
-            {
-              title: "Beans",
-              items: ["Jelly Beans", "Choc Beans", "Jelly Babies"],
-            },
-            {
-              title: "Lollies",
-              items: [
-                "Mixed Lollies",
-                "Sugar Free Lollies",
-                "Lollipops",
-                "Mints",
-                "Gummi Lollies",
-                "Lozenges",
-              ],
-            },
-            {
-              title: "Chocolates",
-              items: [
-                "Nuts & Savoury",
-                "Chocolates",
-                "Chewy Fruits",
-                "Biscuits & Cookies",
-                "Snakes",
-              ],
-            },
-            {
-              title: "Popcorn",
-              items: ["Popcorn"],
-            },
-            {
-              title: "Misc",
-              items: ["Misc Confectionery"],
-            },
-          ],
-        },
-        {
-          id: "PH", // Fun & Games from v2Categories
-          name: "Fun & Games",
-          columns: [
-            {
-              title: "Balls",
-              items: [
-                "Stress Balls",
-                "Stress Fruit & Vegetables",
-                "Stress Keyrings",
-                "Stress Transport",
-                "Stress Animals",
-                "Misc Stress Shapes",
-              ],
-            },
-            // {
-            //   title: "Golf",
-            //   items: ["Ball Markers", "Golf Balls", "Golf Tees", "Misc Golf"],
-            // },
-            {
-              title: "Outdoor Toys",
-              items: ["Frisbees & Throwing Toys", "Yo Yos"],
-            },
-            {
-              title: "Indoor Toys",
-              items: ["Jigsaws", "Novelty Items", "Plush Toys", "Puzzles", "Games"],
-            },
-            {
-              title: "Misx",
-              items: ["Misc Fun & Games"],
-            },
-          ],
-        },
-        // Additional categories not in sheet - add at the end
-        {
-          id: "PI", // Glassware
-          name: "Glassware",
-          columns: [
-            {
-              title: "Beer Glasses",
-              items: ["Beer Glasses", "Beer Mugs"],
-            },
-            {
-              title: "Wine & Cocktail",
-              items: ["Wine Glasses", "Cocktail Glasses", "Shot Glasses"],
-            },
-            {
-              title: "Tumblers",
-              items: ["Glass Tumblers"],
-            },
-            {
-              title: "Misc",
-              items: ["Misc Glassware"],
-            },
-          ],
-        },
-        {
-          id: "PJ", // Golf
-          name: "Golf",
-          columns: [
-            {
-              title: "Golf Equipment",
-              items: ["Golf Balls", "Golf Tees", "Ball Markers"],
-            },
-            {
-              title: "Golf Accessories",
-              items: ["Golf Towels", "Golf Umbrellas", "Misc Golf"],
-            },
-          ],
-        },
-        {
-          id: "PP", // Keyrings & Tools
-          name: "Keyrings & Tools",
-          columns: [
-            {
-              title: "Keyrings",
-              items: ["Keyrings", "Bottle Opener Keyrings"],
-            },
-            {
-              title: "Tools",
-              items: [
-                "Tool Sets",
-                "Tape Measures",
-                "Torches",
-                "Carabiners",
-                "Bottle Openers",
-              ],
-            },
-          ],
-        },
-        {
-          id: "PL", // Health & Personal
-          name: "Health & Personal",
-          columns: [
-            {
-              title: "Health",
-              items: ["First Aid Kits", "Hand Sanitisers", "Face Masks", "Sunscreens"],
-            },
-            {
-              title: "Personal Care",
-              items: ["Lip Balms", "Hair, Nails & Beauty", "Temporary Tattoos"],
-            },
-            {
-              title: "Towels",
-              items: ["Bath Towels", "Hand Towels"],
-            },
-            {
-              title: "Misc",
-              items: ["Misc Health & Personal"],
-            },
-          ],
-        },
-        {
-          id: "PR", // Office & Business
-          name: "Office & Business",
-          columns: [
-            {
-              title: "Stationery",
-              items: ["Notepads", "Notebooks", "Diaries", "Pencil Cases", "Rulers"],
-            },
-            {
-              title: "Office Accessories",
-              items: [
-                "Business Card Holders",
-                "Calculators",
-                "Letter Openers",
-                "Sticky Notes & Flags",
-              ],
-            },
-            {
-              title: "Mats & More",
-              items: [
-                "Mouse Mats",
-                "Counter Mats",
-                "Floor Mats",
-                "Compendiums & Portfolios",
-                "Misc Office",
-                "Gift Sets"
-              ],
-            },
-          ],
-        },
-      ];
-
-      // Map the structure to match the expected format
-      const megaMenu = promotionalStructure.map((category) => {
-        // Find matching v1category using the ID
-        const v1Cat = v1categories?.find((c) => c.id === category.id);
-
-        return {
-          id: category.id,
-          name: v1Cat?.name || category.name,
-          onClick: () => handleNameCategories(v1Cat?.name || category.name, category.id),
-          columns: category.columns,
-          subItems: category.columns.flatMap((col) =>
-            col.items.map((itemName) => {
-              // Find matching subtype from v1categories
-              const subType = v1Cat?.subTypes?.find(
-                (st) => st.name.toLowerCase() === itemName.toLowerCase()
-              );
-
-              return {
-                id: subType?.id || itemName.toLowerCase().replace(/\s+/g, "-"),
-                name: itemName,
-                columnTitle: col.title,
-                onClick: () =>
-                  handleSubCategories(
-                    itemName,
-                    subType?.id || itemName.toLowerCase().replace(/\s+/g, "-"),
-                    v1Cat?.name || category.name
-                  ),
-              };
-            })
-          ),
-        };
-      });
-
-      return {
-        ...item,
-        id: "promotional",
-        submenu: megaMenu,
-        megaMenu: true,
-        onClick: () => handleMenuClick(item),
-      };
-    }
-      if (item.name === "Clothing") {
-        // List of v2 category names that we consider "clothing-related"
-        const clothingNames = [
-          "Footwear",
-          "Jackets",
-          "Shirts",
-          "Jumpers",
-          "Bottoms",
-          "Clothing Accessories",
-          "Uniforms",
-          "Workwear",
-          "Sports Uniforms",
-          // Add more names here if you want to treat additional categories as clothing
+        // Define the promotional structure based on the sheet using v2Categories
+        const promotionalStructure = [
+          {
+            id: "PY", // Writing from v2Categories
+            name: "Writing",
+            columns: [
+              {
+                title: "Pens",
+                items: [
+                  "Metal Pens",
+                  "Plastic Pens",
+                  "Stylus Pens",
+                  "Other Pens",
+                  "Wooden Pens",
+                ],
+              },
+              {
+                title: "Pencil",
+                items: ["Grey-Lead Pencils", "Coloured Pencils"],
+              },
+              {
+                title: "Highlighter",
+                items: ["Highlighters", "Markers"],
+              },
+              {
+                title: "Misc",
+                items: [
+                  "Pencil Sharpeners",
+                  "Erasers",
+                  "Pen Packaging",
+                  "Misc Writing",
+                  // "Rulers",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PA", // Bags from v2Categories
+            name: "Bags",
+            columns: [
+              {
+                title: "Tote Bag",
+                items: ["Tote Bags", "Reusable Grocery Bags"],
+              },
+              {
+                title: "Outdoor Bag",
+                items: [
+                  "Cooler Bags",
+                  "Lunch Bags/Lunch Boxes",
+                  "Duffle Bags",
+                  "Dry Bags",
+                  "Drawstring Bags",
+                  "Backpacks",
+                  "Bum Bags",
+                ],
+              },
+              {
+                title: "Business Bag",
+                items: [
+                  "Laptop Bags",
+                  "Paper Bags",
+                  "Satchels",
+                  "Wheeled Bags",
+                ],
+              },
+              {
+                title: "Misc",
+                items: [
+                  "Wallets & Purses",
+                  "Toiletry Bags & Accessories",
+                  "Luggage Tags",
+                  "Misc Bags",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PE", // Drinkware from v2Categories
+            name: "Drinkware",
+            columns: [
+              {
+                title: "Bottles",
+                items: ["Drink Bottles", "Thermoses"],
+              },
+              {
+                title: "Mugs",
+                items: ["Coffee Mugs", "Reusable Coffee Cups", "Travel Mugs"],
+              },
+              // {
+              //   title: "Glasses",
+              //   items: ["Beer Glasses", "Cocktail Glasses", "Shot Glasses", "Wine Glasses"],
+              // },
+              {
+                title: "Tumblers",
+                items: ["Plastic Cups & Tumblers", "Protein Shakers"],
+              },
+              {
+                title: "Misc",
+                items: [
+                  "Misc Drinkware",
+                  // "Coasters",
+                  // "Bottle Openers",
+                  "Stubby Holders",
+                  "Drinking Straws",
+                  "Flasks",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PF", // Exhibitions & Events from v2Categories
+            name: "Exhibitions & Events",
+            columns: [
+              {
+                title: "Awards and Trophies",
+                items: ["Awards & Trophies"],
+              },
+              {
+                title: "Lanyards, Badges and Pins",
+                items: [
+                  "Lanyards",
+                  "Name Badges",
+                  "Lapel Pins",
+                  "Badge Reels",
+                  "Button Badges",
+                  "Badge Holders",
+                ],
+              },
+              {
+                title: "Wristbands",
+                items: ["Event Wristbands", "Silicon Wristbands"],
+              },
+              // {
+              //   title: "Keyrings",
+              //   items: ["Bottle Opener Keyrings", "Keyrings"],
+              // },
+              {
+                title: "Misc",
+                items: [
+                  "Misc Events",
+                  "Flags & Bunting",
+                  "Balloons",
+                  "Banners",
+                  "Marquees",
+                  "Signs",
+                  "Table Covers",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PM", // Home & Living from v2Categories
+            name: "Home & Living",
+            columns: [
+              {
+                title: "Candles",
+                items: ["Candles"],
+              },
+              {
+                title: "Kitchen",
+                items: [
+                  "Cheese Boards & Knives",
+                  "Tea Towels",
+                  "Chopping Boards",
+                  "Cutlery Sets",
+                  "Bottle Coolers",
+                  "Hampers",
+                ],
+              },
+              {
+                title: "Blanket and Mats",
+                items: ["Blankets", "Bar Mats", "Coasters"],
+              },
+              {
+                title: "Decorative",
+                items: [
+                  "Money Boxes",
+                  "Photo Frames",
+                  "Picture Frames",
+                  "Watches",
+                ],
+              },
+              {
+                title: "Misc",
+                items: [
+                  "Tea & Coffee Accessories",
+                  "Pet Accessories",
+                  "Misc Homeware",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PT", // Print from v2Categories
+            name: "Print",
+            columns: [
+              // {
+              //   title: "Diaries",
+              //   items: ["Diaries", "Notepads", "Notebooks"],
+              // },
+              {
+                title: "Cards and Calendar",
+                items: [
+                  "Business Cards",
+                  "Magnet Calendars",
+                  "Wall Calendars",
+                  "Desk Calendars",
+                ],
+              },
+              {
+                title: "Stickers",
+                items: [
+                  "Sticky Notes & Flags",
+                  "Combo Pads",
+                  "Pads & Planners",
+                  "Stickers",
+                  // "Compendiums & Portfolios",
+                ],
+              },
+              // {
+              //   title: "Gift Sets",
+              //   items: ["Gift Sets"],
+              // },
+              {
+                title: "Magnetic",
+                items: [
+                  "Magnets",
+                  "Magnetic To-Do Lists",
+                  "Magnetic Photo Frames",
+                ],
+              },
+              {
+                title: "More",
+                items: ["Misc Print", "Packaging", "Ribbons"],
+              },
+            ],
+          },
+          {
+            id: "PS", // Phone & Technology from v2Categories
+            name: "Phone & Technology",
+            columns: [
+              {
+                title: "Flashdrives",
+                items: ["Flashdrives", "USB Hubs"],
+              },
+              {
+                title: "Mobile",
+                items: [
+                  "Wireless Chargers",
+                  "Powerbanks",
+                  "Phone Wallets",
+                  "USB Car Chargers",
+                  "Cable Tidies",
+                  "Car Phone Holders",
+                  "Charging Cables",
+                  "Phone Stands",
+                ],
+              },
+              {
+                title: "Speakers and Headphones",
+                items: ["Speakers", "Earbuds", "Headphones"],
+              },
+              {
+                title: "Misc",
+                items: ["Cleaning Cloths", "Tablet Covers", "Travel Adapters"],
+              },
+            ],
+          },
+          {
+            id: "PQ", // Leisure & Outdoors from v2Categories
+            name: "Leisure & Outdoors",
+            columns: [
+              {
+                title: "Umbrellas",
+                items: ["Umbrellas", "Beach Umbrellas"],
+              },
+              {
+                title: "Towels",
+                items: [
+                  "Gym Towels",
+                  // "Bath Towels",
+                  // "Hand Towels",
+                  "Cooling Towels",
+                  // "Golf Towels",
+                ],
+              },
+              {
+                title: "Picnic",
+                items: [
+                  "Bottled Water",
+                  "Blankets",
+                  "Picnic Rugs",
+                  "BBQ Sets",
+                  "Picnic Sets",
+                  "Ice Buckets",
+                ],
+              },
+              // {
+              //   title: "Medical",
+              //   items: ["Hand Sanitisers", "Face Masks", "First Aid Kits"],
+              // },
+              {
+                title: "Shades",
+                items: ["Sunglasses & Accessories", "Sunshades"],
+              },
+              {
+                title: "Misc",
+                items: [
+                  "Chairs",
+                  "Misc Outdoors",
+                  "Seeds",
+                  "Sports Balls",
+                  "Sports Gear",
+                  "Tables",
+                  "Wine & Beer",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PD", // Confectionery from v2Categories
+            name: "Confectionery",
+            columns: [
+              {
+                title: "Beans",
+                items: ["Jelly Beans", "Choc Beans", "Jelly Babies"],
+              },
+              {
+                title: "Lollies",
+                items: [
+                  "Mixed Lollies",
+                  "Sugar Free Lollies",
+                  "Lollipops",
+                  "Mints",
+                  "Gummi Lollies",
+                  "Lozenges",
+                ],
+              },
+              {
+                title: "Chocolates",
+                items: [
+                  "Nuts & Savoury",
+                  "Chocolates",
+                  "Chewy Fruits",
+                  "Biscuits & Cookies",
+                  "Snakes",
+                ],
+              },
+              {
+                title: "Popcorn",
+                items: ["Popcorn"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Confectionery"],
+              },
+            ],
+          },
+          {
+            id: "PH", // Fun & Games from v2Categories
+            name: "Fun & Games",
+            columns: [
+              {
+                title: "Balls",
+                items: [
+                  "Stress Balls",
+                  "Stress Fruit & Vegetables",
+                  "Stress Keyrings",
+                  "Stress Transport",
+                  "Stress Animals",
+                  "Misc Stress Shapes",
+                ],
+              },
+              // {
+              //   title: "Golf",
+              //   items: ["Ball Markers", "Golf Balls", "Golf Tees", "Misc Golf"],
+              // },
+              {
+                title: "Outdoor Toys",
+                items: ["Frisbees & Throwing Toys", "Yo Yos"],
+              },
+              {
+                title: "Indoor Toys",
+                items: [
+                  "Jigsaws",
+                  "Novelty Items",
+                  "Plush Toys",
+                  "Puzzles",
+                  "Games",
+                ],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Fun & Games"],
+              },
+            ],
+          },
+          // Additional categories not in sheet - add at the end
+          {
+            id: "PI", // Glassware
+            name: "Glassware",
+            columns: [
+              {
+                title: "Beer Glasses",
+                items: ["Beer Glasses", "Beer Mugs"],
+              },
+              {
+                title: "Wine & Cocktail",
+                items: ["Wine Glasses", "Cocktail Glasses", "Shot Glasses"],
+              },
+              {
+                title: "Tumblers",
+                items: ["Glass Tumblers"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Glassware"],
+              },
+            ],
+          },
+          {
+            id: "PJ", // Golf
+            name: "Golf",
+            columns: [
+              {
+                title: "Golf Equipment",
+                items: ["Golf Balls", "Golf Tees", "Ball Markers"],
+              },
+              {
+                title: "Golf Accessories",
+                items: ["Golf Towels", "Golf Umbrellas", "Misc Golf"],
+              },
+            ],
+          },
+          {
+            id: "PP", // Keyrings & Tools
+            name: "Keyrings & Tools",
+            columns: [
+              {
+                title: "Keyrings",
+                items: ["Keyrings", "Bottle Opener Keyrings"],
+              },
+              {
+                title: "Tools",
+                items: [
+                  "Tool Sets",
+                  "Tape Measures",
+                  "Torches",
+                  "Carabiners",
+                  "Bottle Openers",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PL", // Health & Personal
+            name: "Health & Personal",
+            columns: [
+              {
+                title: "Health",
+                items: [
+                  "First Aid Kits",
+                  "Hand Sanitisers",
+                  "Face Masks",
+                  "Sunscreens",
+                ],
+              },
+              {
+                title: "Personal Care",
+                items: [
+                  "Lip Balms",
+                  "Hair, Nails & Beauty",
+                  "Temporary Tattoos",
+                ],
+              },
+              {
+                title: "Towels",
+                items: ["Bath Towels", "Hand Towels"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Health & Personal"],
+              },
+            ],
+          },
+          {
+            id: "PR", // Office & Business
+            name: "Office & Business",
+            columns: [
+              {
+                title: "Stationery",
+                items: [
+                  "Notepads",
+                  "Notebooks",
+                  "Diaries",
+                  "Pencil Cases",
+                  "Rulers",
+                ],
+              },
+              {
+                title: "Office Accessories",
+                items: [
+                  "Business Card Holders",
+                  "Calculators",
+                  "Letter Openers",
+                  "Sticky Notes & Flags",
+                ],
+              },
+              {
+                title: "Mats & More",
+                items: [
+                  "Mouse Mats",
+                  "Counter Mats",
+                  "Floor Mats",
+                  "Compendiums & Portfolios",
+                  "Misc Office",
+                  "Gift Sets",
+                ],
+              },
+            ],
+          },
         ];
-        const set = new Set(clothingNames.map((n) => n.toLowerCase()));
 
-        // Build a mega-menu similar to Promotional: left = clothing categories, right = their subTypes
-        const clothingMegaMenu =
-          v1categories
-            ?.filter((category) => set.has(category.name?.toLowerCase()))
-            .map((category) => ({
-              id: category.id,
-              name: category.name,
-              onClick: () => handleNameCategories(category.name, category.id),
-              subItems:
-                category.subTypes?.map((subType) => ({
-                  id: subType.id,
-                  name: subType.name,
+        // Map the structure to match the expected format
+        const megaMenu = promotionalStructure.map((category) => {
+          // Find matching v1category using the ID
+          const v1Cat = v1categories?.find((c) => c.id === category.id);
+
+          return {
+            id: category.id,
+            name: v1Cat?.name || category.name,
+            onClick: () =>
+              handleNameCategories(v1Cat?.name || category.name, category.id,"Promotional"),
+            columns: category.columns,
+            subItems: category.columns.flatMap((col) =>
+              col.items.map((itemName) => {
+                // Find matching subtype from v1categories
+                const subType = v1Cat?.subTypes?.find(
+                  (st) => st.name.toLowerCase() === itemName.toLowerCase()
+                );
+
+                return {
+                  id:
+                    subType?.id || itemName.toLowerCase().replace(/\s+/g, "-"),
+                  name: itemName,
+                  columnTitle: col.title,
                   onClick: () =>
                     handleSubCategories(
-                      subType.name,
-                      subType.id,
-                      category.name
+                      itemName,
+                      subType?.id ||
+                        itemName.toLowerCase().replace(/\s+/g, "-"),
+                      v1Cat?.name || category.name,
+                      "Promotional"
                     ),
-                })) || [],
-            })) || [];
+                };
+              })
+            ),
+          };
+        });
+
+        return {
+          ...item,
+          id: "promotional",
+          submenu: megaMenu,
+          megaMenu: true,
+          onClick: () => handleMenuClick(item),
+        };
+      }
+      if (item.name === "Clothing") {
+        // Define the clothing structure based on v2Categories
+        const clothingStructure = [
+          {
+            id: "PG", // Footwear
+            name: "Footwear",
+            columns: [
+              {
+                title: "Footwear",
+                items: ["Boots", "Thongs"],
+              },
+              {
+                title: "Accessories",
+                items: ["Socks", "Misc Footwear"],
+              },
+            ],
+          },
+          {
+            id: "PN", // Jackets
+            name: "Jackets",
+            columns: [
+              {
+                title: "Formal Jackets",
+                items: ["Blazers & Suit Jackets", "Trench Coats"],
+              },
+              {
+                title: "Casual Jackets",
+                items: [
+                  "Cardigans",
+                  "Puffer Jackets",
+                  "Varsity Jackets",
+                ],
+              },
+              {
+                title: "Work Jackets",
+                items: ["Chefs Jackets", "Rain Jackets", "Track Jackets","Ponchos"],
+              },
+              {
+                title: "Fleece & More",
+                items: [
+                  "Polar Fleece Jacket",
+                  "Soft Shell Jackets",
+                  "Misc Jackets",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PU", // Shirts
+            name: "Shirts",
+            columns: [
+              {
+                title: "Formal Shirts",
+                items: ["Button-Up Shirts", "Polo Shirts"],
+              },
+              {
+                title: "Casual Shirts",
+                items: ["T-Shirts", "Singlets"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Shirts"],
+              },
+            ],
+          },
+          {
+            id: "PO", // Jumpers
+            name: "Jumpers",
+            columns: [
+              {
+                title: "Hoodies & Vests",
+                items: ["Hoodies", "Vests"],
+              },
+              {
+                title: "Sweaters",
+                items: ["Knitted Jumpers", "Sweaters", "Polar Fleece Jumpers"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Jumpers"],
+              },
+            ],
+          },
+          {
+            id: "PB", // Bottoms
+            name: "Bottoms",
+            columns: [
+              {
+                title: "Pants",
+                items: ["Cargo Pants", "Chefs Pants", "Slacks", "Track Pants"],
+              },
+              {
+                title: "Shorts & Dresses",
+                items: ["Dress Shorts", "Sports Shorts", "Dresses"],
+              },
+              {
+                title: "Other Bottoms",
+                items: ["Leggings", "Skirts", "Misc Bottoms"],
+              },
+            ],
+          },
+          {
+            id: "PC", // Clothing Accessories
+            name: "Clothing Accessories",
+            columns: [
+              {
+                title: "Formal Accessories",
+                items: ["Ties", "Cufflinks", "Belts"],
+              },
+              {
+                title: "Winter Accessories",
+                items: ["Scarves", "Gloves"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Clothing Accessories"],
+              },
+            ],
+          },
+          {
+            id: "PW", // Uniforms
+            name: "Uniforms",
+            columns: [
+              {
+                title: "Medical Uniforms",
+                items: ["Scrubs", "Scrub Tops", "Scrub Bottoms", "Lab Coats"],
+              },
+              {
+                title: "Work Uniforms",
+                items: ["Chefwear", "Tunics", "Roughalls & Overalls"],
+              },
+              {
+                title: "Other Uniforms",
+                items: ["Safety Wear", "Salon & Spa", "Misc Uniforms"],
+              },
+            ],
+          },
+          {
+            id: "PX", // Workwear
+            name: "Workwear",
+            columns: [
+              {
+                title: "Work Tops",
+                items: [
+                  "Work Polo Shirts",
+                  "Work Shirts",
+                  "Work T-Shirts",
+                  "Work Singlets",
+                  "Work Hoodies",
+                  "Work Jumpers",
+                ],
+              },
+              {
+                title: "Work Bottoms",
+                items: ["Work Pants", "Work Shorts"],
+              },
+              {
+                title: "Work Jackets & More",
+                items: [
+                  "Work Jackets",
+                  "Work Vests",
+                  "Work Polar Fleece",
+                  "Aprons",
+                  "Work Socks",
+                  "Misc Workwear",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PV", // Sports Uniforms
+            name: "Sports Uniforms",
+            columns: [
+              {
+                title: "Sports Tops",
+                items: [
+                  "Jerseys",
+                  "Crop Tops",
+                  "Sports Jumpers",
+                  "Bibs",
+                  "Sports Vest",
+                ],
+              },
+              {
+                title: "Sports Bottoms",
+                items: ["Sports Shorts", "Sports Skirts", "Sports Dresses"],
+              },
+              {
+                title: "Accessories",
+                items: ["Sports Socks", "Misc Sports Uniforms"],
+              },
+            ],
+          },
+        ];
+
+        // Map the structure to match the expected format
+        const megaMenu = clothingStructure.map((category) => {
+          // Find matching v1category using the ID
+          const v1Cat = v1categories?.find((c) => c.id === category.id);
+
+          return {
+            id: category.id,
+            name: v1Cat?.name || category.name,
+            onClick: () =>
+              handleNameCategories(v1Cat?.name || category.name, category.id,"Clothing"),
+            columns: category.columns,
+            subItems: category.columns.flatMap((col) =>
+              col.items.map((itemName) => {
+                // Find matching subtype from v1categories
+                const subType = v1Cat?.subTypes?.find(
+                  (st) => st.name.toLowerCase() === itemName.toLowerCase()
+                );
+
+                return {
+                  id:
+                    subType?.id || itemName.toLowerCase().replace(/\s+/g, "-"),
+                  name: itemName,
+                  columnTitle: col.title,
+                  onClick: () =>
+                    handleSubCategories(
+                      itemName,
+                      subType?.id ||
+                        itemName.toLowerCase().replace(/\s+/g, "-"),
+                      v1Cat?.name || category.name,
+                      "Clothing"
+                    ),
+                };
+              })
+            ),
+          };
+        });
 
         return {
           ...item,
           id: "clothing",
-          submenu: clothingMegaMenu,
+          submenu: megaMenu,
           megaMenu: true,
           onClick: () => handleMenuClick(item),
         };
@@ -653,7 +905,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                 handleSubCategories(
                   subType.name,
                   subType.id,
-                  headwearCategory.name
+                  headwearCategory.name,
+                  "Headwear"
                 ),
             })) || [],
           onClick: () => handleMenuClick(item),
@@ -689,13 +942,15 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     }
   };
 
-  const handleNameCategories = (titleName, NameId) => {
+  const handleNameCategories = (titleName, NameId, parentType) => {
     const encodedTitleName = encodeURIComponent(titleName);
+    const encodedType = encodeURIComponent(parentType || titleName); 
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
+    //also add weather it is promotional, clothing or headwear in url in type
     navigate(
-      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
+      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}&type=${encodedType}`
     );
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
@@ -703,9 +958,10 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setActiveFilterCategory(null);
   };
 
-  const handleSubCategories = (subCategory, categoryId, titleName) => {
+  const handleSubCategories = (subCategory, categoryId, titleName,parentType) => {
     const encodedTitleName = encodeURIComponent(titleName);
     const encodedSubCategory = encodeURIComponent(subCategory);
+    const encodedType = encodeURIComponent(parentType || titleName);
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
@@ -723,7 +979,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     // For all other categories, use /Spromotional
 
     navigate(
-      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}&type=${encodedType}`
     );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
