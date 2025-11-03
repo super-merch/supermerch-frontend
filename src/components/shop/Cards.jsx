@@ -17,6 +17,7 @@ import UnifiedSidebar from "../shared/UnifiedSidebar";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
+import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
 
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -119,6 +120,8 @@ const Cards = ({ category = "dress" }) => {
 
     if (categoryChanged) {
       setSortOption("");
+      dispatch(setMinPrice(0));
+      dispatch(setMaxPrice(1000));
 
       if (urlCategoryParam) {
         if (
@@ -132,6 +135,8 @@ const Cards = ({ category = "dress" }) => {
             category: urlCategoryParam,
             page: pageFromURL,
             sortOption: "",
+            colors:[],
+            pricerange: undefined,
           }));
         } else {
           setPaginationData((prev) => ({
@@ -140,6 +145,8 @@ const Cards = ({ category = "dress" }) => {
             category: null,
             page: pageFromURL,
             sortOption: "",
+            colors:[],
+            pricerange: undefined,
           }));
         }
       } else if (isSearchRoute) {
@@ -150,6 +157,8 @@ const Cards = ({ category = "dress" }) => {
           searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
           sortOption: "",
+          colors:[],
+          pricerange: undefined,
         }));
       } else {
         setPaginationData((prev) => ({
@@ -157,6 +166,8 @@ const Cards = ({ category = "dress" }) => {
           category: category,
           page: pageFromURL,
           sortOption: "",
+          colors:[],
+          pricerange: undefined,
         }));
       }
 
@@ -175,6 +186,7 @@ const Cards = ({ category = "dress" }) => {
           page: pageFromURL,
           // preserve prev.sortOption
           sortOption: prev?.sortOption ?? "",
+
         }));
       } else {
         setPaginationData((prev) => ({
@@ -361,7 +373,9 @@ const Cards = ({ category = "dress" }) => {
                 <p className="text-sm text-gray-600">
                   {productsLoading ? "Loading..." : `product found `}
                   {productsLoading && " Please wait a while..."}
+                  {(isPriceFilterActive  && !productsLoading) ? `between $${minPrice} and $${maxPrice}` : ""}
                 </p>
+
               </div>
             </div>
           </div>
@@ -376,6 +390,7 @@ const Cards = ({ category = "dress" }) => {
                 <p className="">
                   {productsLoading ? "Loading..." : `product found`}
                   {productsLoading && " Please wait a while..."}
+                  {(isPriceFilterActive  && !productsLoading) ? ` between $${minPrice} and $${maxPrice}` : ""}
                 </p>
               </div>
 
@@ -473,7 +488,7 @@ const Cards = ({ category = "dress" }) => {
               />
             )}
           </div>
-          {totalPages > 1 && getProductsData.length > 0 && (
+          {totalPages > 1 && getProductsData?.length > 0 && (
             <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination">
               {/* Previous Button */}
               <button

@@ -81,7 +81,6 @@ export default {
         "custom-bg": "url('/bg-img.png')",
         "pink-color": "url('/pinkcolor.png')",
         "shop-now": "url('/bg-pic.png')",
-        signup: "url('/singup.png')",
       },
       screens: {
         "custom-1282": {
