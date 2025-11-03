@@ -203,12 +203,12 @@ select {
 /* Standard laptops / desktops */
 @media (max-width: 1366px) {
   .Mycontainer {
-    width: 90%;
+    width: 95%;
     max-width: 1200px;
   }
 
   .Mycontainer2 {
-    width: 90%;
+    width: 95%;
     max-width: 1200px;
   }
 }
@@ -216,12 +216,12 @@ select {
 /* Full HD displays */
 @media (max-width: 1920px) {
   .Mycontainer {
-    width: 90%;
+    width: 95%;
     max-width: 1400px;
   }
 
   .Mycontainer2 {
-    width: 90%;
+    width: 95%;
     max-width: 1400px;
   }
 }
@@ -229,12 +229,12 @@ select {
 /* Quad HD (2K) displays */
 @media (max-width: 2560px) {
   .Mycontainer {
-    width: 90%;
+    width: 95%;
     max-width: 1500px;
   }
 
   .Mycontainer2 {
-    width: 90%;
+    width: 95%;
     max-width: 1500px;
   }
 }
@@ -242,12 +242,12 @@ select {
 /* Ultra HD (4K and larger) */
 @media (min-width: 2561px) {
   .Mycontainer {
-    width: 90%;
+    width: 95%;
     max-width: 1800px;
   }
 
   .Mycontainer2 {
-    width: 90%;
+    width: 95%;
     max-width: 1800px;
   }
 }

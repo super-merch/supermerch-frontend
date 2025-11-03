@@ -93,7 +93,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 text-white">
               Quick Links
             </h3>
-            <ul className="space-y-1 sm:space-y-3">
+            <ul className="space-y-3 text-sm md:text-base">
               <li>
                 <Link
                   to="/about"
@@ -150,7 +150,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 text-white">
               Customer Service
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-3 text-sm md:text-base">
               <li>
                 <Link
                   to="/artwork-policy"
@@ -199,7 +199,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 text-white">
               Contact Us
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-3 text-sm md:text-base">
               <div>
                 <p className="text-white/80 text-sm">Phone</p>
                 <a
@@ -233,7 +233,9 @@ const Footer = () => {
         <div className="border-t border-white/10 mt-2 pt-2">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
-              <p className="text-white/80 text-sm mb-3">We Accept</p>
+              <p className="text-white/80 text-sm mb-3 text-center md:text-left">
+                We Accept
+              </p>
               <div className="sm:flex grid grid-cols-4 items-center gap-3">
                 {paymethod.map((p, i) => (
                   <img
@@ -246,7 +248,7 @@ const Footer = () => {
               </div>
             </div>
             <div>
-              <div className="max-w-2xl mx-auto text-left">
+              <div className="max-w-2xl mx-auto text-center md:text-left">
                 <p className="text-white/80 mb-2">
                   Subscribe to our newsletter for exclusive offers and new
                   product updates

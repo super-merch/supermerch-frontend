@@ -941,7 +941,7 @@ const ProductDetails = () => {
           ) : ( */}
           <div>
             <div
-              className="mb-4 border border-border2 overflow-hidden relative group cursor-zoom-in"
+              className="mb-4  border-border2 overflow-hidden relative group cursor-zoom-in"
               onClick={() => setImageModel(true)}
               onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -1014,7 +1014,7 @@ const ProductDetails = () => {
           {/* // )} */}
           {/* 2nd column  */}
           <div>
-            <div className="flex justify-between md:flex-row flex-col">
+            <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="w-2/3">
                 <h2
                   className={`text-2xl ${
@@ -1182,7 +1182,7 @@ const ProductDetails = () => {
           {/* 3rd column  */}
           <div className="">
             {/* Consolidated Order Summary */}
-            <div className="bg-white rounded-none border border-gray-200 shadow-sm lg:sticky lg:top-4">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm lg:sticky lg:top-4">
               {/* Header */}
               <div className="px-6 py-5 border-b border-gray-200 bg-white rounded-t-md">
                 <div className="flex items-start justify-between gap-4">
@@ -1231,7 +1231,7 @@ const ProductDetails = () => {
               </div>
 
               {/* Order Details */}
-              <div className="px-6 py-2">
+              <div className="px-6 py-2 rounded-lg">
                 {/* Action Buttons */}
                 <div className="space-y-3 mt-2">
                   <div
@@ -1303,7 +1303,7 @@ const ProductDetails = () => {
                       <FaCheck />
                     </p>
                     <p className="text-sm">
-                      Color:{" "}
+                      Selected Color:{" "}
                       {selectedColor ? selectedColor : "No color selected"}
                     </p>
                   </div>
@@ -1321,18 +1321,11 @@ const ProductDetails = () => {
                       <FaCheck />
                     </p>
                     <p className="text-sm">
-                      Selected SIze: &nbsp;
+                      Selected Size: &nbsp;
                       {selectedSize || "Not selected"}
                     </p>
                   </div>
-                  <div className="flex items-start gap-2 pt-3 ">
-                    <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
-                      <FaCheck />
-                    </p>
-                    <p className="text-sm">
-                      Logo Color: {logoColor || "No logo color selected"}
-                    </p>
-                  </div>
+
                   <div className="flex items-start gap-2 pt-3 ">
                     <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                       <FaCheck />
@@ -1356,7 +1349,7 @@ const ProductDetails = () => {
                     </p>
                     <p className="text-sm">
                       Freight Charge:
-                      {freightFee > 0 ? `$${freightFee.toFixed(2)}` : "-"}
+                      {freightFee > 0 ? `$${freightFee.toFixed(2)}` : " TBD"}
                     </p>
                   </div>
                 </div>

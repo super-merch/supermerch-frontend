@@ -101,7 +101,7 @@ export default function HowItWorks({ className = "" }) {
           {/* Desktop Connection Lines */}
           <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-green-200 via-purple-200 via-orange-200 via-indigo-200 to-teal-200"></div>
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-12">
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               return (
@@ -110,7 +110,7 @@ export default function HowItWorks({ className = "" }) {
                   <article className="relative bg-white rounded-2xl md:p-8 p-4 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100">
                     {/* Step Number Badge */}
                     <div
-                      className={`absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-r ${step.color} rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                      className={`absolute -top-4 -left-4 md:w-12 md:h-12 w-8 h-8 bg-gradient-to-r ${step.color} rounded-full flex items-center justify-center text-white font-bold md:text-lg text-sm shadow-lg group-hover:scale-110 transition-transform duration-300`}
                     >
                       {step.number}
                     </div>

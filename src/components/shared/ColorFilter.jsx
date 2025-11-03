@@ -41,10 +41,10 @@ const ColorFilter = () => {
       let newColors;
       if (prev.includes(colorName)) {
         newColors = prev.filter((name) => name !== colorName);
-        toast.info(`${colorName} filter removed`);
+        // toast.info(`${colorName} filter removed`);
       } else {
         newColors = [...prev, colorName];
-        toast.success(`${colorName} filter applied`);
+        // toast.success(`${colorName} filter applied`);
       }
       return newColors;
     });

@@ -7,10 +7,10 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
       "Material",
       "Packing",
       "Features",
-      "Sizes",
-      "Size",
-      "Item Size",
-      "Sizing",
+      // "Sizes",
+      // "Size",
+      // "Item Size",
+      // "Sizing",
       "Product Dimensions",
       "Dimensions",
       "Fabric",
@@ -94,25 +94,21 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
         )}
       {activeInfoTab === "features" && (
         <div className="space-y-3 text-sm leading-6">
-          {filterByNames(single_product?.product?.details)?.length > 0 ? (
-            filterByNames(single_product?.product?.details)?.map((d, i) => (
-              <div key={i} className="border-b last:border-0 pb-3">
-                <p className="font-semibold capitalize">{d.method || d.name}</p>
+          {filterByNames(single_product?.product?.details)?.map((d, i) => (
+            <div key={i} className="border-b last:border-0 pb-3">
+              <p className="font-semibold capitalize">{d.method || d.name}</p>
 
-                {d?.detail && (
-                  <div className="text-black">
-                    {d?.detail?.split("\n").map((line, index) => (
-                      <p key={index} className="mb-1">
-                        - {line}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))
-          ) : (
-            <p>No features info available.</p>
-          )}
+              {d?.detail && (
+                <div className="text-black">
+                  {d?.detail?.split("\n").map((line, index) => (
+                    <p key={index} className="mb-1">
+                      - {line}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
