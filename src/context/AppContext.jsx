@@ -145,6 +145,7 @@ const AppContextProvider = (props) => {
     productTypeId: null,
     category: null,
     searchTerm: "",
+    
   });
   const [totalCount, setTotalCount] = useState(0);
 
@@ -168,7 +169,18 @@ const AppContextProvider = (props) => {
       ...(paginationData.searchTerm !== undefined && {
         searchTerm: paginationData.searchTerm,
       }),
+      ...(paginationData.pricerange?.min_price != null && {
+        min_price: paginationData.pricerange.min_price,
+      }),
+      ...(paginationData.pricerange?.max_price != null && {
+        max_price: paginationData.pricerange.max_price,
+      }),
     });
+    if (paginationData.colors && Array.isArray(paginationData.colors) && paginationData.colors.length > 0) {
+      paginationData.colors.forEach(color => {
+        params.append('colors[]', color);
+      });
+    }
 
     let url = "";
 
@@ -215,6 +227,9 @@ const AppContextProvider = (props) => {
       paginationData.productTypeId,
       paginationData.category,
       paginationData.searchTerm,
+      paginationData.pricerange?.min_price,
+      paginationData.pricerange?.max_price,
+      paginationData.colors
     ],
     queryFn: () => getProductsFromApi(),
   });

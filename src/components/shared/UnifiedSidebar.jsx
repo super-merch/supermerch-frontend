@@ -104,7 +104,7 @@ const UnifiedSidebar = ({
   const [isMobile, setIsMobile] = useState(false);
   const [openCategory, setOpenCategory] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
     console.log("type", searchParams.get("type"));
   }, []);
@@ -114,6 +114,7 @@ const UnifiedSidebar = ({
     setSidebarActiveCategory,
     setActiveFilterCategory,
     v1categories, // Add this from context
+    setPaginationData
   } = useContext(AppContext);
 
   // Get configuration for this page type
@@ -229,7 +230,7 @@ const UnifiedSidebar = ({
     } else {
       setActiveSub(null);
     }
-  }, [urlSubCategory, urlCategoryName, displayedCategories]);
+  }, [urlSubCategory, urlCategoryName]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -241,7 +242,7 @@ const UnifiedSidebar = ({
     dispatch(setSelectedCategory(categoryName));
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
-    dispatch(applyFilters());
+    setPaginationData((prev) => ({ ...prev, pricerange: undefined, page: 1 }));
   };
 
   const handleSubCategoryClick = (subCategory, categoryId, categoryName) => {
@@ -250,22 +251,23 @@ const UnifiedSidebar = ({
     const encodedSubCategory = encodeURIComponent(subCategory);
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
-    dispatch(applyFilters());
+    setPaginationData((prev) => ({ ...prev, pricerange: undefined, page: 1 }));
 
     // Determine the correct route based on the category name
     let targetRoute = "/Spromotional"; // Default fallback
+    let type = dropdownCategoryMap.promotional.includes(categoryName)
+      ? "promotional"
+      : dropdownCategoryMap.clothing.includes(categoryName)
+      ? "clothing"
+      : dropdownCategoryMap.headwear.includes(categoryName)
+      ? "headwear"
+      : null;
+    const encodedType = encodeURIComponent(type);
 
-    // if (categoryName === "Clothing") {
-    //   targetRoute = "/Clothing";
-    // } else if (categoryName === "Headwear") {
-    //   targetRoute = "/Headwear";
-    // } else if (categoryName === "Capital Equipment") {
-    //   targetRoute = "/Spromotional"; // Keep as promotional for now
-    // }
-    // For all other categories, use /Spromotional
+    //find out that the category clicked is from promotional or clothing or headwear
 
     navigate(
-      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}&type=${encodedType}`
     );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
