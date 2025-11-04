@@ -1,9 +1,19 @@
-import { useState, useCallback } from "react";
+import { AppContext } from "@/context/AppContext";
+import { useState, useCallback, useContext, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ColorFilter = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllColors, setShowAllColors] = useState(false);
+  const { setPaginationData } = useContext(AppContext);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const category = params.get("category");
+  const search = params.get("search");
+  useEffect(() => {
+    setSelectedColors([]);
+  }, [location.pathname, category, search]);
 
   // Available colors with their display names and hex values matching the image
   const availableColors = [
@@ -16,7 +26,7 @@ const ColorFilter = () => {
     { name: "Pink", hex: "#ec4899" },
     { name: "Black", hex: "#1f2937" },
     { name: "White", hex: "#ffffff" },
-    { name: "Gray", hex: "#6b7280" },
+    { name: "Grey", hex: "#6b7280" },
     { name: "Brown", hex: "#92400e" },
     { name: "Cyan", hex: "#06b6d4" },
   ];
@@ -41,10 +51,10 @@ const ColorFilter = () => {
       let newColors;
       if (prev.includes(colorName)) {
         newColors = prev.filter((name) => name !== colorName);
-        // toast.info(`${colorName} filter removed`);
+        setPaginationData((prev) => ({ ...prev, page: 1, colors: newColors }));
       } else {
         newColors = [...prev, colorName];
-        // toast.success(`${colorName} filter applied`);
+        setPaginationData((prev) => ({ ...prev, page: 1, colors: newColors }));
       }
       return newColors;
     });
