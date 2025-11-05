@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 // Import reusable components
 import { AppContext } from "../../context/AppContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
-
+import supermerch from "../../../public/logo.png";
 import { useCoupons } from "@/hooks/useCoupons";
 import {
   clearCurrentUser,
@@ -613,7 +613,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             id: category.id,
             name: v1Cat?.name || category.name,
             onClick: () =>
-              handleNameCategories(v1Cat?.name || category.name, category.id,"Promotional"),
+              handleNameCategories(
+                v1Cat?.name || category.name,
+                category.id,
+                "Promotional"
+              ),
             columns: category.columns,
             subItems: category.columns.flatMap((col) =>
               col.items.map((itemName) => {
@@ -653,140 +657,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         // Define the clothing structure based on v2Categories
         const clothingStructure = [
           {
-            id: "PG", // Footwear
-            name: "Footwear",
-            columns: [
-              {
-                title: "Footwear",
-                items: ["Boots", "Thongs"],
-              },
-              {
-                title: "Accessories",
-                items: ["Socks", "Misc Footwear"],
-              },
-            ],
-          },
-          {
-            id: "PN", // Jackets
-            name: "Jackets",
-            columns: [
-              {
-                title: "Formal Jackets",
-                items: ["Blazers & Suit Jackets", "Trench Coats"],
-              },
-              {
-                title: "Casual Jackets",
-                items: [
-                  "Cardigans",
-                  "Puffer Jackets",
-                  "Varsity Jackets",
-                ],
-              },
-              {
-                title: "Work Jackets",
-                items: ["Chefs Jackets", "Rain Jackets", "Track Jackets","Ponchos"],
-              },
-              {
-                title: "Fleece & More",
-                items: [
-                  "Polar Fleece Jacket",
-                  "Soft Shell Jackets",
-                  "Misc Jackets",
-                ],
-              },
-            ],
-          },
-          {
-            id: "PU", // Shirts
-            name: "Shirts",
-            columns: [
-              {
-                title: "Formal Shirts",
-                items: ["Button-Up Shirts", "Polo Shirts"],
-              },
-              {
-                title: "Casual Shirts",
-                items: ["T-Shirts", "Singlets"],
-              },
-              {
-                title: "Misc",
-                items: ["Misc Shirts"],
-              },
-            ],
-          },
-          {
-            id: "PO", // Jumpers
-            name: "Jumpers",
-            columns: [
-              {
-                title: "Hoodies & Vests",
-                items: ["Hoodies", "Vests"],
-              },
-              {
-                title: "Sweaters",
-                items: ["Knitted Jumpers", "Sweaters", "Polar Fleece Jumpers"],
-              },
-              {
-                title: "Misc",
-                items: ["Misc Jumpers"],
-              },
-            ],
-          },
-          {
-            id: "PB", // Bottoms
-            name: "Bottoms",
-            columns: [
-              {
-                title: "Pants",
-                items: ["Cargo Pants", "Chefs Pants", "Slacks", "Track Pants"],
-              },
-              {
-                title: "Shorts & Dresses",
-                items: ["Dress Shorts", "Sports Shorts", "Dresses"],
-              },
-              {
-                title: "Other Bottoms",
-                items: ["Leggings", "Skirts", "Misc Bottoms"],
-              },
-            ],
-          },
-          {
-            id: "PC", // Clothing Accessories
-            name: "Clothing Accessories",
-            columns: [
-              {
-                title: "Formal Accessories",
-                items: ["Ties", "Cufflinks", "Belts"],
-              },
-              {
-                title: "Winter Accessories",
-                items: ["Scarves", "Gloves"],
-              },
-              {
-                title: "Misc",
-                items: ["Misc Clothing Accessories"],
-              },
-            ],
-          },
-          {
-            id: "PW", // Uniforms
-            name: "Uniforms",
-            columns: [
-              {
-                title: "Medical Uniforms",
-                items: ["Scrubs", "Scrub Tops", "Scrub Bottoms", "Lab Coats"],
-              },
-              {
-                title: "Work Uniforms",
-                items: ["Chefwear", "Tunics", "Roughalls & Overalls"],
-              },
-              {
-                title: "Other Uniforms",
-                items: ["Safety Wear", "Salon & Spa", "Misc Uniforms"],
-              },
-            ],
-          },
-          {
             id: "PX", // Workwear
             name: "Workwear",
             columns: [
@@ -819,8 +689,26 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             ],
           },
           {
+            id: "PW", // Uniforms
+            name: "Hospitality Uniforms",
+            columns: [
+              {
+                title: "Medical Uniforms",
+                items: ["Scrubs", "Scrub Tops", "Scrub Bottoms", "Lab Coats"],
+              },
+              {
+                title: "Work Uniforms",
+                items: ["Chefwear", "Tunics", "Roughalls & Overalls"],
+              },
+              {
+                title: "Other Uniforms",
+                items: ["Safety Wear", "Salon & Spa", "Misc Uniforms"],
+              },
+            ],
+          },
+          {
             id: "PV", // Sports Uniforms
-            name: "Sports Uniforms",
+            name: "Sportswear",
             columns: [
               {
                 title: "Sports Tops",
@@ -842,6 +730,124 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               },
             ],
           },
+          {
+            id: "PU", // Shirts
+            name: "Shirts",
+            columns: [
+              {
+                title: "Formal Shirts",
+                items: ["Button-Up Shirts", "Polo Shirts"],
+              },
+              {
+                title: "Casual Shirts",
+                items: ["T-Shirts", "Singlets"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Shirts"],
+              },
+            ],
+          },
+          {
+            id: "PB", // Bottoms
+            name: "Bottoms",
+            columns: [
+              {
+                title: "Pants",
+                items: ["Cargo Pants", "Chefs Pants", "Slacks", "Track Pants"],
+              },
+              {
+                title: "Shorts & Dresses",
+                items: ["Dress Shorts", "Sports Shorts", "Dresses"],
+              },
+              {
+                title: "Other Bottoms",
+                items: ["Leggings", "Skirts", "Misc Bottoms"],
+              },
+            ],
+          },
+          {
+            id: "PN", // Jackets
+            name: "Jackets",
+            columns: [
+              {
+                title: "Formal Jackets",
+                items: ["Blazers & Suit Jackets", "Trench Coats"],
+              },
+              {
+                title: "Casual Jackets",
+                items: ["Cardigans", "Puffer Jackets", "Varsity Jackets"],
+              },
+              {
+                title: "Work Jackets",
+                items: [
+                  "Chefs Jackets",
+                  "Rain Jackets",
+                  "Track Jackets",
+                  "Ponchos",
+                ],
+              },
+              {
+                title: "Fleece & More",
+                items: [
+                  "Polar Fleece Jacket",
+                  "Soft Shell Jackets",
+                  "Misc Jackets",
+                ],
+              },
+            ],
+          },
+          {
+            id: "PO", // Jumpers
+            name: "Jumpers",
+            columns: [
+              {
+                title: "Hoodies & Vests",
+                items: ["Hoodies", "Vests"],
+              },
+              {
+                title: "Sweaters",
+                items: ["Knitted Jumpers", "Sweaters", "Polar Fleece Jumpers"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Jumpers"],
+              },
+            ],
+          },
+          {
+            id: "PG", // Footwear
+            name: "Footwear",
+            columns: [
+              {
+                title: "Footwear",
+                items: ["Boots", "Thongs"],
+              },
+              {
+                title: "Accessories",
+                items: ["Socks", "Misc Footwear"],
+              },
+            ],
+          },
+
+          {
+            id: "PC", // Clothing Accessories
+            name: "Clothing Accessories",
+            columns: [
+              {
+                title: "Formal Accessories",
+                items: ["Ties", "Cufflinks", "Belts"],
+              },
+              {
+                title: "Winter Accessories",
+                items: ["Scarves", "Gloves"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Clothing Accessories"],
+              },
+            ],
+          },
         ];
 
         // Map the structure to match the expected format
@@ -853,7 +859,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             id: category.id,
             name: v1Cat?.name || category.name,
             onClick: () =>
-              handleNameCategories(v1Cat?.name || category.name, category.id,"Clothing"),
+              handleNameCategories(
+                v1Cat?.name || category.name,
+                category.id,
+                "Clothing"
+              ),
             columns: category.columns,
             subItems: category.columns.flatMap((col) =>
               col.items.map((itemName) => {
@@ -944,7 +954,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   const handleNameCategories = (titleName, NameId, parentType) => {
     const encodedTitleName = encodeURIComponent(titleName);
-    const encodedType = encodeURIComponent(parentType || titleName); 
+    const encodedType = encodeURIComponent(parentType || titleName);
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
@@ -958,7 +968,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setActiveFilterCategory(null);
   };
 
-  const handleSubCategories = (subCategory, categoryId, titleName,parentType) => {
+  const handleSubCategories = (
+    subCategory,
+    categoryId,
+    titleName,
+    parentType
+  ) => {
     const encodedTitleName = encodeURIComponent(titleName);
     const encodedSubCategory = encodeURIComponent(subCategory);
     const encodedType = encodeURIComponent(parentType || titleName);
@@ -1011,14 +1026,15 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   return (
     <>
       {/* Main Navbar */}
-      <div className="bg-line shadow-xl sm:py-3 sticky top-0 z-50">
-        <div className="flex items-center justify-between gap-4 text-white !px-0 md:px-0 Mycontainer flex-wrap">
+      <div className="bg-white border-b border-gray-200 shadow-sm sm:py-2 sticky top-0 z-50 pb-4">
+        <div className="flex items-center justify-between gap-3 !px-0 md:px-0 Mycontainer flex-wrap">
+          {/* Mobile Menu Button */}
           <Sheet
             open={isSheetOpen}
             onOpenChange={setIsSheetOpen}
             className="xl:hidden"
           >
-            <SheetTrigger className="text-black focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
+            <SheetTrigger className="text-gray-700 focus:outline-none p-2.5 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-6 h-6"
@@ -1035,12 +1051,16 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               </svg>
             </SheetTrigger>
             <SheetContent
-              className="overflow-y-auto w-[85vw] sm:w-[400px]"
+              className="overflow-y-auto w-[85vw] sm:w-[400px] bg-white"
               side="left"
             >
               <SheetHeader>
-                <SheetTitle className="mb-6 text-2xl text-smallHeader font-bold">
-                  SuperMerch
+                <SheetTitle className="mb-6 text-2xl text-primary font-bold">
+                  <img
+                    src={supermerch}
+                    alt="SuperMerch"
+                    className="h-20 w-auto object-contain mx-auto"
+                  />
                 </SheetTitle>
               </SheetHeader>
               <NavigationMenu
@@ -1055,7 +1075,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               />
             </SheetContent>
           </Sheet>
-          {/* Navigation Menu - Left side */}
+
+          {/* Navigation Menu - Desktop */}
           <div className="hidden xl:block">
             <NavigationMenu
               menuItems={menuItems}
@@ -1064,6 +1085,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               className="justify-start"
             />
           </div>
+
+          {/* Search Bar - Center */}
           <div className="w-full flex-1 mx-2 sm:mx-4 order-3 lg:order-2">
             <SearchBar
               onSearch={handleSearch}
@@ -1075,9 +1098,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             />
           </div>
 
-          {/* Search Bar and User Actions on the right */}
-          <div className="flex items-center gap-4 order-2 lg:order-3">
-            {/* User Actions */}
+          {/* User Actions - Right */}
+          <div className="flex items-center gap-3 order-2 lg:order-3">
             <UserActions
               isAuthenticated={!!token}
               onLogout={() => setNavbarLogout(true)}
@@ -1085,13 +1107,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               favouriteQuantity={favouriteQuantity}
               size="default"
             />
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="xl:hidden">
-          <div className="flex items-center justify-between px-2 sm:px-4 py-2">
-            {/* Mobile Search */}
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const SizeGuideModal = ({ setShowSizeGuide, parseSizing }) => {
+  const navigate = useNavigate();
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
@@ -91,20 +93,34 @@ const SizeGuideModal = ({ setShowSizeGuide, parseSizing }) => {
                     Product Size Chart
                   </h4>
                   <div className="space-y-1">
-                    {parseSizing()?.result?.map((sizeInfo, index) => (
-                      <div
-                        key={index}
-                        className={`p-2 rounded-lg border-b ${
-                          index % 2 === 0
-                            ? "bg-gray-50 border-gray-200"
-                            : "bg-white border-gray-200"
-                        }`}
-                      >
-                        <p className="text-sm font-medium text-gray-900 text-center">
-                          {sizeInfo}
-                        </p>
-                      </div>
-                    ))}
+                    {parseSizing()?.result?.length > 0 ? (
+                      parseSizing()?.result?.map((sizeInfo, index) => (
+                        <div
+                          key={index}
+                          className={`p-2 rounded-lg border-b ${
+                            index % 2 === 0
+                              ? "bg-gray-50 border-gray-200"
+                              : "bg-white border-gray-200"
+                          }`}
+                        >
+                          <p className="text-sm font-medium text-gray-900 text-center">
+                            {sizeInfo}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-600 text-center">
+                        No size information available for this product. Please
+                        contact our customer service for more information.{" "}
+                        <br />
+                        <button
+                          onClick={() => navigate("/contact")}
+                          className="text-primary hover:text-blue-700 font-medium text-sm underline"
+                        >
+                          Contact our customer service
+                        </button>
+                      </p>
+                    )}
                   </div>
                 </div>
               ) : (

@@ -13,7 +13,7 @@ const ColorFilter = () => {
   const search = params.get("search");
   useEffect(() => {
     setSelectedColors([]);
-  }, [location.pathname,category,search]);
+  }, [location.pathname, category, search]);
 
   // Available colors with their display names and hex values matching the image
   const availableColors = [
@@ -51,11 +51,9 @@ const ColorFilter = () => {
       let newColors;
       if (prev.includes(colorName)) {
         newColors = prev.filter((name) => name !== colorName);
-        toast.info(`${colorName} filter removed`);
         setPaginationData((prev) => ({ ...prev, page: 1, colors: newColors }));
       } else {
         newColors = [...prev, colorName];
-        toast.success(`${colorName} filter applied`);
         setPaginationData((prev) => ({ ...prev, page: 1, colors: newColors }));
       }
       return newColors;

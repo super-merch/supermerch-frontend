@@ -105,16 +105,14 @@ const UnifiedSidebar = ({
   const [openCategory, setOpenCategory] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  useEffect(() => {
-    console.log("type", searchParams.get("type"));
-  }, []);
+  useEffect(() => {}, []);
   const {
     setSelectedParamCategoryId,
     setCurrentPage,
     setSidebarActiveCategory,
     setActiveFilterCategory,
     v1categories, // Add this from context
-    setPaginationData
+    setPaginationData,
   } = useContext(AppContext);
 
   // Get configuration for this page type

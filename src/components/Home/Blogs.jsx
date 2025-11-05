@@ -29,7 +29,7 @@ const Blogs = () => {
         />
 
         {/* Blog Carousel */}
-        <div className="relative mt-4 md:mt-0">
+        <div className="relative mt-0 md:mt-0">
           <Swiper
             navigation={{
               prevEl: ".blog-prev",
@@ -81,12 +81,12 @@ const Blogs = () => {
 
           {/* Navigation Buttons */}
           <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10">
-            <button className="blog-prev bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
+            <button className="blog-prev bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary md:w-12 md:h-12 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
               <IoArrowBackOutline className="w-6 h-6" />
             </button>
           </div>
           <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10">
-            <button className="blog-next bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
+            <button className="blog-next bg-white shadow-lg hover:shadow-xl text-secondary hover:text-primary md:w-12 md:h-12 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 border border-gray-200 hover:border-primary">
               <IoMdArrowForward className="w-6 h-6" />
             </button>
           </div>

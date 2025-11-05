@@ -145,7 +145,6 @@ const AppContextProvider = (props) => {
     productTypeId: null,
     category: null,
     searchTerm: "",
-    
   });
   const [totalCount, setTotalCount] = useState(0);
 
@@ -176,9 +175,13 @@ const AppContextProvider = (props) => {
         max_price: paginationData.pricerange.max_price,
       }),
     });
-    if (paginationData.colors && Array.isArray(paginationData.colors) && paginationData.colors.length > 0) {
-      paginationData.colors.forEach(color => {
-        params.append('colors[]', color);
+    if (
+      paginationData.colors &&
+      Array.isArray(paginationData.colors) &&
+      paginationData.colors.length > 0
+    ) {
+      paginationData.colors.forEach((color) => {
+        params.append("colors[]", color);
       });
     }
 
@@ -229,7 +232,7 @@ const AppContextProvider = (props) => {
       paginationData.searchTerm,
       paginationData.pricerange?.min_price,
       paginationData.pricerange?.max_price,
-      paginationData.colors
+      paginationData.colors,
     ],
     queryFn: () => getProductsFromApi(),
   });
@@ -333,7 +336,6 @@ const AppContextProvider = (props) => {
     sort = "",
     limit
   ) => {
-    console.log(limit, "limit");
     setProductsCategoryLoading(true);
     try {
       const limitParam = limit ?? 10;
@@ -362,7 +364,7 @@ const AppContextProvider = (props) => {
     }
   };
 
-  const [shippingCharges, setShippingCharges] = useState(0);
+  const [shippingCharges, setShippingCharges] = useState(20);
   const getShippingCharges = async () => {
     try {
       const response = await fetch(
@@ -377,7 +379,7 @@ const AppContextProvider = (props) => {
       );
 
       const data = await response.json();
-      setShippingCharges(data.shipping || 0);
+      setShippingCharges(data.shipping || 20);
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to fetch shipping charges");

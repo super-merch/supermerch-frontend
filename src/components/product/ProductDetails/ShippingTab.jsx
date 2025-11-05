@@ -1,4 +1,5 @@
 import React from "react";
+import { FaBox, FaInfoCircle } from "react-icons/fa";
 
 const ShippingTab = ({ single_product }) => {
   const filterByNamesForShipping = (array) => {
@@ -34,7 +35,18 @@ const ShippingTab = ({ single_product }) => {
           )
         )
       ) : (
-        <p>No shipping info available.</p>
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+            <FaBox className="w-10 h-10 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No Shipping Information
+          </h3>
+          <p className="text-sm text-gray-500 max-w-md mx-auto">
+            Shipping details are not currently available for this product.
+            Please contact us for more information.
+          </p>
+        </div>
       )}
     </div>
   );
