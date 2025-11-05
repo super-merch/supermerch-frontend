@@ -747,6 +747,7 @@ const ProductDetails = () => {
       };
     });
   };
+  const productPrice = getProductPrice(single_product, productId)
 
   // In your component:
   const printMethods = getPrintMethods(single_product?.product?.details || []);
@@ -771,6 +772,11 @@ const ProductDetails = () => {
   const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
 
   const handleAddToCart = (e) => {
+    if(productPrice == 0){
+      toast.error("Product price not available contact us to get the price and place order.")
+      setShowQuoteForm(true)
+      return
+    }
     e.preventDefault();
     //   if (!userEmail) {
     //   toast.error("Please login to add items to cart");

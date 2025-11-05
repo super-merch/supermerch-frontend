@@ -204,6 +204,7 @@ const SearchBar = ({
         onSearch(sel.name || sel.sku || "");
         return;
       }
+      setIsSuggestionsOpen(false);
 
       // Clear debounce timer and search immediately
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -350,7 +351,10 @@ const SearchBar = ({
 
           <div className="flex items-center gap-2 ml-2">
             <IoSearchSharp
-              onClick={handleSearch}
+              onClick={()=>{
+                handleSearch
+                setIsSuggestionsOpen(false);
+              }}
               className="text-primary text-xl cursor-pointer hover:text-blue-700 transition-colors"
             />
             <IoClose
@@ -523,6 +527,7 @@ const SearchBar = ({
                 clearTimeout(debounceTimerRef.current);
               }
               handleSearch();
+              setIsSuggestionsOpen(false);
             }}
             className="text-primary hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded-lg transition-all duration-200 flex-shrink-0"
           >

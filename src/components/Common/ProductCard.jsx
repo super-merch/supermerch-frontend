@@ -62,6 +62,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
   const encodedId = btoa(product.meta.id.toString());
+  const productPrice = product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]?.price
 
   // Extract unique colors
   const uniqueColors =
@@ -178,6 +179,13 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
 
               {/* Pricing */}
               <div>
+                {productPrice == 0 ?(
+                  <h2 className="text-xs sm:text-base font-bold text-primary" >
+                    Contact Us
+                  </h2>
+                ):(
+
+                
                 <h2 className="text-xs sm:text-base font-bold text-primary">
                   Starting From{" "}
                   {discountPct > 0 ? (
@@ -201,6 +209,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                     </span>
                   )}
                 </h2>
+                ) }
               </div>
             </div>
           </div>
