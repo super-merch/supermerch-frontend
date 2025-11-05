@@ -707,16 +707,62 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             ],
           },
           {
-            id: "PG", // Footwear
-            name: "Footwear",
+            id: "PV", // Sports Uniforms
+            name: "Sportswear",
             columns: [
               {
-                title: "Footwear",
-                items: ["Boots", "Thongs"],
+                title: "Sports Tops",
+                items: [
+                  "Jerseys",
+                  "Crop Tops",
+                  "Sports Jumpers",
+                  "Bibs",
+                  "Sports Vest",
+                ],
+              },
+              {
+                title: "Sports Bottoms",
+                items: ["Sports Shorts", "Sports Skirts", "Sports Dresses"],
               },
               {
                 title: "Accessories",
-                items: ["Socks", "Misc Footwear"],
+                items: ["Sports Socks", "Misc Sports Uniforms"],
+              },
+            ],
+          },
+          {
+            id: "PU", // Shirts
+            name: "Shirts",
+            columns: [
+              {
+                title: "Formal Shirts",
+                items: ["Button-Up Shirts", "Polo Shirts"],
+              },
+              {
+                title: "Casual Shirts",
+                items: ["T-Shirts", "Singlets"],
+              },
+              {
+                title: "Misc",
+                items: ["Misc Shirts"],
+              },
+            ],
+          },
+          {
+            id: "PB", // Bottoms
+            name: "Bottoms",
+            columns: [
+              {
+                title: "Pants",
+                items: ["Cargo Pants", "Chefs Pants", "Slacks", "Track Pants"],
+              },
+              {
+                title: "Shorts & Dresses",
+                items: ["Dress Shorts", "Sports Shorts", "Dresses"],
+              },
+              {
+                title: "Other Bottoms",
+                items: ["Leggings", "Skirts", "Misc Bottoms"],
               },
             ],
           },
@@ -752,24 +798,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             ],
           },
           {
-            id: "PU", // Shirts
-            name: "Shirts",
-            columns: [
-              {
-                title: "Formal Shirts",
-                items: ["Button-Up Shirts", "Polo Shirts"],
-              },
-              {
-                title: "Casual Shirts",
-                items: ["T-Shirts", "Singlets"],
-              },
-              {
-                title: "Misc",
-                items: ["Misc Shirts"],
-              },
-            ],
-          },
-          {
             id: "PO", // Jumpers
             name: "Jumpers",
             columns: [
@@ -788,23 +816,20 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             ],
           },
           {
-            id: "PB", // Bottoms
-            name: "Bottoms",
+            id: "PG", // Footwear
+            name: "Footwear",
             columns: [
               {
-                title: "Pants",
-                items: ["Cargo Pants", "Chefs Pants", "Slacks", "Track Pants"],
+                title: "Footwear",
+                items: ["Boots", "Thongs"],
               },
               {
-                title: "Shorts & Dresses",
-                items: ["Dress Shorts", "Sports Shorts", "Dresses"],
-              },
-              {
-                title: "Other Bottoms",
-                items: ["Leggings", "Skirts", "Misc Bottoms"],
+                title: "Accessories",
+                items: ["Socks", "Misc Footwear"],
               },
             ],
           },
+
           {
             id: "PC", // Clothing Accessories
             name: "Clothing Accessories",
@@ -820,31 +845,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               {
                 title: "Misc",
                 items: ["Misc Clothing Accessories"],
-              },
-            ],
-          },
-
-          {
-            id: "PV", // Sports Uniforms
-            name: "Sports Uniforms",
-            columns: [
-              {
-                title: "Sports Tops",
-                items: [
-                  "Jerseys",
-                  "Crop Tops",
-                  "Sports Jumpers",
-                  "Bibs",
-                  "Sports Vest",
-                ],
-              },
-              {
-                title: "Sports Bottoms",
-                items: ["Sports Shorts", "Sports Skirts", "Sports Dresses"],
-              },
-              {
-                title: "Accessories",
-                items: ["Sports Socks", "Misc Sports Uniforms"],
               },
             ],
           },
@@ -1026,7 +1026,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   return (
     <>
       {/* Main Navbar */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sm:py-2 sticky top-0 z-50">
+      <div className="bg-white border-b border-gray-200 shadow-sm sm:py-2 sticky top-0 z-50 pb-4">
         <div className="flex items-center justify-between gap-3 !px-0 md:px-0 Mycontainer flex-wrap">
           {/* Mobile Menu Button */}
           <Sheet

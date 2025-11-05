@@ -3,6 +3,7 @@ import { IoSearchSharp } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
 const SearchBar = ({
   onSearch,
@@ -30,6 +31,9 @@ const SearchBar = ({
 
   const suggestionTimerRef = useRef(null);
   const wrapperRef = categoryDropdownRef;
+  const location = useLocation();
+  const prevLocationRef = useRef(location.pathname);
+  const inputValueRef = useRef("");
   // Close category dropdown & suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -145,6 +149,28 @@ const SearchBar = ({
     }
   }, [collapsible, isOpen]);
 
+  // Sync inputValue with ref
+  useEffect(() => {
+    inputValueRef.current = inputValue;
+  }, [inputValue]);
+
+  // Clear input when navigating away from search page
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const prevPath = prevLocationRef.current;
+
+    // Clear input if we're not on the search page and we have input value
+    if (currentPath !== "/search" && inputValueRef.current.trim()) {
+      setInputValue("");
+      setSuggestions([]);
+      setIsSuggestionsOpen(false);
+      setHighlightedIndex(-1);
+    }
+
+    // Update previous location
+    prevLocationRef.current = currentPath;
+  }, [location.pathname]);
+
   // Add debounce timer ref
   const debounceTimerRef = useRef(null);
 
@@ -177,12 +203,19 @@ const SearchBar = ({
   };
 
   const handleSearch = (searchValue = inputValue) => {
+    // Close suggestions when searching
+    setIsSuggestionsOpen(false);
+    setSuggestions([]);
+    setHighlightedIndex(-1);
+
     if (!searchValue.trim()) {
       onSearch("");
+      setInputValue("");
       return;
     }
     onSearch(searchValue.trim());
-    // setInputValue("");
+    // Clear input after search is performed (navigation happens in parent)
+    // The input will be cleared when navigating away from search page
     // Close search bar if collapsible
     if (collapsible && onToggle) {
       onToggle(false);
@@ -191,6 +224,7 @@ const SearchBar = ({
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       // If suggestions open and one highlighted -> select it
       if (
         isSuggestionsOpen &&
@@ -201,11 +235,12 @@ const SearchBar = ({
         setInputValue(sel.name || sel.sku || "");
         setIsSuggestionsOpen(false);
         setSuggestions([]);
+        setHighlightedIndex(-1);
         onSearch(sel.name || sel.sku || "");
         return;
       }
 
-      // Clear debounce timer and search immediately
+      // Clear debounce timer and search immediately (this will close suggestions)
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       handleSearch();
     } else if (e.key === "Escape") {

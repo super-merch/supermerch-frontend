@@ -1,5 +1,6 @@
 import { AppContext } from "@/context/AppContext";
 import { useContext } from "react";
+import { colornames } from "color-name-list";
 
 export const getProductPrice = (product, id) => {
   const { marginApi } = useContext(AppContext);
@@ -17,8 +18,8 @@ export const getProductPrice = (product, id) => {
   const marginEntry = marginApi[productId] || {};
   const marginFlat =
     typeof marginEntry.marginFlat === "number" ? marginEntry.marginFlat : 0;
-  minPrice
-  maxPrice
+  minPrice;
+  maxPrice;
   return Number(minPrice?.toFixed(2));
 };
 
@@ -30,6 +31,128 @@ export const slugify = (s) =>
     .replace(/[^a-z0-9]+/g, "-")
     // remove leading/trailing hyphens
     .replace(/(^-|-$)/g, "");
+
+export const findNearestColor = (colorName) => {
+  if (!colorName || typeof colorName !== "string") {
+    return null;
+  }
+
+  const normalizedColorName = colorName.toLowerCase().trim();
+
+  // Strategy 1: Exact match (case-insensitive)
+  let match = colornames.find(
+    (item) => item?.name?.toLowerCase() === normalizedColorName
+  );
+  if (match) return match;
+
+  // Strategy 2: Contains match (color name contains search term or vice versa)
+  match = colornames.find(
+    (item) =>
+      item?.name?.toLowerCase().includes(normalizedColorName) ||
+      normalizedColorName.includes(item?.name?.toLowerCase())
+  );
+  if (match) return match;
+
+  // Strategy 3: Fuzzy match using word similarity
+  // Split color name into words and find matches
+  const colorWords = normalizedColorName.split(/\s+/);
+  match = colornames.find((item) => {
+    if (!item?.name) return false;
+    const itemName = item.name.toLowerCase();
+    return colorWords.some(
+      (word) =>
+        itemName.includes(word) ||
+        (word.length > 3 &&
+          itemName.includes(word.substring(0, word.length - 1)))
+    );
+  });
+  if (match) return match;
+
+  // Strategy 4: Find color by similarity using Levenshtein-like distance
+  // Simple character overlap matching
+  let bestMatch = null;
+  let bestScore = 0;
+
+  colornames.forEach((item) => {
+    if (!item?.name) return;
+    const itemName = item.name.toLowerCase();
+
+    // Calculate similarity score based on common characters
+    let score = 0;
+    const minLength = Math.min(normalizedColorName.length, itemName.length);
+    const maxLength = Math.max(normalizedColorName.length, itemName.length);
+
+    // Count matching characters at same positions
+    for (let i = 0; i < minLength; i++) {
+      if (normalizedColorName[i] === itemName[i]) {
+        score += 2;
+      }
+    }
+
+    // Count common characters (case-insensitive)
+    const colorChars = normalizedColorName.split("");
+    const itemChars = itemName.split("");
+    colorChars.forEach((char) => {
+      if (itemChars.includes(char)) {
+        score += 1;
+      }
+    });
+
+    // Normalize score by length
+    score = score / maxLength;
+
+    if (score > bestScore && score > 0.3) {
+      bestScore = score;
+      bestMatch = item;
+    }
+  });
+
+  if (bestMatch) return bestMatch;
+
+  // Strategy 5: Try to match common color variations
+  const colorVariations = {
+    navy: "navy blue",
+    burgundy: "burgundy",
+    charcoal: "charcoal gray",
+    khaki: "khaki",
+    coral: "coral",
+  };
+
+  const variationMatch = colornames.find((item) => {
+    const itemName = item?.name?.toLowerCase();
+    const variation = colorVariations[normalizedColorName];
+    return variation && itemName?.includes(variation);
+  });
+  if (variationMatch) return variationMatch;
+
+  // Strategy 6: Try common color name mappings
+  const commonMappings = {
+    blk: "black",
+    wht: "white",
+    grn: "green",
+    blu: "blue",
+    red: "red",
+    yel: "yellow",
+    org: "orange",
+    pur: "purple",
+    pnk: "pink",
+    brn: "brown",
+    gry: "gray",
+    gld: "gold",
+    slv: "silver",
+  };
+
+  if (commonMappings[normalizedColorName]) {
+    match = colornames.find(
+      (item) =>
+        item?.name?.toLowerCase() === commonMappings[normalizedColorName]
+    );
+    if (match) return match;
+  }
+
+  // Strategy 7: Fallback - return a gray color if no match found
+  return { name: colorName, hex: "#9ca3af" }; // Default gray color
+};
 
 export const backgroundColor = (color) =>
   color
@@ -102,3 +225,48 @@ export const backgroundColor = (color) =>
 
     .replace(" ", "") || // remove remaining spaces
   color.toLowerCase();
+
+export const getProductCategory = (product) => {
+  const productType = product?.product?.categorisation?.appa_product_type;
+  if (!productType || typeof productType !== "object") {
+    return null;
+  }
+  // Get the first key from the object
+  const categories = Object.keys(productType);
+  return categories.length > 0 ? categories[0] : null;
+};
+
+export const isProductCategory = (product, categoryName) => {
+  const productType = product?.product?.categorisation?.appa_product_type;
+  const category = getProductCategory(product);
+  return category?.toLowerCase() === categoryName?.toLowerCase();
+};
+
+export const getClothingPricing = (printMethodDescription) => {
+  if (!printMethodDescription || typeof printMethodDescription !== "string") {
+    return { perUnitCost: 0, setupFee: 0 };
+  }
+
+  // Clean the description by removing setup cost info
+  const cleanDesc = printMethodDescription
+    .replace(/\s*-\s*set\s*up.*$/i, "")
+    .trim()
+    .toLowerCase();
+
+  // Map of clothing print methods to their pricing
+  // perUnitCost: Added to each unit price
+  // setupFee: One-time setup charge
+  const clothingPricingMap = {
+    "pocket size front print": { perUnitCost: 8, setupFee: 29 },
+    "pocket size front embroidery": { perUnitCost: 8, setupFee: 49 },
+    "big print in back": { perUnitCost: 10, setupFee: 29 },
+    "pocket size front + big print back": { perUnitCost: 15, setupFee: 49 },
+  };
+
+  // Return the mapped pricing or default values if not found
+  return clothingPricingMap[cleanDesc] || { perUnitCost: 0, setupFee: 0 };
+};
+
+export const getClothingAdditionalCost = (printMethodDescription) => {
+  return getClothingPricing(printMethodDescription).perUnitCost;
+};
