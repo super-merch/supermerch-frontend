@@ -12,7 +12,12 @@ import {
 } from "../../redux/slices/favouriteSlice";
 import Tooltip from "./Tooltip";
 import noimage from "/noimage.png";
-import { backgroundColor, getProductPrice, slugify } from "@/utils/utils";
+import {
+  backgroundColor,
+  findNearestColor,
+  getProductPrice,
+  slugify,
+} from "@/utils/utils";
 import { AppContext } from "@/context/AppContext";
 
 const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
@@ -143,17 +148,18 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
         <div className="p-2 py-1">
           {/* Color Swatches */}
           <div className="flex justify-center mb-1 gap-1 z-10">
-            {uniqueColors.slice(0, 12).map((color, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: backgroundColor
-                    ? backgroundColor(color)
-                    : color,
-                }}
-                className="w-4 h-4 rounded-full border border-slate-900"
-              />
-            ))}
+            {uniqueColors.slice(0, 6).map((color, index) => {
+              const matchedColor = findNearestColor(color);
+              return (
+                <div
+                  key={index}
+                  style={{
+                    backgroundColor: matchedColor?.hex,
+                  }}
+                  className="w-4 h-4 rounded-full border border-slate-900"
+                />
+              );
+            })}
           </div>
 
           {/* Product Info */}
@@ -165,7 +171,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                 }
                 placement="top"
               >
-                <p className="text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand text-wrap md:text-nowrap truncate md:w-[300px] w-full">
+                <p className="text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand md:text-nowrap truncate md:w-[300px] w-[150px]">
                   {product.overview.name}
                 </p>
               </Tooltip>

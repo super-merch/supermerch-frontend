@@ -1,6 +1,13 @@
+import {
+  getProductCategory,
+  isProductCategory,
+  getClothingAdditionalCost,
+  getClothingPricing,
+} from "@/utils/utils";
 import React from "react";
 import { IoCartOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { FaInfoCircle } from "react-icons/fa";
 
 const PricingTab = ({
   productId,
@@ -17,22 +24,37 @@ const PricingTab = ({
   getPriceForQuantity,
   discountMultiplier,
   setSelectedSize,
+  single_product,
 }) => {
   const getTrimmedDescription = (description) => {
-    return description.trim().split(" (")[0];
+    return description?.trim()?.split(" (")[0];
   };
 
-  const printMethods = availablePriceGroups.filter(
-    (method) => method.undecorated === false
-  );
+  const getCleanPrintMethodName = (description) => {
+    if (!description) return "";
 
-  const addOns = availablePriceGroups.filter(
-    (method) => method.undecorated === true
-  );
+    // Remove everything after " - Set up" or " - Setup" (case insensitive)
+    const cleaned = description.replace(/\s*-\s*set\s*up.*$/i, "").trim();
 
+    // Also remove parentheses content if exists
+    return cleaned.split(" (")[0].trim();
+  };
+
+  const uniquePriceGroups = availablePriceGroups.filter(
+    (group, index, self) =>
+      index ===
+      self.findIndex(
+        (t) =>
+          t.promodata_decoration &&
+          t.promodata_decoration === group.promodata_decoration
+      )
+  );
+  const isClothing = isProductCategory(single_product, "Clothing");
+
+  const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
-      {availablePriceGroups?.length > 0 && (
+      {priceGroups?.length > 0 && (
         <div className="flex justify-between items-center gap-4">
           <label
             htmlFor="print-method"
@@ -40,11 +62,12 @@ const PricingTab = ({
           >
             Print Method:
           </label>
+
           <select
             id="print-method"
             value={selectedPrintMethod?.key}
             onChange={(e) => {
-              const selected = availablePriceGroups.find(
+              const selected = priceGroups.find(
                 (method) => method.key === e.target.value
               );
               setSelectedPrintMethod(selected);
@@ -55,14 +78,20 @@ const PricingTab = ({
             }}
             className="w-full px-2 py-2 border rounded-md outline-none pr-3"
           >
-            {availablePriceGroups?.map((method, index) => (
-              <option key={method.key} value={method.key}>
-                {getTrimmedDescription(method.description)}
-              </option>
-            ))}
+            {priceGroups?.map((method, index) => {
+              const displayName = isClothing
+                ? getCleanPrintMethodName(method.description)
+                : getTrimmedDescription(method?.promodata_decoration);
+
+              return (
+                <option key={method.key + index} value={method.key}>
+                  {displayName}
+                </option>
+              );
+            })}
           </select>
         </div>
-      )}{" "}
+      )}
       {/* {addOns.length > 0 && (
         <div className="flex justify-between items-center gap-4">
           <label htmlFor="print-method" className="w-full my-2  font-medium">
@@ -91,7 +120,7 @@ const PricingTab = ({
           </select>
         </div>
       )} */}
-      {parseSizing()?.sizes?.length > 1 && (
+      {isClothing && parseSizing()?.sizes?.length > 1 && (
         <div className="flex flex-col w-full mb-3">
           <div className="flex justify-between items-center gap-4 my-2">
             <label htmlFor="print-method" className="w-full my-2  font-medium">
@@ -118,9 +147,42 @@ const PricingTab = ({
           </p>
         </div>
       )}
-      <span className="text-sm text-black mt-3">
-        * The pricing includes 1 col - 1 position
-      </span>
+      {!isClothing && (
+        <span className="text-sm text-black mt-3">
+          * The pricing includes 1 col - 1 position
+        </span>
+      )}
+
+      {/* Clothing-specific pricing info */}
+      {/* {isClothing &&
+        selectedPrintMethod &&
+        (() => {
+          const clothingPricing = getClothingPricing(
+            selectedPrintMethod.description
+          );
+          return clothingPricing.perUnitCost > 0 ||
+            clothingPricing.setupFee > 0 ? (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3 mb-2">
+              <div className="flex items-start gap-2">
+                <FaInfoCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 mb-1">
+                    Clothing Print Pricing
+                  </p>
+                  <p className="text-xs text-gray-700 mb-1">
+                    • Setup Fee: ${clothingPricing.setupFee.toFixed(2)}{" "}
+                    (one-time charge)
+                  </p>
+                  <p className="text-xs text-gray-700">
+                    • Per Unit Cost: ${clothingPricing.perUnitCost.toFixed(2)}{" "}
+                    (added to each item)
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null;
+        })()} */}
+
       {/* <div className="flex justify-between items-center gap-4 mb-4 ">
                       <label
                         htmlFor="logo-color"
@@ -151,10 +213,19 @@ const PricingTab = ({
         <tbody>
           {selectedPrintMethod?.price_breaks?.map((item, i) => {
             const baseProductPrice = getPriceForQuantity(item.qty);
-            const methodUnit =
+            let methodUnit =
               selectedPrintMethod.type === "base"
                 ? item.price
                 : baseProductPrice + item.price;
+
+            // Add clothing-specific additional cost per unit if applicable
+            if (isClothing) {
+              const clothingAdditionalCost = getClothingAdditionalCost(
+                selectedPrintMethod.description
+              );
+              methodUnit += clothingAdditionalCost;
+            }
+
             const unitWithMargin = methodUnit;
             const unitDiscounted = unitWithMargin * discountMultiplier;
             const total = unitDiscounted * item.qty;

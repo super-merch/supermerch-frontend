@@ -51,12 +51,10 @@
         let newColors;
         if (prev.includes(colorName)) {
           newColors = prev.filter((name) => name !== colorName);
-          toast.info(`${colorName} filter removed`);
           setPaginationData((prev) => ({ ...prev, page: 1, colors: newColors,sendAttributes:false }));
           if (window.innerWidth <= 1025) toggleSidebar();
         } else {
           newColors = [...prev, colorName];
-          toast.success(`${colorName} filter applied`);
           setPaginationData((prev) => ({ ...prev, page: 1, colors: newColors,sendAttributes:false }));
           if (window.innerWidth <= 1025) toggleSidebar();
         }

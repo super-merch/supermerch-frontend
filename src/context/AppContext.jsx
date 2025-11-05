@@ -351,7 +351,6 @@ const AppContextProvider = (props) => {
     sort = "",
     limit
   ) => {
-    console.log(limit, "limit");
     setProductsCategoryLoading(true);
     try {
       const limitParam = limit ?? 10;
@@ -380,7 +379,7 @@ const AppContextProvider = (props) => {
     }
   };
 
-  const [shippingCharges, setShippingCharges] = useState(0);
+  const [shippingCharges, setShippingCharges] = useState(20);
   const getShippingCharges = async () => {
     try {
       const response = await fetch(
@@ -395,7 +394,7 @@ const AppContextProvider = (props) => {
       );
 
       const data = await response.json();
-      setShippingCharges(data.shipping || 0);
+      setShippingCharges(data.shipping || 20);
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to fetch shipping charges");

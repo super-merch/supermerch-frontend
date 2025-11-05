@@ -25,14 +25,14 @@ const NavigationMenu = ({
       megaMenu: "w-80",
     },
     default: {
-      item: "text-lg px-3 py-2",
+      item: "text-sm px-3 py-2",
       submenu: "text-base px-3 py-1",
-      megaMenu: "w-[1000px]",
+      megaMenu: "w-[1200px]",
     },
     large: {
-      item: "text-xl px-4 py-3",
+      item: "text-lg px-4 py-3",
       submenu: "text-lg px-4 py-2",
-      megaMenu: "w-[1000px]",
+      megaMenu: "w-[1200px]",
     },
   };
 
@@ -107,103 +107,143 @@ const NavigationMenu = ({
       <div
         className={`absolute left-0 top-full z-50 transition-all duration-300 ${
           isDesktop ? "hidden xl:block" : "block"
-        } ${isVisible ? "opacity-100 visible" : "opacity-0 invisible"}`}
+        } ${
+          isVisible
+            ? "opacity-100 visible translate-y-0"
+            : "opacity-0 invisible -translate-y-2"
+        }`}
       >
-        <div className="container mx-auto mt-2">
+        <div className="container mx-auto mt-4">
           <div
-            className={`overflow-hidden rounded-2xl border border-secondary/10 bg-white ${currentSize.megaMenu} shadow-2xl`}
+            className={`overflow-hidden rounded-xl border border-gray-200 bg-white ${currentSize.megaMenu} shadow-2xl`}
           >
             {item.megaMenu ? (
-              <div className="grid grid-cols-[1fr_3fr]">
-                <div className="border-r border-secondary/10 bg-secondary/5">
-                  <nav className="flex flex-col py-3">
+              <div className="grid grid-cols-[260px_1fr]">
+                {/* Sidebar Navigation */}
+                <div className="border-r border-gray-200 bg-gradient-to-b from-gray-50 to-white">
+                  <nav className="flex flex-col p-3 space-y-1">
                     {item.submenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         className={cn(
-                          "flex items-center justify-between gap-2 px-5 py-[9px] text-sm font-medium transition-all duration-200 text-left", // Added text-left
+                          "flex items-center justify-between gap-3 px-2 py-2 text-sm font-semibold transition-all duration-200 text-left rounded-lg group",
                           activeItem === subItem.id
-                            ? "bg-primary text-white shadow-sm"
-                            : "text-secondary hover:bg-primary/10 hover:text-primary"
+                            ? "bg-primary text-white shadow-md scale-[1.02]"
+                            : "text-gray-700 hover:bg-blue-50 hover:text-primary"
                         )}
                         onMouseEnter={() => setActiveItem(subItem.id)}
                         onClick={() => handleItemClick(subItem)}
                       >
-                        <span className="flex-1 text-left">{subItem.name}</span>{" "}
-                        {/* Wrapped in span with flex-1 */}
+                        <span className="flex-1 text-left">{subItem.name}</span>
                         <ChevronRight
                           className={cn(
-                            "w-4 h-4 transition-transform flex-shrink-0", // Added flex-shrink-0
-                            activeItem === subItem.id && "translate-x-1"
+                            "w-4 h-4 transition-all flex-shrink-0",
+                            activeItem === subItem.id
+                              ? "translate-x-1 text-white"
+                              : "text-gray-400 group-hover:text-primary group-hover:translate-x-0.5"
                           )}
                         />
                       </button>
                     ))}
                   </nav>
                 </div>
-                <div className="w-full p-6 bg-white">
+
+                {/* Content Area */}
+                <div className="w-full p-8 bg-white min-h-[400px]">
                   {(() => {
                     const activeSubItem = item.submenu.find(
                       (subItem) => subItem.id === activeItem
                     );
 
-                    if (!activeSubItem) return null;
+                    if (!activeSubItem)
+                      return (
+                        <div className="flex items-center justify-center h-full text-gray-400">
+                          <p className="text-sm">
+                            Hover over a category to see items
+                          </p>
+                        </div>
+                      );
 
                     // Check if this is a promotional item with columns
                     if (activeSubItem.columns) {
                       return (
-                        <div
-                          className={`grid gap-4`}
-                          style={{
-                            gridTemplateColumns: `repeat(${activeSubItem.columns.length}, 1fr)`,
-                          }}
-                        >
-                          {activeSubItem.columns.map((column, colIndex) => (
-                            <div key={colIndex} className="space-y-2">
-                              <h4 className="text-sm font-bold text-primary mb-3 pb-2 border-b border-primary/20">
-                                {column.title}
-                              </h4>
-                              <div className="space-y-1">
-                                {column.items.map((itemName, itemIndex) => {
-                                  const subSubItem =
-                                    activeSubItem.subItems.find(
-                                      (si) =>
-                                        si.name === itemName &&
-                                        si.columnTitle === column.title
-                                    );
+                        <div>
+                          {/* Category Header */}
+                          <div className="mb-6 pb-4 border-b border-gray-200">
+                            <h3 className="text-lg font-bold text-secondary">
+                              {activeSubItem.name}
+                            </h3>
+                          </div>
 
-                                  return (
-                                    <button
-                                      key={itemIndex}
-                                      onClick={() =>
-                                        subSubItem &&
-                                        handleItemClick(subSubItem)
-                                      }
-                                      className="text-sm text-secondary font-medium text-start p-2 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200 w-full"
-                                    >
-                                      {itemName}
-                                    </button>
-                                  );
-                                })}
+                          {/* Columns Grid */}
+                          <div
+                            className={`grid gap-6`}
+                            style={{
+                              gridTemplateColumns: `repeat(${activeSubItem.columns.length}, 1fr)`,
+                            }}
+                          >
+                            {activeSubItem.columns.map((column, colIndex) => (
+                              <div key={colIndex} className="space-y-2">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <div className="w-1 h-4 bg-primary rounded-full"></div>
+                                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wide">
+                                    {column.title}
+                                  </h4>
+                                </div>
+                                <div className="space-y-0.5">
+                                  {column.items.map((itemName, itemIndex) => {
+                                    const subSubItem =
+                                      activeSubItem.subItems.find(
+                                        (si) =>
+                                          si.name === itemName &&
+                                          si.columnTitle === column.title
+                                      );
+
+                                    return (
+                                      <button
+                                        key={itemIndex}
+                                        onClick={() =>
+                                          subSubItem &&
+                                          handleItemClick(subSubItem)
+                                        }
+                                        className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 w-full group flex items-center justify-between"
+                                      >
+                                        <span className="leading-relaxed">
+                                          {itemName}
+                                        </span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                       );
                     }
 
-                    // Default 3-column grid for non-promotional items
+                    // Default grid for non-promotional items
                     return (
-                      <div className="grid grid-cols-3 gap-3">
-                        {activeSubItem.subItems?.map((subSubItem, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleItemClick(subSubItem)}
-                            className="text-sm text-secondary font-medium text-start p-3 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200 border border-transparent hover:border-primary/20"
-                          >
-                            {subSubItem.name}
-                          </button>
-                        ))}
+                      <div>
+                        <div className="mb-6 pb-4 border-b border-gray-200">
+                          <h3 className="text-lg font-bold text-secondary">
+                            {activeSubItem.name}
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-5 gap-2">
+                          {activeSubItem.subItems?.map((subSubItem, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleItemClick(subSubItem)}
+                              className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
+                            >
+                              <span className="leading-relaxed">
+                                {subSubItem.name}
+                              </span>
+                              <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0" />
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     );
                   })()}
@@ -211,18 +251,21 @@ const NavigationMenu = ({
               </div>
             ) : (
               // Regular submenu layout
-              <div className="p-6 bg-white">
-                <h3 className="text-lg font-semibold text-secondary mb-4 pb-2 border-b border-secondary/10">
-                  {item.name}
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
+              <div className="p-8 bg-white">
+                <div className="mb-6 pb-4 border-b border-gray-200">
+                  <h3 className="text-lg font-bold text-secondary">
+                    {item.name}
+                  </h3>
+                </div>
+                <div className="grid grid-cols-5 gap-2">
                   {item.submenu.map((subItem, index) => (
                     <button
                       key={index}
                       onClick={() => handleItemClick(subItem)}
-                      className="text-sm text-secondary font-medium text-start p-3 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200 border border-transparent hover:border-primary/20"
+                      className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
                     >
-                      {subItem.name}
+                      <span className="leading-relaxed">{subItem.name}</span>
+                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0" />
                     </button>
                   ))}
                 </div>
@@ -236,38 +279,53 @@ const NavigationMenu = ({
 
   if (variant === "vertical") {
     return (
-      <nav className={`space-y-1 ${className}`}>
+      <nav className={`space-y-2 ${className}`}>
         {menuItems.map((item) => {
           const isSubmenuVisible = clickedItem === item.id;
 
           return (
             <div key={item.id} className="space-y-1">
               <div
-                className={`flex items-center justify-between ${currentSize.item} cursor-pointer hover:bg-primary/5 rounded-lg p-3 transition-all duration-200 group`}
+                className={cn(
+                  "flex items-center justify-between cursor-pointer rounded-lg p-3 transition-all duration-200 group",
+                  isSubmenuVisible
+                    ? "bg-blue-50 text-primary"
+                    : "hover:bg-gray-100 text-gray-700",
+                  currentSize.item
+                )}
                 onClick={() => {
                   handleItemClick(item);
                   onSubItemClick && onSubItemClick();
                 }}
               >
-                <span className="text-secondary capitalize font-semibold group-hover:text-primary transition-colors">
+                <span className="capitalize font-semibold group-hover:text-primary transition-colors">
                   {item.name}
                 </span>
                 {item.hasSubmenu && (
                   <RiArrowDropDownLine
-                    className={`text-2xl transition-all duration-300 text-secondary group-hover:text-primary cursor-pointer ${
-                      isSubmenuVisible ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={cn(
+                      "text-2xl transition-all duration-300 cursor-pointer",
+                      isSubmenuVisible
+                        ? "rotate-180 text-primary"
+                        : "rotate-0 text-gray-500"
+                    )}
                     onClick={(e) => handleArrowClick(item, e)}
                   />
                 )}
               </div>
 
               {item.hasSubmenu && item.submenu && isSubmenuVisible && (
-                <div className="ml-3 space-y-1 border-l-2 border-primary/20 pl-3">
+                <div className="ml-4 space-y-1 border-l-2 border-blue-200 pl-4 py-2">
                   {item.submenu.map((subItem) => (
                     <div key={subItem.id} className="space-y-1">
                       <div
-                        className={`${currentSize.submenu} flex items-center justify-between cursor-pointer hover:bg-primary/5 rounded-lg p-2.5 transition-all duration-200 group`}
+                        className={cn(
+                          "flex items-center justify-between cursor-pointer rounded-lg p-2.5 transition-all duration-200 group",
+                          expandedSubItem === subItem.id
+                            ? "bg-blue-50 text-primary"
+                            : "hover:bg-gray-50 text-gray-600",
+                          currentSize.submenu
+                        )}
                         onClick={() => {
                           if (subItem.name && subItem.id) {
                             handleItemClick(subItem);
@@ -278,7 +336,7 @@ const NavigationMenu = ({
                           }
                         }}
                       >
-                        <span className="text-secondary/80 font-medium group-hover:text-primary transition-colors">
+                        <span className="font-medium group-hover:text-primary transition-colors">
                           {subItem.name}
                         </span>
 
@@ -292,9 +350,12 @@ const NavigationMenu = ({
                                   : subItem.id
                               );
                             }}
-                            className={`w-4 h-4 text-secondary/60 group-hover:text-primary transition-all duration-200 ${
-                              expandedSubItem === subItem.id ? "rotate-90" : ""
-                            }`}
+                            className={cn(
+                              "w-4 h-4 transition-all duration-200",
+                              expandedSubItem === subItem.id
+                                ? "rotate-90 text-primary"
+                                : "text-gray-400 group-hover:text-primary"
+                            )}
                           />
                         )}
                       </div>
@@ -302,17 +363,20 @@ const NavigationMenu = ({
                       {subItem.subItems &&
                         subItem.subItems.length > 0 &&
                         expandedSubItem === subItem.id && (
-                          <div className="ml-3 mt-1 space-y-1">
+                          <div className="ml-3 mt-1 space-y-1 border-l border-gray-200 pl-3">
                             {subItem.subItems.map((subSubItem, idx) => (
                               <div
                                 key={idx}
-                                className={`${currentSize.submenu} cursor-pointer hover:bg-primary/5 rounded-lg p-2 transition-all duration-200 group`}
+                                className={cn(
+                                  "cursor-pointer rounded-lg p-2 transition-all duration-200 group hover:bg-gray-50",
+                                  currentSize.submenu
+                                )}
                                 onClick={() => {
                                   handleItemClick(subSubItem);
                                   onSubItemClick && onSubItemClick();
                                 }}
                               >
-                                <span className="text-secondary/70 text-sm group-hover:text-primary transition-colors">
+                                <span className="text-gray-600 text-sm group-hover:text-primary transition-colors">
                                   {subSubItem.name}
                                 </span>
                               </div>
@@ -332,7 +396,7 @@ const NavigationMenu = ({
 
   return (
     <nav className={`${className}`}>
-      <ul className="space-y-3 xl:space-y-0 xl:flex xl:space-x-1">
+      <ul className="space-y-3 xl:space-y-0 xl:flex xl:items-center xl:gap-1">
         {menuItems.map((item) => {
           const isSubmenuVisible = isDesktop
             ? hoveredItem === item.id
@@ -348,7 +412,13 @@ const NavigationMenu = ({
             >
               <div>
                 <span
-                  className={`flex capitalize items-center text-secondary hover:text-primary transition-all duration-200 rounded-lg px-3 py-2 hover:bg-primary/5 ${currentSize.item}`}
+                  className={cn(
+                    "flex capitalize items-center gap-1 transition-all duration-200 rounded-lg px-3 py-2 text-base font-semibold",
+                    item.hasSubmenu
+                      ? "text-gray-700 hover:text-primary hover:bg-blue-50"
+                      : "text-gray-700 hover:text-primary hover:bg-gray-100",
+                    isSubmenuVisible && "text-primary bg-blue-50"
+                  )}
                   onMouseEnter={() => {
                     handleMouseEnter(item);
                     if (
@@ -369,14 +439,18 @@ const NavigationMenu = ({
                     handleItemClick(item);
                   }}
                 >
-                  {item.name}
+                  <span className="relative">
+                    {item.name}
+                    {isSubmenuVisible && item.hasSubmenu && (
+                      <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"></span>
+                    )}
+                  </span>
                   {item.hasSubmenu && (
                     <RiArrowDropDownLine
-                      className={`text-2xl transition-all duration-300 cursor-pointer ${
-                        isDesktop
-                          ? `-rotate-90 ${isSubmenuVisible ? "rotate-0" : ""}`
-                          : `${isSubmenuVisible ? "rotate-180" : "rotate-0"}`
-                      }`}
+                      className={cn(
+                        "text-xl transition-all duration-300 cursor-pointer",
+                        isSubmenuVisible ? "rotate-180" : "rotate-0"
+                      )}
                       onClick={(e) => handleArrowClick(item, e)}
                     />
                   )}

@@ -78,7 +78,7 @@ const GoogleReviewsComponent = () => {
             ))}
           </div>
         ) : (
-          <div className="w-full relative px-8">
+          <div className="w-full relative md:px-8 px-0">
             <ReactGoogleReviews
               layout="custom"
               featurableId={featurableWidgetId}
@@ -121,7 +121,7 @@ const GoogleReviewsComponent = () => {
 
                         return (
                           <SwiperSlide key={reviewId}>
-                            <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col h-[280px]">
+                            <div className="border border-gray-200 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col h-[280px]">
                               {/* Author Info at Top (Google Style) */}
                               <div className="flex items-start mb-2">
                                 <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mr-2 bg-gray-200">
