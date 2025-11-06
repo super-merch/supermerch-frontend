@@ -28,7 +28,6 @@ const AppContextProvider = (props) => {
   const [productsCache, setProductsCache] = useState(null);
   const [isCacheValid, setIsCacheValid] = useState(false);
   const [openLoginModal, setOpenLoginModal] = useState(false);
-
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
@@ -145,6 +144,8 @@ const AppContextProvider = (props) => {
     productTypeId: null,
     category: null,
     searchTerm: "",
+    attributes: null,
+    sendAttributes: false,
   });
   const [totalCount, setTotalCount] = useState(0);
 
@@ -173,6 +174,15 @@ const AppContextProvider = (props) => {
       }),
       ...(paginationData.pricerange?.max_price != null && {
         max_price: paginationData.pricerange.max_price,
+      }),
+      ...(paginationData.sendAttributes != null && {
+        send_attributes: paginationData.sendAttributes,
+      }),
+      ...(paginationData.attributes?.name && {
+        attribute_name: paginationData.attributes.name,
+      }),
+      ...(paginationData.attributes?.value && {
+        attribute_value: paginationData.attributes.value,
       }),
     });
     if (
@@ -233,8 +243,13 @@ const AppContextProvider = (props) => {
       paginationData.pricerange?.min_price,
       paginationData.pricerange?.max_price,
       paginationData.colors,
+      paginationData.attributes,
+      paginationData.sendAttributes,
     ],
     queryFn: () => getProductsFromApi(),
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const refetchProducts = () => {

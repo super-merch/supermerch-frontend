@@ -3,26 +3,26 @@
 export const megaMenu = [
     {
         "id": "N",
-        "name": "Pens & Pencils",
+        "name": "Writing",
         "subTypes": [
             {
                 // "id": "N-07",
                 "label": "Pens",
                 "items": [
                     {
-                        "id": "N-07",
+                        "id": "PY-06",
                         "name": "Metal Pens"
                     },
                     {
-                        "id": "N-11",
+                        "id": "PY-11",
                         "name": "Plastic Pens"
                     },
                     {
-                        "id": "N-12",
+                        "id": "PY-12",
                         "name": "Stylus Pens"
                     },
                     {
-                        "id": "N-08",
+                        "id": "PY-08",
                         "name": "Other Pens"
                     },
                 ],
@@ -32,11 +32,11 @@ export const megaMenu = [
                 "label": "Pencils",
                 "items": [
                     {
-                        "id": "N-06",
+                        "id": "PY-03",
                         "name": "Lead Pencils"
                     },
                     {
-                        "id": "N-01",
+                        "id": "PY-01",
                         "name": "Coloured Pencils"
                     },
                 ],
@@ -46,7 +46,7 @@ export const megaMenu = [
                 "label": "Highlighter",
                 "items": [
                     {
-                        "id": "N-05",
+                        "id": "PY-04",
                         "name": "Highlighters"
                     },
                 ],
@@ -55,15 +55,15 @@ export const megaMenu = [
                 "label": "Misc",
                 "items": [
                     {
-                        "id": "N-10",
+                        "id": "PY-10",
                         "name": "Pencil Sharpeners"
                     },
                     {
-                        "id": "N-03",
+                        "id": "PY-02",
                         "name": "Erasers"
                     },
                     {
-                        "id": "N-09",
+                        "id": "PY-09",
                         "name": "Pen Packaging"
                     },
                     {
@@ -91,12 +91,12 @@ export const megaMenu = [
                 "label": "Tote Bag",
                 "items": [
                     {
-                        "id": "A-13",
+                        "id": "PA-15",
                         "name": "Tote Bags"
                     },
                     {
-                        "id": "A-11",
-                        "name": "Reuseable Grocery Bags"
+                        "id": "PA-12",
+                        "name": "Reusable Grocery Bags"
                     },
 
                 ],
@@ -105,11 +105,11 @@ export const megaMenu = [
                 "label": "Outdoor Bag",
                 "items": [
                     {
-                        "id": "A-03",
+                        "id": "PA-03",
                         "name": "Cooler Bags"
                     },
                     {
-                        "id": "A-08",
+                        "id": "PA-09",
                         "name": "Lunch Bags/Lunch Boxes"
                     },
                     {
@@ -117,11 +117,11 @@ export const megaMenu = [
                         "name": "Duffle/Sports Bags"
                     },
                     {
-                        "id": "A-14",
+                        "id": "PA-06",
                         "name": "Travel Bum Bags"
                     },
                     {
-                        "id": "A-04",
+                        "id": "PA-02",
                         "name": "Drawstring Backpacks"
                     },
                     {
@@ -138,19 +138,19 @@ export const megaMenu = [
                 "label": "Business Bag",
                 "items": [
                     {
-                        "id": "A-06",
+                        "id": "PA-07",
                         "name": "Laptops Bags"
                     },
                     {
-                        "id": "A-09",
+                        "id": "PA-11",
                         "name": "Paper Bags"
                     },
                     {
-                        "id": "A-10",
+                        "id": "PA-13",
                         "name": "Satchels"
                     },
                     {
-                        "id": "A-02",
+                        "id": "PA-02",
                         "name": "Bum Bags"
                     },
                     {
@@ -163,15 +163,15 @@ export const megaMenu = [
                 "label": "Misc",
                 "items": [
                     {
-                        "id": "A-15",
+                        "id": "PA-16",
                         "name": "Wallets & Purses"
                     },
                     {
-                        "id": "A-12",
+                        "id": "PA-14",
                         "name": "Toiletry Bags & Accessories"
                     },
                     {
-                        "id": "A-07",
+                        "id": "PA-06",
                         "name": "Luggage Tags"
                     },
                 ],
@@ -187,7 +187,7 @@ export const megaMenu = [
                 "label": "Bottles",
                 "items": [
                     {
-                        "id": "C-04",
+                        "id": "PE-02",
                         "name": "Drink Bottles"
                     },
 
@@ -197,15 +197,15 @@ export const megaMenu = [
                 "label": "Mugs",
                 "items": [
                     {
-                        "id": "C-08",
+                        "id": "PI-02",
                         "name": "Beer Mugs"
                     },
                     {
-                        "id": "C-09",
+                        "id": "PE-08",
                         "name": "Reusable Coffee Cups"
                     },
                     {
-                        "id": "C-12",
+                        "id": "PE-11",
                         "name": "Travel Mugs"
                     },
                 ],
@@ -214,11 +214,11 @@ export const megaMenu = [
                 "label": "Glasses",
                 "items": [
                     {
-                        "id": "C-01",
+                        "id": "PI-01",
                         "name": "Beer Glasses"
                     },
                     {
-                        "id": "C-13",
+                        "id": "PI-07",
                         "name": "Wine Glasses"
                     },
 
@@ -228,19 +228,19 @@ export const megaMenu = [
                 "label": "Thumblers",
                 "items": [
                     {
-                        "id": "C-03",
+                        "id": "PE-06",
                         "name": "Plastic Cups And Tumblers"
                     },
                     {
-                        "id": "C-10",
+                        "id": "PE-07",
                         "name": "Sports Shakers"
                     },
                     {
-                        "id": "C-07",
+                        "id": "PI",
                         "name": "Glassware"
                     },
                     {
-                        "id": "C-02",
+                        "id": "PI-04",
                         "name": "Glass Tumblers"
                     },
                 ],
@@ -271,10 +271,10 @@ export const megaMenu = [
         "name": "Exhibitions & Events",
         "subTypes": [
             {
-                "label": "Awards & Trophies",
+                "label": "Awards",
                 "items": [
                     {
-                        "id": "D-01",
+                        "id": "PF-01",
                         "name": "Awards & Trophies"
                     },
                 ],
@@ -283,19 +283,19 @@ export const megaMenu = [
                 "label": "Lanyards, Bagdes and Pins",
                 "items": [
                     {
-                        "id": "D-07",
+                        "id": "PF-09",
                         "name": "Lanyards"
                     },
                     {
-                        "id": "D-08",
+                        "id": "PF-13",
                         "name": "Name Badges"
                     },
                     {
-                        "id": "D-02",
+                        "id": "PF-02",
                         "name": "Badge Holders"
                     },
                     {
-                        "id": "D-05",
+                        "id": "PT-07",
                         "name": "Fridge Magnets"
                     },
                     {
@@ -309,7 +309,7 @@ export const megaMenu = [
                 "label": "WristBands",
                 "items": [
                     {
-                        "id": "D-10",
+                        "id": "PF-07",
                         "name": " Wristbands"
                     },
 
@@ -336,24 +336,12 @@ export const megaMenu = [
                 "label": "Misc",
                 "items": [
                     {
-                        "id": "D-04",
-                        "name": "Flags & Bunting"
+                        "id": "PP-01",
+                        "name": "Bottle Opener Keyrings"
                     },
                     {
-                        "id": "D-12",
-                        "name": "Misc Events"
-                    },
-                    {
-                        "id": "D-03",
-                        "name": "Banners"
-                    },
-                    {
-                        "id": "D-11",
-                        "name": "Marquees"
-                    },
-                    {
-                        "id": "D-09",
-                        "name": "Table Covers"
+                        "id": "PP-04",
+                        "name": "Keyrings"
                     },
                 ],
             },
@@ -681,7 +669,7 @@ export const megaMenu = [
                     },
                 ]
             },
-           
+
 
 
         ]
@@ -693,91 +681,91 @@ export const megaMenu = [
             {
                 "label": "Accessory",
                 "items": [
-                {
-                    "id": "Q-01",
-                    "name": "Bluetooth Speakers"
-                },
-                {
-                    "id": "Q-02",
-                    "name": "Cable Tidies"
-                },
-                {
-                    "id": "Q-03",
-                    "name": "Car Chargers"
-                },
-                {
-                    "id": "Q-04",
-                    "name": "Car Phone Mounts"
-                },
-                {
-                    "id": "Q-05",
-                    "name": "Charging Cables"
-                },
-                {
-                    "id": "Q-06",
-                    "name": "Cleaning Cloths"
-                },
-                {
-                    "id": "Q-07",
-                    "name": "Earbuds"
-                },
-                {
-                    "id": "Q-08",
-                    "name": "Headphones"
-                },
-                {
-                    "id": "Q-09",
-                    "name": "Mouse Mats"
-                },
-                {
-                    "id": "Q-10",
-                    "name": "Phone Accessories"
-                },
-                {
-                    "id": "Q-11",
-                    "name": "Phone Stands"
-                },
-                {
-                    "id": "Q-12",
-                    "name": "Phone Wallets"
-                },
-                {
-                    "id": "Q-13",
-                    "name": "Pouches"
-                },
-                {
-                    "id": "Q-14",
-                    "name": "Powerbanks"
-                },
-                {
-                    "id": "Q-15",
-                    "name": "Tablet Covers"
-                },
-                {
-                    "id": "Q-16",
-                    "name": "Tech Accessories"
-                },
-                {
-                    "id": "Q-17",
-                    "name": "Travel Adapters"
-                },
-                {
-                    "id": "Q-18",
-                    "name": "USB Drives"
-                },
-                {
-                    "id": "Q-19",
-                    "name": "USB Hubs"
-                },
-                {
-                    "id": "Q-20",
-                    "name": "Wireless Chargers"
-                },
-                {
-                    "id": "Q-21",
-                    "name": "Misc Tech"
-                }
-            ]
+                    {
+                        "id": "Q-01",
+                        "name": "Bluetooth Speakers"
+                    },
+                    {
+                        "id": "Q-02",
+                        "name": "Cable Tidies"
+                    },
+                    {
+                        "id": "Q-03",
+                        "name": "Car Chargers"
+                    },
+                    {
+                        "id": "Q-04",
+                        "name": "Car Phone Mounts"
+                    },
+                    {
+                        "id": "Q-05",
+                        "name": "Charging Cables"
+                    },
+                    {
+                        "id": "Q-06",
+                        "name": "Cleaning Cloths"
+                    },
+                    {
+                        "id": "Q-07",
+                        "name": "Earbuds"
+                    },
+                    {
+                        "id": "Q-08",
+                        "name": "Headphones"
+                    },
+                    {
+                        "id": "Q-09",
+                        "name": "Mouse Mats"
+                    },
+                    {
+                        "id": "Q-10",
+                        "name": "Phone Accessories"
+                    },
+                    {
+                        "id": "Q-11",
+                        "name": "Phone Stands"
+                    },
+                    {
+                        "id": "Q-12",
+                        "name": "Phone Wallets"
+                    },
+                    {
+                        "id": "Q-13",
+                        "name": "Pouches"
+                    },
+                    {
+                        "id": "Q-14",
+                        "name": "Powerbanks"
+                    },
+                    {
+                        "id": "Q-15",
+                        "name": "Tablet Covers"
+                    },
+                    {
+                        "id": "Q-16",
+                        "name": "Tech Accessories"
+                    },
+                    {
+                        "id": "Q-17",
+                        "name": "Travel Adapters"
+                    },
+                    {
+                        "id": "Q-18",
+                        "name": "USB Drives"
+                    },
+                    {
+                        "id": "Q-19",
+                        "name": "USB Hubs"
+                    },
+                    {
+                        "id": "Q-20",
+                        "name": "Wireless Chargers"
+                    },
+                    {
+                        "id": "Q-21",
+                        "name": "Misc Tech"
+                    }
+                ]
             }
         ]
     },
@@ -882,49 +870,49 @@ export const megaMenu = [
         ]
     },
     {
-            "id": "O",
-            "name": "Print",
-            "subTypes": [
-                {
-                    "label": "Diar",
-                    "items": [
-                        
-                {
-                    "id": "P-01",
-                    "name": "Ad Labels"
-                },
-                {
-                    "id": "P-02",
-                    "name": "Business Cards"
-                },
-                {
-                    "id": "P-03",
-                    "name": "Calendars"
-                },
-                {
-                    "id": "P-04",
-                    "name": "Combo Pads"
-                },
-                {
-                    "id": "P-05",
-                    "name": "Pads & Planners"
-                },
-                {
-                    "id": "P-06",
-                    "name": "Ribbons"
-                },
-                {
-                    "id": "P-07",
-                    "name": "Stuk Notes"
-                },
-                {
-                    "id": "P-08",
-                    "name": "Misc Print"
-                }
-                    ]
-                }
-            ]
-        },
+        "id": "O",
+        "name": "Print",
+        "subTypes": [
+            {
+                "label": "Diar",
+                "items": [
+
+                    {
+                        "id": "P-01",
+                        "name": "Ad Labels"
+                    },
+                    {
+                        "id": "P-02",
+                        "name": "Business Cards"
+                    },
+                    {
+                        "id": "P-03",
+                        "name": "Calendars"
+                    },
+                    {
+                        "id": "P-04",
+                        "name": "Combo Pads"
+                    },
+                    {
+                        "id": "P-05",
+                        "name": "Pads & Planners"
+                    },
+                    {
+                        "id": "P-06",
+                        "name": "Ribbons"
+                    },
+                    {
+                        "id": "P-07",
+                        "name": "Stuk Notes"
+                    },
+                    {
+                        "id": "P-08",
+                        "name": "Misc Print"
+                    }
+                ]
+            }
+        ]
+    },
     {
         "id": "E",
         "name": "Food & Drink",

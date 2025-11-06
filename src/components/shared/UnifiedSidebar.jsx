@@ -49,6 +49,7 @@ import { BiDrink } from "react-icons/bi";
 import { CiGlass } from "react-icons/ci";
 import { MdOutlinePhoneIphone, MdSportsGymnastics } from "react-icons/md";
 import { FaChildDress } from "react-icons/fa6";
+import AttributeFilters from "./AttributeFilters";
 
 // Category icon mapping
 const getCategoryIcon = (categoryName) => {
@@ -96,6 +97,7 @@ const UnifiedSidebar = ({
   pageType = "GENERAL",
   customConfig = null,
   isSearchPage = false,
+  categoryType,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -105,7 +107,6 @@ const UnifiedSidebar = ({
   const [openCategory, setOpenCategory] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  useEffect(() => {}, []);
   const {
     setSelectedParamCategoryId,
     setCurrentPage,
@@ -116,56 +117,10 @@ const UnifiedSidebar = ({
   } = useContext(AppContext);
 
   // Get configuration for this page type
-  const allCategories = v1categories || [];
+  const urlCategory = searchParams.get("categoryName");
+  const category = v1categories.filter((cat) => cat.name === urlCategory);
+  const allCategories = category.length > 0 ? category : v1categories || [];
   const config = { title: "Categories" };
-
-  // Map dropdown type -> category names (must match v1categories.name values)
-  const dropdownCategoryMap = {
-    promotional: [
-      "Writing",
-      "Bags",
-      "Drinkware",
-      "Exhibitions & Events",
-      "Home & Living",
-      "Print",
-      "Phone & Technology",
-      "Leisure & Outdoors",
-      "Confectionery",
-      "Fun & Games",
-      "Glassware",
-      "Golf",
-      "Keyrings & Tools",
-      "Health & Personal",
-      "Office & Business",
-      // add any other promotional categories you included in RefactoredNavbar
-    ],
-    clothing: [
-      "Footwear",
-      "Jackets",
-      "Shirts",
-      "Jumpers",
-      "Bottoms",
-      "Clothing Accessories",
-      "Uniforms",
-      "Workwear",
-      "Sports Uniforms",
-    ],
-    headwear: ["Headwear"],
-  };
-
-  // Determine which dropdown/type was used (case-insensitive)
-  const rawType = (searchParams.get("type") || "").trim();
-  const typeKey = rawType ? rawType.toLowerCase() : "";
-
-  // Filter categories to show in sidebar based on type param (fallback -> all)
-  const displayedCategories =
-    typeKey && dropdownCategoryMap[typeKey]
-      ? allCategories.filter((c) =>
-          dropdownCategoryMap[typeKey].includes(c.name)
-        )
-      : allCategories;
-
-  // Get URL parameters for active state
   const urlSubCategory = searchParams.get("subCategory");
   const urlCategoryName = searchParams.get("categoryName");
 
@@ -213,13 +168,13 @@ const UnifiedSidebar = ({
   }, [isMobile, isSidebarOpen]);
 
   useEffect(() => {
-    if (!urlCategoryName || displayedCategories.length === 0) return;
-    const categoryMatch = displayedCategories.find(
+    if (!urlCategoryName || allCategories.length === 0) return;
+    const categoryMatch = allCategories.find(
       (category) => category.name === urlCategoryName
     );
 
     if (!categoryMatch) return;
-    setOpenCategory(categoryMatch.id);
+    // setOpenCategory(categoryMatch.id);
     if (
       urlSubCategory &&
       categoryMatch.subTypes?.some((subType) => subType.name === urlSubCategory)
@@ -288,7 +243,7 @@ const UnifiedSidebar = ({
         data-sidebar-content
         className={`transition-all duration-300 ease-in-out ${
           isSidebarOpen
-            ? "lg:w-[100%] z-10 lg:mt-0 md:w-[280px] w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 lg:px-0 py-4"
+            ? "lg:w-[100%] z-50 lg:mt-0 md:w-[280px] max-w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 lg:px-0 py-4"
             : "hidden"
         }`}
       >
@@ -298,7 +253,7 @@ const UnifiedSidebar = ({
             <CollapsibleSection title={config.title} defaultExpanded={true}>
               {/* Categories List */}
               <div className="space-y-0.5">
-                {displayedCategories
+                {allCategories
                   .filter((category) => category.name !== "Capital Equipment")
                   .map((category) => {
                     const IconComponent = getCategoryIcon(category.name);
@@ -387,12 +342,25 @@ const UnifiedSidebar = ({
             )}
 
             <CollapsibleSection title="Price Range" defaultExpanded={true}>
-              <PriceFilter />
+              <PriceFilter toggleSidebar={toggleSidebar} />
             </CollapsibleSection>
 
             <CollapsibleSection title="Filter by Colour" defaultExpanded={true}>
-              <ColorFilter />
+              <ColorFilter toggleSidebar={toggleSidebar} />
             </CollapsibleSection>
+            {categoryType !== "australia" &&
+              categoryType !== "24hr-production" &&
+              categoryType !== "sales" && (
+                <CollapsibleSection
+                  title="Filter by Attributes"
+                  defaultExpanded={true}
+                >
+                  <AttributeFilters
+                    toggleSidebar={toggleSidebar}
+                    categoryType={categoryType}
+                  />
+                </CollapsibleSection>
+              )}
           </div>
         </div>
       </div>
