@@ -45,14 +45,14 @@ const TopBanner = ({ onCouponClick }) => {
         </div>
 
         {/* Right side - Social media icons */}
-        <div className="flex items-center gap-3 md:gap-6 order-2 md:order-3 ml-auto shrink-0">
+        <div className="flex items-center gap-3 md:gap-5 order-2 md:order-3 ml-auto shrink-0">
           <a
             href="https://www.facebook.com/share/1DztGRWqfA/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition-opacity"
           >
-            <FaFacebookF className="text-base sm:text-2xl" />
+            <FaFacebookF className="text-base sm:text-3xl" />
           </a>
 
           <a
@@ -61,7 +61,7 @@ const TopBanner = ({ onCouponClick }) => {
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition-opacity"
           >
-            <FaInstagram className="text-base sm:text-2xl" />
+            <FaInstagram className="text-base sm:text-3xl" />
           </a>
 
           <a
@@ -70,7 +70,7 @@ const TopBanner = ({ onCouponClick }) => {
             rel="noopener noreferrer"
             className="text-white hover:opacity-80 transition-opacity"
           >
-            <FaEnvelope className="text-base sm:text-2xl" />
+            <FaEnvelope className="text-base sm:text-3xl" />
           </a>
         </div>
       </div>

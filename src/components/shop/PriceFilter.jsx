@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 
-const PriceFilter = () => {
+const PriceFilter = ({toggleSidebar}) => {
   const dispatch = useDispatch();
   const { setPaginationData } = useContext(AppContext);
 
@@ -23,6 +23,7 @@ const PriceFilter = () => {
       ...prev,
       page: 1, // reset to first page
       pricerange: { min_price: Number(minValue), max_price: Number(maxValue) },
+      sendAttributes:false
     }));
   };
 
@@ -48,7 +49,7 @@ const PriceFilter = () => {
 
     setLocalMin("");
     setLocalMax("");
-
+    if (window.innerWidth <= 1025) toggleSidebar();
     setTimeout(() => setIsApplying(false), 800);
   };
 

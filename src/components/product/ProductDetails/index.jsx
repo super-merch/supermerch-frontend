@@ -737,8 +737,13 @@ const ProductDetails = () => {
   };
 
   const setupFee = getSetupFee();
-
+  const productPrice = getProductPrice(single_product,productId)
   const handleAddToCart = (e) => {
+    if(productPrice == 0){
+      toast.error("Product price not available contact us to get the price and place order.")
+      setShowQuoteForm(true)
+      return
+    }
     e.preventDefault();
 
     dispatch(

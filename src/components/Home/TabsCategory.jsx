@@ -157,7 +157,7 @@ const TabsCategory = () => {
                         (subCategory.label == "WristBands" && wrist) ||
                         (subCategory.label == "Lanyards, Bagdes and Pins" &&
                           laynard) ||
-                        (subCategory.label == "Awards & Trophies" && trophy) ||
+                        (subCategory.label == "Awards" && trophy) ||
                         (subCategory.label == "Keyrings" && keyring)
                       }
                       alt=""

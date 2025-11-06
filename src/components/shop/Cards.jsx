@@ -108,6 +108,10 @@ const Cards = ({ category = "dress" }) => {
     const urlCategoryParam = searchParams.get("category");
     const urlType = searchParams.get("type");
     const isSearchRoute = location.pathname.includes("/search");
+    let limit =9
+    if(window.innerWidth <= 1025){
+      limit=10
+    }
 
     const currentCategoryKey = urlCategoryParam
       ? `cat:${urlCategoryParam}:type:${urlType || ""}`
@@ -134,18 +138,24 @@ const Cards = ({ category = "dress" }) => {
             ...prev,
             category: urlCategoryParam,
             page: pageFromURL,
+            limit,
             sortOption: "",
             colors:[],
+            attributes: null,
             pricerange: undefined,
+            sendAttributes: false,
           }));
         } else {
           setPaginationData((prev) => ({
             ...prev,
             productTypeId: urlCategoryParam,
+            sendAttributes:true,
+            limit,
             category: null,
             page: pageFromURL,
             sortOption: "",
             colors:[],
+            attributes: null,
             pricerange: undefined,
           }));
         }
@@ -154,10 +164,13 @@ const Cards = ({ category = "dress" }) => {
           ...prev,
           category: "search",
           page: pageFromURL,
+          sendAttributes:true,
+          limit,
           searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
           sortOption: "",
           colors:[],
+          attributes: null,
           pricerange: undefined,
         }));
       } else {
@@ -167,7 +180,10 @@ const Cards = ({ category = "dress" }) => {
           page: pageFromURL,
           sortOption: "",
           colors:[],
+          limit,
+          attributes: null,
           pricerange: undefined,
+          sendAttributes: false,
         }));
       }
 
@@ -184,8 +200,10 @@ const Cards = ({ category = "dress" }) => {
           ...prev,
           category: urlCategoryParam,
           page: pageFromURL,
+          limit,
           // preserve prev.sortOption
           sortOption: prev?.sortOption ?? "",
+          sendAttributes: false,
 
         }));
       } else {
@@ -193,8 +211,10 @@ const Cards = ({ category = "dress" }) => {
           ...prev,
           productTypeId: urlCategoryParam,
           category: null,
+          limit,
           page: pageFromURL,
           sortOption: prev?.sortOption ?? "",
+          sendAttributes: false,
         }));
       }
     } else if (isSearchRoute) {
@@ -203,15 +223,19 @@ const Cards = ({ category = "dress" }) => {
         category: "search",
         page: pageFromURL,
         searchTerm: searchParams.get("search"),
+        limit,
         productTypeId: searchParams.get("categoryId"),
         sortOption: prev?.sortOption ?? "",
+        sendAttributes: false,
       }));
     } else {
       setPaginationData((prev) => ({
         ...prev,
         category: category,
+        limit,
         page: pageFromURL,
         sortOption: prev?.sortOption ?? "",
+        sendAttributes: false,
       }));
     }
   }, [searchParams, category, location.pathname]);
@@ -220,15 +244,15 @@ const Cards = ({ category = "dress" }) => {
     favSet.add(item.meta.id);
   });
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //       setIsDropdownOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -264,6 +288,7 @@ const Cards = ({ category = "dress" }) => {
       ...prev,
       sortOption: option === "revelancy" ? "" : option,
       page: 1,
+      sendAttributes: false
     }));
 
     setIsDropdownOpen(false);
@@ -290,7 +315,7 @@ const Cards = ({ category = "dress" }) => {
     <>
       <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[280px]">
-          <UnifiedSidebar pageType={pageType} />
+          <UnifiedSidebar pageType={pageType} categoryType={category} />
         </div>
 
         <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-0">
@@ -333,7 +358,7 @@ const Cards = ({ category = "dress" }) => {
                     </span>
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute right-0 z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
+                    <div className="absolute right-0 z-[100] w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-t-lg ${
@@ -497,6 +522,7 @@ const Cards = ({ category = "dress" }) => {
                   setPaginationData((prev) => ({
                     ...prev,
                     page: newPage,
+                    sendAttributes:false
                   }));
                   updatePaginationInURL(newPage);
                 }}
@@ -509,7 +535,7 @@ const Cards = ({ category = "dress" }) => {
               {/* Page 1 - Always show */}
               <button
                 onClick={() => {
-                  setPaginationData((prev) => ({ ...prev, page: 1 }));
+                  setPaginationData((prev) => ({ ...prev, page: 1, sendAttributes:false }));
                   updatePaginationInURL(1);
                 }}
                 className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
@@ -534,7 +560,7 @@ const Cards = ({ category = "dress" }) => {
                   <button
                     key={page}
                     onClick={() => {
-                      setPaginationData((prev) => ({ ...prev, page: page }));
+                      setPaginationData((prev) => ({ ...prev, page: page, sendAttributes:false }));
                       updatePaginationInURL(page);
                     }}
                     className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
@@ -560,6 +586,7 @@ const Cards = ({ category = "dress" }) => {
                     setPaginationData((prev) => ({
                       ...prev,
                       page: totalPages,
+                      sendAttributes:false
                     }));
                     updatePaginationInURL(totalPages);
                   }}
@@ -580,6 +607,7 @@ const Cards = ({ category = "dress" }) => {
                   setPaginationData((prev) => ({
                     ...prev,
                     page: newPage,
+                    sendAttributes:false
                   }));
                   updatePaginationInURL(newPage);
                 }}

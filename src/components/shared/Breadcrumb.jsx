@@ -40,6 +40,9 @@ const Breadcrumb = () => {
     if (pathname === "/ReturnGifts") {
       return { pageName: "Return Gifts", isSpecialPage: true };
     }
+    if (pathname === "/search") {
+      return { pageName: "search", isSpecialPage: true };
+    }
 
     // Category pages
     // if (pathname === "/Clothing") {
@@ -96,13 +99,15 @@ const Breadcrumb = () => {
           </Link>
 
           {/* Category */}
-          <Link
-            to="/category"
-            className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
-          >
-            <p className="truncate">Category</p>
-            <MdKeyboardArrowRight className="text-sm" />
-          </Link>
+          {location.pathname === "/Spromotional" && (
+            <Link
+              to="/category"
+              className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
+            >
+              <p className="truncate">Category</p>
+              <MdKeyboardArrowRight className="text-sm" />
+            </Link>
+          )}
 
           {/* Main Category */}
           {categoryName && (
@@ -136,10 +141,12 @@ const Breadcrumb = () => {
           </Link>
 
           {/* Category */}
-          <Link to="/category" className="flex items-center gap-1">
-            <p>Category</p>
-            <MdKeyboardArrowRight className="text-xl" />
-          </Link>
+          {location.pathname === "/Spromotional" && (
+            <Link to="/category" className="flex items-center gap-1">
+              <p>Category</p>
+              <MdKeyboardArrowRight className="text-xl" />
+            </Link>
+          )}
 
           {/* Main Category */}
           {categoryName && (
@@ -155,7 +162,7 @@ const Breadcrumb = () => {
           )}
 
           {/* Subcategory or Page Name */}
-          {subCategory ? <span>{subCategory}</span> : <span>{pageName}</span>}
+          {subCategory ? <span>{subCategory}</span> : <span>{pageName == "Shop"? "": pageName }</span>}
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import { AppContext } from "@/context/AppContext";
 import { megaMenu } from "@/assets/assets";
 import { toast } from "react-toastify";
+import trophy from "../../assets/trophy.jpg";
 import collection4 from "../../assets/pen.jpg";
 import stylus from "../../assets/stylus.jpg";
 import metal from "../../assets/metal.jpg";
@@ -19,6 +20,7 @@ import cases from "../../assets/cases.jpg";
 import grocery from "../../assets/grocery.jpg";
 import tote from "../../assets/tote.jpg";
 import cooler from "../../assets/cooler.jpg";
+import magnet from "../../assets/magnet.jpg";
 import sports from "../../assets/sports.jpg";
 import travel from "../../assets/travel.jpg";
 import lunch from "../../assets/lunch.jpg";
@@ -36,6 +38,7 @@ import coffee from "../../assets/coffee.jpg";
 import beerMugs from "../../assets/beerMugs.jpg";
 import travelMugs from "../../assets/travelMugs.jpg";
 import reuseCoffee from "../../assets/reuseCoffee.jpg";
+import glass from "../../assets/glass.jpg";
 import cockGlass from "../../assets/cockGlass.jpg";
 import beerGlass from "../../assets/beerGlass.jpg";
 import shotGlass from "../../assets/shotGlass.jpg";
@@ -76,7 +79,7 @@ const Category = () => {
     }
     const encodedTitleName = encodeURIComponent(titleName); // Encode the title
     const encodedLabelName = encodeURIComponent(labelName); // Encode the title
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&label=${encodedLabelName}`);
+    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&label=${encodedLabelName}&subCategory=${subCategory}`);
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory)
     setCurrentPage(1);
@@ -110,8 +113,8 @@ const Category = () => {
               }
             >
               <img
-              src={item.name=="Other Pens" && collection4 || item.name=="Metal Pens" && metal || item.name=="Plastic Pens" && plastic || item.name=="Stylus Pens" && stylus || item.name=="Grey-Lead Pencils" && grayLead || item.name=="Coloured Pencils" && other || item.name=="Highlighters" && highlighter || item.name=="Markers" && marker || item.name == "Erasers" &&eraser || item.name == "Pencil Sharpeners" &&sharpner || item.name == "Pencils Cases" &&cases || item.name == "Pen Packaging" &&packing || item.name == "Reuseable Grocery Bags" &&grocery || item.name ==="Tote Bags" && tote || item.name ==="Cooler Bags" &&cooler || item.name ==="Duffle/Sports Bags" &&sports || item.name ==="Travel Bum Bags" &&travel || item.name ==="Lunch Bags/Lunch Boxes" &&lunch || item.name ==="Laptops Bags" &&laptop || item.name ==="Satchels" &&satchel || item.name ==="Wheeled Bags" &&wheel || item.name ==="Paper Bags" &&paper || item.name ==="Toiletry Bags & Accessories" &&toiletry || item.name ==="Luggage Tags" &&tags || item.name ==="Wallets & Purses" &&wallet || item.name ==="Bottled Water" &&bottled || item.name ==="Drink Bottles" &&drinkBottle || item.name ==="Thermoses" &&thermose || item.name ==="Coffee Mugs" &&coffee || item.name ==="Beer Mugs" &&beerMugs || item.name ==="Travel Mugs" &&travelMugs || item.name ==="Reusable Coffee Cups" &&reuseCoffee || item.name ==="Cocktail Glasses" &&cockGlass || item.name ==="Beer Glasses" &&beerGlass || item.name ==="Shot Glasses" &&shotGlass || item.name ==="Wine Glasses" &&wineGlass || item.name ==="Protein Shakers" &&protienShaker || item.name ==="Glass Tumblers" &&glassTumbler || item.name ==="Plastic Cups And Tumblers" &&plasticCup ||
-              item.name =="Name Badges" && nameBadge || item.name == "Lanyards" && lanyard || item.name == "Lapel Pins" && lapel || item.name == "Badge Reels" && badgeReel  || item.name == "Event Wristbands" && eventWrist || item.name == "Silicon Wristbands" && siliconWrist || item.name == "Bottle Opener Keyrings" && openerKeyring || item.name == "Keyrings" && keyring
+              src={item.name=="Other Pens" && collection4 || item.name=="Metal Pens" && metal || item.name=="Glassware" && glass || item.name=="Fridge Magnets" && magnet || item.name=="Plastic Pens" && plastic || item.name=="Stylus Pens" && stylus || item.name=="Lead Pencils" && grayLead || item.name=="Coloured Pencils" && other || item.name=="Highlighters" && highlighter || item.name=="Markers" && marker || item.name == "Erasers" &&eraser || item.name == "Pencil Sharpeners" &&sharpner || item.name == "Pencils Cases" &&cases || item.name == "Pen Packaging" &&packing || item.name == "Reusable Grocery Bags" &&grocery || item.name ==="Tote Bags" && tote || item.name ==="Cooler Bags" &&cooler || item.name ==="Duffle/Sports Bags" &&sports || item.name ==="Travel Bum Bags" &&travel || item.name ==="Bum Bags" &&travel || item.name ==="Lunch Bags/Lunch Boxes" &&lunch || item.name ==="Laptops Bags" &&laptop || item.name ==="Satchels" &&satchel || item.name ==="Wheeled Bags" &&wheel || item.name ==="Paper Bags" &&paper || item.name ==="Toiletry Bags & Accessories" &&toiletry || item.name ==="Luggage Tags" &&tags || item.name ==="Wallets & Purses" &&wallet || item.name ==="Bottled Water" &&bottled || item.name ==="Drink Bottles" &&drinkBottle || item.name ==="Thermoses" &&thermose || item.name ==="Coffee Mugs" &&coffee || item.name ==="Beer Mugs" &&beerMugs || item.name ==="Travel Mugs" &&travelMugs || item.name ==="Reusable Coffee Cups" &&reuseCoffee || item.name ==="Cocktail Glasses" &&cockGlass || item.name ==="Beer Glasses" &&beerGlass || item.name ==="Shot Glasses" &&shotGlass || item.name ==="Wine Glasses" &&wineGlass || item.name ==="Protein Shakers" &&protienShaker || item.name ==="Sports Shakers" &&protienShaker || item.name ==="Glass Tumblers" &&glassTumbler || item.name ==="Plastic Cups And Tumblers" &&plasticCup ||
+              item.name =="Name Badges" && nameBadge || item.name == "Awards & Trophies" && trophy || item.name == "Lanyards" && lanyard || item.name == "Lapel Pins" && lapel || item.name == "Badge Reels" && badgeReel || item.name == "Badge Holders" && badgeReel  || item.name == "Event Wristbands" && eventWrist || item.name == "Wristbands" && eventWrist || item.name == "Silicon Wristbands" && siliconWrist || item.name == "Bottle Opener Keyrings" && openerKeyring || item.name == "Keyrings" && keyring
               }
               alt=""
               className="w-full mb-3"
