@@ -25,6 +25,7 @@ const PricingTab = ({
   discountMultiplier,
   setSelectedSize,
   single_product,
+  setShowQuoteForm,
 }) => {
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
@@ -201,76 +202,119 @@ const PricingTab = ({
                       </select>
                     </div> */}
       {/* Custom Quantity Input */}
-      <table className="min-w-full text-sm">
-        <thead>
-          <tr className="text-left text-black">
-            <th className="py-2 pr-4">Select</th>
-            <th className="py-2 pr-4">Qty</th>
-            <th className="py-2 pr-4">Unit</th>
-            <th className="py-2">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {selectedPrintMethod?.price_breaks?.map((item, i) => {
-            const baseProductPrice = getPriceForQuantity(item.qty);
-            let methodUnit =
-              selectedPrintMethod.type === "base"
-                ? item.price
-                : baseProductPrice + item.price;
+      {(() => {
+        // Sort price breaks once for reuse
+        const sortedBreaks = selectedPrintMethod?.price_breaks
+          ? [...selectedPrintMethod.price_breaks].sort((a, b) => a.qty - b.qty)
+          : [];
+        const firstQuantity = sortedBreaks[0]?.qty;
+        const showContactRow = sortedBreaks.length > 0 && firstQuantity > 2;
 
-            // Add clothing-specific additional cost per unit if applicable
-            if (isClothing) {
-              const clothingAdditionalCost = getClothingAdditionalCost(
-                selectedPrintMethod.description
-              );
-              methodUnit += clothingAdditionalCost;
-            }
+        return (
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="text-left text-black">
+                <th className="py-2 pr-4">Select</th>
+                <th className="py-2 pr-4">Qty</th>
+                <th className="py-2 pr-4">Unit</th>
+                <th className="py-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Contact row for quantities below first price break */}
+              {showContactRow && (
+                <tr className="border-t hover:bg-gray-50 text-black">
+                  <td className="py-2 pr-4 align-middle text-md text-black">
+                    <input
+                      type="radio"
+                      name="priceTier"
+                      aria-label="Contact for quote"
+                      disabled
+                      className="opacity-50 cursor-not-allowed"
+                    />
+                  </td>
+                  <td className="py-2 pr-4 align-middle text-md text-black">
+                    0-{firstQuantity - 1}
+                  </td>
+                  <td className="py-2 pr-4 align-middle text-md text-black">
+                    -
+                  </td>
+                  <td className="py-2 align-middle text-md text-black">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowQuoteForm?.(true);
+                      }}
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-md transition-colors"
+                    >
+                      Contact
+                    </button>
+                  </td>
+                </tr>
+              )}
+              {sortedBreaks.map((item, i) => {
+                const baseProductPrice = getPriceForQuantity(item.qty);
+                let methodUnit =
+                  selectedPrintMethod.type === "base"
+                    ? item.price
+                    : baseProductPrice + item.price;
 
-            const unitWithMargin = methodUnit;
-            const unitDiscounted = unitWithMargin * discountMultiplier;
-            const total = unitDiscounted * item.qty;
-            // Check if this price tier applies to the current quantity
-            const isSelected =
-              currentQuantity >= item.qty &&
-              (i === selectedPrintMethod.price_breaks.length - 1 ||
-                currentQuantity < selectedPrintMethod.price_breaks[i + 1].qty);
-            return (
-              <tr
-                key={item.qty}
-                className={`border-t cursor-pointer hover:bg-blue-50/80 text-black ${
-                  isSelected ? "bg-blue-50/80" : "hover:bg-gray-50"
-                }`}
-                onClick={() => {
-                  setCurrentQuantity(item.qty);
-                  setActiveIndex(i);
-                }}
-              >
-                <td className="py-2 pr-4 align-middle text-md text-black">
-                  <input
-                    type="radio"
-                    name="priceTier"
-                    aria-label={`Select ${item.qty}+ tier`}
-                    checked={isSelected}
-                    onChange={() => {
+                // Add clothing-specific additional cost per unit if applicable
+                if (isClothing) {
+                  const clothingAdditionalCost = getClothingAdditionalCost(
+                    selectedPrintMethod.description
+                  );
+                  methodUnit += clothingAdditionalCost;
+                }
+
+                const unitWithMargin = methodUnit;
+                const unitDiscounted = unitWithMargin * discountMultiplier;
+                const total = unitDiscounted * item.qty;
+
+                // Check if this price tier applies to the current quantity
+                const isSelected =
+                  currentQuantity >= item.qty &&
+                  (i === sortedBreaks.length - 1 ||
+                    currentQuantity < sortedBreaks[i + 1].qty);
+                return (
+                  <tr
+                    key={item.qty}
+                    className={`border-t cursor-pointer hover:bg-blue-50/80 text-black ${
+                      isSelected ? "bg-blue-50/80" : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => {
                       setCurrentQuantity(item.qty);
                       setActiveIndex(i);
                     }}
-                  />
-                </td>
-                <td className="py-2 pr-4 align-middle text-md text-black">
-                  {item.qty}+
-                </td>
-                <td className="py-2 pr-4 align-middle text-md text-black">
-                  ${unitDiscounted.toFixed(2)}
-                </td>
-                <td className="py-2 align-middle text-md text-black">
-                  ${total.toFixed(2)}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  >
+                    <td className="py-2 pr-4 align-middle text-md text-black">
+                      <input
+                        type="radio"
+                        name="priceTier"
+                        aria-label={`Select ${item.qty}+ tier`}
+                        checked={isSelected}
+                        onChange={() => {
+                          setCurrentQuantity(item.qty);
+                          setActiveIndex(i);
+                        }}
+                      />
+                    </td>
+                    <td className="py-2 pr-4 align-middle text-md text-black">
+                      {item.qty}+
+                    </td>
+                    <td className="py-2 pr-4 align-middle text-md text-black">
+                      ${unitDiscounted.toFixed(2)}
+                    </td>
+                    <td className="py-2 align-middle text-md text-black">
+                      ${total.toFixed(2)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        );
+      })()}
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-center gap-4">
           <label className="md:text-lg text-md font-medium text-gray-700 whitespace-nowrap">

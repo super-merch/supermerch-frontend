@@ -1,5 +1,6 @@
 import React from "react";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle } from "react-icons/fa";
+import { FaHandDots } from "react-icons/fa6";
 
 const FeaturesTab = ({ single_product, activeInfoTab }) => {
   function filterByNames(array) {
@@ -31,6 +32,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
       "Fit",
       "Tags",
     ];
+
     const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
     return array?.filter((item) =>
       lowerCaseNames.includes(item?.name?.toLowerCase())
@@ -40,11 +42,24 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
   return (
     <div className="space-y-1 border- border-gray-200 pt-2">
       {/* Brief Description */}
+
       {single_product?.product?.description ? (
         <div className=" border-gray-200 pb-2">
+          {single_product.product.description.split("Features:")[0] && (
+            <>
+              <p className="text-sm leading-6 text-black text-justify">
+                {single_product.product.description
+                  .split("Features:")[0]
+                  .split("\n")
+                  .map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+              </p>
+            </>
+          )}
           {(single_product.product.description.includes("Features:") ||
             single_product?.product?.categorisation?.promodata_attributes) && (
-            <div className="text-sm leading-6 text-black mb-2 border-b border-gray-200 pb-2">
+            <div className="text-sm leading-6 text-black mb-2 border-b border-gray-200 pb-2 my-4">
               <span className="font-semibold">Features:</span>
 
               <ul className="mt-2 space-y-1 list-disc list-inside">
@@ -57,33 +72,22 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                       : item?.trim()
                   )
                   .map((feature, index) => (
-                    <p key={index} className="mb-1">
-                      - {feature?.replace("*", "").trim()}
+                    <p key={index} className="mb-1 list-disc list-inside">
+                      {feature?.replace("*", "").trim()}
                     </p>
                   ))}
                 {single_product?.product?.categorisation?.promodata_attributes?.map(
                   (attribute, index) => (
-                    <p key={index} className="mb-1">
-                      - {attribute}
+                    <p
+                      key={index}
+                      className="mb-1 list-disc list-inside flex items-center gap-2"
+                    >
+                      <FaCheckCircle /> {attribute}
                     </p>
                   )
                 )}
               </ul>
             </div>
-          )}
-          {single_product.product.description.split("Features:")[0] && (
-            <>
-              <span className="font-semibold">Description:</span>
-
-              <p className="text-sm leading-6 text-black">
-                {single_product.product.description
-                  .split("Features:")[0]
-                  .split("\n")
-                  .map((line, index) => (
-                    <p key={index}>{line}</p>
-                  ))}
-              </p>
-            </>
           )}
         </div>
       ) : (

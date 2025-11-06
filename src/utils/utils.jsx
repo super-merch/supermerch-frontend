@@ -261,6 +261,7 @@ export const getClothingPricing = (printMethodDescription) => {
     "pocket size front embroidery": { perUnitCost: 8, setupFee: 49 },
     "big print in back": { perUnitCost: 10, setupFee: 29 },
     "pocket size front + big print back": { perUnitCost: 15, setupFee: 49 },
+    unbranded: { perUnitCost: 0, setupFee: 0 },
   };
 
   // Return the mapped pricing or default values if not found
