@@ -264,6 +264,13 @@ const ProductDetails = () => {
             setup: 49,
             price_breaks: basePriceBreaks,
           },
+          {
+            key: "unbranded",
+            description: "Unbranded",
+            type: "base",
+            setup: 0,
+            price_breaks: basePriceBreaks,
+          },
         ];
 
         allGroups = staticClothingMethods;
@@ -723,7 +730,6 @@ const ProductDetails = () => {
 
   const rawPerUnit = unitPrice;
   const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
-
   // Calculate setup fee - use clothing-specific setup fee if applicable
   const getSetupFee = () => {
     const isClothing = isProductCategory(single_product, "Clothing");
@@ -737,12 +743,14 @@ const ProductDetails = () => {
   };
 
   const setupFee = getSetupFee();
-  const productPrice = getProductPrice(single_product,productId)
+  const productPrice = getProductPrice(single_product, productId);
   const handleAddToCart = (e) => {
-    if(productPrice == 0){
-      toast.error("Product price not available contact us to get the price and place order.")
-      setShowQuoteForm(true)
-      return
+    if (productPrice == 0) {
+      toast.error(
+        "Product price not available contact us to get the price and place order."
+      );
+      setShowQuoteForm(true);
+      return;
     }
     e.preventDefault();
 
@@ -1057,9 +1065,13 @@ const ProductDetails = () => {
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-extrabold text-green-600">
                         $
-                        {Number(
-                          getProductPrice(single_product, productId) + 8
-                        ).toFixed(2)}{" "}
+                        {isProductCategory(single_product, "Clothing")
+                          ? Number(
+                              getProductPrice(single_product, productId) + 8
+                            ).toFixed(2)
+                          : Number(
+                              getProductPrice(single_product, productId)
+                            ).toFixed(2)}
                         <span className="text-xs text-gray-500">per unit</span>
                       </span>
                     </div>
@@ -1082,7 +1094,7 @@ const ProductDetails = () => {
               {/* Tab headers */}
               <div className="flex gap-2 border-b">
                 {[
-                  { key: "features", label: "Features" },
+                  { key: "features", label: "Details" },
                   { key: "pricing", label: "Pricing" },
                   { key: "decoration", label: "Decoration" },
                   { key: "shipping", label: "Shipping" },
@@ -1127,6 +1139,7 @@ const ProductDetails = () => {
                       discountMultiplier,
                       setSelectedSize,
                       single_product,
+                      setShowQuoteForm,
                     }}
                   />
                 )}
