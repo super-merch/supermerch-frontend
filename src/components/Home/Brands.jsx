@@ -54,18 +54,23 @@ const Brands = () => {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-3 md:mt-0">
           <button
             onClick={() => scroll("left")}
-            className="md:p-2 p-1 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+            className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 md:w-10 md:h-10 p-1 md:p-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+            aria-label="scroll left"
+            type="button"
           >
-            <IoArrowBackOutline className="md:text-lg text-base" />
+            <IoArrowBackOutline size={18} />
           </button>
+
           <button
             onClick={() => scroll("right")}
-            className="md:p-2 p-1 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+            className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 md:w-10 md:h-10 p-1 md:p-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+            aria-label="scroll right"
+            type="button"
           >
-            <IoMdArrowForward className="md:text-lg text-base" />
+            <IoMdArrowForward size={18} />
           </button>
         </div>
       </div>

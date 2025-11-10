@@ -96,7 +96,7 @@ const Blogs = () => {
         <div className="text-center mt-8">
           <Link
             to="/all-blogs"
-            className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             View All Blogs
             <FaArrowRight className="w-4 h-4" />

@@ -21,7 +21,7 @@ const BlogCard = ({ blog, options }) => {
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-col flex-grow p-6">
+      <div className="flex flex-col flex-grow p-4 sm:p-6">
         <div className="flex-grow">
           <h3 className="md:text-xl text-sm font-bold text-secondary mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
             {blog.title}
