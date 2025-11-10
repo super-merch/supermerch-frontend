@@ -175,7 +175,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
                           onChange={() =>
                             handleCheckboxChange(attribute.name, value)
                           }
-                          className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-2 focus:ring-primary cursor-pointer"
+                          className="max-w-4 max-h-4 min-w-4 min-h-4  text-primary border-gray-300 rounded focus:ring-2 focus:ring-primary cursor-pointer"
                         />
                         <span className="text-sm text-gray-700 group-hover:text-gray-900">
                           {value}
