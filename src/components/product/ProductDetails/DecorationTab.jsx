@@ -109,7 +109,7 @@ const DecorationTab = ({ single_product, availablePriceGroups }) => {
       )}
       {/* Lead Time CTA - Only show if there are valid lead times */}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-2">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-xl p-2">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -119,11 +119,7 @@ const DecorationTab = ({ single_product, availablePriceGroups }) => {
               <h4 className="font-semibold text-secondary mb-1">
                 Production Timeline
               </h4>
-              {/* <p className="text-sm text-gray-600">
-                {leadTimeData.length === 1
-                  ? `${leadTimeData[0].leadTime} lead time available`
-                  : `${leadTimeData.length} decoration methods with lead times`}
-              </p> */}
+              
             </div>
           </div>
           <button
@@ -133,7 +129,7 @@ const DecorationTab = ({ single_product, availablePriceGroups }) => {
             View Lead Times
           </button>
         </div>
-      </div>
+      </div> */}
 
       {leadTimeModal && (
         <LeadTimeModal
