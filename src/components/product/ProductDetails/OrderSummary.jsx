@@ -74,7 +74,7 @@ const OrderSummary = ({
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm lg:sticky lg:top-4">
         {/* Header */}
         <div className="px-6 py-5 border-b border-gray-200 bg-white rounded-t-md">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-2 sm:gap-4">
             <div>
               <p className="text-xs font-medium text-gray-600 tracking-wide">
                 Per unit
@@ -85,7 +85,7 @@ const OrderSummary = ({
                     ${rawPerUnit.toFixed(2)}
                   </span>
                 )}
-                <p className="text-2xl font-bold text-smallHeader">
+                <p className="sm:text-2xl text-xl font-bold text-smallHeader">
                   $
                   {discountedUnitPrice.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -104,10 +104,10 @@ const OrderSummary = ({
                 Total
               </p>
               <div className="flex items-center justify-end gap-2">
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[13px] text-gray-700 ring-1 ring-inset ring-gray-200">
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 leading-3 text-[12px] sm:text-[13px] text-gray-700 ring-1 ring-inset ring-gray-200">
                   {currentQuantity} pcs
                 </span>
-                <p className="text-3xl font-extrabold text-smallHeader">
+                <p className="sm:text-3xl text-2xl font-extrabold text-smallHeader">
                   $
                   {currentPrice.toLocaleString("en-US", {
                     minimumFractionDigits: 2,

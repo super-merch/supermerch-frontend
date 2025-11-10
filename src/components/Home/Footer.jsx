@@ -230,7 +230,7 @@ const Footer = () => {
         </div>
 
         {/* Payment Methods */}
-        <div className="border-t border-white/10 mt-2 pt-2">
+        <div className="border-t  border-white/10 mt-2 pt-2">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-white/80 text-sm mb-3 text-center md:text-left">
@@ -250,14 +250,14 @@ const Footer = () => {
             <div>
               <div className="max-w-2xl mx-auto text-center md:text-left">
                 <p className="text-white/80 mb-2">
-                  Subscribe to our newsletter for exclusive offers and new
+                  Subscribe to our newsletter for <br className="hidden xs:block" /> exclusive offers and new
                   product updates
                 </p>
                 <div className="flex max-w-md">
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 px-3 sm:px-4 py-3 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder:text-white/60"
+                    className="flex-1 xs:px-1 px-3 sm:px-4 py-3 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder:text-white/60"
                   />
                   <button className="px-3 sm:px-6 py-3 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors font-medium">
                     Subscribe

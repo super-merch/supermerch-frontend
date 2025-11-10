@@ -276,7 +276,7 @@ const UnifiedSidebar = ({
         data-sidebar-content
         className={`transition-all duration-300 ease-in-out ${
           isSidebarOpen
-            ? "lg:w-[100%] z-50 lg:mt-0 md:w-[280px] max-w-[90vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 lg:px-0 py-4"
+            ? "lg:w-[100%] z-50 lg:mt-0 md:w-[280px] max-w-[90vw] xs:max-w-[95vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 xs:px-2 lg:px-0 py-4"
             : "hidden"
         }`}
       >

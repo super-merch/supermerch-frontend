@@ -106,7 +106,7 @@ const CategoryGrid = ({ activeTab }) => {
 
   return (
     <div className="pb-10 Mycontainer">
-      <div className="grid gap-5 grid-cols-2 lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
+      <div className="grid gap-3 xs:gap-2 sm:gap-5 grid-cols-2 lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
         {loading
           ? Array.from({ length: activeTab === "All Product" ? 4 : 4 }).map(
               (_, index) => <SkeletonLoading key={index} />

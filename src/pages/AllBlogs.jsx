@@ -4,11 +4,15 @@ import { AppContext } from "@/context/AppContext";
 import { FaArrowRight } from "react-icons/fa";
 
 const AllBlogs = () => {
-  const { blogs, options } = useContext(AppContext);
+  const { blogLoading,blogs, options } = useContext(AppContext);
   const navigate = useNavigate();
-
+  if(blogLoading){
+    return <div className="flex justify-center items-center min-h-screen" >
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+    </div>
+  }
   return (
-    <section className="min-h-screen bg-white py-16">
+    <section className="min-h-screen bg-white py-8 sm:py-16">
       <div className="Mycontainer px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12">
@@ -21,7 +25,7 @@ const AllBlogs = () => {
         </div>
 
         {blogs?.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => (
               <div
                 key={blog._id}

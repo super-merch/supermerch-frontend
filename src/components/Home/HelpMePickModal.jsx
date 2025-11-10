@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  setMinPrice,
-  setMaxPrice,
-  applyFilters,
-} from "../../redux/slices/filterSlice";
+import { setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-import { megaMenu } from "../../assets/assets.js";
+// import { megaMenu } from "../../assets/assets.js";
+import { AppContext } from "@/context/AppContext";
 
 // Price ranges for Help me Pick
 const priceRanges = [
@@ -22,126 +19,48 @@ const priceRanges = [
 ];
 
 // Custom clothing categories for popup
-const customClothingCategories = [
-  {
-    id: "B-CW",
-    name: "Corporate Wear",
-    subTypes: [
-      {
-        label: "Pants",
-        items: [{ id: "B-03", name: "Dresses" }],
-      },
-    ],
-  },
-  {
-    id: "B-AW",
-    name: "Activewear",
-    subTypes: [
-      {
-        label: "Top",
-        items: [{ id: "B-09", name: "Polo Shirts" }],
-      },
-    ],
-  },
-  {
-    id: "B-WW",
-    name: "Workwear",
-    subTypes: [
-      {
-        label: "Top",
-        items: [{ id: "B-18", name: "T Shirts" }],
-      },
-    ],
-  },
-  {
-    id: "B-BR",
-    name: "Brands",
-    subTypes: [
-      {
-        label: "Top",
-        items: [{ id: "B-13", name: "Shirts" }],
-      },
-    ],
-  },
-  {
-    id: "B-HT",
-    name: "Hospitality",
-    subTypes: [
-      {
-        label: "Top",
-        items: [{ id: "B-02", name: "Aprons" }],
-      },
-    ],
-  },
-];
-
-// Custom headwear categories for popup
-const customHeadwearCategories = [
-  {
-    id: "G-CAP",
-    name: "Caps & Hats",
-    subTypes: [
-      {
-        label: "Headwear",
-        items: [
-          { id: "G-01", name: "Baseball Caps" },
-          { id: "G-04", name: "Flat Peak Caps" },
-          { id: "G-08", name: "Trucker Caps" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "G-SUN",
-    name: "Sun Protection",
-    subTypes: [
-      {
-        label: "Headwear",
-        items: [
-          { id: "G-03", name: "Bucket & Sun Hats" },
-          { id: "G-07", name: "Straw Hats" },
-          { id: "G-09", name: "Visors" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "G-WIN",
-    name: "Winter Wear",
-    subTypes: [
-      {
-        label: "Headwear",
-        items: [
-          { id: "G-02", name: "Beanies" },
-          { id: "G-05", name: "Headbands" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "G-KID",
-    name: "Kids & Specialty",
-    subTypes: [
-      {
-        label: "Headwear",
-        items: [
-          { id: "G-06", name: "Kid's Caps" },
-          { id: "G-10", name: "Misc Headwear" },
-        ],
-      },
-    ],
-  },
-];
-
-const mainCategories = [
-  { id: "promotion", name: "Promotion", data: megaMenu },
-  { id: "clothing", name: "Clothing", data: customClothingCategories },
-  { id: "headwear", name: "Headwear", data: customHeadwearCategories },
-];
 
 const HelpMePickModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { v1categories, setPaginationData } = useContext(AppContext);
+  const customClothingCategories = v1categories?.filter((category) =>
+    [
+      "Bottoms",
+      "Workwear",
+      "Uniforms",
+      "Sports Uniforms",
+      "Shirts",
+      "Jackets",
+      "Jumpers",
+      "Footwear",
+      "Clothing Accessories",
+    ].includes(category.name)
+  );
+  const customHeadwearCategories = v1categories?.filter((category) =>
+    ["Headwear"].includes(category.name)
+  );
+  const megaMenu = v1categories?.filter(
+    (category) =>
+      ![
+        "Bottoms",
+        "Workwear",
+        "Uniforms",
+        "Sports Uniforms",
+        "Shirts",
+        "Jackets",
+        "Jumpers",
+        "Footwear",
+        "Clothing Accessories",
+        "Headwear",
+      ].includes(category.name)
+  );
+
+  const mainCategories = [
+    { id: "promotion", name: "Promotion", data: megaMenu },
+    { id: "clothing", name: "Clothing", data: customClothingCategories },
+    { id: "headwear", name: "Headwear", data: customHeadwearCategories },
+  ];
 
   const [step, setStep] = useState(1);
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
@@ -183,59 +102,17 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
   };
 
   const handleApplyFilters = () => {
+    const encodedCategoryName = encodeURIComponent(selectedSubCategory.name);
     dispatch(setMinPrice(selectedPrice.min));
     dispatch(setMaxPrice(selectedPrice.max));
-    dispatch(applyFilters());
-
-    if (selectedMainCategory.id === "promotion") {
-      const encodedCategoryName = encodeURIComponent(selectedSubCategory.name);
-      navigate(
-        `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedSubCategory.id}`
-      );
-    } else if (selectedMainCategory.id === "clothing") {
-      let selectedItem = null;
-      let selectedLabel = null;
-
-      for (const subType of selectedSubCategory.subTypes) {
-        if (subType.items && subType.items.length > 0) {
-          selectedItem = subType.items[0];
-          selectedLabel = subType.label;
-          break;
-        }
-      }
-
-      if (selectedItem) {
-        const encodedCategoryName = encodeURIComponent(
-          selectedSubCategory.name
-        );
-        const encodedLabel = encodeURIComponent(selectedLabel);
-        navigate(
-          `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedItem.id}&label=${encodedLabel}`
-        );
-      }
-    } else if (selectedMainCategory.id === "headwear") {
-      let selectedItem = null;
-      let selectedLabel = null;
-
-      for (const subType of selectedSubCategory.subTypes) {
-        if (subType.items && subType.items.length > 0) {
-          selectedItem = subType.items[0];
-          selectedLabel = subType.label;
-          break;
-        }
-      }
-
-      if (selectedItem) {
-        const encodedCategoryName = encodeURIComponent(
-          selectedSubCategory.name
-        );
-        const encodedLabel = encodeURIComponent(selectedLabel);
-        navigate(
-          `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedItem.id}&label=${encodedLabel}`
-        );
-      }
-    }
-
+    navigate(
+      `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedSubCategory.id}&minPrice=${selectedPrice.min}&maxPrice=${selectedPrice.max}`
+    );
+    //scroll to top smooth
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
     onClose();
   };
 
@@ -395,7 +272,7 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 max-h-64 overflow-y-auto">
-              {availableSubCategories.map((category) => (
+              {availableSubCategories?.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleSubCategorySelect(category)}
