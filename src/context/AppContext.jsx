@@ -1467,10 +1467,8 @@ const AppContextProvider = (props) => {
       setBlogLoading(true);
       const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs`);
       setBlogs(data.blogs);
-      console.log(data.blogs);
       setBlogLoading(false);
     } catch (error) {
-      toast.error(error.message);
       toast.error(error.message);
       console.error(error);
       setBlogLoading(false)

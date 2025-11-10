@@ -124,7 +124,9 @@ const OrderSummary = ({
           {/* Action Buttons */}
           <div className="space-y-3 mt-2">
             <div
-              onClick={() => setShowQuoteForm(!showQuoteForm)}
+              onClick={() =>
+                setShowQuoteForm?.({ state: true, from: "quoteButton" })
+              }
               className="flex items-center justify-center gap-2 py-2 text-primary cursor-pointer border border-primary transition-all duration-300 rounded-sm hover:shadow-md"
             >
               <FaMoneyBill1Wave className="text-primary" />

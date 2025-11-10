@@ -181,7 +181,7 @@ const NavigationMenu = ({
                           <div
                             className={`grid gap-6`}
                             style={{
-                              gridTemplateColumns: `repeat(${activeSubItem.columns.length}, 1fr)`,
+                              gridTemplateColumns: `repeat(5, 1fr)`,
                             }}
                           >
                             {activeSubItem.columns.map((column, colIndex) => (
@@ -267,7 +267,6 @@ const NavigationMenu = ({
                       className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
                     >
                       <span className="leading-relaxed">{subItem.name}</span>
-                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0" />
                     </button>
                   ))}
                 </div>

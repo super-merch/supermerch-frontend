@@ -27,7 +27,7 @@ const TopBanner = ({ onCouponClick }) => {
             className="flex items-center text-white text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
             onClick={handleCouponClick}
           >
-            Free Shipping over $999
+            First time customers get 15% off
           </span>
 
           {/* Vertical separator */}

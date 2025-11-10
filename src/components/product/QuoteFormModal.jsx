@@ -26,6 +26,8 @@ const QuoteFormModal = ({
   isDragging2,
   setPreviewImage2,
   setNotRobot,
+  showQuoteForm,
+  setCurrentQuantity,
 }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -41,7 +43,7 @@ const QuoteFormModal = ({
             </p>
           </div>
           <button
-            onClick={() => setShowQuoteForm(false)}
+            onClick={() => setShowQuoteForm({ state: false, from: "" })}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
             <svg
@@ -93,9 +95,21 @@ const QuoteFormModal = ({
                   {selectedPrintMethod?.description || "Not selected"}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <span className="text-gray-600">Quantity</span>
-                <span className="font-semibold">{currentQuantity}</span>
+
+                {showQuoteForm?.from === "lowMOQ" ? (
+                  <input
+                    type="number"
+                    value={currentQuantity}
+                    onChange={(e) =>
+                      setCurrentQuantity(parseInt(e.target.value))
+                    }
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+                ) : (
+                  <span className="font-semibold">{currentQuantity}</span>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Unit Price</span>
@@ -296,7 +310,7 @@ const QuoteFormModal = ({
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setShowQuoteForm(false)}
+                  onClick={() => setShowQuoteForm({ state: false, from: "" })}
                   className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
