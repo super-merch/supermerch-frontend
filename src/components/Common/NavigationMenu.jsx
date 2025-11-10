@@ -3,6 +3,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PropTypes from "prop-types";
+import { useSearchParams } from "react-router-dom";
 
 const NavigationMenu = ({
   menuItems = [],
@@ -17,6 +18,7 @@ const NavigationMenu = ({
   const [clickedItem, setClickedItem] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const [expandedSubItem, setExpandedSubItem] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const sizeClasses = {
     small: {
@@ -440,7 +442,7 @@ const NavigationMenu = ({
                 >
                   <span className="relative">
                     {item.name}
-                    {isSubmenuVisible && item.hasSubmenu && (
+                    {(isSubmenuVisible && item.hasSubmenu) || searchParams.get("type") == item.name && (
                       <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"></span>
                     )}
                   </span>

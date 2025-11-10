@@ -45,6 +45,7 @@ const Cards = ({ category = "dress" }) => {
   const isSalesPage = category === "sales";
   const isSearch = category === "search";
   const isAllProducts = category === "allProducts";
+  const [searchParams, setSearchParams] = useSearchParams();
   const isSpecialPage =
     isAustraliaPage || is24HrPage || isSalesPage || isSearch;
 
@@ -52,6 +53,8 @@ const Cards = ({ category = "dress" }) => {
     (state) => state.filters
   );
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
+  const urlMinPrice = searchParams.get("minPrice");
+  const urlMaxPrice = searchParams.get("maxPrice");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,7 +78,6 @@ const Cards = ({ category = "dress" }) => {
     }
   }, [getProducts]);
 
-  const [searchParams, setSearchParams] = useSearchParams();
   const getProductsData = getProducts?.data;
 
   // Helper function to update URL with pagination
@@ -108,9 +110,9 @@ const Cards = ({ category = "dress" }) => {
     const urlCategoryParam = searchParams.get("category");
     const urlType = searchParams.get("type");
     const isSearchRoute = location.pathname.includes("/search");
-    let limit =9
-    if(window.innerWidth <= 1025){
-      limit=10
+    let limit = 9;
+    if (window.innerWidth <= 1025) {
+      limit = 10;
     }
 
     const currentCategoryKey = urlCategoryParam
@@ -124,8 +126,13 @@ const Cards = ({ category = "dress" }) => {
 
     if (categoryChanged) {
       setSortOption("");
-      dispatch(setMinPrice(0));
-      dispatch(setMaxPrice(1000));
+      if (urlMinPrice && urlMaxPrice) {
+        dispatch(setMinPrice(Number(urlMinPrice)));
+        dispatch(setMaxPrice(Number(urlMaxPrice)));
+      } else {
+        dispatch(setMinPrice(0));
+        dispatch(setMaxPrice(1000));
+      }
 
       if (urlCategoryParam) {
         if (
@@ -140,7 +147,7 @@ const Cards = ({ category = "dress" }) => {
             page: pageFromURL,
             limit,
             sortOption: "",
-            colors:[],
+            colors: [],
             attributes: null,
             pricerange: undefined,
             sendAttributes: false,
@@ -149,14 +156,20 @@ const Cards = ({ category = "dress" }) => {
           setPaginationData((prev) => ({
             ...prev,
             productTypeId: urlCategoryParam,
-            sendAttributes:true,
+            sendAttributes: true,
             limit,
             category: null,
             page: pageFromURL,
             sortOption: "",
-            colors:[],
+            colors: [],
             attributes: null,
-            pricerange: undefined,
+            pricerange:
+              urlMinPrice && urlMaxPrice
+                ? {
+                    min_price: Number(urlMinPrice),
+                    max_price: Number(urlMaxPrice),
+                  }
+                : undefined,
           }));
         }
       } else if (isSearchRoute) {
@@ -164,12 +177,12 @@ const Cards = ({ category = "dress" }) => {
           ...prev,
           category: "search",
           page: pageFromURL,
-          sendAttributes:true,
+          sendAttributes: true,
           limit,
           searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
           sortOption: "",
-          colors:[],
+          colors: [],
           attributes: null,
           pricerange: undefined,
         }));
@@ -179,7 +192,7 @@ const Cards = ({ category = "dress" }) => {
           category: category,
           page: pageFromURL,
           sortOption: "",
-          colors:[],
+          colors: [],
           limit,
           attributes: null,
           pricerange: undefined,
@@ -204,7 +217,6 @@ const Cards = ({ category = "dress" }) => {
           // preserve prev.sortOption
           sortOption: prev?.sortOption ?? "",
           sendAttributes: false,
-
         }));
       } else {
         setPaginationData((prev) => ({
@@ -288,7 +300,7 @@ const Cards = ({ category = "dress" }) => {
       ...prev,
       sortOption: option === "revelancy" ? "" : option,
       page: 1,
-      sendAttributes: false
+      sendAttributes: false,
     }));
 
     setIsDropdownOpen(false);
@@ -398,9 +410,10 @@ const Cards = ({ category = "dress" }) => {
                 <p className="text-sm text-gray-600">
                   {productsLoading ? "Loading..." : `product found `}
                   {productsLoading && " Please wait a while..."}
-                  {(isPriceFilterActive  && !productsLoading) ? `between $${minPrice} and $${maxPrice}` : ""}
+                  {isPriceFilterActive && !productsLoading
+                    ? `between $${minPrice} and $${maxPrice}`
+                    : ""}
                 </p>
-
               </div>
             </div>
           </div>
@@ -415,7 +428,9 @@ const Cards = ({ category = "dress" }) => {
                 <p className="">
                   {productsLoading ? "Loading..." : `product found`}
                   {productsLoading && " Please wait a while..."}
-                  {(isPriceFilterActive  && !productsLoading) ? ` between $${minPrice} and $${maxPrice}` : ""}
+                  {isPriceFilterActive && !productsLoading
+                    ? ` between $${minPrice} and $${maxPrice}`
+                    : ""}
                 </p>
               </div>
 
@@ -485,7 +500,7 @@ const Cards = ({ category = "dress" }) => {
                 <SkeletonLoadingCards key={index} />
               ))
             ) : productsData?.length > 0 ? (
-              <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2">
+              <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2 ">
                 {productsData?.map((product) => {
                   return (
                     <ProductCard
@@ -522,7 +537,7 @@ const Cards = ({ category = "dress" }) => {
                   setPaginationData((prev) => ({
                     ...prev,
                     page: newPage,
-                    sendAttributes:false
+                    sendAttributes: false,
                   }));
                   updatePaginationInURL(newPage);
                 }}
@@ -535,7 +550,11 @@ const Cards = ({ category = "dress" }) => {
               {/* Page 1 - Always show */}
               <button
                 onClick={() => {
-                  setPaginationData((prev) => ({ ...prev, page: 1, sendAttributes:false }));
+                  setPaginationData((prev) => ({
+                    ...prev,
+                    page: 1,
+                    sendAttributes: false,
+                  }));
                   updatePaginationInURL(1);
                 }}
                 className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
@@ -555,12 +574,16 @@ const Cards = ({ category = "dress" }) => {
 
               {/* Middle pages */}
               {getPaginationButtons(currentPage, totalPages, maxVisiblePages)
-                .filter((page) => page > 1 && page < totalPages)
+                .filter((page) => page > 1 && page < totalPages).slice(0,2)
                 .map((page) => (
                   <button
                     key={page}
                     onClick={() => {
-                      setPaginationData((prev) => ({ ...prev, page: page, sendAttributes:false }));
+                      setPaginationData((prev) => ({
+                        ...prev,
+                        page: page,
+                        sendAttributes: false,
+                      }));
                       updatePaginationInURL(page);
                     }}
                     className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
@@ -576,7 +599,7 @@ const Cards = ({ category = "dress" }) => {
               {/* Show ellipsis if there are hidden pages at the end */}
               {currentPage < totalPages - maxVisiblePages / 2 &&
                 totalPages > maxVisiblePages && (
-                  <span className="px-2 text-gray-500">...</span>
+                  <span className="px-2 xs:px-1 text-gray-500">...</span>
                 )}
 
               {/* Last page - Always show if more than 1 page */}
@@ -586,7 +609,7 @@ const Cards = ({ category = "dress" }) => {
                     setPaginationData((prev) => ({
                       ...prev,
                       page: totalPages,
-                      sendAttributes:false
+                      sendAttributes: false,
                     }));
                     updatePaginationInURL(totalPages);
                   }}
@@ -607,7 +630,7 @@ const Cards = ({ category = "dress" }) => {
                   setPaginationData((prev) => ({
                     ...prev,
                     page: newPage,
-                    sendAttributes:false
+                    sendAttributes: false,
                   }));
                   updatePaginationInURL(newPage);
                 }}

@@ -121,7 +121,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
       </div>
 
       {/* Product Image */}
-      <div className="max-h-[160px] sm:max-h-[280px] h-full border-b overflow-hidden relative">
+      <div className="max-h-[150px] sm:max-h-[280px] xs:max-h-[130px] h-full border-b overflow-hidden relative">
         <img
           src={product?.overview?.hero_image || noimage}
           alt={product?.overview?.name || "Product"}
@@ -147,7 +147,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
       <Link to={`/product/${slug}?ref=${encodedId}`}>
         <div className="p-2 py-1">
           {/* Color Swatches */}
-          <div className="flex justify-center mb-1 gap-1 z-10">
+          <div className="flex justify-center mb-1 xs:gap-[3px] gap-1 z-10">
             {uniqueColors.slice(0, 6).map((color, index) => {
               const matchedColor = findNearestColor(color);
               return (
@@ -156,7 +156,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                   style={{
                     backgroundColor: matchedColor?.hex,
                   }}
-                  className="w-4 h-4 rounded-full border border-slate-900"
+                  className="w-4 h-4 xs:w-3 xs:h-3 rounded-full border border-slate-900"
                 />
               );
             })}
@@ -171,7 +171,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                 }
                 placement="top"
               >
-                <p className="text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand md:text-nowrap truncate md:w-[300px] w-[150px]">
+                <p className="text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand md:text-nowrap truncate md:w-[300px] w-[150px] xs:w-[120px]">
                   {product.overview.name}
                 </p>
               </Tooltip>

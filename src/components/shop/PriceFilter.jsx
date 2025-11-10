@@ -55,6 +55,8 @@ const PriceFilter = ({toggleSidebar}) => {
 
   const handlePresetRangeClick = (range) => {
     setIsApplying(true);
+    setLocalMin("");
+    setLocalMax("");
     applyRangeToBackend(range.min, range.max);
     setTimeout(() => setIsApplying(false), 500);
   };

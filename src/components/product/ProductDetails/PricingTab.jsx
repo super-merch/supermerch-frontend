@@ -340,12 +340,12 @@ const PricingTab = ({
           </table>
         );
       })()}
-      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="flex items-center gap-4">
+      <div className="mb-4 p-4 xs:p-2 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center xs:gap-2 gap-4">
           <label className="md:text-lg text-md font-medium text-gray-700 whitespace-nowrap">
             Order Quantity:
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center xs:gap-1 gap-2">
             <input
               type="number"
               min="1"
@@ -367,10 +367,10 @@ const PricingTab = ({
                 }
                 setActiveIndex(newActiveIndex);
               }}
-              className="w-24 px-3 py-2 border border-gray-300 rounded-md text-md md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-24 xs:w-20 px-3 py-2 border border-gray-300 rounded-md text-md md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter qty"
             />
-            <span className="text-md md:text-lg text-black">pieces</span>
+            <span className="text-md md:text-lg text-black block xs:hidden">pieces</span> <span className="text-md md:text-lg text-black hidden xs:block">pcs</span>
           </div>
           {/* <div className="ml-auto text-sm text-black">
                           <Button>Large Order?</Button>
