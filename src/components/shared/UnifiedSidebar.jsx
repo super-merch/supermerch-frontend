@@ -115,7 +115,40 @@ const UnifiedSidebar = ({
     v1categories, // Add this from context
     setPaginationData,
   } = useContext(AppContext);
+  const dropdownCategoryMap = {
+    promotional: [
+      "Writing",
+      "Bags",
+      "Drinkware",
+      "Exhibitions & Events",
+      "Home & Living",
+      "Print",
+      "Phone & Technology",
+      "Leisure & Outdoors",
+      "Confectionery",
+      "Fun & Games",
+      "Glassware",
+      "Golf",
+      "Keyrings & Tools",
+      "Health & Personal",
+      "Office & Business",
+      // add any other promotional categories you included in RefactoredNavbar
+    ],
+    clothing: [
+      "Footwear",
+      "Jackets",
+      "Shirts",
+      "Jumpers",
+      "Bottoms",
+      "Clothing Accessories",
+      "Uniforms",
+      "Workwear",
+      "Sports Uniforms",
+    ],
+    headwear: ["Headwear"],
+  };
 
+  
   // Get configuration for this page type
   const urlCategory = searchParams.get("categoryName");
   const category = v1categories.filter((cat) => cat.name === urlCategory);

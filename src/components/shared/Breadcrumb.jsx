@@ -101,7 +101,7 @@ const Breadcrumb = () => {
           {/* Category */}
           {location.pathname === "/Spromotional" && (
             <Link
-              to="/category"
+              to="/ReturnGifts"
               className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
             >
               <p className="truncate">Category</p>
@@ -142,7 +142,7 @@ const Breadcrumb = () => {
 
           {/* Category */}
           {location.pathname === "/Spromotional" && (
-            <Link to="/category" className="flex items-center gap-1">
+            <Link to="/ReturnGifts" className="flex items-center gap-1">
               <p>Category</p>
               <MdKeyboardArrowRight className="text-xl" />
             </Link>

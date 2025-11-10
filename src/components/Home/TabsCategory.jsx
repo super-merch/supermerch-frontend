@@ -166,7 +166,7 @@ const TabsCategory = () => {
                   </div>
 
                   <div className="p-4">
-                    <h3 className="text-secondary text-base font-semibold group-hover:text-primary transition-colors duration-300 mb-2">
+                    <h3 className="text-secondary text-base font-semibold group-hover:text-primary transition-colors duration-300 mb-1">
                       {subCategory.label}
                     </h3>
                     <div className="flex items-center justify-between">
