@@ -4,7 +4,7 @@ import {
   getClothingAdditionalCost,
   getClothingPricing,
 } from "@/utils/utils";
-import React from "react";
+import React, { useEffect } from "react";
 import { IoCartOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { FaInfoCircle } from "react-icons/fa";
@@ -26,10 +26,77 @@ const PricingTab = ({
   setSelectedSize,
   single_product,
   setShowQuoteForm,
+  setQuantity,
+  selectedLeadTimeAddition,
+  setSelectedLeadTimeAddition,
 }) => {
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
   };
+  const uniquePriceGroups = availablePriceGroups.filter(
+    (group, index, self) =>
+      index ===
+      self.findIndex(
+        (t) =>
+          t.promodata_decoration &&
+          t.promodata_decoration === group.promodata_decoration
+      )
+  );
+
+  // Find all additions with the same promodata_decoration as the selected print method
+  const getLeadTimeOptions = () => {
+    if (!selectedPrintMethod || selectedPrintMethod.type !== "addition") {
+      return [];
+    }
+    const decoration = selectedPrintMethod.promodata_decoration;
+    if (!decoration) return [];
+
+    return availablePriceGroups.filter(
+      (group) =>
+        group.type === "addition" &&
+        group.promodata_decoration === decoration &&
+        group.lead_time
+    );
+  };
+
+  const leadTimeOptions = getLeadTimeOptions();
+  const hasMultipleLeadTimes = leadTimeOptions.length > 1;
+
+  // When print method changes, reset lead time selection
+  useEffect(() => {
+    if (selectedPrintMethod?.type === "addition" && hasMultipleLeadTimes) {
+      // Auto-select first lead time option if none selected
+      if (
+        !selectedLeadTimeAddition ||
+        selectedLeadTimeAddition.promodata_decoration !==
+          selectedPrintMethod.promodata_decoration
+      ) {
+        const firstOption = leadTimeOptions[0];
+        if (firstOption) {
+          setSelectedLeadTimeAddition(firstOption);
+          // Update selectedPrintMethod to use first option's price_breaks
+          setSelectedPrintMethod({
+            ...selectedPrintMethod,
+            price_breaks: firstOption.price_breaks,
+            setup: firstOption.setup,
+            lead_time: firstOption.lead_time,
+          });
+        }
+      }
+    }
+
+    if (selectedPrintMethod?.type === "base") {
+      setSelectedPrintMethod(uniquePriceGroups[0]);
+
+      setSelectedLeadTimeAddition(null);
+    } else {
+      setSelectedLeadTimeAddition(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPrintMethod?.key, hasMultipleLeadTimes]);
+
+  // Get the effective print method (use selectedLeadTimeAddition if available)
+  const effectivePrintMethod = selectedLeadTimeAddition || selectedPrintMethod;
 
   const getCleanPrintMethodName = (description) => {
     if (!description) return "";
@@ -41,15 +108,7 @@ const PricingTab = ({
     return cleaned.split(" (")[0].trim();
   };
 
-  const uniquePriceGroups = availablePriceGroups.filter(
-    (group, index, self) =>
-      index ===
-      self.findIndex(
-        (t) =>
-          t.promodata_decoration &&
-          t.promodata_decoration === group.promodata_decoration
-      )
-  );
+  console.log({ uniquePriceGroups });
   const isClothing = isProductCategory(single_product, "Clothing");
 
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
@@ -72,6 +131,8 @@ const PricingTab = ({
                 (method) => method.key === e.target.value
               );
               setSelectedPrintMethod(selected);
+              // Reset lead time selection when print method changes
+              setSelectedLeadTimeAddition(null);
               // Reset quantity to first price break of new selection
               if (selected?.price_breaks?.length > 0) {
                 setCurrentQuantity(selected.price_breaks[0].qty);
@@ -93,34 +154,47 @@ const PricingTab = ({
           </select>
         </div>
       )}
-      {/* {addOns.length > 0 && (
-        <div className="flex justify-between items-center gap-4">
-          <label htmlFor="print-method" className="w-full my-2  font-medium">
-            Add ons:
-          </label>
-          <select
-            id="print-method"
-            value={selectedPrintMethod?.key}
-            onChange={(e) => {
-              const selected = addOns.find(
-                (method) => method.key === e.target.value
+
+      {/* Lead Time Selection for Additions */}
+      {hasMultipleLeadTimes && (
+        <div className="flex flex-col gap-2 mt-3">
+          <label className="w-full font-medium text-black">Lead Time:</label>
+          <div className="flex flex-wrap gap-2">
+            {leadTimeOptions.map((option, index) => {
+              const isSelected =
+                selectedLeadTimeAddition?.key === option.key &&
+                selectedLeadTimeAddition?.lead_time === option.lead_time;
+              return (
+                <button
+                  key={option.key + index}
+                  onClick={() => {
+                    setSelectedLeadTimeAddition(option);
+                    // Update selectedPrintMethod to use this addition's price_breaks
+                    setSelectedPrintMethod({
+                      ...selectedPrintMethod,
+                      price_breaks: option.price_breaks,
+                      setup: option.setup,
+                      lead_time: option.lead_time,
+                    });
+                    // Reset to first price break
+                    if (option.price_breaks?.length > 0) {
+                      setCurrentQuantity(option.price_breaks[0].qty);
+                    }
+                  }}
+                  className={`px-2 py-1.5 rounded-md border text-sm font-medium transition-all ${
+                    isSelected
+                      ? "bg-secondary text-white shadow-md"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {option.lead_time}
+                </button>
               );
-              setSelectedPrintMethod(selected);
-              // Reset quantity to first price break of new selection
-              if (selected?.price_breaks?.length > 0) {
-                setCurrentQuantity(selected.price_breaks[0].qty);
-              }
-            }}
-            className="w-full px-2 py-2 border rounded-md outline-none pr-3"
-          >
-            {addOns.map((method, index) => (
-              <option key={method.key} value={method.key}>
-                {getTrimmedDescription(method.description)}
-              </option>
-            ))}
-          </select>
+            })}
+          </div>
         </div>
-      )} */}
+      )}
+
       {isClothing && parseSizing()?.sizes?.length > 1 && (
         <div className="flex flex-col w-full mb-3">
           <div className="flex justify-between items-center gap-4 my-2">
@@ -154,58 +228,10 @@ const PricingTab = ({
         </span>
       )}
 
-      {/* Clothing-specific pricing info */}
-      {/* {isClothing &&
-        selectedPrintMethod &&
-        (() => {
-          const clothingPricing = getClothingPricing(
-            selectedPrintMethod.description
-          );
-          return clothingPricing.perUnitCost > 0 ||
-            clothingPricing.setupFee > 0 ? (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3 mb-2">
-              <div className="flex items-start gap-2">
-                <FaInfoCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 mb-1">
-                    Clothing Print Pricing
-                  </p>
-                  <p className="text-xs text-gray-700 mb-1">
-                    • Setup Fee: ${clothingPricing.setupFee.toFixed(2)}{" "}
-                    (one-time charge)
-                  </p>
-                  <p className="text-xs text-gray-700">
-                    • Per Unit Cost: ${clothingPricing.perUnitCost.toFixed(2)}{" "}
-                    (added to each item)
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : null;
-        })()} */}
-
-      {/* <div className="flex justify-between items-center gap-4 mb-4 ">
-                      <label
-                        htmlFor="logo-color"
-                        className="w-full pt-3 mb-2 font-medium"
-                      >
-                        Logo Colour:
-                      </label>
-                      <select
-                        value={logoColor}
-                        onChange={(e) => setLogoColor(e.target.value)}
-                        id="logo-color"
-                        className="w-full px-2 py-2 border rounded-md outline-none"
-                      >
-                        <option>1 Colour Print</option>
-                        <option>2 Colour Print</option>
-                      </select>
-                    </div> */}
-      {/* Custom Quantity Input */}
       {(() => {
-        // Sort price breaks once for reuse
-        const sortedBreaks = selectedPrintMethod?.price_breaks
-          ? [...selectedPrintMethod.price_breaks].sort((a, b) => a.qty - b.qty)
+        // Sort price breaks once for reuse - use effectivePrintMethod
+        const sortedBreaks = effectivePrintMethod?.price_breaks
+          ? [...effectivePrintMethod.price_breaks].sort((a, b) => a.qty - b.qty)
           : [];
         const firstQuantity = sortedBreaks[0]?.qty;
         const showContactRow = sortedBreaks.length > 0 && firstQuantity > 2;
@@ -236,18 +262,17 @@ const PricingTab = ({
                   <td className="py-2 pr-4 align-middle text-md text-black">
                     0-{firstQuantity - 1}
                   </td>
-                  <td className="py-2 pr-4 align-middle text-md text-black">
-                    -
-                  </td>
-                  <td className="py-2 align-middle text-md text-black">
+
+                  <td className="py-2   text-md text-black" colSpan={2}>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setShowQuoteForm?.(true);
+                        setShowQuoteForm?.({ state: true, from: "lowMOQ" });
+                        setCurrentQuantity(0);
                       }}
                       className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-md transition-colors"
                     >
-                      Contact
+                      For Low MOQ, Contact Us
                     </button>
                   </td>
                 </tr>
@@ -255,14 +280,14 @@ const PricingTab = ({
               {sortedBreaks.map((item, i) => {
                 const baseProductPrice = getPriceForQuantity(item.qty);
                 let methodUnit =
-                  selectedPrintMethod.type === "base"
+                  effectivePrintMethod.type === "base"
                     ? item.price
                     : baseProductPrice + item.price;
 
                 // Add clothing-specific additional cost per unit if applicable
                 if (isClothing) {
                   const clothingAdditionalCost = getClothingAdditionalCost(
-                    selectedPrintMethod.description
+                    effectivePrintMethod.description
                   );
                   methodUnit += clothingAdditionalCost;
                 }
@@ -330,7 +355,7 @@ const PricingTab = ({
                 setCurrentQuantity(value);
                 // Find the appropriate price tier for this quantity
                 const sortedBreaks = [
-                  ...(selectedPrintMethod?.price_breaks || []),
+                  ...(effectivePrintMethod?.price_breaks || []),
                 ].sort((a, b) => a.qty - b.qty);
                 let newActiveIndex = 0;
                 for (let i = 0; i < sortedBreaks.length; i++) {

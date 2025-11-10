@@ -36,6 +36,7 @@ import OrderSummary from "./OrderSummary";
 import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
+import LeadTimeTab from "./LeadTime";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -159,7 +160,10 @@ const ProductDetails = () => {
   const [previewImage2, setPreviewImage2] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState("");
-  const [showQuoteForm, setShowQuoteForm] = useState(false);
+  const [showQuoteForm, setShowQuoteForm] = useState({
+    state: false,
+    from: "",
+  });
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const [isShiftPressed, setIsShiftPressed] = useState(false);
   const [isAPressed, setIsAPressed] = useState(false);
@@ -182,6 +186,8 @@ const ProductDetails = () => {
   const [logoColor, setLogoColor] = useState("1 Colour Print");
 
   const [selectedPrintMethod, setSelectedPrintMethod] = useState(null);
+  const [selectedLeadTimeAddition, setSelectedLeadTimeAddition] =
+    useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
   const [imageModel, setImageModel] = useState(false);
 
@@ -293,9 +299,7 @@ const ProductDetails = () => {
       }
 
       setAvailablePriceGroups(allGroups);
-      setSelectedPrintMethod(
-        allGroups.length === 1 ? allGroups[0] : allGroups[0]
-      );
+      setSelectedPrintMethod(allGroups[0]);
 
       // Initialize quantity and price based on first price break
       const initialMethod = allGroups[0];
@@ -702,7 +706,7 @@ const ProductDetails = () => {
         });
         setSelectedFile2(null);
         setQuoteLoading(false);
-        setShowQuoteForm(false);
+        setShowQuoteForm({ state: false, from: "" });
       } else {
         toast.error(data.message || "Something went wrong");
         setQuoteLoading(false);
@@ -749,7 +753,7 @@ const ProductDetails = () => {
       toast.error(
         "Product price not available contact us to get the price and place order."
       );
-      setShowQuoteForm(true);
+      setShowQuoteForm({ state: true, from: "quoteButton" });
       return;
     }
     e.preventDefault();
@@ -1023,7 +1027,7 @@ const ProductDetails = () => {
                                     className={`absolute inset-0 rounded-full ${
                                       isSelected
                                         ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
-                                        : "border border-gray-300"
+                                        : ""
                                     }`}
                                   ></div>
 
@@ -1097,6 +1101,7 @@ const ProductDetails = () => {
                   { key: "features", label: "Details" },
                   { key: "pricing", label: "Pricing" },
                   { key: "decoration", label: "Decoration" },
+                  { key: "leadTime", label: "Lead Time" },
                   { key: "shipping", label: "Shipping" },
                 ].map((tab) => (
                   <button
@@ -1140,6 +1145,8 @@ const ProductDetails = () => {
                       setSelectedSize,
                       single_product,
                       setShowQuoteForm,
+                      selectedLeadTimeAddition,
+                      setSelectedLeadTimeAddition,
                     }}
                   />
                 )}
@@ -1148,6 +1155,9 @@ const ProductDetails = () => {
                     single_product={single_product}
                     availablePriceGroups={availablePriceGroups}
                   />
+                )}
+                {activeInfoTab === "leadTime" && (
+                  <LeadTimeTab availablePriceGroups={availablePriceGroups} />
                 )}
                 {activeInfoTab === "shipping" && (
                   <ShippingTab single_product={single_product} />
@@ -1177,6 +1187,7 @@ const ProductDetails = () => {
             freightFee={freightFee}
             userEmail={userEmail}
             setupFee={setupFee}
+            setCurrentQuantity={setCurrentQuantity}
           />
         </div>
       </div>
@@ -1184,7 +1195,7 @@ const ProductDetails = () => {
       {/* Tabs moved above within the middle column for better UX */}
 
       {/* Quote Modal */}
-      {showQuoteForm && (
+      {showQuoteForm?.state && (
         <QuoteFormModal
           {...{
             product,
@@ -1212,6 +1223,8 @@ const ProductDetails = () => {
             setPreviewImage2,
             setNotRobot,
             setShowQuoteForm,
+            showQuoteForm,
+            setCurrentQuantity,
           }}
         />
       )}

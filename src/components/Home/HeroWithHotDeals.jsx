@@ -28,6 +28,7 @@ const HeroWithHotDeals = () => {
       buttonText: "Shop Now",
       // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",
+      url: "/shop",
     },
     {
       id: 2,
@@ -38,6 +39,7 @@ const HeroWithHotDeals = () => {
       buttonText: "Contact Us",
       // slide 2: image in public/pgHome.jpg
       imageUrl: `/pgHome.jpg`,
+      url: "/contact",
     },
     {
       id: 3,
@@ -48,6 +50,7 @@ const HeroWithHotDeals = () => {
       buttonText: "Contact Us",
       // slide 3: image in public/phHome1.jpg
       imageUrl: `/pgHome1.jpg`,
+      url: "/contact",
     },
   ];
 
@@ -144,7 +147,7 @@ const HeroWithHotDeals = () => {
                           <Button
                             variant="primary"
                             size="lg"
-                            onClick={() => navigate("/shop")}
+                            onClick={() => navigate(slide.url)}
                             className="rounded-lg"
                           >
                             {slide.buttonText}

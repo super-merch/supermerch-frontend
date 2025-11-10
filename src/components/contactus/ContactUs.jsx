@@ -74,7 +74,7 @@ const serviceCards = [
 
 const ContactUs = () => {
   return (
-    <section className="bg-gradient-to-br from-gray-50 via-white to-blue-50 py-16 lg:py-20">
+    <section className="bg-gradient-to-br from-gray-50 via-white to-blue-50 py-4">
       <div className="Mycontainer mx-auto px-4">
         {/* Breadcrumb Navigation */}
         <nav
