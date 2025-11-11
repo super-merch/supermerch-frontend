@@ -40,6 +40,7 @@ import Australia from "./pages/Australia";
 import HourProduction24 from "./pages/HourProduction24";
 import UploadArtwork from "./pages/UploadArtwork";
 import Terms from "./pages/Terms";
+import QuoteResponse from "./pages/QuoteResponse";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -102,6 +103,7 @@ const App = () => {
               element={<ShopPage category="allProducts" />}
             />
             <Route path="/24hr-production" element={<ShopPage category="24hr-production" />} />
+            <Route path="/quote/respond/:id" element={<QuoteResponse />} />
             <Route path="/sales" element={<ShopPage category="sales" />} />
             {/* <Route path="/Australia" element={<ShopPage category="australia" />} /> */}
             {/* SHOPPAGE  */}
