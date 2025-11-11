@@ -1166,7 +1166,7 @@ const SpromotionalNavigate = () => {
 
 
   const handleNameCategories = () => {
-    navigate(`/Spromotional?categoryName=${encodedCategoryName}&category=${categoryId}`);
+    navigate(`/promotional?categoryName=${encodedCategoryName}&category=${categoryId}`);
     setSelectedParamCategoryId(categoryId);
     // setActiveFilterCategory(subCategory)
     setCurrentPage(1);

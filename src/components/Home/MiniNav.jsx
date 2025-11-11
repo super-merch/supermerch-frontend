@@ -185,13 +185,13 @@ const MiniNav = () => {
   }, []);
 
   const route = [
-    { name: "Promotional", path: "/Spromotional" },
+    { name: "Promotional", path: "/promotional" },
     { name: "Clothing", path: "/Clothing" },
     { name: "Headwear", path: "/Headwear" },
-    { name: "Return Gifts", path: "/ReturnGifts" },
-    { name: "24 Hour production", path: "/production" },
+    { name: "Return Gifts", path: "/return-gifts" },
+    { name: "24 Hour production", path: "/24hr-production" },
     { name: "Sale", path: "/Sale" },
-    { name: "australia Made", path: "/Australia" },
+    { name: "australia Made", path: "/australia-made" },
   ];
 
   useEffect(() => {

@@ -151,7 +151,7 @@ export default function HowItWorks({ className = "" }) {
               Join thousands of satisfied customers who trust us with their
               promotional product needs.
             </p>
-            <Link to="/Spromotional">
+            <Link to="/return-gifts">
               <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Start Shopping Now
               </button>

@@ -158,13 +158,13 @@ const SMiniNav = () => {
 
   // Simplified route structure
   const route = [
-    { name: "Promotional", path: "/Spromotional" },
+    { name: "Promotional", path: "/promotional" },
     { name: "Clothing", path: "/Clothing" },
     { name: "Headwear", path: "/Headwear" },
-    { name: "Return Gifts", path: "/ReturnGifts" },
-    { name: "24 Hour production", path: "/production" },
+    { name: "Return Gifts", path: "/return-gifts" },
+    { name: "24 Hour production", path: "/24hr-production" },
     { name: "Sale", path: "/sales" },
-    { name: "Australia Made", path: "/Australia" },
+    { name: "Australia Made", path: "/australia-made" },
   ];
 
   useEffect(() => {
@@ -196,7 +196,7 @@ const SMiniNav = () => {
   }, [navbarLogout]);
 
   const productCategory = () => {
-    navigate(`/Spromotional`);
+    navigate(`/promotional`);
     const matchedProducts = products.filter((product) => {
       const typeId =
         product.product?.categorisation?.promodata_product_type?.type_id;
@@ -223,7 +223,7 @@ const SMiniNav = () => {
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
     navigate(
-      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}`
+      `/promotional?categoryName=${encodedTitleName}&category=${NameId}`
     );
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
@@ -240,7 +240,7 @@ const SMiniNav = () => {
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
     navigate(
-      `/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
+      `/promotional?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}`
     );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
