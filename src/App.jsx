@@ -19,15 +19,11 @@ import { AppContext } from "./context/AppContext";
 import Sidebar from "./userAdmin/Sidebar";
 import { ToastContainer } from "react-toastify";
 import BlogDetails from "./pages/BlogDetails";
-import PromotionalPage from "./components/miniNavLinks/promotionalComps/PromotionalPage";
-import SpromotionalPage from "./components/sminiNavLink/SpromotionalPage";
 import FavouritePage from "./pages/FavouritePage";
 import BestSellers from "./pages/BestSellers";
 import NewArrival from "./pages/NewArrival";
 import { HelmetProvider } from "react-helmet-async";
-import SalesPage from "./pages/SalesPage";
 import BestSellerPage from "./pages/BestSellerPage";
-import SearchPage from "./pages/SearchPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Success from "./pages/Success";
 import Cancel from "./pages/Cancel";
@@ -43,10 +39,6 @@ import TrackOrder from "./pages/TrackOrder";
 import Australia from "./pages/Australia";
 import HourProduction24 from "./pages/HourProduction24";
 import UploadArtwork from "./pages/UploadArtwork";
-import { useModals } from "./hooks/useModals";
-import HotDeals from "./pages/HotDeals";
-import HourProduction24Products from "./components/shop/HourProduction24Products";
-import AustraliaProducts from "./components/shop/AusProducts";
 import Terms from "./pages/Terms";
 
 export const ScrollToTop = () => {
@@ -91,7 +83,7 @@ const App = () => {
             {/* Akash */}
             {/* Other routes */}
             <Route
-              path="/Spromotional"
+              path="/promotional"
               element={<ShopPage category="promotional" />}
             />
 
@@ -106,18 +98,18 @@ const App = () => {
               element={<ShopPage category="headwear" />}
             />
             <Route
-              path="/ReturnGifts"
+              path="/return-gifts"
               element={<ShopPage category="allProducts" />}
             />
-            <Route path="/production" element={<ShopPage category="24hr-production" />} />
+            <Route path="/24hr-production" element={<ShopPage category="24hr-production" />} />
             <Route path="/sales" element={<ShopPage category="sales" />} />
-            <Route path="/Australia" element={<ShopPage category="australia" />} />
+            {/* <Route path="/Australia" element={<ShopPage category="australia" />} /> */}
             {/* SHOPPAGE  */}
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/trendings" element={<BestSellers />} />
-            <Route path="/australia-made" element={<Australia />} />
+            <Route path="/australia-made" element={<ShopPage category="australia" />} />
             <Route path="/hour-production" element={<HourProduction24 />} />
             <Route path="/search" element={<ShopPage category="search" />} />
             <Route path="/new-arrivals" element={<NewArrival />} />

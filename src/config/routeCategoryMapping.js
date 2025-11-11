@@ -23,13 +23,13 @@ export const ROUTE_CATEGORY_MAPPING = {
     categoryName: "Headwear",
     description: "Headwear Products",
   },
-  "/ReturnGifts": {
+  "/return-gifts": {
     type: "return-gifts",
     categoryId: null, // Return gifts might be a special category
     categoryName: "Return Gifts",
     description: "Return Gifts Products",
   },
-  "/production": {
+  "/24hr-production": {
     type: "24-hour-production",
     categoryId: null, // 24 Hour Production is based on product IDs, not category
     categoryName: "24 Hour Production",
@@ -41,7 +41,7 @@ export const ROUTE_CATEGORY_MAPPING = {
     categoryName: "Sale",
     description: "Sale Products",
   },
-  "/Australia": {
+  "/australia-made": {
     type: "australia-made",
     categoryId: null, // Australia Made is based on product IDs, not category
     categoryName: "Australia Made",

@@ -28,16 +28,16 @@ const Breadcrumb = () => {
     const pathname = location.pathname;
 
     // Special pages
-    if (pathname === "/australia-made" || pathname === "/Australia") {
+    if (pathname === "/australia-made" || pathname === "/australia-made") {
       return { pageName: "Australia Made", isSpecialPage: true };
     }
-    if (pathname === "/hour-production" || pathname === "/production") {
+    if (pathname === "/hour-production" || pathname === "/24hr-production") {
       return { pageName: "24 Hour Production", isSpecialPage: true };
     }
     if (pathname === "/Sale" || pathname === "/sales") {
       return { pageName: "Sale", isSpecialPage: true };
     }
-    if (pathname === "/ReturnGifts") {
+    if (pathname === "/return-gifts") {
       return { pageName: "Return Gifts", isSpecialPage: true };
     }
     if (pathname === "/search") {
@@ -66,16 +66,7 @@ const Breadcrumb = () => {
     if (categoryName && category) {
       // Navigate to the main category page
       const encodedCategoryName = encodeURIComponent(categoryName);
-      let targetRoute = "/Spromotional"; // Default fallback
-
-      if (categoryName === "Clothing") {
-        targetRoute = "/Clothing";
-      } else if (categoryName === "Headwear") {
-        targetRoute = "/Headwear";
-      } else if (categoryName === "Capital Equipment") {
-        targetRoute = "/Spromotional";
-      }
-
+      let targetRoute = "/promotional"; // Default fallback
       window.location.href = `${targetRoute}?categoryName=${encodedCategoryName}&category=${category}`;
       setSelectedParamCategoryId(category);
       setCurrentPage(1);
@@ -99,9 +90,9 @@ const Breadcrumb = () => {
           </Link>
 
           {/* Category */}
-          {location.pathname === "/Spromotional" && (
+          {location.pathname === "/promotional" && (
             <Link
-              to="/ReturnGifts"
+              to="/return-gifts"
               className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
             >
               <p className="truncate">Category</p>
@@ -141,8 +132,8 @@ const Breadcrumb = () => {
           </Link>
 
           {/* Category */}
-          {location.pathname === "/Spromotional" && (
-            <Link to="/ReturnGifts" className="flex items-center gap-1">
+          {location.pathname === "/promotional" && (
+            <Link to="/return-gifts" className="flex items-center gap-1">
               <p>Category</p>
               <MdKeyboardArrowRight className="text-xl" />
             </Link>
