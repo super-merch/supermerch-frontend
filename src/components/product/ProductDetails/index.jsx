@@ -1052,45 +1052,6 @@ const ProductDetails = () => {
                   </div>
                 )}
               </div>
-
-              <div className="md:w-1/3 flex justify-center items-center flex-wrap gap-2 p-1 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-200 to-emerald-200 rounded-full -translate-y-8 translate-x-8 opacity-30"></div>
-                <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-tr from-teal-200 to-green-200 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
-
-                <div className="relative z-10 flex items-center gap-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg text-white">
-                    $
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600 mb-1">
-                      Starting From
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-2xl font-extrabold text-green-600">
-                        $
-                        {isProductCategory(single_product, "Clothing")
-                          ? Number(
-                              getProductPrice(single_product, productId) + 8
-                            ).toFixed(2)
-                          : Number(
-                              getProductPrice(single_product, productId)
-                            ).toFixed(2)}
-                        <span className="text-xs text-gray-500">per unit</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-full">
-                    <CheckCheck className="w-4 h-4 text-green-700" />
-                    <span className="text-sm font-semibold text-green-700">
-                      Great Deal!
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Feature/Decoration/Pricing Tabs */}
