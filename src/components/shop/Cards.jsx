@@ -20,16 +20,49 @@ import ProductCard from "../Common/ProductCard";
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
 
 const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
-  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-  let endPage = startPage + maxVisiblePages - 1;
-  if (endPage > totalPages) {
-    endPage = totalPages;
-    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  // Always ensure current page is visible
+  // Calculate pages to show around current page (excluding page 1 and last page)
+
+  if (totalPages <= 2) {
+    // If only 2 pages total, no middle pages needed
+    return [];
   }
+
+  // Calculate how many pages to show on each side of current page
+  const pagesOnEachSide = Math.floor((maxVisiblePages - 1) / 2);
+
+  // Start from currentPage - pagesOnEachSide, but not less than 2
+  let startPage = Math.max(2, currentPage - pagesOnEachSide);
+  // End at currentPage + pagesOnEachSide, but not more than totalPages - 1
+  let endPage = Math.min(totalPages - 1, currentPage + pagesOnEachSide);
+
+  // If we have room, try to show more pages
+  const pagesNeeded = endPage - startPage + 1;
+  if (pagesNeeded < maxVisiblePages) {
+    // If near the start, extend to the right
+    if (startPage === 2) {
+      endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+    }
+    // If near the end, extend to the left
+    else if (endPage === totalPages - 1) {
+      startPage = Math.max(2, endPage - maxVisiblePages + 1);
+    }
+  }
+
+  // Final check: ensure current page is always included
+  if (currentPage < startPage) {
+    startPage = currentPage;
+  }
+  if (currentPage > endPage) {
+    endPage = currentPage;
+  }
+
+  // Build and return the pages array
   const pages = [];
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }
+
   return pages;
 };
 
@@ -528,119 +561,161 @@ const Cards = ({ category = "dress" }) => {
               />
             )}
           </div>
-          {totalPages > 1 && getProductsData?.length > 0 && (
-            <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination">
-              {/* Previous Button */}
-              <button
-                onClick={() => {
-                  const newPage = Math.max(currentPage - 1, 1);
-                  setPaginationData((prev) => ({
-                    ...prev,
-                    page: newPage,
-                    sendAttributes: false,
-                  }));
-                  updatePaginationInURL(newPage);
-                }}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <IoMdArrowBack className="text-lg sm:text-xl" />
-              </button>
+          {totalPages > 1 &&
+            getProductsData?.length > 0 &&
+            (() => {
+              // Calculate middle pages once to avoid inconsistencies
+              // Ensure we have valid values
+              const safeCurrentPage = Number(currentPage) || 1;
+              const safeTotalPages = Number(totalPages) || 1;
+              const safeMaxVisiblePages = Number(maxVisiblePages) || 6;
 
-              {/* Page 1 - Always show */}
-              <button
-                onClick={() => {
-                  setPaginationData((prev) => ({
-                    ...prev,
-                    page: 1,
-                    sendAttributes: false,
-                  }));
-                  updatePaginationInURL(1);
-                }}
-                className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
-                  currentPage === 1
-                    ? "bg-primary text-white border-blue-600"
-                    : "border-gray-300 hover:bg-gray-100"
-                }`}
-              >
-                1
-              </button>
+              const middlePages = getPaginationButtons(
+                safeCurrentPage,
+                safeTotalPages,
+                safeMaxVisiblePages
+              );
+              const showPage1Separately = !middlePages.includes(1);
+              const showLastPageSeparately =
+                safeTotalPages > 1 && !middlePages.includes(safeTotalPages);
+              const firstMiddlePage =
+                middlePages.length > 0 ? middlePages[0] : 0;
+              const lastMiddlePage =
+                middlePages.length > 0
+                  ? middlePages[middlePages.length - 1]
+                  : 0;
+              const showEllipsisBefore =
+                showPage1Separately && firstMiddlePage > 2;
+              const showEllipsisAfter =
+                showLastPageSeparately && lastMiddlePage < safeTotalPages - 1;
 
-              {/* Show ellipsis if there are hidden pages at the start */}
-              {currentPage > maxVisiblePages / 2 + 1 &&
-                totalPages > maxVisiblePages && (
-                  <span className="px-2 text-gray-500">...</span>
-                )}
+              // Ensure current page is always visible - if not in middlePages, add it
+              const displayPages = [...middlePages];
+              if (
+                !displayPages.includes(safeCurrentPage) &&
+                safeCurrentPage > 1 &&
+                safeCurrentPage < safeTotalPages
+              ) {
+                displayPages.push(safeCurrentPage);
+                displayPages.sort((a, b) => a - b);
+              }
 
-              {/* Middle pages */}
-              {getPaginationButtons(currentPage, totalPages, maxVisiblePages)
-                .filter((page) => page > 1 && page < totalPages).slice(0,2)
-                .map((page) => (
+              return (
+                <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination flex-wrap">
+                  {/* Previous Button */}
                   <button
-                    key={page}
                     onClick={() => {
+                      const newPage = Math.max(safeCurrentPage - 1, 1);
                       setPaginationData((prev) => ({
                         ...prev,
-                        page: page,
+                        page: newPage,
                         sendAttributes: false,
                       }));
-                      updatePaginationInURL(page);
+                      updatePaginationInURL(newPage);
                     }}
-                    className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
-                      currentPage === page
-                        ? "bg-primary text-white border-blue-600"
-                        : "border-gray-300 hover:bg-gray-100"
-                    }`}
+                    disabled={safeCurrentPage === 1}
+                    className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {page}
+                    <IoMdArrowBack className="text-lg sm:text-xl" />
                   </button>
-                ))}
 
-              {/* Show ellipsis if there are hidden pages at the end */}
-              {currentPage < totalPages - maxVisiblePages / 2 &&
-                totalPages > maxVisiblePages && (
-                  <span className="px-2 xs:px-1 text-gray-500">...</span>
-                )}
+                  {/* Page 1 - Show if not in middle range */}
+                  {showPage1Separately && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setPaginationData((prev) => ({
+                            ...prev,
+                            page: 1,
+                            sendAttributes: false,
+                          }));
+                          updatePaginationInURL(1);
+                        }}
+                        className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
+                          safeCurrentPage === 1
+                            ? "bg-primary text-white border-blue-600"
+                            : "border-gray-300 hover:bg-gray-100"
+                        }`}
+                      >
+                        1
+                      </button>
+                      {/* Show ellipsis if there's a gap between page 1 and middle pages */}
+                      {showEllipsisBefore && (
+                        <span className="px-2 text-gray-500">...</span>
+                      )}
+                    </>
+                  )}
 
-              {/* Last page - Always show if more than 1 page */}
-              {totalPages > 1 && (
-                <button
-                  onClick={() => {
-                    setPaginationData((prev) => ({
-                      ...prev,
-                      page: totalPages,
-                      sendAttributes: false,
-                    }));
-                    updatePaginationInURL(totalPages);
-                  }}
-                  className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
-                    currentPage === totalPages
-                      ? "bg-primary text-white border-blue-600"
-                      : "border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  {totalPages}
-                </button>
-              )}
+                  {/* Middle pages - Always include current page */}
+                  {displayPages.map((page) => (
+                    <button
+                      key={`page-${page}`}
+                      onClick={() => {
+                        setPaginationData((prev) => ({
+                          ...prev,
+                          page: page,
+                          sendAttributes: false,
+                        }));
+                        updatePaginationInURL(page);
+                      }}
+                      className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
+                        safeCurrentPage === page
+                          ? "bg-primary text-white border-blue-600"
+                          : "border-gray-300 hover:bg-gray-100"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
 
-              {/* Next Button */}
-              <button
-                onClick={() => {
-                  const newPage = Math.min(currentPage + 1, totalPages);
-                  setPaginationData((prev) => ({
-                    ...prev,
-                    page: newPage,
-                    sendAttributes: false,
-                  }));
-                  updatePaginationInURL(newPage);
-                }}
-                disabled={currentPage === totalPages}
-                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <IoMdArrowForward className="text-lg sm:text-xl" />
-              </button>
-            </div>
-          )}
+                  {/* Show ellipsis if there's a gap between middle pages and last page */}
+                  {showEllipsisAfter && (
+                    <span className="px-2 text-gray-500">...</span>
+                  )}
+
+                  {/* Last page - Show if not in middle range */}
+                  {showLastPageSeparately && (
+                    <button
+                      onClick={() => {
+                        setPaginationData((prev) => ({
+                          ...prev,
+                          page: safeTotalPages,
+                          sendAttributes: false,
+                        }));
+                        updatePaginationInURL(safeTotalPages);
+                      }}
+                      className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
+                        safeCurrentPage === safeTotalPages
+                          ? "bg-primary text-white border-blue-600"
+                          : "border-gray-300 hover:bg-gray-100"
+                      }`}
+                    >
+                      {safeTotalPages}
+                    </button>
+                  )}
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => {
+                      const newPage = Math.min(
+                        safeCurrentPage + 1,
+                        safeTotalPages
+                      );
+                      setPaginationData((prev) => ({
+                        ...prev,
+                        page: newPage,
+                        sendAttributes: false,
+                      }));
+                      updatePaginationInURL(newPage);
+                    }}
+                    disabled={safeCurrentPage === safeTotalPages}
+                    className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <IoMdArrowForward className="text-lg sm:text-xl" />
+                  </button>
+                </div>
+              );
+            })()}
         </div>
       </div>
     </>
