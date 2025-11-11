@@ -60,17 +60,17 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     const baseMenuItems = [
       {
         name: "Promotional",
-        path: "/Spromotional?categoryName=Promotional&category=PA",
+        path: "/Spromotional?categoryName=Bags&category=PA&type=Promotional",
         hasSubmenu: true,
       },
       {
         name: "Clothing",
-        path: "/Spromotional?categoryName=Clothing&category=PB",
+        path: "/Spromotional?categoryName=Bottoms&category=PB&type=Clothing",
         hasSubmenu: true,
       },
       {
         name: "Headwear",
-        path: "/Spromotional?categoryName=Headwear&category=PK",
+        path: "/Spromotional?categoryName=Headwear&category=PK&type=Headwear",
         hasSubmenu: true,
       },
       { name: "Return Gifts", path: "/ReturnGifts" },

@@ -1027,7 +1027,7 @@ const ProductDetails = () => {
                                     className={`absolute inset-0 rounded-full ${
                                       isSelected
                                         ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
-                                        : ""
+                                        : "border-[2px] border-gray-400/60"
                                     }`}
                                   ></div>
 
@@ -1057,7 +1057,7 @@ const ProductDetails = () => {
             {/* Feature/Decoration/Pricing Tabs */}
             <div className="mt-1 mb-0">
               {/* Tab headers */}
-              <div className="flex gap-2 border-b">
+              <div className="flex max-sm:justify-start max-sm:gap-1 sm:gap-2 overflow-x-auto border-b no-scrollbar">
                 {[
                   { key: "features", label: "Details" },
                   { key: "pricing", label: "Pricing" },
@@ -1068,7 +1068,7 @@ const ProductDetails = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveInfoTab(tab.key)}
-                    className={`px-4 py-2 text-md font-medium border-b-2 -mb-px transition-colors ${
+                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-md text-sm font-medium border-b-2 -mb-px transition-colors ${
                       activeInfoTab === tab.key
                         ? "border-primary text-primary"
                         : "border-transparent text-gray-600 hover:text-gray-900"

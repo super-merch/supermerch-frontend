@@ -32,6 +32,7 @@ const AppContextProvider = (props) => {
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
   const pendingParamMultiRequestsRef = useRef({});
+  const [blogLoading, setBlogLoading] = useState(false);
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
@@ -1463,11 +1464,14 @@ const AppContextProvider = (props) => {
 
   const fetchBlogs = async () => {
     try {
+      setBlogLoading(true);
       const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs`);
       setBlogs(data.blogs);
+      setBlogLoading(false);
     } catch (error) {
       toast.error(error.message);
       console.error(error);
+      setBlogLoading(false)
     }
   };
 
@@ -1654,7 +1658,7 @@ const AppContextProvider = (props) => {
     options,
     categoryProducts,
     fetchDiscountedProducts,
-
+    blogLoading,
     discountedProducts,
     fetchMultipleBestSellerPages,
     setCategoryProducts,

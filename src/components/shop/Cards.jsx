@@ -78,6 +78,7 @@ const Cards = ({ category = "dress" }) => {
   const isSalesPage = category === "sales";
   const isSearch = category === "search";
   const isAllProducts = category === "allProducts";
+  const [searchParams, setSearchParams] = useSearchParams();
   const isSpecialPage =
     isAustraliaPage || is24HrPage || isSalesPage || isSearch;
 
@@ -85,6 +86,8 @@ const Cards = ({ category = "dress" }) => {
     (state) => state.filters
   );
   const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
+  const urlMinPrice = searchParams.get("minPrice");
+  const urlMaxPrice = searchParams.get("maxPrice");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,7 +111,6 @@ const Cards = ({ category = "dress" }) => {
     }
   }, [getProducts]);
 
-  const [searchParams, setSearchParams] = useSearchParams();
   const getProductsData = getProducts?.data;
 
   // Helper function to update URL with pagination
@@ -157,8 +159,13 @@ const Cards = ({ category = "dress" }) => {
 
     if (categoryChanged) {
       setSortOption("");
-      dispatch(setMinPrice(0));
-      dispatch(setMaxPrice(1000));
+      if (urlMinPrice && urlMaxPrice) {
+        dispatch(setMinPrice(Number(urlMinPrice)));
+        dispatch(setMaxPrice(Number(urlMaxPrice)));
+      } else {
+        dispatch(setMinPrice(0));
+        dispatch(setMaxPrice(1000));
+      }
 
       if (urlCategoryParam) {
         if (
@@ -189,7 +196,13 @@ const Cards = ({ category = "dress" }) => {
             sortOption: "",
             colors: [],
             attributes: null,
-            pricerange: undefined,
+            pricerange:
+              urlMinPrice && urlMaxPrice
+                ? {
+                    min_price: Number(urlMinPrice),
+                    max_price: Number(urlMaxPrice),
+                  }
+                : undefined,
           }));
         }
       } else if (isSearchRoute) {
@@ -520,7 +533,7 @@ const Cards = ({ category = "dress" }) => {
                 <SkeletonLoadingCards key={index} />
               ))
             ) : productsData?.length > 0 ? (
-              <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2">
+              <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2 ">
                 {productsData?.map((product) => {
                   return (
                     <ProductCard
