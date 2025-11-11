@@ -79,7 +79,7 @@ const Category = () => {
     }
     const encodedTitleName = encodeURIComponent(titleName); // Encode the title
     const encodedLabelName = encodeURIComponent(labelName); // Encode the title
-    navigate(`/Spromotional?categoryName=${encodedTitleName}&category=${categoryId}&label=${encodedLabelName}&subCategory=${subCategory}`);
+    navigate(`/promotional?categoryName=${encodedTitleName}&category=${categoryId}&label=${encodedLabelName}&subCategory=${subCategory}`);
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory)
     setCurrentPage(1);

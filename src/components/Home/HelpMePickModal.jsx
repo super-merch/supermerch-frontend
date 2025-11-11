@@ -106,7 +106,7 @@ const HelpMePickModal = ({ isOpen, onClose }) => {
     dispatch(setMinPrice(selectedPrice.min));
     dispatch(setMaxPrice(selectedPrice.max));
     navigate(
-      `/Spromotional?categoryName=${encodedCategoryName}&category=${selectedSubCategory.id}&minPrice=${selectedPrice.min}&maxPrice=${selectedPrice.max}`
+      `/promotional?categoryName=${encodedCategoryName}&category=${selectedSubCategory.id}&minPrice=${selectedPrice.min}&maxPrice=${selectedPrice.max}`
     );
     //scroll to top smooth
     window.scrollTo({

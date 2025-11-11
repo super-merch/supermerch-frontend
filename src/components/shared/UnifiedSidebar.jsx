@@ -240,7 +240,7 @@ const UnifiedSidebar = ({
     setPaginationData((prev) => ({ ...prev, pricerange: undefined, page: 1 }));
 
     // Determine the correct route based on the category name
-    let targetRoute = "/Spromotional"; // Default fallback
+    let targetRoute = "/promotional"; // Default fallback
     let type = dropdownCategoryMap.promotional.includes(categoryName)
       ? "promotional"
       : dropdownCategoryMap.clothing.includes(categoryName)

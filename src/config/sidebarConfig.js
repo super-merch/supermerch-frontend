@@ -74,13 +74,12 @@ export const PAGE_TYPES = {
 // Helper function to determine page type from route
 export const getPageTypeFromRoute = (pathname) => {
   const routeMap = {
-    "/Spromotional": PAGE_TYPES.PROMOTIONAL,
+    "/promotional": PAGE_TYPES.PROMOTIONAL,
     "/Clothing": PAGE_TYPES.CLOTHING,
     "/Headwear": PAGE_TYPES.HEADWEAR,
-    "/ReturnGifts": PAGE_TYPES.RETURN_GIFTS,
-    "/production": PAGE_TYPES.HOUR_PRODUCTION,
+    "/return-gifts": PAGE_TYPES.RETURN_GIFTS,
+    "/24hr-production": PAGE_TYPES.HOUR_PRODUCTION,
     "/sales": PAGE_TYPES.SALE,
-    "/Australia": PAGE_TYPES.AUSTRALIA_MADE,
     "/australia-made": PAGE_TYPES.AUSTRALIA_MADE,
     "/hour-production": PAGE_TYPES.HOUR_PRODUCTION,
   };

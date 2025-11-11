@@ -60,23 +60,23 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     const baseMenuItems = [
       {
         name: "Promotional",
-        path: "/Spromotional?categoryName=Bags&category=PA&type=Promotional",
+        path: "/promotional?categoryName=Bags&category=PA&type=Promotional",
         hasSubmenu: true,
       },
       {
         name: "Clothing",
-        path: "/Spromotional?categoryName=Bottoms&category=PB&type=Clothing",
+        path: "/promotional?categoryName=Bottoms&category=PB&type=Clothing",
         hasSubmenu: true,
       },
       {
         name: "Headwear",
-        path: "/Spromotional?categoryName=Headwear&category=PK&type=Headwear",
+        path: "/promotional?categoryName=Headwear&category=PK&type=Headwear",
         hasSubmenu: true,
       },
-      { name: "Return Gifts", path: "/ReturnGifts" },
-      { name: "24hr Prod", path: "/production" },
+      { name: "Return Gifts", path: "/return-gifts" },
+      { name: "24hr Prod", path: "/24hr-production" },
       { name: "Deals", path: "/sales" },
-      { name: "Australia Made", path: "/Australia" },
+      { name: "Australia Made", path: "/australia-made" },
     ];
 
     return baseMenuItems.map((item) => {
@@ -960,7 +960,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(applyFilters());
     //also add weather it is promotional, clothing or headwear in url in type
     navigate(
-      `/Spromotional?categoryName=${encodedTitleName}&category=${NameId}&type=${encodedType}`
+      `/promotional?categoryName=${encodedTitleName}&category=${NameId}&type=${encodedType}`
     );
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
@@ -982,14 +982,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(applyFilters());
 
     // Determine the correct route based on the category name
-    let targetRoute = "/Spromotional"; // Default fallback
+    let targetRoute = "/promotional"; // Default fallback
 
     // if (titleName === "Clothing") {
     //   targetRoute = "/Clothing";
     // } else if (titleName === "Headwear") {
     //   targetRoute = "/Headwear";
     // } else if (titleName === "Capital Equipment") {
-    //   targetRoute = "/Spromotional"; // Keep as promotional for now
+    //   targetRoute = "/promotional"; // Keep as promotional for now
     // }
     // For all other categories, use /Spromotional
 

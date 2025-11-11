@@ -90,7 +90,7 @@ const ShopOurBestSellers = ({ changeBg = false }) => {
                 <span className="sm:hidden">Stationery</span>
               </button>{" "}
               <Link
-                to={"/Spromotional"}
+                to={"/return-gifts"}
                 className="flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-smallHeader  px-3 py-2  rounded-lg  transition-colors duration-200 w-content"
               >
                 See All
