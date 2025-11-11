@@ -85,11 +85,12 @@ const PricingTab = ({
       }
     }
 
-    if (selectedPrintMethod?.type === "base") {
-      setSelectedPrintMethod(uniquePriceGroups[0]);
+    // if (selectedPrintMethod?.type === "base") {
+    //   // setSelectedPrintMethod(uniquePriceGroups[0]);
 
-      setSelectedLeadTimeAddition(null);
-    } else {
+    //   setSelectedLeadTimeAddition(null);
+    // }
+    else {
       setSelectedLeadTimeAddition(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,7 +109,6 @@ const PricingTab = ({
     return cleaned.split(" (")[0].trim();
   };
 
-  console.log({ uniquePriceGroups });
   const isClothing = isProductCategory(single_product, "Clothing");
 
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
