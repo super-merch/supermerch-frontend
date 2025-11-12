@@ -82,7 +82,16 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                       key={index}
                       className="mb-1 list-disc list-inside flex items-center gap-2"
                     >
-                      <FaCheckCircle /> {attribute}
+                      <FaCheckCircle />{" "}
+                      <>
+                        <span className="font-semibold">
+                          {attribute.split(":")[0]}
+                        </span>{" "}
+                        :
+                        <span className="font-normal">
+                          {attribute.split(":")[1]}
+                        </span>
+                      </>
                     </p>
                   )
                 )}
