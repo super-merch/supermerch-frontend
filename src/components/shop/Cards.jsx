@@ -82,9 +82,11 @@ const Cards = ({ category = "dress" }) => {
 
   // Helper function to update URL with pagination
   const updatePaginationInURL = (newPage) => {
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.set("page", newPage.toString());
-    setSearchParams(currentParams);
+    setSearchParams(prev => {
+    const newParams = new URLSearchParams(prev);
+    newParams.set("page", newPage.toString());
+    return newParams;
+  });
 
     // Scroll to top of the page
     window.scrollTo({
@@ -110,6 +112,12 @@ const Cards = ({ category = "dress" }) => {
     const urlCategoryParam = searchParams.get("category");
     const urlType = searchParams.get("type");
     const isSearchRoute = location.pathname.includes("/search");
+    const urlSort = searchParams.get("sort") || "";
+    const urlMinPrice = searchParams.get("minPrice");
+    const urlMaxPrice = searchParams.get("maxPrice");
+    const urlColors = searchParams.get("colors");
+    const urlAttrName = searchParams.get("attrName");
+    const urlAttrValue = searchParams.get("attrValue");
     let limit = 9;
     if (window.innerWidth <= 1025) {
       limit = 10;
@@ -125,7 +133,7 @@ const Cards = ({ category = "dress" }) => {
     prevCategoryKeyRef.current = currentCategoryKey;
 
     if (categoryChanged) {
-      setSortOption("");
+      setSortOption(urlSort || "");
       if (urlMinPrice && urlMaxPrice) {
         dispatch(setMinPrice(Number(urlMinPrice)));
         dispatch(setMaxPrice(Number(urlMaxPrice)));
@@ -160,9 +168,12 @@ const Cards = ({ category = "dress" }) => {
             limit,
             category: null,
             page: pageFromURL,
-            sortOption: "",
-            colors: [],
-            attributes: null,
+            sortOption: urlSort,
+            colors: urlColors ? urlColors.split(",") : [],
+            attributes:
+              urlAttrName && urlAttrValue
+                ? { name: urlAttrName, value: urlAttrValue }
+                : null,
             pricerange:
               urlMinPrice && urlMaxPrice
                 ? {
@@ -181,21 +192,39 @@ const Cards = ({ category = "dress" }) => {
           limit,
           searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
-          sortOption: "",
-          colors: [],
-          attributes: null,
-          pricerange: undefined,
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
         }));
       } else {
         setPaginationData((prev) => ({
           ...prev,
           category: category,
           page: pageFromURL,
-          sortOption: "",
-          colors: [],
           limit,
-          attributes: null,
-          pricerange: undefined,
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
           sendAttributes: false,
         }));
       }
@@ -215,7 +244,19 @@ const Cards = ({ category = "dress" }) => {
           page: pageFromURL,
           limit,
           // preserve prev.sortOption
-          sortOption: prev?.sortOption ?? "",
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
           sendAttributes: false,
         }));
       } else {
@@ -225,7 +266,19 @@ const Cards = ({ category = "dress" }) => {
           category: null,
           limit,
           page: pageFromURL,
-          sortOption: prev?.sortOption ?? "",
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
           sendAttributes: false,
         }));
       }
@@ -237,7 +290,19 @@ const Cards = ({ category = "dress" }) => {
         searchTerm: searchParams.get("search"),
         limit,
         productTypeId: searchParams.get("categoryId"),
-        sortOption: prev?.sortOption ?? "",
+        sortOption: urlSort,
+        colors: urlColors ? urlColors.split(",") : [],
+        attributes:
+          urlAttrName && urlAttrValue
+            ? { name: urlAttrName, value: urlAttrValue }
+            : null,
+        pricerange:
+          urlMinPrice && urlMaxPrice
+            ? {
+                min_price: Number(urlMinPrice),
+                max_price: Number(urlMaxPrice),
+              }
+            : undefined,
         sendAttributes: false,
       }));
     } else {
@@ -246,7 +311,19 @@ const Cards = ({ category = "dress" }) => {
         category: category,
         limit,
         page: pageFromURL,
-        sortOption: prev?.sortOption ?? "",
+        sortOption: urlSort,
+        colors: urlColors ? urlColors.split(",") : [],
+        attributes:
+          urlAttrName && urlAttrValue
+            ? { name: urlAttrName, value: urlAttrValue }
+            : null,
+        pricerange:
+          urlMinPrice && urlMaxPrice
+            ? {
+                min_price: Number(urlMinPrice),
+                max_price: Number(urlMaxPrice),
+              }
+            : undefined,
         sendAttributes: false,
       }));
     }
@@ -295,10 +372,18 @@ const Cards = ({ category = "dress" }) => {
 
   const handleSortSelection = (option) => {
     setSortOption(option);
+    const currentParams = new URLSearchParams(searchParams);
+    if (option === "relevancy") {
+      currentParams.delete("sort");
+    } else {
+      currentParams.set("sort", option);
+    }
+    currentParams.set("page", "1");
+    setSearchParams(currentParams);
 
     setPaginationData((prev) => ({
       ...prev,
-      sortOption: option === "revelancy" ? "" : option,
+      sortOption: option === "relevancy" ? "" : option,
       page: 1,
       sendAttributes: false,
     }));
@@ -388,9 +473,9 @@ const Cards = ({ category = "dress" }) => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("revelancy")}
+                        onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-b-lg ${
-                          sortOption === "revelancy" ? "bg-gray-50" : ""
+                          sortOption === "relevancy" ? "bg-gray-50" : ""
                         }`}
                       >
                         Relevancy
@@ -474,7 +559,7 @@ const Cards = ({ category = "dress" }) => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("revelancy")}
+                        onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "highToLow" ? "bg-gray-100" : ""
                         }`}
@@ -574,7 +659,8 @@ const Cards = ({ category = "dress" }) => {
 
               {/* Middle pages */}
               {getPaginationButtons(currentPage, totalPages, maxVisiblePages)
-                .filter((page) => page > 1 && page < totalPages).slice(0,2)
+                .filter((page) => page > 1 && page < totalPages)
+                .slice(0, 2)
                 .map((page) => (
                   <button
                     key={page}

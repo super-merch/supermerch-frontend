@@ -1,6 +1,6 @@
 import { AppContext } from "@/context/AppContext";
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import allAttributes from "./attributes";
 
@@ -9,6 +9,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [expandedAttributes, setExpandedAttributes] = useState({});
   const [cachedAttributes, setCachedAttributes] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const category = params.get("category");
@@ -56,17 +57,41 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
 
   // Reset selected filter when location changes
   useEffect(() => {
-    setSelectedFilter(null);
-    setPaginationData((prev) => ({ ...prev, attributes: null }));
+    const urlAttrName = params.get("attrName");
+    const urlAttrValue = params.get("attrValue");
+    
+    if (urlAttrName && urlAttrValue) {
+      setSelectedFilter({ name: urlAttrName, value: urlAttrValue });
+    } else {
+      setSelectedFilter(null);
+    }
+    
+    setPaginationData((prev) => ({ 
+      ...prev, 
+      attributes: urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null 
+    }));
   }, [location.pathname, category, search]);
 
   const handleCheckboxChange = (attributeName, value) => {
-    // Check if this filter is already selected
     const isCurrentlySelected =
       selectedFilter?.name === attributeName && selectedFilter?.value === value;
 
+    setSearchParams(prevParams => {
+      const newParams = new URLSearchParams(prevParams);
+      
+      if (isCurrentlySelected) {
+        newParams.delete("attrName");
+        newParams.delete("attrValue");
+      } else {
+        newParams.set("attrName", attributeName);
+        newParams.set("attrValue", value);
+      }
+      
+      newParams.set("page", "1");
+      return newParams;
+    });
+    
     if (isCurrentlySelected) {
-      // Deselect the filter
       setSelectedFilter(null);
       setPaginationData((prev) => ({
         ...prev,
@@ -74,9 +99,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
         attributes: null,
         sendAttributes: false,
       }));
-      // toast.info(`${value} filter removed from ${attributeName}`);
     } else {
-      // Select new filter (only one at a time)
       const newFilter = { name: attributeName, value: value };
       setSelectedFilter(newFilter);
       setPaginationData((prev) => ({
@@ -85,16 +108,14 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
         attributes: newFilter,
         sendAttributes: false,
       }));
-      // toast.success(`${value} filter applied to ${attributeName}`);
 
-      // Smooth scroll to top
       window.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     }
+    
 
-    // Optional: Close sidebar on mobile after selection
     if (toggleSidebar && window.innerWidth <= 1025) {
       toggleSidebar();
     }
@@ -170,7 +191,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
                         className="flex items-center gap-2 cursor-pointer group"
                       >
                         <input
-                          type="checkbox"
+                          type="radio"
                           checked={isChecked}
                           onChange={() =>
                             handleCheckboxChange(attribute.name, value)
