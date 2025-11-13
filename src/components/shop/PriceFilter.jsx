@@ -1,23 +1,36 @@
 // PriceFilter.jsx — updated (only show changed file)
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
+import { useSearchParams } from "react-router-dom";
 
 const PriceFilter = ({toggleSidebar}) => {
   const dispatch = useDispatch();
   const { setPaginationData } = useContext(AppContext);
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const [localMin, setLocalMin] = useState("");
   const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
 
+  useEffect(()=>{
+    setLocalMin(searchParams.get("minPrice") || "");
+    setLocalMax(searchParams.get("maxPrice") || "");
+  },[]) 
+
   const applyRangeToBackend = (minValue, maxValue) => {
-    // update redux for UI + update AppContext paginationData so backend will be called
     dispatch(setMinPrice(minValue));
     dispatch(setMaxPrice(maxValue));
+
+      setSearchParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.set("minPrice", minValue.toString());
+        newParams.set("maxPrice", maxValue.toString());
+        newParams.set("page", "1");
+        return newParams;
+      });
 
     setPaginationData((prev) => ({
       ...prev,
@@ -46,9 +59,6 @@ const PriceFilter = ({toggleSidebar}) => {
 
     setIsApplying(true);
     applyRangeToBackend(minValue, maxValue);
-
-    setLocalMin("");
-    setLocalMax("");
     if (window.innerWidth <= 1025) toggleSidebar();
     setTimeout(() => setIsApplying(false), 800);
   };
@@ -71,6 +81,11 @@ const PriceFilter = ({toggleSidebar}) => {
               type="text"
               placeholder="0"
               value={localMin}
+              onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleApplyCustomRange()
+                    }
+                  }}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
               onChange={(e) => setLocalMin(e.target.value)}
             />
@@ -80,6 +95,11 @@ const PriceFilter = ({toggleSidebar}) => {
             <input
               type="text"
               placeholder="1000"
+              onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleApplyCustomRange()
+                    }
+                  }}
               value={localMax}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
               onChange={(e) => setLocalMax(e.target.value)}
