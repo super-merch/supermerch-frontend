@@ -17,8 +17,6 @@ const Clothing = ({ activeTab }) => {
   const [error, setError] = useState(null);
   const {
     marginApi,
-    productionIds,
-    australiaIds,
     fetchProductsCategory,
     productsCategoryLoading,
     productsCategory,
@@ -128,8 +126,6 @@ const Clothing = ({ activeTab }) => {
                         maxPrice={maxPrice}
                         discountPct={discountPct}
                         isGlobalDiscount={isGlobalDiscount}
-                        productionIds={productionIds}
-                        australiaIds={australiaIds}
                         favSet={favSet}
                         isHovered={cardHover === product.meta.id}
                         onClickView={() =>

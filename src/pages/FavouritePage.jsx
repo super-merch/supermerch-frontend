@@ -12,7 +12,6 @@ import { getProductPrice, backgroundColor } from "@/utils/utils";
 
 const FavouritePage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const { productionIds, australiaIds } = useContext(AppContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
@@ -96,8 +95,6 @@ const FavouritePage = () => {
                 <ProductCard
                   key={product.meta.id}
                   product={product}
-                  productionIds={productionIds}
-                  australiaIds={australiaIds}
                   favSet={favSet}
                   getProductPrice={getProductPrice}
                   backgroundColor={backgroundColor}
