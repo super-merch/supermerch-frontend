@@ -16,8 +16,6 @@ const ProductCard = ({
   maxPrice,
   discountPct,
   isGlobalDiscount,
-  productionIds,
-  australiaIds,
   favSet,
   onClickView,
   onMouseEnter,
@@ -43,6 +41,25 @@ const ProductCard = ({
     unDiscountedPrice =
       getProductPrice(product, product.meta.id) / (1 - discountPct / 100);
   }
+  const is24HrProduct = (() => {
+    const groups = product?.product?.prices?.price_groups ?? [];
+    if (!Array.isArray(groups) || groups.length === 0) return false;
+
+    const re = /(same\s*-?\s*day|24\s*hrs?|24\s*hours?)/i;
+
+    return groups.some((g) => {
+      // check base_price.lead_time
+      if (re.test(String(g?.base_price?.lead_time ?? ""))) return true;
+
+      // check additions[].lead_time
+      if (Array.isArray(g?.additions)) {
+        if (g.additions.some((a) => re.test(String(a?.lead_time ?? ""))))
+          return true;
+      }
+
+      return false;
+    });
+  })();
   return (
     <div
       onMouseEnter={() => setCardHover(product.meta.id)}
@@ -53,20 +70,27 @@ const ProductCard = ({
         className="text-center"
       >
         <div className="bg-white relative border border-border2 hover:border-1 transition-all duration-200 hover:border-primary  max-h-[320px] sm:max-h-[400px] h-full group rounded-lg">
-          <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
-            {(productionIds?.has(productId) ||
-              productionIds?.has(String(productId))) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-                <Clock />
-                <span>24Hr Production</span>
+          <div
+            className="absolute left-1 top-1 sm:left-1.5 sm:top-1.5 z-20 flex flex-col gap-1 pointer-events-none"
+            style={{ maxWidth: "calc(100% - 50px)" }}
+          >
+            {is24HrProduct && (
+              <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-green-200 shadow-sm overflow-hidden">
+                <Clock className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+                <span className="truncate max-w-[40px] sm:max-w-none">
+                  24Hr
+                </span>
               </span>
             )}
 
-            {(australiaIds?.has(productId) ||
-              australiaIds?.has(String(productId))) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-                <Flag />
-                <span>Australia Made</span>
+            {product?.product?.categorisation?.promodata_attributes?.some(
+              (item) => item === "Local Factors: Made In Australia"
+            ) && (
+              <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
+                <Flag className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+                <span className="truncate max-w-[50px] sm:max-w-none">
+                  AU Made
+                </span>
               </span>
             )}
           </div>

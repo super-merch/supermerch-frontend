@@ -20,10 +20,7 @@ import Sidebar from "./userAdmin/Sidebar";
 import { ToastContainer } from "react-toastify";
 import BlogDetails from "./pages/BlogDetails";
 import FavouritePage from "./pages/FavouritePage";
-import BestSellers from "./pages/BestSellers";
-import NewArrival from "./pages/NewArrival";
 import { HelmetProvider } from "react-helmet-async";
-import BestSellerPage from "./pages/BestSellerPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Success from "./pages/Success";
 import Cancel from "./pages/Cancel";
@@ -36,8 +33,6 @@ import PMSColorChart from "./pages/PMS";
 import HelpCenter from "./pages/HelpCenter";
 import MailOffer from "./pages/MailOffer";
 import TrackOrder from "./pages/TrackOrder";
-import Australia from "./pages/Australia";
-import HourProduction24 from "./pages/HourProduction24";
 import UploadArtwork from "./pages/UploadArtwork";
 import Terms from "./pages/Terms";
 import QuoteResponse from "./pages/QuoteResponse";
@@ -105,23 +100,17 @@ const App = () => {
             />
             <Route path="/quote/respond/:id" element={<QuoteResponse />} />
             <Route path="/sales" element={<ShopPage category="sales" />} />
-            {/* <Route path="/Australia" element={<ShopPage category="australia" />} /> */}
             {/* SHOPPAGE  */}
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/shop" element={<ShopPage general={true} />} />
-            <Route path="/trendings" element={<BestSellers />} />
             <Route
               path="/australia-made"
               element={<ShopPage category="australia" />}
             />
-            <Route path="/hour-production" element={<HourProduction24 />} />
             <Route path="/search" element={<ShopPage category="search" />} />
-            <Route path="/new-arrivals" element={<NewArrival />} />
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
-            {/* <Route path="/sales" element={<SalesPage />} /> */}
-            <Route path="/bestSellers" element={<BestSellerPage />} />
             {!token && <Route path="/signup" element={<Signup />} />}
             {!token && <Route path="/login" element={<Login />} />}
             <Route path="/cart" element={<Cart />} />

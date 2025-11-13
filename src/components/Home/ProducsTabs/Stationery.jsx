@@ -23,7 +23,7 @@ const Stationery = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi, productionIds, australiaIds } = useContext(AppContext);
+  const { marginApi} = useContext(AppContext);
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
   const productsCacheRef = useRef({});
   const pendingClothingRequestsRef = useRef({});
@@ -290,8 +290,6 @@ const Stationery = ({ activeTab }) => {
                         maxPrice={maxPrice}
                         discountPct={discountPct}
                         isGlobalDiscount={isGlobalDiscount}
-                        productionIds={productionIds}
-                        australiaIds={australiaIds}
                         favSet={favSet}
                         isHovered={cardHover === product.meta.id}
                         onClickView={() =>

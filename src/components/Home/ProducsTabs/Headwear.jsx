@@ -23,7 +23,7 @@ const Headwear = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi, productionIds, australiaIds } = useContext(AppContext);
+  const { marginApi } = useContext(AppContext);
   const productsCacheRef = useRef({});
   const pendingClothingRequestsRef = useRef({});
 
@@ -296,8 +296,6 @@ const Headwear = ({ activeTab }) => {
                         maxPrice={maxPrice}
                         discountPct={discountPct}
                         isGlobalDiscount={isGlobalDiscount}
-                        productionIds={productionIds}
-                        australiaIds={australiaIds}
                         favSet={favSet}
                         isHovered={cardHover === product.meta.id}
                         onClickView={() =>

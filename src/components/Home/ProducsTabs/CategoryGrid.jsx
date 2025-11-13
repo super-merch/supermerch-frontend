@@ -18,10 +18,6 @@ const CategoryGrid = ({ activeTab }) => {
   const dispatch = useDispatch();
 
   const {
-    marginApi,
-    productionIds,
-    australiaIds,
-    // fetchers and state from context
     fetchProducts,
     products,
     fetchProductsCategory,

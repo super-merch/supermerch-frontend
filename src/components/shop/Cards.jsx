@@ -52,14 +52,10 @@ const Cards = ({ category = "dress" }) => {
   const pageType = getPageTypeFromRoute(location.pathname);
 
   const {
-    marginApi,
-    productionIds,
-    australiaIds,
     paginationData,
     setPaginationData,
     getProducts,
     productsLoading,
-    refetchProducts,
     backednUrl,
   } = useContext(AppContext);
 
