@@ -21,6 +21,8 @@ const Cards = ({ category = "dress" }) => {
   const dropdownRef = useRef(null);
   const selectedCategory = useSelector((state) => state.filters.categoryId);
   const [cardHover, setCardHover] = useState(null);
+  const location = useLocation();
+
   const isAustraliaPage = category === "australia";
   const is24HrPage = category === "24hr-production";
   const isSalesPage = category === "sales";
@@ -29,7 +31,16 @@ const Cards = ({ category = "dress" }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isSpecialPage =
     isAustraliaPage || is24HrPage || isSalesPage || isSearch;
+  const urlCategoryParam = searchParams.get("category");
+  const pageFromURL = parseInt(searchParams.get("page")) || 1;
 
+  const urlType = searchParams.get("type");
+  const isSearchRoute = location.pathname.includes("/search");
+  const limit = 20;
+  const urlSort = searchParams.get("sort") || "";
+  const urlColors = searchParams.get("colors");
+  const urlAttrName = searchParams.get("attrName");
+  const urlAttrValue = searchParams.get("attrValue");
   const { activeFilters, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
@@ -38,7 +49,6 @@ const Cards = ({ category = "dress" }) => {
   const urlMaxPrice = searchParams.get("maxPrice");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const pageType = getPageTypeFromRoute(location.pathname);
 
   const {
@@ -54,19 +64,21 @@ const Cards = ({ category = "dress" }) => {
   } = useContext(AppContext);
 
   // State for accumulated products and loading more
-  const [accumulatedProducts, setAccumulatedProducts] = useState([]);
+  const [accumulatedProducts, setAccumulatedProducts] = useState(
+    getProducts?.data ?? []
+  );
+
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(
+    paginationData?.page || paginationData?.currentPage
+  );
   const prevCategoryKeyRef = useRef(null);
+
+  const getProductsData = getProducts?.data;
 
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
-
-  // Function to get responsive limit
-  const getResponsiveLimit = () => {
-    return 20;
-  };
 
   // Function to build API URL for fetching products
   const buildApiUrl = (page, limit) => {
@@ -179,11 +191,6 @@ const Cards = ({ category = "dress" }) => {
 
   // Reset accumulated products when category/filters change
   useEffect(() => {
-    const urlCategoryParam = searchParams.get("category");
-    const urlType = searchParams.get("type");
-    const isSearchRoute = location.pathname.includes("/search");
-    const limit = 20;
-
     const currentCategoryKey = urlCategoryParam
       ? `cat:${urlCategoryParam}:type:${urlType || ""}`
       : isSearchRoute
@@ -198,8 +205,8 @@ const Cards = ({ category = "dress" }) => {
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
-      setSortOption("");
 
+      setSortOption(urlSort || "");
       if (urlMinPrice && urlMaxPrice) {
         dispatch(setMinPrice(Number(urlMinPrice)));
         dispatch(setMaxPrice(Number(urlMaxPrice)));
@@ -233,10 +240,13 @@ const Cards = ({ category = "dress" }) => {
             sendAttributes: true,
             limit,
             category: null,
-            page: 1,
-            sortOption: "",
-            colors: [],
-            attributes: null,
+            page: pageFromURL,
+            sortOption: urlSort,
+            colors: urlColors ? urlColors.split(",") : [],
+            attributes:
+              urlAttrName && urlAttrValue
+                ? { name: urlAttrName, value: urlAttrValue }
+                : null,
             pricerange:
               urlMinPrice && urlMaxPrice
                 ? {
@@ -255,21 +265,39 @@ const Cards = ({ category = "dress" }) => {
           limit,
           searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
-          sortOption: "",
-          colors: [],
-          attributes: null,
-          pricerange: undefined,
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
         }));
       } else {
         setPaginationData((prev) => ({
           ...prev,
           category: category,
-          page: 1,
-          sortOption: "",
-          colors: [],
+          page: pageFromURL,
           limit,
-          attributes: null,
-          pricerange: undefined,
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
           sendAttributes: false,
         }));
       }
@@ -328,7 +356,7 @@ const Cards = ({ category = "dress" }) => {
       !productsLoading
     ) {
       // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-      if (isInitialLoadRef.current || paginationData.page === 1) {
+      if (isInitialLoadRef.current || currentPage === 1) {
         setAccumulatedProducts(getProducts.data);
         setCurrentPage(1);
         isInitialLoadRef.current = false;
@@ -348,6 +376,102 @@ const Cards = ({ category = "dress" }) => {
         setAccumulatedProducts([]);
         setHasMoreProducts(false);
       }
+    }
+    if (urlCategoryParam) {
+      if (
+        urlCategoryParam === "australia" ||
+        urlCategoryParam === "24hr-production" ||
+        urlCategoryParam === "sales" ||
+        urlCategoryParam === "allProducts"
+      ) {
+        setPaginationData((prev) => ({
+          ...prev,
+          category: urlCategoryParam,
+          page: pageFromURL,
+          limit,
+          // preserve prev.sortOption
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
+          sendAttributes: false,
+        }));
+      } else {
+        setPaginationData((prev) => ({
+          ...prev,
+          productTypeId: urlCategoryParam,
+          category: null,
+          limit,
+          page: pageFromURL,
+          sortOption: urlSort,
+          colors: urlColors ? urlColors.split(",") : [],
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
+          pricerange:
+            urlMinPrice && urlMaxPrice
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
+              : undefined,
+          sendAttributes: false,
+        }));
+      }
+    } else if (isSearchRoute) {
+      setPaginationData((prev) => ({
+        ...prev,
+        category: "search",
+        page: pageFromURL,
+        searchTerm: searchParams.get("search"),
+        limit,
+        productTypeId: searchParams.get("categoryId"),
+        sortOption: urlSort,
+        colors: urlColors ? urlColors.split(",") : [],
+        attributes:
+          urlAttrName && urlAttrValue
+            ? { name: urlAttrName, value: urlAttrValue }
+            : null,
+        pricerange:
+          urlMinPrice && urlMaxPrice
+            ? {
+                min_price: Number(urlMinPrice),
+                max_price: Number(urlMaxPrice),
+              }
+            : undefined,
+        sendAttributes: false,
+      }));
+    } else {
+      setPaginationData((prev) => ({
+        ...prev,
+        category: category,
+        limit,
+        page: pageFromURL,
+        sortOption: urlSort,
+        colors: urlColors ? urlColors.split(",") : [],
+        attributes:
+          urlAttrName && urlAttrValue
+            ? { name: urlAttrName, value: urlAttrValue }
+            : null,
+        pricerange:
+          urlMinPrice && urlMaxPrice
+            ? {
+                min_price: Number(urlMinPrice),
+                max_price: Number(urlMaxPrice),
+              }
+            : undefined,
+        sendAttributes: false,
+      }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -413,10 +537,18 @@ const Cards = ({ category = "dress" }) => {
     setAccumulatedProducts([]);
     setCurrentPage(1);
     setHasMoreProducts(true);
+    const currentParams = new URLSearchParams(searchParams);
+    if (option === "relevancy") {
+      currentParams.delete("sort");
+    } else {
+      currentParams.set("sort", option);
+    }
+    currentParams.set("page", "1");
+    setSearchParams(currentParams);
 
     setPaginationData((prev) => ({
       ...prev,
-      sortOption: option === "revelancy" ? "" : option,
+      sortOption: option === "relevancy" ? "" : option,
       page: 1,
       sendAttributes: false,
     }));
@@ -506,9 +638,9 @@ const Cards = ({ category = "dress" }) => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("revelancy")}
+                        onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-b-lg ${
-                          sortOption === "revelancy" ? "bg-gray-50" : ""
+                          sortOption === "relevancy" ? "bg-gray-50" : ""
                         }`}
                       >
                         Relevancy
@@ -600,7 +732,7 @@ const Cards = ({ category = "dress" }) => {
                         Highest to Lowest
                       </button>
                       <button
-                        onClick={() => handleSortSelection("revelancy")}
+                        onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "revelancy" ? "bg-gray-100" : ""
                         }`}
@@ -613,7 +745,6 @@ const Cards = ({ category = "dress" }) => {
               </div>
             </div>
           </div>
-
           <div
             className={`${
               productsLoading

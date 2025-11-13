@@ -1,7 +1,7 @@
 import { AppContext } from "@/context/AppContext";
 import { CheckCheck } from "lucide-react";
 import { useState, useCallback, useContext, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ColorFilter = ({ toggleSidebar }) => {
@@ -9,12 +9,17 @@ const ColorFilter = ({ toggleSidebar }) => {
   const [showAllColors, setShowAllColors] = useState(false);
   const { setPaginationData } = useContext(AppContext);
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const category = params.get("category");
-  const search = params.get("search");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get("category");
+  const search = searchParams.get("search");
   useEffect(() => {
-    setSelectedColors([]);
-  }, [location.pathname, category, search]);
+    const urlColors = searchParams.get("colors");
+    if (urlColors) {
+      setSelectedColors(urlColors.split(',').filter(Boolean));
+    } else {
+      setSelectedColors([]);
+    }
+  }, [location.pathname, category, search,searchParams]);
 
   // Available colors with their display names and hex values matching the image
   const availableColors = [
@@ -52,26 +57,34 @@ const ColorFilter = ({ toggleSidebar }) => {
       let newColors;
       if (prev.includes(colorName)) {
         newColors = prev.filter((name) => name !== colorName);
-        setPaginationData((prev) => ({
-          ...prev,
-          page: 1,
-          colors: newColors,
-          sendAttributes: false,
-        }));
-        if (window.innerWidth <= 1025) toggleSidebar();
       } else {
         newColors = [...prev, colorName];
-        setPaginationData((prev) => ({
-          ...prev,
-          page: 1,
-          colors: newColors,
-          sendAttributes: false,
-        }));
-        if (window.innerWidth <= 1025) toggleSidebar();
       }
+      setSearchParams((currentParams) => {
+        const newParams = new URLSearchParams(currentParams);
+        
+        if (newColors.length > 0) {
+          newParams.set("colors", newColors.join(','));
+        } else {
+          newParams.delete("colors");
+        }
+        
+        newParams.set("page", "1");
+        return newParams;
+      });
+
+      setPaginationData((prev) => ({
+        ...prev,
+        page: 1,
+        colors: newColors,
+        sendAttributes: false,
+      }));
+      
+      if (window.innerWidth <= 1025) toggleSidebar();
+      
       return newColors;
     });
-  }, []);
+  }, [setPaginationData, toggleSidebar, setSearchParams]);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg py-4 px-2">
