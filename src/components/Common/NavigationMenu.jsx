@@ -151,7 +151,7 @@ const NavigationMenu = ({
                 </div>
 
                 {/* Content Area */}
-                <div className="w-full p-8 bg-white min-h-[400px]">
+                <div className="w-full p-4 bg-white min-h-[400px]">
                   {(() => {
                     const activeSubItem = item.submenu.find(
                       (subItem) => subItem.id === activeItem
@@ -170,13 +170,6 @@ const NavigationMenu = ({
                     if (activeSubItem.columns) {
                       return (
                         <div>
-                          {/* Category Header */}
-                          <div className="mb-6 pb-4 border-b border-gray-200">
-                            <h3 className="text-lg font-bold text-secondary">
-                              {activeSubItem.name}
-                            </h3>
-                          </div>
-
                           {/* Columns Grid */}
                           <div
                             className={`grid gap-6`}
@@ -227,11 +220,6 @@ const NavigationMenu = ({
                     // Default grid for non-promotional items
                     return (
                       <div>
-                        <div className="mb-6 pb-4 border-b border-gray-200">
-                          <h3 className="text-lg font-bold text-secondary">
-                            {activeSubItem.name}
-                          </h3>
-                        </div>
                         <div className="grid grid-cols-5 gap-2">
                           {activeSubItem.subItems?.map((subSubItem, index) => (
                             <button
@@ -253,12 +241,7 @@ const NavigationMenu = ({
               </div>
             ) : (
               // Regular submenu layout
-              <div className="p-8 bg-white">
-                <div className="mb-6 pb-4 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-secondary">
-                    {item.name}
-                  </h3>
-                </div>
+              <div className="p-4 bg-white">
                 <div className="grid grid-cols-5 gap-2">
                   {item.submenu.map((subItem, index) => (
                     <button
@@ -442,9 +425,10 @@ const NavigationMenu = ({
                 >
                   <span className="relative">
                     {item.name}
-                    {(isSubmenuVisible && item.hasSubmenu) || searchParams.get("type") == item.name && (
-                      <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"></span>
-                    )}
+                    {(isSubmenuVisible && item.hasSubmenu) ||
+                      (searchParams.get("type") == item.name && (
+                        <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"></span>
+                      ))}
                   </span>
                   {item.hasSubmenu && (
                     <RiArrowDropDownLine

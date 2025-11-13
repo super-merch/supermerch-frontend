@@ -53,11 +53,11 @@ const CategoryGrid = ({ activeTab }) => {
     setLoading(true);
     try {
       if (activeTab === "All Product") {
-        await fetchProducts(1, "", 4);
+        await fetchProducts(1, "", 5);
       } else {
         const cat = tabToCategory[activeTab];
 
-        await fetchProductsCategory(cat, 1, "", 4);
+        await fetchProductsCategory(cat, 1, "", 5);
       }
     } catch (e) {
       if (!ignore) setError(e?.message || "Error fetching products");
@@ -106,14 +106,14 @@ const CategoryGrid = ({ activeTab }) => {
 
   return (
     <div className="pb-10 Mycontainer">
-      <div className="grid gap-3 xs:gap-2 sm:gap-5 grid-cols-2 lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
+      <div className="grid gap-3 xs:gap-2 sm:gap-5 grid-cols-2 lg:grid-cols-5 max-md:grid-cols-3 max-sm:grid-cols-2">
         {loading
-          ? Array.from({ length: activeTab === "All Product" ? 4 : 4 }).map(
+          ? Array.from({ length: activeTab === "All Product" ? 5 : 5 }).map(
               (_, index) => <SkeletonLoading key={index} />
             )
           : renderGrid(
               activeTab === "All Product"
-                ? finalProducts?.slice(0, 4)
+                ? finalProducts?.slice(0, 5)
                 : finalProducts
             )}
       </div>

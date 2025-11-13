@@ -5,6 +5,8 @@ import {
   getClothingPricing,
   isProductCategory,
   findNearestColor,
+  getProductCategory,
+  getProductSupplier,
 } from "@/utils/utils";
 import axios from "axios";
 import { CheckCheck } from "lucide-react";
@@ -233,7 +235,7 @@ const ProductDetails = () => {
   useEffect(() => {
     if (priceGroups.length > 0) {
       const isClothing = isProductCategory(single_product, "Clothing");
-
+      const supplier = getProductSupplier(single_product);
       let allGroups = [];
 
       if (isClothing) {
@@ -241,7 +243,7 @@ const ProductDetails = () => {
         // Use the base price breaks from the first price group for all clothing methods
         const basePriceBreaks = priceGroups[0]?.base_price?.price_breaks || [];
 
-        const staticClothingMethods = [
+        const clothingMethods = [
           {
             key: "pocket-size-front-print",
             description: "Pocket size Front print",
@@ -278,6 +280,11 @@ const ProductDetails = () => {
             price_breaks: basePriceBreaks,
           },
         ];
+
+        const staticClothingMethods =
+          supplier === "AS Colour"
+            ? clothingMethods.filter((method) => method.key !== "unbranded")
+            : clothingMethods;
 
         allGroups = staticClothingMethods;
       } else {
@@ -956,7 +963,7 @@ const ProductDetails = () => {
           {/* 2nd column  */}
           <div>
             <div className="flex justify-between items-center md:flex-row flex-col">
-              <div className="w-2/3">
+              <div className="w-full">
                 <h2
                   className={`text-2xl ${
                     product?.name ? "font-bold" : "font-medium"
@@ -1068,7 +1075,7 @@ const ProductDetails = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveInfoTab(tab.key)}
-                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-md text-sm font-medium border-b-2 -mb-px transition-colors ${
+                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${
                       activeInfoTab === tab.key
                         ? "border-primary text-primary"
                         : "border-transparent text-gray-600 hover:text-gray-900"

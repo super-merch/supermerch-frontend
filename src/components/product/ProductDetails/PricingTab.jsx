@@ -44,6 +44,7 @@ const PricingTab = ({
   );
 
   // Find all additions with the same promodata_decoration as the selected print method
+  // Deduplicate by lead_time, keeping the first occurrence for each unique lead_time
   const getLeadTimeOptions = () => {
     if (!selectedPrintMethod || selectedPrintMethod.type !== "addition") {
       return [];
@@ -51,25 +52,46 @@ const PricingTab = ({
     const decoration = selectedPrintMethod.promodata_decoration;
     if (!decoration) return [];
 
-    return availablePriceGroups.filter(
+    // Filter all matching additions
+    const allOptions = availablePriceGroups.filter(
       (group) =>
         group.type === "addition" &&
         group.promodata_decoration === decoration &&
         group.lead_time
     );
+
+    // Deduplicate by lead_time, keeping the first occurrence
+    const uniqueOptionsMap = new Map();
+    allOptions.forEach((option) => {
+      const leadTime = option.lead_time;
+      // Only add if we haven't seen this lead_time before
+      if (!uniqueOptionsMap.has(leadTime)) {
+        uniqueOptionsMap.set(leadTime, option);
+      }
+    });
+
+    // Convert Map values to array and maintain original order (first occurrence)
+    return Array.from(uniqueOptionsMap.values());
   };
 
   const leadTimeOptions = getLeadTimeOptions();
-  const hasMultipleLeadTimes = leadTimeOptions.length > 1;
 
   // When print method changes, reset lead time selection
   useEffect(() => {
-    if (selectedPrintMethod?.type === "addition" && hasMultipleLeadTimes) {
-      // Auto-select first lead time option if none selected
+    if (
+      selectedPrintMethod?.type === "addition" &&
+      leadTimeOptions.length > 0
+    ) {
+      // Auto-select first lead time option if none selected or if decoration doesn't match
       if (
         !selectedLeadTimeAddition ||
         selectedLeadTimeAddition.promodata_decoration !==
-          selectedPrintMethod.promodata_decoration
+          selectedPrintMethod.promodata_decoration ||
+        !leadTimeOptions.some(
+          (opt) =>
+            opt.key === selectedLeadTimeAddition.key &&
+            opt.lead_time === selectedLeadTimeAddition.lead_time
+        )
       ) {
         const firstOption = leadTimeOptions[0];
         if (firstOption) {
@@ -83,18 +105,16 @@ const PricingTab = ({
           });
         }
       }
-    }
-
-    // if (selectedPrintMethod?.type === "base") {
-    //   // setSelectedPrintMethod(uniquePriceGroups[0]);
-
-    //   setSelectedLeadTimeAddition(null);
-    // }
-    else {
+    } else {
+      // Clear lead time selection if not an addition or no options available
       setSelectedLeadTimeAddition(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPrintMethod?.key, hasMultipleLeadTimes]);
+  }, [
+    selectedPrintMethod?.key,
+    selectedPrintMethod?.promodata_decoration,
+    leadTimeOptions.length,
+  ]);
 
   // Get the effective print method (use selectedLeadTimeAddition if available)
   const effectivePrintMethod = selectedLeadTimeAddition || selectedPrintMethod;
@@ -115,10 +135,10 @@ const PricingTab = ({
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
       {priceGroups?.length > 0 && (
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex items-center gap-4">
           <label
             htmlFor="print-method"
-            className="w-full my-2  font-medium text-black"
+            className=" my-2  font-medium text-black"
           >
             Print Method:
           </label>
@@ -138,7 +158,7 @@ const PricingTab = ({
                 setCurrentQuantity(selected.price_breaks[0].qty);
               }
             }}
-            className="w-full px-2 py-2 border rounded-md outline-none pr-3"
+            className="px-2 py-2 border rounded-md outline-none pr-3"
           >
             {priceGroups?.map((method, index) => {
               const displayName = isClothing
@@ -156,9 +176,11 @@ const PricingTab = ({
       )}
 
       {/* Lead Time Selection for Additions */}
-      {hasMultipleLeadTimes && (
-        <div className="flex flex-col gap-2 mt-3">
-          <label className="w-full font-medium text-black">Lead Time:</label>
+      {leadTimeOptions.length > 0 && (
+        <div className="flex justify-start items-start gap-2 mt-3">
+          <label className="w-max min-w-[100px] font-medium text-black">
+            Lead Time:
+          </label>
           <div className="flex flex-wrap gap-2">
             {leadTimeOptions.map((option, index) => {
               const isSelected =
@@ -166,7 +188,7 @@ const PricingTab = ({
                 selectedLeadTimeAddition?.lead_time === option.lead_time;
               return (
                 <button
-                  key={option.key + index}
+                  key={`${option.lead_time}-${option.key}-${index}`}
                   onClick={() => {
                     setSelectedLeadTimeAddition(option);
                     // Update selectedPrintMethod to use this addition's price_breaks
@@ -240,10 +262,12 @@ const PricingTab = ({
           <table className="min-w-full text-sm">
             <thead>
               <tr className="text-left text-black">
-                <th className="py-2 pr-4">Select</th>
-                <th className="py-2 pr-4">Qty</th>
-                <th className="py-2 pr-4">Unit</th>
-                <th className="py-2">Total</th>
+                <th className="py-2 pr-4 text-xl">Select</th>
+                <th className="py-2 pr-4 text-xl">Qty</th>
+                <th className="py-2 pr-4 text-xl min-w-[70px]">
+                  Unit <span className=" text-gray-500">(excl GST)</span>
+                </th>
+                <th className="py-2 text-xl">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -259,11 +283,11 @@ const PricingTab = ({
                       className="opacity-50 cursor-not-allowed"
                     />
                   </td>
-                  <td className="py-2 pr-4 align-middle text-md text-black">
+                  <td className="py-2 pr-4 align-middle text-lg text-black">
                     0-{firstQuantity - 1}
                   </td>
-
-                  <td className="py-2   text-md text-black" colSpan={2}>
+                  <td className="py-2 pr-4 align-middle text-lg text-black"></td>
+                  <td className="py-2   text-lg text-black" colSpan={1}>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -312,7 +336,7 @@ const PricingTab = ({
                       setActiveIndex(i);
                     }}
                   >
-                    <td className="py-2 pr-4 align-middle text-md text-black">
+                    <td className="py-2 pr-4 align-middle text-lg text-black">
                       <input
                         type="radio"
                         name="priceTier"
@@ -324,13 +348,13 @@ const PricingTab = ({
                         }}
                       />
                     </td>
-                    <td className="py-2 pr-4 align-middle text-md text-black">
+                    <td className="py-2 pr-4 align-middle text-lg text-black">
                       {item.qty}+
                     </td>
-                    <td className="py-2 pr-4 align-middle text-md text-black">
+                    <td className="py-2 pr-4 align-middle text-lg text-black">
                       ${unitDiscounted.toFixed(2)}
                     </td>
-                    <td className="py-2 align-middle text-md text-black">
+                    <td className="py-2 align-middle text-lg text-black">
                       ${total.toFixed(2)}
                     </td>
                   </tr>
@@ -370,7 +394,12 @@ const PricingTab = ({
               className="w-24 xs:w-20 px-3 py-2 border border-gray-300 rounded-md text-md md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter qty"
             />
-            <span className="text-md md:text-lg text-black block xs:hidden">pieces</span> <span className="text-md md:text-lg text-black hidden xs:block">pcs</span>
+            <span className="text-md md:text-lg text-black block xs:hidden">
+              units
+            </span>{" "}
+            <span className="text-md md:text-lg text-black hidden xs:block">
+              pcs
+            </span>
           </div>
           {/* <div className="ml-auto text-sm text-black">
                           <Button>Large Order?</Button>

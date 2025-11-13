@@ -1,17 +1,38 @@
 import React from "react";
 import Breadcrumb from "../components/shared/Breadcrumb";
 import Cards from "../components/shop/Cards";
-import TabsBtns from "../components/shop/ProducsTabs/TabsBtns";
-import TabsButtons from "@/components/Home/ProducsTabs/ShopOurBestSellers";
-const ShopPage = ({ category }) => {
+import ShopOurBestSellers from "@/components/Home/ProducsTabs/ShopOurBestSellers";
+import CategoryGrid from "../components/shop/CategoryGrid";
+import banner from "../../public/BANNER/summer.jpg";
+const GeneralShopPage = () => {
   return (
     <div>
-      <Breadcrumb />
-      <Cards category={category} />
+      {/* Category Grid */}
+      <CategoryGrid />
+      <img src={banner} alt="Home" className="w-full h-2/3 my-12" />
+
       <div className="mt-10 bg-primary/10 py-10">
-        <TabsButtons />
+        <ShopOurBestSellers />
       </div>
     </div>
+  );
+};
+
+const ShopPage = ({ category, general }) => {
+  return (
+    <>
+      {general ? (
+        <GeneralShopPage />
+      ) : (
+        <div>
+          <Breadcrumb />
+          <Cards category={category} />
+          <div className="mt-10 bg-primary/10 py-10">
+            <ShopOurBestSellers />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

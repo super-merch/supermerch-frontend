@@ -137,9 +137,17 @@ const AppContextProvider = (props) => {
 
   const options = { day: "2-digit", month: "short", year: "numeric" };
 
+  // Function to get responsive limit based on screen size
+  const getResponsiveLimit = () => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth <= 1025 ? 8 : 9;
+    }
+    return 9; // Default for SSR
+  };
+
   const [paginationData, setPaginationData] = useState({
     page: 1,
-    limit: 9,
+    limit: getResponsiveLimit(),
     sortOption: "",
     filter: true,
     productTypeId: null,
@@ -1471,7 +1479,7 @@ const AppContextProvider = (props) => {
     } catch (error) {
       toast.error(error.message);
       console.error(error);
-      setBlogLoading(false)
+      setBlogLoading(false);
     }
   };
 

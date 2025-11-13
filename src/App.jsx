@@ -88,10 +88,7 @@ const App = () => {
               element={<ShopPage category="promotional" />}
             />
 
-            <Route
-              path="hot-deals"
-              element={<ShopPage category="sales" />}
-            />
+            <Route path="hot-deals" element={<ShopPage category="sales" />} />
             <Route path="/favourites" element={<FavouritePage />} />
             <Route path="/Clothing" element={<ShopPage category="dress" />} />
             <Route
@@ -102,16 +99,22 @@ const App = () => {
               path="/return-gifts"
               element={<ShopPage category="allProducts" />}
             />
-            <Route path="/24hr-production" element={<ShopPage category="24hr-production" />} />
+            <Route
+              path="/24hr-production"
+              element={<ShopPage category="24hr-production" />}
+            />
             <Route path="/quote/respond/:id" element={<QuoteResponse />} />
             <Route path="/sales" element={<ShopPage category="sales" />} />
             {/* <Route path="/Australia" element={<ShopPage category="australia" />} /> */}
             {/* SHOPPAGE  */}
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/shop" element={<ShopPage general={true} />} />
             <Route path="/trendings" element={<BestSellers />} />
-            <Route path="/australia-made" element={<ShopPage category="australia" />} />
+            <Route
+              path="/australia-made"
+              element={<ShopPage category="australia" />}
+            />
             <Route path="/hour-production" element={<HourProduction24 />} />
             <Route path="/search" element={<ShopPage category="search" />} />
             <Route path="/new-arrivals" element={<NewArrival />} />

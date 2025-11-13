@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { IoMenu } from "react-icons/io5";
-import { IoClose } from "react-icons/io5";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedCategory, applyFilters, setCategoryId } from "../../redux/slices/filterSlice";
-import PriceFilter from "./PriceFilter";
-import BrandCheckboxes from "./BrandFilter";
-import PopularTags from "./PopularTags";
 import { AppContext } from "../../context/AppContext";
+import {
+  applyFilters,
+  setCategoryId,
+  setSelectedCategory,
+} from "../../redux/slices/filterSlice";
+import PriceFilter from "./PriceFilter";
 
 const Sidebar = (props) => {
   const dispatch = useDispatch();
@@ -18,50 +18,8 @@ const Sidebar = (props) => {
 
   const [categoriesData, setCategoriesData] = useState([]);
   const [showAllCategories, setShowAllCategories] = useState(false); // <-- new
-  // cache key (change suffix if you need to invalidate)
-  const CATEGORIES_CACHE_KEY = "v1_categories_cache_v1";
-
-  // load cache helper
-  const loadCategoriesFromSession = () => {
-    try {
-      const raw = sessionStorage.getItem(CATEGORIES_CACHE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  // save cache helper
-  const saveCategoriesToSession = (payload) => {
-    try {
-      sessionStorage.setItem(CATEGORIES_CACHE_KEY, JSON.stringify(payload));
-    } catch (e) {
-      // ignore write errors
-    }
-  };
-
-  // in-memory ref + pending request ref
-  const categoriesCacheRef = useRef(loadCategoriesFromSession()); // may be null or { data: [...] }
-  const pendingCategoriesRequestRef = useRef(null);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1-categories`);
-      const data = await response.json();
-      setCategoriesData(data.data || []); // safe default
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      setCategoriesData([]); // fallback
-    }
-  };
 
   const filter = props.filter ? props.filter : false;
-
-  // useEffect(() => {
-  //   if (!filter) {
-  //     fetchCategories();
-  //   }
-  // }, []);
 
   const handleCategoryClick = (category) => {
     // category is string in some places and object elsewhere in your code.
@@ -93,7 +51,12 @@ const Sidebar = (props) => {
         const sidebar = document.querySelector("[data-sidebar-content]");
         const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
 
-        if (sidebar && !sidebar.contains(event.target) && hamburgerButton && !hamburgerButton.contains(event.target)) {
+        if (
+          sidebar &&
+          !sidebar.contains(event.target) &&
+          hamburgerButton &&
+          !hamburgerButton.contains(event.target)
+        ) {
           setIsSidebarOpen(false);
         }
       }
@@ -114,12 +77,19 @@ const Sidebar = (props) => {
 
   // derive list to render (first 5 or all)
   const visibleLimit = 5;
-  const visibleCategories = showAllCategories ? categoriesData : categoriesData.slice(0, visibleLimit);
+  const visibleCategories = showAllCategories
+    ? categoriesData
+    : categoriesData.slice(0, visibleLimit);
 
   return (
     <div className=" z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
       {/* Hidden toggle button for external control */}
-      <button data-sidebar-toggle onClick={toggleSidebar} className="hidden" aria-hidden="true" />
+      <button
+        data-sidebar-toggle
+        onClick={toggleSidebar}
+        className="hidden"
+        aria-hidden="true"
+      />
 
       {/* Sidebar */}
       <div
@@ -133,7 +103,9 @@ const Sidebar = (props) => {
         <div className="h-full overflow-y-auto pr-3 ">
           {!filter && (
             <div className="border-b-2 pb-6">
-              <h1 className="font-medium text-base mb-1 uppercase text-brand">Categories</h1>
+              <h1 className="font-medium text-base mb-1 uppercase text-brand">
+                Categories
+              </h1>
 
               {/* All Products */}
               <div
@@ -145,7 +117,9 @@ const Sidebar = (props) => {
               >
                 <p
                   className={`text-category hover:underline text-sm font-normal ${
-                    selectedCategory === "all" ? "underline text-smallHeader" : ""
+                    selectedCategory === "all"
+                      ? "underline text-smallHeader"
+                      : ""
                   }`}
                 >
                   All Products
@@ -165,8 +139,12 @@ const Sidebar = (props) => {
                   className=" transform group hover:scale-x-95 transition duration-300 py-1 capitalize cursor-pointer"
                 >
                   <p
-                    className={`text-category  hover:underline ${skeletonLoading ? "hover:cursor-not-allowed" : ""} text-sm font-normal ${
-                      selectedCategory === category.name ? "underline text-smallHeader" : ""
+                    className={`text-category  hover:underline ${
+                      skeletonLoading ? "hover:cursor-not-allowed" : ""
+                    } text-sm font-normal ${
+                      selectedCategory === category.name
+                        ? "underline text-smallHeader"
+                        : ""
                     }`}
                   >
                     {category.name}
@@ -182,7 +160,9 @@ const Sidebar = (props) => {
                     disabled={skeletonLoading}
                     className="text-sm font-medium text-brand hover:underline"
                   >
-                    {showAllCategories ? "Show less" : `See all (${categoriesData.length})`}
+                    {showAllCategories
+                      ? "Show less"
+                      : `See all (${categoriesData.length})`}
                   </button>
                 </div>
               )}

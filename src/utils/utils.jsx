@@ -242,6 +242,11 @@ export const isProductCategory = (product, categoryName) => {
   return category?.toLowerCase() === categoryName?.toLowerCase();
 };
 
+export const getProductSupplier = (product) => {
+  const supplier = product?.supplier?.supplier;
+  return supplier;
+};
+
 export const getClothingPricing = (printMethodDescription) => {
   if (!printMethodDescription || typeof printMethodDescription !== "string") {
     return { perUnitCost: 0, setupFee: 0 };
