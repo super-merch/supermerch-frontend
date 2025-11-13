@@ -67,7 +67,9 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
   const encodedId = btoa(product.meta.id.toString());
-  const productPrice = product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]?.price
+  const productPrice =
+    product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]
+      ?.price;
 
   // Extract unique colors
   const uniqueColors =
@@ -84,58 +86,71 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   return (
     <div
       key={productId}
-      className="w-full relative border border-primary rounded-lg hover:border-1 cursor-pointer transition-all duration-200 h-full group hover:rounded-lg hover:shadow-md bg-white"
+      className="w-full h-full relative border border-gray-200 rounded-lg cursor-pointer transition-all duration-200 flex flex-col group hover:border-primary hover:shadow-lg bg-white overflow-hidden"
       onClick={handleCardClick}
     >
       {/* Badges - Top Left */}
-      <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none">
+      <div
+        className="absolute left-1 top-1 sm:left-1.5 sm:top-1.5 z-20 flex flex-col gap-1 pointer-events-none"
+        style={{ maxWidth: "calc(100% - 50px)" }}
+      >
         {(productionIds.has(product?.meta?.id) ||
           productionIds.has(String(product?.meta?.id))) && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-xs font-semibold border border-green-200 shadow-sm">
-            <Clock className="w-3 h-3" />
-            <span>24Hr Production</span>
+          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-green-200 shadow-sm overflow-hidden">
+            <Clock className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+            <span className="truncate max-w-[40px] sm:max-w-none">24Hr</span>
           </span>
         )}
 
         {(australiaIds.has(product?.meta?.id) ||
           australiaIds.has(String(product?.meta?.id))) && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-xs font-semibold border border-yellow-200 shadow-sm">
-            <Flag className="w-3 h-3" />
-            <span>Australia Made</span>
+          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
+            <Flag className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+            <span className="truncate max-w-[50px] sm:max-w-none">AU Made</span>
           </span>
         )}
       </div>
 
       {/* Favorite Button - Top Right */}
-      <div className="absolute top-2 right-2 z-20">
+      <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20">
         <div
           onClick={handleFavoriteClick}
-          className="p-2 bg-white bg-opacity-80 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100"
+          className="p-1.5 sm:p-2 bg-white bg-opacity-90 backdrop-blur-sm rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-opacity-100 flex-shrink-0"
         >
           {favSet.has(product?.meta?.id) ? (
-            <IoIosHeart className="text-lg text-primary" />
+            <IoIosHeart className="text-sm sm:text-base md:text-lg text-primary" />
           ) : (
-            <CiHeart className="text-lg text-gray-700 hover:text-primary transition-colors" />
+            <CiHeart className="text-sm sm:text-base md:text-lg text-gray-700 hover:text-primary transition-colors" />
           )}
         </div>
       </div>
 
       {/* Product Image */}
-      <div className="max-h-[150px] sm:max-h-[280px] xs:max-h-[130px] h-full border-b overflow-hidden relative">
+      <div
+        className="w-full border-b border-gray-100 overflow-hidden relative flex items-center justify-center flex-shrink-0"
+        style={{ height: "160px", minHeight: "160px", maxHeight: "160px" }}
+      >
         <img
           src={product?.overview?.hero_image || noimage}
           alt={product?.overview?.name || "Product"}
-          className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-95"
+          className="object-contain w-full h-full p-2 sm:p-3 transition-transform duration-300 group-hover:scale-105"
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            width: "auto",
+            height: "auto",
+          }}
+          loading="lazy"
         />
 
         {/* Discount Badge */}
         {discountPct > 0 && (
-          <div className="absolute bottom-2 right-1 sm:right-2 z-20">
-            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-primary rounded-full">
+          <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 z-20 flex flex-col gap-1">
+            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs font-bold text-white bg-primary rounded-full whitespace-nowrap">
               {discountPct}% OFF
             </span>
             {isGlobalDiscount && (
-              <span className="block px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs font-bold text-white bg-orange-500 rounded mt-1">
+              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs font-bold text-white bg-orange-500 rounded-full whitespace-nowrap">
                 Sale
               </span>
             )}
@@ -144,83 +159,94 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
       </div>
 
       {/* Product Details */}
-      <Link to={`/product/${slug}?ref=${encodedId}`}>
-        <div className="p-2 py-1">
+      <div className="flex-1 flex flex-col p-2 sm:p-3 overflow-hidden min-h-0">
+        <Link
+          to={`/product/${slug}?ref=${encodedId}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex-1 flex flex-col min-w-0 w-full h-full"
+        >
           {/* Color Swatches */}
-          <div className="flex justify-center mb-1 xs:gap-[3px] gap-1 z-10">
-            {uniqueColors.slice(0, 6).map((color, index) => {
-              const matchedColor = findNearestColor(color);
-              return (
-                <div
-                  key={index}
-                  style={{
-                    backgroundColor: matchedColor?.hex,
-                  }}
-                  className="w-4 h-4 xs:w-3 xs:h-3 rounded-full border border-slate-900"
-                />
-              );
-            })}
-          </div>
+          {uniqueColors.length > 0 && (
+            <div className="flex justify-center items-center gap-1 sm:gap-1.5 mb-1.5 sm:mb-2 flex-wrap overflow-hidden">
+              {uniqueColors.slice(0, 6).map((color, index) => {
+                const matchedColor = findNearestColor(color);
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      backgroundColor: matchedColor?.hex || "#ccc",
+                    }}
+                    className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border border-gray-300 flex-shrink-0"
+                    title={color}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {/* Product Info */}
-          <div className="relative flex justify-center items-center text-center">
-            <div className="flex-1 justify-center w-[300px]">
-              <Tooltip
-                content={
-                  product.overview.name.length > 25 ? product.overview.name : ""
-                }
-                placement="top"
+          <div className="flex-1 flex flex-col items-center justify-center text-center gap-1 sm:gap-1 min-w-0 w-full px-1 overflow-hidden">
+            {/* Product Name */}
+            <Tooltip
+              content={
+                product.overview.name.length > 30 ? product.overview.name : ""
+              }
+              placement="top"
+            >
+              <h3
+                className="text-xs sm:text-sm font-semibold text-gray-900 w-full overflow-hidden"
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  lineHeight: "1.2rem",
+                  maxHeight: "2.4rem",
+                  wordBreak: "break-word",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
               >
-                <p className="text-sm sm:text-lg transition-all duration-300 mx-auto text font-semibold text-brand md:text-nowrap truncate md:w-[300px] w-[150px] xs:w-[120px]">
-                  {product.overview.name}
+                {product.overview.name}
+              </h3>
+            </Tooltip>
+
+            {/* Minimum Quantity */}
+            <p className="text-[10px] sm:text-xs font-medium text-gray-500 whitespace-nowrap flex-shrink-0">
+              Min Qty:{" "}
+              {product.product?.prices?.price_groups[0]?.base_price
+                ?.price_breaks[0]?.qty || 1}
+            </p>
+
+            {/* Pricing */}
+            <div className="w-full flex flex-col items-center justify-center gap-0.5 sm:gap-1 flex-shrink-0">
+              {productPrice == 0 ? (
+                <p className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
+                  Contact Us
                 </p>
-              </Tooltip>
-
-              {/* Minimum Quantity */}
-              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                Min Qty:{" "}
-                {product.product?.prices?.price_groups[0]?.base_price
-                  ?.price_breaks[0]?.qty || 1}
-              </p>
-
-              {/* Pricing */}
-              <div>
-                {productPrice == 0 ?(
-                  <h2 className="text-xs sm:text-base font-bold text-primary" >
-                    Contact Us
-                  </h2>
-                ):(
-
-                
-                <h2 className="text-xs sm:text-base font-bold text-primary">
-                  Starting From{" "}
-                  {discountPct > 0 ? (
-                    <>
-                      <span className="text-xs sm:text-sm text-red-500 line-through mr-2">
-                        ${unDiscountedPrice.toFixed(2)}
+              ) : (
+                <div className="w-full flex items-center justify-center gap-1">
+                  <p className="text-[10px] sm:text-xs text-gray-600 font-medium whitespace-nowrap">
+                    Starting From
+                  </p>
+                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 flex-wrap">
+                    {discountPct > 0 && (
+                      <span className="text-[10px] sm:text-xs text-red-500 line-through whitespace-nowrap">
+                        ${unDiscountedPrice?.toFixed(2) || "0.00"}
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-primary">
-                        $
-                        {getProductPrice
-                          ? getProductPrice(product, product.meta.id).toFixed(2)
-                          : "0.00"}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-xs sm:text-sm font-bold text-primary">
+                    )}
+                    <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
                       $
                       {getProductPrice
                         ? getProductPrice(product, product.meta.id).toFixed(2)
                         : "0.00"}
                     </span>
-                  )}
-                </h2>
-                ) }
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      </div>
     </div>
   );
 };

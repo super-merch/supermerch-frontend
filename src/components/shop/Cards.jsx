@@ -1,12 +1,7 @@
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { backgroundColor, getProductPrice, slugify } from "@/utils/utils";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import {
-  IoIosArrowDown,
-  IoIosArrowUp,
-  IoMdArrowBack,
-  IoMdArrowForward,
-} from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -18,61 +13,16 @@ import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
-
-const getPaginationButtons = (currentPage, totalPages, maxVisiblePages) => {
-  // Always ensure current page is visible
-  // Calculate pages to show around current page (excluding page 1 and last page)
-
-  if (totalPages <= 2) {
-    // If only 2 pages total, no middle pages needed
-    return [];
-  }
-
-  // Calculate how many pages to show on each side of current page
-  const pagesOnEachSide = Math.floor((maxVisiblePages - 1) / 2);
-
-  // Start from currentPage - pagesOnEachSide, but not less than 2
-  let startPage = Math.max(2, currentPage - pagesOnEachSide);
-  // End at currentPage + pagesOnEachSide, but not more than totalPages - 1
-  let endPage = Math.min(totalPages - 1, currentPage + pagesOnEachSide);
-
-  // If we have room, try to show more pages
-  const pagesNeeded = endPage - startPage + 1;
-  if (pagesNeeded < maxVisiblePages) {
-    // If near the start, extend to the right
-    if (startPage === 2) {
-      endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
-    }
-    // If near the end, extend to the left
-    else if (endPage === totalPages - 1) {
-      startPage = Math.max(2, endPage - maxVisiblePages + 1);
-    }
-  }
-
-  // Final check: ensure current page is always included
-  if (currentPage < startPage) {
-    startPage = currentPage;
-  }
-  if (currentPage > endPage) {
-    endPage = currentPage;
-  }
-
-  // Build and return the pages array
-  const pages = [];
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i);
-  }
-
-  return pages;
-};
+import { LoadingOverlay } from "../Common";
 
 const Cards = ({ category = "dress" }) => {
-  const [maxVisiblePages, setMaxVisiblePages] = useState(6);
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const selectedCategory = useSelector((state) => state.filters.categoryId);
   const [cardHover, setCardHover] = useState(null);
+  const location = useLocation();
+
   const isAustraliaPage = category === "australia";
   const is24HrPage = category === "24hr-production";
   const isSalesPage = category === "sales";
@@ -81,7 +31,16 @@ const Cards = ({ category = "dress" }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isSpecialPage =
     isAustraliaPage || is24HrPage || isSalesPage || isSearch;
+  const urlCategoryParam = searchParams.get("category");
+  const pageFromURL = parseInt(searchParams.get("page")) || 1;
 
+  const urlType = searchParams.get("type");
+  const isSearchRoute = location.pathname.includes("/search");
+  const limit = 20;
+  const urlSort = searchParams.get("sort") || "";
+  const urlColors = searchParams.get("colors");
+  const urlAttrName = searchParams.get("attrName");
+  const urlAttrValue = searchParams.get("attrValue");
   const { activeFilters, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
@@ -90,7 +49,6 @@ const Cards = ({ category = "dress" }) => {
   const urlMaxPrice = searchParams.get("maxPrice");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const pageType = getPageTypeFromRoute(location.pathname);
 
   const {
@@ -102,60 +60,137 @@ const Cards = ({ category = "dress" }) => {
     getProducts,
     productsLoading,
     refetchProducts,
+    backednUrl,
   } = useContext(AppContext);
-  const [productsData, setProductsData] = useState(getProducts?.data);
 
-  useEffect(() => {
-    if (getProducts?.data) {
-      setProductsData(getProducts?.data);
-    }
-  }, [getProducts]);
+  // State for accumulated products and loading more
+  const [accumulatedProducts, setAccumulatedProducts] = useState(
+    getProducts?.data ?? []
+  );
+
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreProducts, setHasMoreProducts] = useState(true);
+  const [currentPage, setCurrentPage] = useState(
+    paginationData?.page || paginationData?.currentPage
+  );
+  const prevCategoryKeyRef = useRef(null);
 
   const getProductsData = getProducts?.data;
 
-  // Helper function to update URL with pagination
-  const updatePaginationInURL = (newPage) => {
-    setSearchParams(prev => {
-    const newParams = new URLSearchParams(prev);
-    newParams.set("page", newPage.toString());
-    return newParams;
-  });
-
-    // Scroll to top of the page
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  const itemsPerPage = getProducts?.items_per_page;
-  const totalPages = getProducts?.total_pages || getProducts?.totalPages;
-  const itemCount =
-    getProducts?.item_count ||
-    getProducts?.totalCount ||
-    getProducts?.data?.length;
-  const currentPage = paginationData?.page || paginationData?.currentPage;
   const favSet = new Set();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
-  const prevCategoryKeyRef = useRef(null);
+  // Function to build API URL for fetching products
+  const buildApiUrl = (page, limit) => {
+    const params = new URLSearchParams({
+      ...(paginationData.productTypeId && {
+        product_type_ids: paginationData.productTypeId,
+      }),
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(paginationData.sortOption && { sort: paginationData.sortOption }),
+      ...(paginationData.filter && { filter: paginationData.filter }),
+      ...(paginationData.category && { category: paginationData.category }),
+      ...(paginationData.searchTerm !== undefined && {
+        searchTerm: paginationData.searchTerm,
+      }),
+      ...(paginationData.pricerange?.min_price != null && {
+        min_price: paginationData.pricerange.min_price,
+      }),
+      ...(paginationData.pricerange?.max_price != null && {
+        max_price: paginationData.pricerange.max_price,
+      }),
+      ...(paginationData.sendAttributes != null && {
+        send_attributes: paginationData.sendAttributes,
+      }),
+      ...(paginationData.attributes?.name && {
+        attribute_name: paginationData.attributes.name,
+      }),
+      ...(paginationData.attributes?.value && {
+        attribute_value: paginationData.attributes.value,
+      }),
+    });
 
-  useEffect(() => {
-    const pageFromURL = parseInt(searchParams.get("page")) || 1;
-    const urlCategoryParam = searchParams.get("category");
-    const urlType = searchParams.get("type");
-    const isSearchRoute = location.pathname.includes("/search");
-    const urlSort = searchParams.get("sort") || "";
-    const urlMinPrice = searchParams.get("minPrice");
-    const urlMaxPrice = searchParams.get("maxPrice");
-    const urlColors = searchParams.get("colors");
-    const urlAttrName = searchParams.get("attrName");
-    const urlAttrValue = searchParams.get("attrValue");
-    let limit = 9;
-    if (window.innerWidth <= 1025) {
-      limit = 10;
+    if (
+      paginationData.colors &&
+      Array.isArray(paginationData.colors) &&
+      paginationData.colors.length > 0
+    ) {
+      paginationData.colors.forEach((color) => {
+        params.append("colors[]", color);
+      });
     }
 
+    let url = "";
+    if (paginationData.category === "australia") {
+      url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+    } else if (paginationData.category === "24hr-production") {
+      url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
+    } else if (paginationData.category === "sales") {
+      url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
+    } else if (paginationData.category === "allProducts") {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    } else if (paginationData.category === "search") {
+      url = `${backednUrl}/api/client-products/search?${params.toString()}`;
+    } else if (paginationData.category) {
+      url = `${backednUrl}/api/client-products/category?${params.toString()}`;
+    } else if (paginationData.productTypeId) {
+      url = `${backednUrl}/api/params-products?${params.toString()}`;
+    } else {
+      url = `${backednUrl}/api/client-products?${params.toString()}`;
+    }
+
+    return url;
+  };
+
+  // Function to fetch products for a specific page
+  const fetchProductsPage = async (page) => {
+    const limit = 20;
+    const url = buildApiUrl(page, limit);
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch products");
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
+    }
+  };
+
+  // Function to load more products
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMoreProducts) return;
+
+    setIsLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const data = await fetchProductsPage(nextPage);
+
+      if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+        // Append new products to accumulated products
+        setAccumulatedProducts((prev) => [...prev, ...data.data]);
+        setCurrentPage(nextPage);
+
+        // Check if there are more products to load
+        const totalPages = data.total_pages || data.totalPages || 0;
+        if (nextPage >= totalPages) {
+          setHasMoreProducts(false);
+        }
+      } else {
+        setHasMoreProducts(false);
+      }
+    } catch (error) {
+      console.error("Error loading more products:", error);
+      toast.error("Failed to load more products");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Reset accumulated products when category/filters change
+  useEffect(() => {
     const currentCategoryKey = urlCategoryParam
       ? `cat:${urlCategoryParam}:type:${urlType || ""}`
       : isSearchRoute
@@ -166,6 +201,11 @@ const Cards = ({ category = "dress" }) => {
     prevCategoryKeyRef.current = currentCategoryKey;
 
     if (categoryChanged) {
+      // Reset accumulated products and page when category/filters change
+      setAccumulatedProducts([]);
+      setCurrentPage(1);
+      setHasMoreProducts(true);
+
       setSortOption(urlSort || "");
       if (urlMinPrice && urlMaxPrice) {
         dispatch(setMinPrice(Number(urlMinPrice)));
@@ -185,7 +225,7 @@ const Cards = ({ category = "dress" }) => {
           setPaginationData((prev) => ({
             ...prev,
             category: urlCategoryParam,
-            page: pageFromURL,
+            page: 1,
             limit,
             sortOption: "",
             colors: [],
@@ -220,7 +260,7 @@ const Cards = ({ category = "dress" }) => {
         setPaginationData((prev) => ({
           ...prev,
           category: "search",
-          page: pageFromURL,
+          page: 1,
           sendAttributes: true,
           limit,
           searchTerm: searchParams.get("search"),
@@ -261,8 +301,81 @@ const Cards = ({ category = "dress" }) => {
           sendAttributes: false,
         }));
       }
+    }
+  }, [
+    searchParams,
+    category,
+    location.pathname,
+    dispatch,
+    urlMinPrice,
+    urlMaxPrice,
+  ]);
 
-      return;
+  // Track when filters/category change to reset accumulated products
+  const filtersKeyRef = useRef(null);
+  const isInitialLoadRef = useRef(true);
+
+  // Reset accumulated products when filters change (before data is fetched)
+  useEffect(() => {
+    const currentFiltersKey = `${paginationData.productTypeId}-${
+      paginationData.category
+    }-${paginationData.searchTerm}-${
+      paginationData.sortOption
+    }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
+      paginationData.colors
+    )}`;
+
+    if (
+      filtersKeyRef.current !== null &&
+      filtersKeyRef.current !== currentFiltersKey
+    ) {
+      // Filters changed - reset accumulated products
+      filtersKeyRef.current = currentFiltersKey;
+      isInitialLoadRef.current = true;
+      setAccumulatedProducts([]);
+      setCurrentPage(1);
+      setHasMoreProducts(true);
+    } else if (filtersKeyRef.current === null) {
+      // Initial load - set the key
+      filtersKeyRef.current = currentFiltersKey;
+    }
+  }, [
+    paginationData.productTypeId,
+    paginationData.category,
+    paginationData.searchTerm,
+    paginationData.sortOption,
+    paginationData.pricerange,
+    paginationData.colors,
+  ]);
+
+  // Update accumulated products when getProducts.data changes
+  useEffect(() => {
+    if (
+      getProducts?.data &&
+      Array.isArray(getProducts.data) &&
+      !productsLoading
+    ) {
+      // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
+      if (isInitialLoadRef.current || currentPage === 1) {
+        setAccumulatedProducts(getProducts.data);
+        setCurrentPage(1);
+        isInitialLoadRef.current = false;
+
+        // Check if there are more products to load
+        const totalPages =
+          getProducts.total_pages || getProducts.totalPages || 0;
+        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
+      }
+    } else if (
+      !productsLoading &&
+      (!getProducts?.data ||
+        (Array.isArray(getProducts.data) && getProducts.data.length === 0))
+    ) {
+      // No products and not loading - only clear if we don't have accumulated products or if it's the initial load
+      if (isInitialLoadRef.current || accumulatedProducts.length === 0) {
+        setAccumulatedProducts([]);
+        setHasMoreProducts(false);
+      }
     }
     if (urlCategoryParam) {
       if (
@@ -360,7 +473,14 @@ const Cards = ({ category = "dress" }) => {
         sendAttributes: false,
       }));
     }
-  }, [searchParams, category, location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    getProducts?.data,
+    getProducts?.total_pages,
+    getProducts?.totalPages,
+    productsLoading,
+    paginationData.page,
+  ]);
 
   favouriteItems.map((item) => {
     favSet.add(item.meta.id);
@@ -376,13 +496,21 @@ const Cards = ({ category = "dress" }) => {
   //   return () => document.removeEventListener("mousedown", handleClickOutside);
   // }, []);
 
+  // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
-      setMaxVisiblePages(window.innerWidth <= 767 ? 4 : 6);
+      const newLimit = 20;
+      setPaginationData((prev) => {
+        if (prev.limit !== newLimit) {
+          return { ...prev, limit: newLimit };
+        }
+        return prev;
+      });
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const priceCache = useRef(new Map());
 
@@ -405,6 +533,10 @@ const Cards = ({ category = "dress" }) => {
 
   const handleSortSelection = (option) => {
     setSortOption(option);
+    // Reset accumulated products and page when sort changes
+    setAccumulatedProducts([]);
+    setCurrentPage(1);
+    setHasMoreProducts(true);
     const currentParams = new URLSearchParams(searchParams);
     if (option === "relevancy") {
       currentParams.delete("sort");
@@ -443,7 +575,7 @@ const Cards = ({ category = "dress" }) => {
 
   return (
     <>
-      <div className="relative flex justify-between pt-2 Mycontainer lg:gap-4 md:gap-4">
+      <div className="relative flex justify-between pt-0 Mycontainer lg:gap-4 md:gap-4">
         <div className="lg:w-[280px]">
           <UnifiedSidebar pageType={pageType} categoryType={category} />
         </div>
@@ -523,7 +655,11 @@ const Cards = ({ category = "dress" }) => {
             <div className="mb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
-                  {!productsLoading && (itemCount || 0)}
+                  {!productsLoading &&
+                    (getProducts?.item_count ||
+                      getProducts?.totalCount ||
+                      accumulatedProducts.length ||
+                      0)}
                 </span>
                 <p className="text-sm text-gray-600">
                   {productsLoading ? "Loading..." : `product found `}
@@ -541,7 +677,11 @@ const Cards = ({ category = "dress" }) => {
               {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
-                  {!productsLoading && (itemCount || 0)}
+                  {!productsLoading &&
+                    (getProducts?.item_count ||
+                      getProducts?.totalCount ||
+                      accumulatedProducts.length ||
+                      0)}
                 </span>
                 <p className="">
                   {productsLoading ? "Loading..." : `product found`}
@@ -594,7 +734,7 @@ const Cards = ({ category = "dress" }) => {
                       <button
                         onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
-                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                          sortOption === "revelancy" ? "bg-gray-100" : ""
                         }`}
                       >
                         Relevancy
@@ -605,11 +745,10 @@ const Cards = ({ category = "dress" }) => {
               </div>
             </div>
           </div>
-
           <div
             className={`${
               productsLoading
-                ? "grid grid-cols-3 gap-6 mt-4 md:mt-10 custom-card:grid-cols-2 lg:grid-cols-3 max-sm:grid-cols-1"
+                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
                 : ""
             }`}
           >
@@ -617,19 +756,61 @@ const Cards = ({ category = "dress" }) => {
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
-            ) : productsData?.length > 0 ? (
-              <div className="grid justify-center grid-cols-2 gap-2 md:gap-6 md:mt-10 mt-3 custom-card:grid-cols-2 lg:grid-cols-3 max-sm2:grid-cols-2 ">
-                {productsData?.map((product) => {
-                  return (
-                    <ProductCard
-                      key={product.meta.id}
-                      product={product}
-                      favSet={favSet}
-                      onViewProduct={handleViewProduct}
-                    />
-                  );
-                })}
-              </div>
+            ) : accumulatedProducts?.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
+                  {accumulatedProducts.map((product) => {
+                    return (
+                      <ProductCard
+                        key={product.meta.id}
+                        product={product}
+                        favSet={favSet}
+                        onViewProduct={handleViewProduct}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Load More Button */}
+                {hasMoreProducts && !productsLoading && (
+                  <div className="flex justify-center mt-8 mb-4">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                      className="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[180px] justify-center"
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <span>Loading...</span>
+                        </>
+                      ) : (
+                        "View More Products"
+                      )}
+                    </button>
+                  </div>
+                )}
+
+                {/* Product Count Display */}
+                {accumulatedProducts.length > 0 && !productsLoading && (
+                  <div className="flex justify-center mb-8 mt-2">
+                    <p className="text-sm sm:text-base text-gray-600 text-center">
+                      Showing{" "}
+                      <span className="font-semibold text-gray-900">1</span> -{" "}
+                      <span className="font-semibold text-gray-900">
+                        {accumulatedProducts.length}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-semibold text-gray-900">
+                        {getProducts?.item_count ||
+                          getProducts?.totalCount ||
+                          getProducts?.total_count ||
+                          accumulatedProducts.length}
+                      </span>{" "}
+                      products
+                    </p>
+                  </div>
+                )}
+              </>
             ) : (
               <EmptyState
                 title="No Products Found"
@@ -646,161 +827,6 @@ const Cards = ({ category = "dress" }) => {
               />
             )}
           </div>
-          {totalPages > 1 &&
-            getProductsData?.length > 0 &&
-            (() => {
-              // Calculate middle pages once to avoid inconsistencies
-              // Ensure we have valid values
-              const safeCurrentPage = Number(currentPage) || 1;
-              const safeTotalPages = Number(totalPages) || 1;
-              const safeMaxVisiblePages = Number(maxVisiblePages) || 6;
-
-              const middlePages = getPaginationButtons(
-                safeCurrentPage,
-                safeTotalPages,
-                safeMaxVisiblePages
-              );
-              const showPage1Separately = !middlePages.includes(1);
-              const showLastPageSeparately =
-                safeTotalPages > 1 && !middlePages.includes(safeTotalPages);
-              const firstMiddlePage =
-                middlePages.length > 0 ? middlePages[0] : 0;
-              const lastMiddlePage =
-                middlePages.length > 0
-                  ? middlePages[middlePages.length - 1]
-                  : 0;
-              const showEllipsisBefore =
-                showPage1Separately && firstMiddlePage > 2;
-              const showEllipsisAfter =
-                showLastPageSeparately && lastMiddlePage < safeTotalPages - 1;
-
-              // Ensure current page is always visible - if not in middlePages, add it
-              const displayPages = [...middlePages];
-              if (
-                !displayPages.includes(safeCurrentPage) &&
-                safeCurrentPage > 1 &&
-                safeCurrentPage < safeTotalPages
-              ) {
-                displayPages.push(safeCurrentPage);
-                displayPages.sort((a, b) => a - b);
-              }
-
-              return (
-                <div className="flex items-center justify-center mt-16 space-x-1 sm:space-x-2 pagination flex-wrap">
-                  {/* Previous Button */}
-                  <button
-                    onClick={() => {
-                      const newPage = Math.max(safeCurrentPage - 1, 1);
-                      setPaginationData((prev) => ({
-                        ...prev,
-                        page: newPage,
-                        sendAttributes: false,
-                      }));
-                      updatePaginationInURL(newPage);
-                    }}
-                    disabled={safeCurrentPage === 1}
-                    className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <IoMdArrowBack className="text-lg sm:text-xl" />
-                  </button>
-
-                  {/* Page 1 - Show if not in middle range */}
-                  {showPage1Separately && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setPaginationData((prev) => ({
-                            ...prev,
-                            page: 1,
-                            sendAttributes: false,
-                          }));
-                          updatePaginationInURL(1);
-                        }}
-                        className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
-                          safeCurrentPage === 1
-                            ? "bg-primary text-white border-blue-600"
-                            : "border-gray-300 hover:bg-gray-100"
-                        }`}
-                      >
-                        1
-                      </button>
-                      {/* Show ellipsis if there's a gap between page 1 and middle pages */}
-                      {showEllipsisBefore && (
-                        <span className="px-2 text-gray-500">...</span>
-                      )}
-                    </>
-                  )}
-
-                  {/* Middle pages - Always include current page */}
-                  {displayPages.map((page) => (
-                    <button
-                      key={`page-${page}`}
-                      onClick={() => {
-                        setPaginationData((prev) => ({
-                          ...prev,
-                          page: page,
-                          sendAttributes: false,
-                        }));
-                        updatePaginationInURL(page);
-                      }}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
-                        safeCurrentPage === page
-                          ? "bg-primary text-white border-blue-600"
-                          : "border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-
-                  {/* Show ellipsis if there's a gap between middle pages and last page */}
-                  {showEllipsisAfter && (
-                    <span className="px-2 text-gray-500">...</span>
-                  )}
-
-                  {/* Last page - Show if not in middle range */}
-                  {showLastPageSeparately && (
-                    <button
-                      onClick={() => {
-                        setPaginationData((prev) => ({
-                          ...prev,
-                          page: safeTotalPages,
-                          sendAttributes: false,
-                        }));
-                        updatePaginationInURL(safeTotalPages);
-                      }}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 border rounded-full flex items-center justify-center text-sm sm:text-base font-medium transition-colors ${
-                        safeCurrentPage === safeTotalPages
-                          ? "bg-primary text-white border-blue-600"
-                          : "border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      {safeTotalPages}
-                    </button>
-                  )}
-
-                  {/* Next Button */}
-                  <button
-                    onClick={() => {
-                      const newPage = Math.min(
-                        safeCurrentPage + 1,
-                        safeTotalPages
-                      );
-                      setPaginationData((prev) => ({
-                        ...prev,
-                        page: newPage,
-                        sendAttributes: false,
-                      }));
-                      updatePaginationInURL(newPage);
-                    }}
-                    disabled={safeCurrentPage === safeTotalPages}
-                    className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <IoMdArrowForward className="text-lg sm:text-xl" />
-                  </button>
-                </div>
-              );
-            })()}
         </div>
       </div>
     </>

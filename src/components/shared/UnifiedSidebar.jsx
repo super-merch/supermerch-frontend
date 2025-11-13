@@ -148,7 +148,6 @@ const UnifiedSidebar = ({
     headwear: ["Headwear"],
   };
 
-  
   // Get configuration for this page type
   const urlCategory = searchParams.get("categoryName");
   const category = v1categories.filter((cat) => cat.name === urlCategory);
@@ -369,16 +368,19 @@ const UnifiedSidebar = ({
           {/* Filters Section */}
           <div className="mt-4 space-y-4">
             {pageType === "CLOTHING" && (
-              <CollapsibleSection title="Gender" defaultExpanded={true}>
+              <CollapsibleSection title="Gender" defaultExpanded={false}>
                 <ClothingGenderToggle />
               </CollapsibleSection>
             )}
 
-            <CollapsibleSection title="Price Range" defaultExpanded={true}>
+            <CollapsibleSection title="Price Range" defaultExpanded={false}>
               <PriceFilter toggleSidebar={toggleSidebar} />
             </CollapsibleSection>
 
-            <CollapsibleSection title="Filter by Colour" defaultExpanded={true}>
+            <CollapsibleSection
+              title="Filter by Colour"
+              defaultExpanded={false}
+            >
               <ColorFilter toggleSidebar={toggleSidebar} />
             </CollapsibleSection>
             {categoryType !== "australia" &&
@@ -386,7 +388,7 @@ const UnifiedSidebar = ({
               categoryType !== "sales" && (
                 <CollapsibleSection
                   title="Filter by Attributes"
-                  defaultExpanded={true}
+                  defaultExpanded={false}
                 >
                   <AttributeFilters
                     toggleSidebar={toggleSidebar}

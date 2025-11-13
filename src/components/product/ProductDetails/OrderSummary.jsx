@@ -77,7 +77,8 @@ const OrderSummary = ({
           <div className="flex items-start justify-between gap-2 sm:gap-4">
             <div>
               <p className="text-xs font-medium text-gray-600 tracking-wide">
-                Per unit
+                Per unit <br />{" "}
+                <span className="text-gray-500">(excl GST)</span>
               </p>
               <div className="flex items-baseline gap-2">
                 {discountPct > 0 && (
@@ -99,14 +100,14 @@ const OrderSummary = ({
                 </span>
               )}
             </div>
-            <div className="text-right">
-              <p className="text-xs font-medium text-gray-600 tracking-wide">
+            <div className="text-right flex flex-col">
+              <span className="text-xs font-medium text-gray-600 tracking-wide">
                 Total
-              </p>
+              </span>{" "}
+              <span className="text-gray-500 text-sm">
+                {currentQuantity} units
+              </span>
               <div className="flex items-center justify-end gap-2">
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 leading-3 text-[12px] sm:text-[13px] text-gray-700 ring-1 ring-inset ring-gray-200">
-                  {currentQuantity} pcs
-                </span>
                 <p className="sm:text-3xl text-2xl font-extrabold text-smallHeader">
                   $
                   {currentPrice.toLocaleString("en-US", {
@@ -144,7 +145,8 @@ const OrderSummary = ({
           {/* Product Details */}
           <div className="mt-6">
             <p className="text-sm text-black">
-              Est Delivery Date: {deliveryDate}
+              <span className="font-bold">Est Delivery Date:</span>{" "}
+              {deliveryDate}
             </p>
             <p className="pt-2 text-xs text-black ">
               ${discountedUnitPrice.toFixed(2)} (Non-Branded sample) + $
@@ -158,7 +160,7 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                Selected Color:{" "}
+                <span className="font-bold">Selected Color:</span>{" "}
                 {selectedColor ? selectedColor : "No color selected"}
               </p>
             </div>
@@ -167,7 +169,7 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                Print Method:{" "}
+                <span className="font-bold">Print Method:</span>{" "}
                 {selectedPrintMethod?.description || "Not selected"}
               </p>
             </div>
@@ -176,7 +178,7 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                Selected Size: &nbsp;
+                <span className="font-bold">Selected Size:</span> &nbsp;
                 {selectedSize || "Not selected"}
               </p>
             </div>
@@ -185,7 +187,9 @@ const OrderSummary = ({
               <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                 <FaCheck />
               </p>
-              <p className="text-sm">Quantity: {currentQuantity}</p>
+              <p className="text-sm">
+                <span className="font-bold">Quantity:</span> {currentQuantity}
+              </p>
             </div>
 
             <div className="flex items-start gap-2 pt-3 ">
@@ -193,7 +197,8 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                Setup Charge: ${setupFee?.toFixed(2) || "0.00"}
+                <span className="font-bold">Setup Charge:</span> $
+                {setupFee?.toFixed(2) || "0.00"}
               </p>
             </div>
             <div className="flex items-start gap-2 pt-3 ">
@@ -201,7 +206,7 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                Freight Charge:
+                <span className="font-bold">Freight Charge:</span>
                 {freightFee > 0 ? `$${freightFee.toFixed(2)}` : " TBD"}
               </p>
             </div>
