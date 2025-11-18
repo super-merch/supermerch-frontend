@@ -92,7 +92,7 @@ const App = () => {
             />
             <Route
               path="/return-gifts"
-              element={<ShopPage category="allProducts" />}
+              element={<ShopPage category="return-gifts" />}
             />
             <Route
               path="/24hr-production"

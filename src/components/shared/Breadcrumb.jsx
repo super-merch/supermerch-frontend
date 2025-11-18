@@ -124,7 +124,7 @@ const Breadcrumb = () => {
 
       {/* Desktop Layout */}
       <div className="hidden lg:block">
-        <div className="flex items-center gap-2 text-smallHeader mt-4 text-lg">
+        <div className="flex items-center gap-2 text-smallHeader py-2 text-lg">
           {/* Home */}
           <Link to="/" className="flex items-center gap-1">
             <p>Home</p>
@@ -153,7 +153,11 @@ const Breadcrumb = () => {
           )}
 
           {/* Subcategory or Page Name */}
-          {subCategory ? <span>{subCategory}</span> : <span>{pageName == "Shop"? "": pageName }</span>}
+          {subCategory ? (
+            <span>{subCategory}</span>
+          ) : (
+            <span>{pageName == "Shop" ? "" : pageName}</span>
+          )}
         </div>
       </div>
     </div>

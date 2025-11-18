@@ -19,6 +19,7 @@ import {
   slugify,
 } from "@/utils/utils";
 import { AppContext } from "@/context/AppContext";
+import AusFlag from "../../assets/aus_flag.png";
 
 const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   const dispatch = useDispatch();
@@ -104,7 +105,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   return (
     <div
       key={productId}
-      className="w-full h-full relative border border-gray-200 rounded-lg cursor-pointer transition-all duration-200 flex flex-col group hover:border-primary hover:shadow-lg bg-white overflow-hidden"
+      className="w-full h-full relative border border-gray-300 rounded-lg cursor-pointer transition-all duration-200 flex flex-col group hover:border-primary hover:shadow-xl bg-white overflow-hidden shadow-lg"
       onClick={handleCardClick}
     >
       {/* Badges - Top Left */}
@@ -112,7 +113,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
         className="absolute left-1 top-1 sm:left-1.5 sm:top-1.5 z-20 flex flex-col gap-1 pointer-events-none"
         style={{ maxWidth: "calc(100% - 50px)" }}
       >
-        {is24HrProduct&& (
+        {is24HrProduct && (
           <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-green-200 shadow-sm overflow-hidden">
             <Clock className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="truncate max-w-[40px] sm:max-w-none">24Hr</span>
@@ -146,12 +147,12 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
       {/* Product Image */}
       <div
         className="w-full border-b border-gray-100 overflow-hidden relative flex items-center justify-center flex-shrink-0"
-        style={{ height: "160px", minHeight: "160px", maxHeight: "160px" }}
+        style={{ height: "200px", minHeight: "200px", maxHeight: "200px" }}
       >
         <img
           src={product?.overview?.hero_image || noimage}
           alt={product?.overview?.name || "Product"}
-          className="object-contain w-full h-full p-2 sm:p-3 transition-transform duration-300 group-hover:scale-105"
+          className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
           style={{
             maxWidth: "100%",
             maxHeight: "100%",
@@ -177,7 +178,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
       </div>
 
       {/* Product Details */}
-      <div className="flex-1 flex flex-col p-2 sm:p-3 overflow-hidden min-h-0">
+      <div className="flex-1 flex flex-col p-2 overflow-hidden min-h-0">
         <Link
           to={`/product/${slug}?ref=${encodedId}`}
           onClick={(e) => e.stopPropagation()}
@@ -207,23 +208,12 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
             {/* Product Name */}
             <Tooltip
               content={
-                product.overview.name.length > 30 ? product.overview.name : ""
+                product.overview.name.length > 20 ? product.overview.name : ""
               }
               placement="top"
+              wrapperClassName="block w-full"
             >
-              <h3
-                className="text-xs sm:text-sm font-semibold text-gray-900 w-full overflow-hidden"
-                style={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  lineHeight: "1.2rem",
-                  maxHeight: "2.4rem",
-                  wordBreak: "break-word",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                 {product.overview.name}
               </h3>
             </Tooltip>

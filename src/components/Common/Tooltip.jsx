@@ -8,6 +8,7 @@ const Tooltip = ({
   placement = "top",
   offset = 8,
   className = "",
+  wrapperClassName = "inline-block",
 }) => {
   const [hovered, setHovered] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -83,7 +84,7 @@ const Tooltip = ({
   return (
     <span
       ref={triggerRef}
-      className="inline-block"
+      className={wrapperClassName}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

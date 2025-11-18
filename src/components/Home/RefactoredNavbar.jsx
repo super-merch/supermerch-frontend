@@ -41,6 +41,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     v1categories,
     setSidebarActiveCategory,
     setSidebarActiveLabel,
+    setPaginationData,
   } = useContext(AppContext);
 
   const dispatch = useDispatch();
@@ -54,7 +55,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const [navbarLogout, setNavbarLogout] = useState(false);
   const [coupenModel, setCoupenModel] = useState(false);
   const { coupons, coupenLoading } = useCoupons();
-
   // Create menu items from categories
   const createMenuItems = () => {
     const baseMenuItems = [
@@ -73,7 +73,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         path: "/promotional?categoryName=Headwear&category=PK&type=Headwear",
         hasSubmenu: true,
       },
-      { name: "Return Gifts", path: "/return-gifts" },
+      { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
       { name: "24hr Prod", path: "/24hr-production" },
       { name: "Deals", path: "/sales" },
       { name: "Australia Made", path: "/australia-made" },
@@ -922,6 +922,20 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           onClick: () => handleMenuClick(item),
         };
       }
+      if (item.name === "Gifts") {
+        return {
+          ...item,
+          id: "gifts",
+          submenu: [
+            {
+              id: "gift-hampers",
+              name: "Gift Hampers",
+              onClick: () => handleMenuClick(item),
+            },
+          ],
+          onClick: () => handleMenuClick(item),
+        };
+      }
 
       return {
         ...item,
@@ -947,7 +961,9 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleMenuClick = (item) => {
-    if (item.path) {
+    if (item?.name === "Gifts") {
+      navigate(item.path);
+    } else {
       navigate(item.path);
     }
   };

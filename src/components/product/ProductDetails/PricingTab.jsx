@@ -138,7 +138,7 @@ const PricingTab = ({
         <div className="flex items-center gap-4">
           <label
             htmlFor="print-method"
-            className=" my-2  font-medium text-black"
+            className=" my-2  font-medium text-black text-sm sm:text-base"
           >
             Print Method:
           </label>
@@ -259,15 +259,15 @@ const PricingTab = ({
         const showContactRow = sortedBreaks.length > 0 && firstQuantity > 2;
 
         return (
-          <table className="min-w-full text-sm">
+          <table className="min-w-full text-xs sm:text-sm">
             <thead>
               <tr className="text-left text-black">
-                <th className="py-2 pr-4 text-xl">Select</th>
-                <th className="py-2 pr-4 text-xl">Qty</th>
-                <th className="py-2 pr-4 text-xl min-w-[70px]">
+                <th className="py-2 pr-4 text-base   sm:text-xl">Select</th>
+                <th className="py-2 pr-4 text-base sm:text-xl">Qty</th>
+                <th className="py-2 pr-4 text-base sm:text-xl min-w-[70px]">
                   Unit <span className=" text-gray-500">(excl GST)</span>
                 </th>
-                <th className="py-2 text-xl">Total</th>
+                <th className="py-2 text-base sm:text-xl">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -286,15 +286,17 @@ const PricingTab = ({
                   <td className="py-2 pr-4 align-middle text-lg text-black">
                     0-{firstQuantity - 1}
                   </td>
-                  <td className="py-2 pr-4 align-middle text-lg text-black"></td>
-                  <td className="py-2   text-lg text-black" colSpan={1}>
+                  <td
+                    className="py-2   text-lg text-black text-right"
+                    colSpan={2}
+                  >
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowQuoteForm?.({ state: true, from: "lowMOQ" });
                         setCurrentQuantity(0);
                       }}
-                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-md transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-medium rounded-md transition-colors"
                     >
                       For Low MOQ, Contact Us
                     </button>
@@ -336,7 +338,7 @@ const PricingTab = ({
                       setActiveIndex(i);
                     }}
                   >
-                    <td className="py-2 pr-4 align-middle text-lg text-black">
+                    <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
                       <input
                         type="radio"
                         name="priceTier"
@@ -348,13 +350,13 @@ const PricingTab = ({
                         }}
                       />
                     </td>
-                    <td className="py-2 pr-4 align-middle text-lg text-black">
+                    <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
                       {item.qty}+
                     </td>
-                    <td className="py-2 pr-4 align-middle text-lg text-black">
+                    <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
                       ${unitDiscounted.toFixed(2)}
                     </td>
-                    <td className="py-2 align-middle text-lg text-black">
+                    <td className="py-2 align-middle text-base sm:text-lg text-black">
                       ${total.toFixed(2)}
                     </td>
                   </tr>
