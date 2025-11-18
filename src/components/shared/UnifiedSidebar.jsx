@@ -261,7 +261,7 @@ const UnifiedSidebar = ({
   };
 
   return (
-    <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)]">
+    <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)] bg-gray-100">
       {/* Hidden toggle button for external control */}
       <button
         data-sidebar-toggle
@@ -273,9 +273,9 @@ const UnifiedSidebar = ({
       {/* Sidebar */}
       <div
         data-sidebar-content
-        className={`transition-all duration-300 ease-in-out ${
+        className={`bg-gray-100 transition-all duration-300 ease-in-out ${
           isSidebarOpen
-            ? "lg:w-[100%] z-50 lg:mt-0 md:w-[280px] max-w-[90vw] xs:max-w-[95vw] absolute h-screen md:shadow-xl shadow-xl bg-white lg:shadow-none px-3 xs:px-2 lg:px-0 py-4"
+            ? "lg:w-[100%] z-50 lg:mt-0 md:w-[280px] max-w-[90vw] xs:max-w-[95vw] absolute h-screen md:shadow-xl shadow-xl lg:shadow-none px-3 xs:px-2 lg:px-0 py-4"
             : "hidden"
         }`}
       >

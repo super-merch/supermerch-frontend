@@ -100,7 +100,7 @@ const AppContextProvider = (props) => {
     email: "",
     phone: "",
   });
-
+  const queryClient = useQueryClient();
   const [userOrder, setUserOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [skeletonLoading, setSkeletonLoading] = useState(true);
@@ -218,6 +218,8 @@ const AppContextProvider = (props) => {
       url = `${backednUrl}/api/client-products/search?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
       url = `${backednUrl}/api/client-products?${params.toString()}`;
+    } else if (paginationData.category === "return-gifts") {
+      url = `${backednUrl}/api/client-products/search?searchTerm=hamper&page=${paginationData.page}&limit=${paginationData.limit}`;
     } else if (paginationData.category) {
       url = `${backednUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {
@@ -262,15 +264,22 @@ const AppContextProvider = (props) => {
   });
 
   const refetchProducts = () => {
-    queryClient.invalidateQueries({
-      queryKey: [
-        paginationData.productTypeId,
-        paginationData.page,
-        paginationData.limit,
-        paginationData.sortOption,
-        paginationData.filter,
-      ],
-    });
+    // queryClient.invalidateQueries({
+    //   queryKey: [
+    //     paginationData.productTypeId,
+    //     paginationData.page,
+    //     paginationData.limit,
+    //     paginationData.sortOption,
+    //     paginationData.filter,
+    //     paginationData.category,
+    //     paginationData.searchTerm,
+    //     paginationData.pricerange?.min_price,
+    //     paginationData.pricerange?.max_price,
+    //     paginationData.colors,
+    //     paginationData.attributes,
+    //     paginationData.sendAttributes,
+    //   ],
+    // });
   };
 
   const getAustraliaProductsFromApi = async () => {
