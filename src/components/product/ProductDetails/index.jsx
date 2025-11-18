@@ -315,7 +315,7 @@ const ProductDetails = () => {
         setUnitPrice(firstBreak.price);
         const setupFee = isClothing
           ? getClothingPricing(initialMethod.description).setupFee
-          : allGroups[1].setup * 1.5 || 0;
+          : allGroups[1]?.setup * 1.5 || 0;
         setCurrentPrice(
           firstBreak.price * firstBreak.qty + setupFee + freightFee
         );
@@ -747,7 +747,7 @@ const ProductDetails = () => {
       const clothingPricing = getClothingPricing(
         selectedPrintMethod.description
       );
-      return clothingPricing.setupFee;
+      return clothingPricing?.setupFee;
     }
     return (
       priceGroups[0]?.additions[0]?.setup * 1.5 ||
@@ -835,7 +835,8 @@ const ProductDetails = () => {
 
   const parseSizing = () => {
     const detailString = single_product?.product?.details?.find(
-      (d) => d.name === "Sizing" || d.name === "Sizes" || d.name === "product sizes"
+      (d) =>
+        d.name === "Sizing" || d.name === "Sizes" || d.name === "product sizes"
     )?.detail;
     if (!detailString) return [];
     const lines = detailString.trim().split("\n");
@@ -846,7 +847,7 @@ const ProductDetails = () => {
     const chestValues = lines[1]?.split(",").slice(1);
     const lengthValues = lines[2]?.split(",").slice(1);
 
-    sizes = sizes.length>1 ?sizes: ['XS','S','M','L','XL','2XL']
+    sizes = sizes.length > 1 ? sizes : ["XS", "S", "M", "L", "XL", "2XL"];
     const result =
       chestValues &&
       sizes?.map((size, index) => {
