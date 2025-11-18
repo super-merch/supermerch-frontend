@@ -20,8 +20,6 @@ const AllProducts = ({ activeTab }) => {
     marginApi,
     getGlobalDiscount,
     totalDiscount,
-    australiaIds,
-    productionIds,
   } = useContext(AppContext);
 
   // Local state for products to avoid conflicts with other tabs
@@ -261,8 +259,6 @@ const AllProducts = ({ activeTab }) => {
                         maxPrice={maxPrice}
                         discountPct={discountPct}
                         isGlobalDiscount={isGlobalDiscount}
-                        productionIds={productionIds}
-                        australiaIds={australiaIds}
                         favSet={favSet}
                         isHovered={cardHover === product.meta.id}
                         onClickView={() =>

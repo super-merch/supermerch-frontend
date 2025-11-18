@@ -446,102 +446,102 @@ const Cards = ({ category = "" }) => {
         setHasMoreProducts(false);
       }
     }
-    if (urlCategoryParam) {
-      if (
-        urlCategoryParam === "australia" ||
-        urlCategoryParam === "24hr-production" ||
-        urlCategoryParam === "sales" ||
-        urlCategoryParam === "allProducts"
-      ) {
-        setPaginationData((prev) => ({
-          ...prev,
-          category: urlCategoryParam,
-          page: pageFromURL,
-          limit: pageLimit,
-          // preserve prev.sortOption
-          sortOption: urlSort,
-          colors: urlColors ? urlColors.split(",") : [],
-          attributes:
-            urlAttrName && urlAttrValue
-              ? { name: urlAttrName, value: urlAttrValue }
-              : null,
-          pricerange:
-            urlMinPrice && urlMaxPrice
-              ? {
-                  min_price: Number(urlMinPrice),
-                  max_price: Number(urlMaxPrice),
-                }
-              : undefined,
-          sendAttributes: false,
-        }));
-      } else {
-        setPaginationData((prev) => ({
-          ...prev,
-          productTypeId: urlCategoryParam,
-          category: null,
-          limit: pageLimit,
-          page: pageFromURL,
-          sortOption: urlSort,
-          colors: urlColors ? urlColors.split(",") : [],
-          attributes:
-            urlAttrName && urlAttrValue
-              ? { name: urlAttrName, value: urlAttrValue }
-              : null,
-          pricerange:
-            urlMinPrice && urlMaxPrice
-              ? {
-                  min_price: Number(urlMinPrice),
-                  max_price: Number(urlMaxPrice),
-                }
-              : undefined,
-          sendAttributes: false,
-        }));
-      }
-    } else if (isSearchRoute) {
-      setPaginationData((prev) => ({
-        ...prev,
-        category: "search",
-        page: pageFromURL,
-        searchTerm: searchParams.get("search"),
-        limit: pageLimit,
-        productTypeId: searchParams.get("categoryId"),
-        sortOption: urlSort,
-        colors: urlColors ? urlColors.split(",") : [],
-        attributes:
-          urlAttrName && urlAttrValue
-            ? { name: urlAttrName, value: urlAttrValue }
-            : null,
-        pricerange:
-          urlMinPrice && urlMaxPrice
-            ? {
-                min_price: Number(urlMinPrice),
-                max_price: Number(urlMaxPrice),
-              }
-            : undefined,
-        sendAttributes: false,
-      }));
-    } else {
-      setPaginationData((prev) => ({
-        ...prev,
-        category: category,
-        limit: pageLimit,
-        page: pageFromURL,
-        sortOption: urlSort,
-        colors: urlColors ? urlColors.split(",") : [],
-        attributes:
-          urlAttrName && urlAttrValue
-            ? { name: urlAttrName, value: urlAttrValue }
-            : null,
-        pricerange:
-          urlMinPrice && urlMaxPrice
-            ? {
-                min_price: Number(urlMinPrice),
-                max_price: Number(urlMaxPrice),
-              }
-            : undefined,
-        sendAttributes: false,
-      }));
-    }
+    // if (urlCategoryParam) {
+    //   if (
+    //     urlCategoryParam === "australia" ||
+    //     urlCategoryParam === "24hr-production" ||
+    //     urlCategoryParam === "sales" ||
+    //     urlCategoryParam === "allProducts"
+    //   ) {
+    //     setPaginationData((prev) => ({
+    //       ...prev,
+    //       category: urlCategoryParam,
+    //       page: pageFromURL,
+    //       limit,
+    //       // preserve prev.sortOption
+    //       sortOption: urlSort,
+    //       colors: urlColors ? urlColors.split(",") : [],
+    //       attributes:
+    //         urlAttrName && urlAttrValue
+    //           ? { name: urlAttrName, value: urlAttrValue }
+    //           : null,
+    //       pricerange:
+    //         urlMinPrice && urlMaxPrice
+    //           ? {
+    //               min_price: Number(urlMinPrice),
+    //               max_price: Number(urlMaxPrice),
+    //             }
+    //           : undefined,
+    //       sendAttributes: false,
+    //     }));
+    //   } else {
+    //     setPaginationData((prev) => ({
+    //       ...prev,
+    //       productTypeId: urlCategoryParam,
+    //       category: null,
+    //       limit,
+    //       page: pageFromURL,
+    //       sortOption: urlSort,
+    //       colors: urlColors ? urlColors.split(",") : [],
+    //       attributes:
+    //         urlAttrName && urlAttrValue
+    //           ? { name: urlAttrName, value: urlAttrValue }
+    //           : null,
+    //       pricerange:
+    //         urlMinPrice && urlMaxPrice
+    //           ? {
+    //               min_price: Number(urlMinPrice),
+    //               max_price: Number(urlMaxPrice),
+    //             }
+    //           : undefined,
+    //       sendAttributes: false,
+    //     }));
+    //   }
+    // } else if (isSearchRoute) {
+    //   setPaginationData((prev) => ({
+    //     ...prev,
+    //     category: "search",
+    //     page: pageFromURL,
+    //     searchTerm: searchParams.get("search"),
+    //     limit,
+    //     productTypeId: searchParams.get("categoryId"),
+    //     sortOption: urlSort,
+    //     colors: urlColors ? urlColors.split(",") : [],
+    //     attributes:
+    //       urlAttrName && urlAttrValue
+    //         ? { name: urlAttrName, value: urlAttrValue }
+    //         : null,
+    //     pricerange:
+    //       urlMinPrice && urlMaxPrice
+    //         ? {
+    //             min_price: Number(urlMinPrice),
+    //             max_price: Number(urlMaxPrice),
+    //           }
+    //         : undefined,
+    //     sendAttributes: false,
+    //   }));
+    // } else {
+    //   setPaginationData((prev) => ({
+    //     ...prev,
+    //     category: category,
+    //     limit,
+    //     page: pageFromURL,
+    //     sortOption: urlSort,
+    //     colors: urlColors ? urlColors.split(",") : [],
+    //     attributes:
+    //       urlAttrName && urlAttrValue
+    //         ? { name: urlAttrName, value: urlAttrValue }
+    //         : null,
+    //     pricerange:
+    //       urlMinPrice && urlMaxPrice
+    //         ? {
+    //             min_price: Number(urlMinPrice),
+    //             max_price: Number(urlMaxPrice),
+    //           }
+    //         : undefined,
+    //     sendAttributes: false,
+    //   }));
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     getProducts?.data,

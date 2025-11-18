@@ -24,7 +24,6 @@ import AusFlag from "../../assets/aus_flag.png";
 const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { productionIds, australiaIds } = useContext(AppContext);
 
   const discountPct = product.discountInfo?.discount || 0;
   const isGlobalDiscount = product.discountInfo?.isGlobal || false;
@@ -83,6 +82,25 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
           ),
         ]
       : [];
+  const is24HrProduct = (() => {
+    const groups = product?.product?.prices?.price_groups ?? [];
+    if (!Array.isArray(groups) || groups.length === 0) return false;
+
+    const re = /(same\s*-?\s*day|24\s*hrs?|24\s*hours?)/i;
+
+    return groups.some((g) => {
+      // check base_price.lead_time
+      if (re.test(String(g?.base_price?.lead_time ?? ""))) return true;
+
+      // check additions[].lead_time
+      if (Array.isArray(g?.additions)) {
+        if (g.additions.some((a) => re.test(String(a?.lead_time ?? ""))))
+          return true;
+      }
+
+      return false;
+    });
+  })();
 
   return (
     <div
@@ -95,22 +113,18 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
         className="absolute left-1 top-1 sm:left-1.5 sm:top-1.5 z-20 flex flex-col gap-1 pointer-events-none"
         style={{ maxWidth: "calc(100% - 50px)" }}
       >
-        {(productionIds.has(product?.meta?.id) ||
-          productionIds.has(String(product?.meta?.id))) && (
+        {is24HrProduct && (
           <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-green-50 to-green-100 text-green-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-green-200 shadow-sm overflow-hidden">
             <Clock className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="truncate max-w-[40px] sm:max-w-none">24Hr</span>
           </span>
         )}
 
-        {(australiaIds.has(product?.meta?.id) ||
-          australiaIds.has(String(product?.meta?.id))) && (
-          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-teal-100 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
-            <img
-              src={AusFlag}
-              alt="AU"
-              className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0"
-            />
+        {product?.product?.categorisation?.promodata_attributes?.some(
+          (item) => item === "Local Factors: Made In Australia"
+        ) && (
+          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
+            <Flag className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
             <span className="truncate max-w-[50px] sm:max-w-none">AU Made</span>
           </span>
         )}
