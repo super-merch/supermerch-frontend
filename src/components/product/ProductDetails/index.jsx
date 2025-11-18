@@ -835,17 +835,18 @@ const ProductDetails = () => {
 
   const parseSizing = () => {
     const detailString = single_product?.product?.details?.find(
-      (d) => d.name === "Sizing" || d.name === "Sizes"
+      (d) => d.name === "Sizing" || d.name === "Sizes" || d.name === "product sizes"
     )?.detail;
     if (!detailString) return [];
     const lines = detailString.trim().split("\n");
     if (!lines.length) return [];
     // Parse header (sizes)
-    const sizes = lines[0]?.split(",").filter((size) => size !== ""); // Skip empty first value
+    let sizes = lines[0]?.split(",").filter((size) => size !== ""); // Skip empty first value
     // Parse measurements
     const chestValues = lines[1]?.split(",").slice(1);
     const lengthValues = lines[2]?.split(",").slice(1);
 
+    sizes = sizes.length>1 ?sizes: ['XS','S','M','L','XL','2XL']
     const result =
       chestValues &&
       sizes?.map((size, index) => {

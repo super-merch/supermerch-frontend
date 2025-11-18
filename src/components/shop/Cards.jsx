@@ -152,6 +152,9 @@ const Cards = ({ category = "" }) => {
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
+    const limit = Number(searchParams.get("limit")) || 20;
+    const newLimit = limit + 20;
+;
 
     setIsLoadingMore(true);
     try {
@@ -164,6 +167,7 @@ const Cards = ({ category = "" }) => {
         setCurrentPage(nextPage);
         setSearchParams((prev) => {
           prev.set("page", nextPage.toString());
+          prev.set("limit", newLimit.toString());
           return prev;
         });
 
@@ -554,9 +558,10 @@ const Cards = ({ category = "" }) => {
   // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
+      const newLimit = Number(searchParams.get("limit")) || 20;
       setPaginationData((prev) => {
-        if (prev.limit !== pageLimit) {
-          return { ...prev, limit: pageLimit };
+        if (prev.limit !== newLimit) {
+          return { ...prev, limit: newLimit };
         }
         return prev;
       });
