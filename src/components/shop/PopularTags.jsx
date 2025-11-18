@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 const foter = [
   {
@@ -43,7 +43,6 @@ const foter = [
   },
 ];
 const PopularTags = () => {
-    
   return (
     <div>
       <div className="w-fit">
@@ -64,6 +63,6 @@ const PopularTags = () => {
       </div>
     </div>
   );
-}
+};
 
-export default PopularTags
+export default PopularTags;

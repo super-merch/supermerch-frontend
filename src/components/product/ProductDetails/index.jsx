@@ -307,7 +307,6 @@ const ProductDetails = () => {
 
       setAvailablePriceGroups(allGroups);
       setSelectedPrintMethod(allGroups[0]);
-
       // Initialize quantity and price based on first price break
       const initialMethod = allGroups[0];
       if (initialMethod?.price_breaks?.length > 0) {
@@ -316,7 +315,7 @@ const ProductDetails = () => {
         setUnitPrice(firstBreak.price);
         const setupFee = isClothing
           ? getClothingPricing(initialMethod.description).setupFee
-          : allGroups[0].setup * 1.5 || 0;
+          : allGroups[1].setup * 1.5 || 0;
         setCurrentPrice(
           firstBreak.price * firstBreak.qty + setupFee + freightFee
         );
@@ -750,7 +749,11 @@ const ProductDetails = () => {
       );
       return clothingPricing.setupFee;
     }
-    return selectedPrintMethod?.setup * 1.5 || 0;
+    return (
+      priceGroups[0]?.additions[0]?.setup * 1.5 ||
+      selectedPrintMethod?.setup * 1.5 ||
+      0
+    );
   };
 
   const setupFee = getSetupFee();
@@ -854,8 +857,6 @@ const ProductDetails = () => {
 
     return { sizes, result };
   };
-
-  const clothingPricing = getClothingPricing(selectedPrintMethod?.description);
 
   if (error)
     return (

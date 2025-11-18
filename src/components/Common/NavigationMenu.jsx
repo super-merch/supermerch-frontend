@@ -25,16 +25,19 @@ const NavigationMenu = ({
       item: "text-base px-2 py-1",
       submenu: "text-sm px-2 py-1",
       megaMenu: "w-80",
+      noMegaMenu: "w-80",
     },
     default: {
       item: "text-sm px-3 py-2",
       submenu: "text-base px-3 py-1",
       megaMenu: "w-[1200px]",
+      noMegaMenu: "w-[800px]",
     },
     large: {
       item: "text-lg px-4 py-3",
       submenu: "text-lg px-4 py-2",
       megaMenu: "w-[1200px]",
+      noMegaMenu: "w-[800px]",
     },
   };
 
@@ -117,7 +120,9 @@ const NavigationMenu = ({
       >
         <div className="container mx-auto mt-4">
           <div
-            className={`overflow-hidden rounded-xl border border-gray-200 bg-white ${currentSize.megaMenu} shadow-2xl`}
+            className={`overflow-hidden rounded-xl border border-gray-200 bg-white ${
+              item.megaMenu ? currentSize.megaMenu : currentSize.noMegaMenu
+            } shadow-2xl`}
           >
             {item.megaMenu ? (
               <div className="grid grid-cols-[260px_1fr]">
@@ -242,7 +247,7 @@ const NavigationMenu = ({
             ) : (
               // Regular submenu layout
               <div className="p-4 bg-white">
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {item.submenu.map((subItem, index) => (
                     <button
                       key={index}
@@ -416,7 +421,8 @@ const NavigationMenu = ({
                     if (
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
-                      item.name === "Headwear"
+                      item.name === "Headwear" ||
+                      item.name === "Gifts"
                     ) {
                       return;
                     }

@@ -1,5 +1,5 @@
-import { addToFavourite } from "@/redux/slices/favouriteSlice";
-import { backgroundColor, getProductPrice, slugify } from "@/utils/utils";
+import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
+import { slugify } from "@/utils/utils";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
@@ -8,35 +8,25 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { AppContext } from "../../context/AppContext";
-import UnifiedSidebar from "../shared/UnifiedSidebar";
-import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
-import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
-import { LoadingOverlay } from "../Common";
+import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
+import UnifiedSidebar from "../shared/UnifiedSidebar";
 
-const Cards = ({ category = "dress" }) => {
+const Cards = ({ category = "" }) => {
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const selectedCategory = useSelector((state) => state.filters.categoryId);
-  const [cardHover, setCardHover] = useState(null);
   const location = useLocation();
 
-  const isAustraliaPage = category === "australia";
-  const is24HrPage = category === "24hr-production";
-  const isSalesPage = category === "sales";
-  const isSearch = category === "search";
-  const isAllProducts = category === "allProducts";
   const [searchParams, setSearchParams] = useSearchParams();
-  const isSpecialPage =
-    isAustraliaPage || is24HrPage || isSalesPage || isSearch;
-  const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = parseInt(searchParams.get("page")) || 1;
 
+  const urlCategoryParam = searchParams.get("category");
+  const pageFromURL = parseInt(searchParams.get("page"));
   const urlType = searchParams.get("type");
   const isSearchRoute = location.pathname.includes("/search");
   const limit = 20;
+  const pageLimit = limit;
   const urlSort = searchParams.get("sort") || "";
   const urlColors = searchParams.get("colors");
   const urlAttrName = searchParams.get("attrName");
@@ -57,6 +47,7 @@ const Cards = ({ category = "dress" }) => {
     getProducts,
     productsLoading,
     backednUrl,
+    refetchProducts,
   } = useContext(AppContext);
 
   // State for accumulated products and loading more
@@ -67,14 +58,18 @@ const Cards = ({ category = "dress" }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const [currentPage, setCurrentPage] = useState(
-    paginationData?.page || paginationData?.currentPage
+    pageFromURL || paginationData?.page || paginationData?.currentPage
   );
   const prevCategoryKeyRef = useRef(null);
+  const productRefs = useRef(new Map());
+  const hasScrolledRef = useRef(false);
+  const scrollToProductId = searchParams.get("scrollTo");
 
   const getProductsData = getProducts?.data;
 
   const favSet = new Set();
-  const { favouriteItems } = useSelector((state) => state.favouriteProducts);
+
+  const accumulatedCount = accumulatedProducts.length;
 
   // Function to build API URL for fetching products
   const buildApiUrl = (page, limit) => {
@@ -116,9 +111,10 @@ const Cards = ({ category = "dress" }) => {
         params.append("colors[]", color);
       });
     }
-
     let url = "";
-    if (paginationData.category === "australia") {
+    if (paginationData.category === "return-gifts") {
+      url = `${backednUrl}/api/client-products/search?searchTerm=hamper&page=${page}&limit=${limit}`;
+    } else if (paginationData.category === "australia") {
       url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
     } else if (paginationData.category === "24hr-production") {
       url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
@@ -135,7 +131,6 @@ const Cards = ({ category = "dress" }) => {
     } else {
       url = `${backednUrl}/api/client-products?${params.toString()}`;
     }
-
     return url;
   };
 
@@ -155,14 +150,11 @@ const Cards = ({ category = "dress" }) => {
     }
   };
 
-  // Function to load more products
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
     const limit = Number(searchParams.get("limit")) || 20;
     const newLimit = limit + 20;
-    const urlLimit = new URLSearchParams(searchParams);
-    urlLimit.set("limit", newLimit.toString());
-    setSearchParams(urlLimit);
+;
 
     setIsLoadingMore(true);
     try {
@@ -173,6 +165,11 @@ const Cards = ({ category = "dress" }) => {
         // Append new products to accumulated products
         setAccumulatedProducts((prev) => [...prev, ...data.data]);
         setCurrentPage(nextPage);
+        setSearchParams((prev) => {
+          prev.set("page", nextPage.toString());
+          prev.set("limit", newLimit.toString());
+          return prev;
+        });
 
         // Check if there are more products to load
         const totalPages = data.total_pages || data.totalPages || 0;
@@ -206,6 +203,11 @@ const Cards = ({ category = "dress" }) => {
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
+      // Reset page in URL to 1
+      const currentParams = new URLSearchParams(searchParams);
+      currentParams.set("page", "1");
+      currentParams.delete("scrollTo");
+      setSearchParams(currentParams, { replace: true });
 
       setSortOption(urlSort || "");
       if (urlMinPrice && urlMaxPrice) {
@@ -227,7 +229,7 @@ const Cards = ({ category = "dress" }) => {
             ...prev,
             category: urlCategoryParam,
             page: 1,
-            limit,
+            limit: pageLimit,
             sortOption: "",
             colors: [],
             attributes: null,
@@ -239,7 +241,7 @@ const Cards = ({ category = "dress" }) => {
             ...prev,
             productTypeId: urlCategoryParam,
             sendAttributes: true,
-            limit,
+            limit: pageLimit,
             category: null,
             page: pageFromURL,
             sortOption: urlSort,
@@ -263,7 +265,7 @@ const Cards = ({ category = "dress" }) => {
           category: "search",
           page: 1,
           sendAttributes: true,
-          limit,
+          limit: pageLimit,
           searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
           sortOption: urlSort,
@@ -285,7 +287,7 @@ const Cards = ({ category = "dress" }) => {
           ...prev,
           category: category,
           page: pageFromURL,
-          limit,
+          limit: pageLimit,
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
           attributes:
@@ -336,6 +338,11 @@ const Cards = ({ category = "dress" }) => {
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
+      // Reset page in URL to 1 when filters change
+      const currentParams = new URLSearchParams(searchParams);
+      currentParams.set("page", "1");
+      currentParams.delete("scrollTo");
+      setSearchParams(currentParams, { replace: true });
     } else if (filtersKeyRef.current === null) {
       // Initial load - set the key
       filtersKeyRef.current = currentFiltersKey;
@@ -349,6 +356,48 @@ const Cards = ({ category = "dress" }) => {
     paginationData.colors,
   ]);
 
+  // Handle scroll restoration from URL
+  useEffect(() => {
+    if (
+      scrollToProductId &&
+      !hasScrolledRef.current &&
+      accumulatedProducts.length > 0 &&
+      !productsLoading &&
+      !isLoadingMore
+    ) {
+      const productElement = productRefs.current.get(scrollToProductId);
+
+      if (productElement) {
+        setTimeout(() => {
+          productElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          hasScrolledRef.current = true;
+
+          // Remove scrollTo from URL after scrolling
+          const currentParams = new URLSearchParams(searchParams);
+          currentParams.delete("scrollTo");
+          setSearchParams(currentParams, { replace: true });
+        }, 300);
+      }
+    }
+  }, [
+    scrollToProductId,
+    accumulatedProducts,
+    productsLoading,
+    isLoadingMore,
+    searchParams,
+    setSearchParams,
+  ]);
+
+  // Reset scroll ref when scrollToProductId is removed
+  useEffect(() => {
+    if (!scrollToProductId) {
+      hasScrolledRef.current = false;
+    }
+  }, [scrollToProductId]);
+
   // Update accumulated products when getProducts.data changes
   useEffect(() => {
     if (
@@ -356,13 +405,36 @@ const Cards = ({ category = "dress" }) => {
       Array.isArray(getProducts.data) &&
       !productsLoading
     ) {
+      // Check if we're restoring from URL page parameter
+      const urlPage = parseInt(searchParams.get("page")) || 1;
+      const isRestoringFromURL = urlPage > 1;
+
       // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-      if (isInitialLoadRef.current || currentPage === 1) {
+      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
+      if (
+        (isInitialLoadRef.current || currentPage === 1) &&
+        !isRestoringFromURL
+      ) {
         setAccumulatedProducts(getProducts.data);
         setCurrentPage(1);
         isInitialLoadRef.current = false;
 
+        // Ensure page 1 is in URL only if not restoring
+        if (urlPage === 1) {
+          const currentParams = new URLSearchParams(searchParams);
+          currentParams.set("page", "1");
+          setSearchParams(currentParams, { replace: true });
+        }
+
         // Check if there are more products to load
+        const totalPages =
+          getProducts.total_pages || getProducts.totalPages || 0;
+        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
+      } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
+        // If restoring from URL and no products loaded yet, start with page 1 data
+        // The loadProductsUpToPage will append more products
+        setAccumulatedProducts(getProducts.data);
+        // Don't reset currentPage here, let loadProductsUpToPage handle it
         const totalPages =
           getProducts.total_pages || getProducts.totalPages || 0;
         setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
@@ -483,20 +555,6 @@ const Cards = ({ category = "dress" }) => {
     paginationData.page,
   ]);
 
-  favouriteItems.map((item) => {
-    favSet.add(item.meta.id);
-  });
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setIsDropdownOpen(false);
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
-
   // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
@@ -511,26 +569,7 @@ const Cards = ({ category = "dress" }) => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const priceCache = useRef(new Map());
-
-  const getRealPrice = useCallback((product) => {
-    const productId = product.meta?.id;
-    if (priceCache.current.has(productId)) {
-      return priceCache.current.get(productId);
-    }
-
-    const priceGroups = product.product?.prices?.price_groups || [];
-    const basePrice = priceGroups.find((group) => group?.base_price) || {};
-    const priceBreaks = basePrice.base_price?.price_breaks || [];
-    const price =
-      priceBreaks[0]?.price !== undefined ? priceBreaks[0].price : 0;
-
-    // Cache the result
-    priceCache.current.set(productId, price);
-    return price;
-  }, []);
+  }, [pageLimit, setPaginationData]);
 
   const handleSortSelection = (option) => {
     setSortOption(option);
@@ -558,26 +597,29 @@ const Cards = ({ category = "dress" }) => {
   };
 
   const handleViewProduct = (productId, name) => {
+    // Store current page and product ID in URL for scroll restoration
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.set("page", currentPage.toString());
+    currentParams.set("scrollTo", productId.toString());
+
     const encodedId = btoa(productId); // base64 encode
     const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
-      state: productId,
-    });
-  };
-  const getResultsText = () => {
-    if (isAustraliaPage) return "Australia Made Products";
-    if (is24HrPage) return "24Hr Production Products";
-    if (isSalesPage) return "Sales Products";
-    if (isSearch) return `Search Results for "${searchParams.get("search")}"`;
-    if (category)
-      return `${category.charAt(0).toUpperCase() + category.slice(1)} Products`;
-    return "All Products";
+    const returnUrl = `${location.pathname}?${currentParams.toString()}`;
+
+    navigate(
+      `/product/${encodeURIComponent(
+        slug
+      )}?ref=${encodedId}&return=${encodeURIComponent(returnUrl)}`,
+      {
+        state: { productId, returnUrl },
+      }
+    );
   };
 
   return (
     <>
       <div className="relative flex justify-between pt-0 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[280px]">
+        <div className="lg:w-[280px] bg-gray-100">
           <UnifiedSidebar pageType={pageType} categoryType={category} />
         </div>
 
@@ -754,20 +796,31 @@ const Cards = ({ category = "dress" }) => {
             }`}
           >
             {productsLoading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+              Array.from({ length: 20 }, (_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
             ) : accumulatedProducts?.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
                   {accumulatedProducts.map((product) => {
+                    const productId = product.meta?.id?.toString();
                     return (
-                      <ProductCard
+                      <div
                         key={product.meta.id}
-                        product={product}
-                        favSet={favSet}
-                        onViewProduct={handleViewProduct}
-                      />
+                        ref={(el) => {
+                          if (el && productId) {
+                            productRefs.current.set(productId, el);
+                          } else if (!el && productId) {
+                            productRefs.current.delete(productId);
+                          }
+                        }}
+                      >
+                        <ProductCard
+                          product={product}
+                          favSet={favSet}
+                          onViewProduct={handleViewProduct}
+                        />
+                      </div>
                     );
                   })}
                 </div>

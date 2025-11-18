@@ -20,7 +20,7 @@ const GeneralShopPage = () => {
 
 const ShopPage = ({ category, general }) => {
   return (
-    <>
+    <div className="bg-gray-100">
       {general ? (
         <GeneralShopPage />
       ) : (
@@ -32,7 +32,7 @@ const ShopPage = ({ category, general }) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

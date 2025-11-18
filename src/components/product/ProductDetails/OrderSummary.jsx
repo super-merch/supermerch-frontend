@@ -170,7 +170,7 @@ const OrderSummary = ({
               </p>
               <p className="text-sm">
                 <span className="font-bold">Print Method:</span>{" "}
-                {selectedPrintMethod?.description || "Not selected"}
+                {selectedPrintMethod?.promodata_decoration || "Not selected"}
               </p>
             </div>
             <div className="flex items-start gap-2 pt-3 ">
