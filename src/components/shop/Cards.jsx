@@ -158,6 +158,11 @@ const Cards = ({ category = "dress" }) => {
   // Function to load more products
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
+    const limit = Number(searchParams.get("limit")) || 20;
+    const newLimit = limit + 20;
+    const urlLimit = new URLSearchParams(searchParams);
+    urlLimit.set("limit", newLimit.toString());
+    setSearchParams(urlLimit);
 
     setIsLoadingMore(true);
     try {
@@ -495,7 +500,7 @@ const Cards = ({ category = "dress" }) => {
   // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
-      const newLimit = 20;
+      const newLimit = Number(searchParams.get("limit")) || 20;
       setPaginationData((prev) => {
         if (prev.limit !== newLimit) {
           return { ...prev, limit: newLimit };
