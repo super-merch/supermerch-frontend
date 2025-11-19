@@ -65,11 +65,7 @@ const Cards = ({ category = "" }) => {
   const hasScrolledRef = useRef(false);
   const scrollToProductId = searchParams.get("scrollTo");
 
-  const getProductsData = getProducts?.data;
-
   const favSet = new Set();
-
-  const accumulatedCount = accumulatedProducts.length;
 
   // Function to build API URL for fetching products
   const buildApiUrl = (page, limit) => {
@@ -154,8 +150,6 @@ const Cards = ({ category = "" }) => {
     if (isLoadingMore || !hasMoreProducts) return;
     const limit = Number(searchParams.get("limit")) || 20;
     const newLimit = limit + 20;
-;
-
     setIsLoadingMore(true);
     try {
       const nextPage = currentPage + 1;

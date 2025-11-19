@@ -66,7 +66,7 @@ const App = () => {
 
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer position="bottom-center" autoClose={2000} />
 
       <Navbar onCouponClick={handleCouponClick} />
       <ScrollToTop />

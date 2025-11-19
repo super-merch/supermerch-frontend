@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { AppContext } from "@/context/AppContext";
 import { ProductCard } from "@/components/Common";
 import { getProductPrice, backgroundColor } from "@/utils/utils";
+import ShopOurBestSellers from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 
 const FavouritePage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -71,8 +72,8 @@ const FavouritePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-      <div className="Mycontainer">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-5 sm:pt-10">
+      <div className="Mycontainer ">
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-secondary mb-3">
@@ -89,7 +90,7 @@ const FavouritePage = () => {
 
         {/* Products Grid */}
         {favouriteItems.length > 0 ? (
-          <div className="grid gap-6 grid-cols-2 lg:grid-cols-4 max-sm:grid-cols-2">
+          <div className="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-sm:grid-cols-2">
             {favouriteItems?.map((product) => {
               return (
                 <ProductCard
@@ -202,6 +203,9 @@ const FavouritePage = () => {
             </div>
           </div>
         )}
+      </div>{" "}
+      <div className="mt-10 bg-primary/10 py-10">
+        <ShopOurBestSellers />
       </div>
       {isModalOpen && selectedProduct && (
         <div

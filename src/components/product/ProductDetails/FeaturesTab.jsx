@@ -31,6 +31,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
       "Technology",
       "Fit",
       "Tags",
+      "hamper items",
     ];
 
     const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
