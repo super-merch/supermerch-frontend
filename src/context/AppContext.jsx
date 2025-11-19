@@ -37,6 +37,8 @@ const AppContextProvider = (props) => {
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
   const [blogs, setBlogs] = useState([]);
+  const [totalBlogs, setTotalBlogs] = useState(0);
+  const [totalBlogPages, setTotalBlogPages] = useState(0);
   const [setupFee, setSetupFee] = useState(0);
   const items = useSelector(selectCurrentUserCartItems);
   useEffect(() => {
@@ -1479,11 +1481,13 @@ const AppContextProvider = (props) => {
     }
   };
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = async (page) => {
     try {
       setBlogLoading(true);
-      const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs`);
+      const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs${page && `?page=${page}`}`);
       setBlogs(data.blogs);
+      setTotalBlogPages(data.totalPages);
+      setTotalBlogs(data.totalBlogs);
       setBlogLoading(false);
     } catch (error) {
       toast.error(error.message);
@@ -1501,7 +1505,7 @@ const AppContextProvider = (props) => {
   // console.log(products, "api productss");
 
   useEffect(() => {
-    fetchBlogs();
+    fetchBlogs(1);
     fetchV1Categories();
     // listDiscount();
   }, []);
@@ -1591,6 +1595,9 @@ const AppContextProvider = (props) => {
     fetchHourProducts,
     fetchAllHourProducts,
     fetchHour,
+    totalBlogPages,
+    totalBlogs,
+    fetchBlogs,
     hourProd,
     totalHourPages,
     setTotalHourPages,

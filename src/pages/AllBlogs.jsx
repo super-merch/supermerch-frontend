@@ -1,10 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "@/context/AppContext";
 import { FaArrowRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const AllBlogs = () => {
-  const { blogLoading,blogs, options } = useContext(AppContext);
+  const { blogLoading,blogs, options,totalBlogPages,totalBlogs,fetchBlogs } = useContext(AppContext);
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    fetchBlogs(currentPage)
+  },[currentPage])
+  const prevDisabled = currentPage === 1;
+  let nextDisabled = currentPage >= totalBlogPages;
   const navigate = useNavigate();
   if(blogLoading){
     return <div className="flex justify-center items-center min-h-screen" >
@@ -88,6 +95,68 @@ const AllBlogs = () => {
             </p>
           </div>
         )}
+      { totalBlogPages > 1 && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 bg-white rounded-lg p-3 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={prevDisabled}
+                  className="flex items-center gap-1 px-2 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Prev
+                </button>
+
+                <div className="flex gap-1">
+                  {Array.from(
+                    { length: Math.min(5, totalBlogPages) },
+                    (_, i) => {
+                      let pageNum;
+                      if (totalBlogPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalBlogPages - 2) {
+                        pageNum = totalBlogPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                            currentPage === pageNum
+                              ? "bg-teal-600 text-white"
+                              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={nextDisabled}
+                  className="flex items-center gap-1 px-2 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-3 text-xs text-gray-600">
+                <span>
+                  Page <span className="font-semibold">{currentPage}</span> of{" "}
+                  <span className="font-semibold">{totalBlogPages}</span>
+                </span>
+              </div>
+            </div>
+          )}
       </div>
     </section>
   );
