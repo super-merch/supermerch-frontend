@@ -91,13 +91,12 @@ const Breadcrumb = () => {
 
           {/* Category */}
           {location.pathname === "/promotional" && (
-            <Link
-              to="/return-gifts"
+            <div
               className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
             >
               <p className="truncate">Category</p>
               <MdKeyboardArrowRight className="text-sm" />
-            </Link>
+            </div>
           )}
 
           {/* Main Category */}
@@ -133,10 +132,10 @@ const Breadcrumb = () => {
 
           {/* Category */}
           {location.pathname === "/promotional" && (
-            <Link to="/return-gifts" className="flex items-center gap-1">
+            <div className="flex cursor-default items-center gap-1">
               <p>Category</p>
               <MdKeyboardArrowRight className="text-xl" />
-            </Link>
+            </div>
           )}
 
           {/* Main Category */}

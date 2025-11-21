@@ -276,3 +276,23 @@ export const getClothingPricing = (printMethodDescription) => {
 export const getClothingAdditionalCost = (printMethodDescription) => {
   return getClothingPricing(printMethodDescription).perUnitCost;
 };
+
+export const is24HrProduct = (product) => {
+  const groups = product?.product?.prices?.price_groups ?? [];
+  if (!Array.isArray(groups) || groups.length === 0) return false;
+
+  const re = /(same\s*-?\s*day|24\s*hrs?|24\s*hours?)/i;
+
+  return groups.some((g) => {
+    // check base_price.lead_time
+    if (re.test(String(g?.base_price?.lead_time ?? ""))) return true;
+
+    // check additions[].lead_time
+    if (Array.isArray(g?.additions)) {
+      if (g.additions.some((a) => re.test(String(a?.lead_time ?? ""))))
+        return true;
+    }
+
+    return false;
+  });
+};
