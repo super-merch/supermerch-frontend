@@ -134,47 +134,75 @@ const PricingTab = ({
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
-      {priceGroups?.length > 0 && (
-        <div className="flex items-center gap-4">
-          <label
-            htmlFor="print-method"
-            className=" my-2  font-medium text-black text-sm sm:text-base"
-          >
-            Print Method:
-          </label>
+      <div className="flex md:flex-row flex-col justify-between items-start gap-2 w-full">
+        {priceGroups?.length > 0 && (
+          <div className="flex items-center gap-4">
+            <label
+              htmlFor="print-method"
+              className=" my-2  font-medium text-black text-sm sm:text-base"
+            >
+              Print Method:
+            </label>
 
-          <select
-            id="print-method"
-            value={selectedPrintMethod?.key}
-            onChange={(e) => {
-              const selected = priceGroups.find(
-                (method) => method.key === e.target.value
-              );
-              setSelectedPrintMethod(selected);
-              // Reset lead time selection when print method changes
-              setSelectedLeadTimeAddition(null);
-              // Reset quantity to first price break of new selection
-              if (selected?.price_breaks?.length > 0) {
-                setCurrentQuantity(selected.price_breaks[0].qty);
-              }
-            }}
-            className="px-2 py-2 border rounded-md outline-none pr-3"
-          >
-            {priceGroups?.map((method, index) => {
-              const displayName = isClothing
-                ? getCleanPrintMethodName(method.description)
-                : getTrimmedDescription(method?.promodata_decoration);
+            <select
+              id="print-method"
+              value={selectedPrintMethod?.key}
+              onChange={(e) => {
+                const selected = priceGroups.find(
+                  (method) => method.key === e.target.value
+                );
+                setSelectedPrintMethod(selected);
+                // Reset lead time selection when print method changes
+                setSelectedLeadTimeAddition(null);
+                // Reset quantity to first price break of new selection
+                if (selected?.price_breaks?.length > 0) {
+                  setCurrentQuantity(selected.price_breaks[0].qty);
+                }
+              }}
+              className="px-2 py-2 border rounded-md outline-none pr-3"
+            >
+              {priceGroups?.map((method, index) => {
+                const displayName = isClothing
+                  ? getCleanPrintMethodName(method.description)
+                  : getTrimmedDescription(method?.promodata_decoration);
 
-              return (
-                <option key={method.key + index} value={method.key}>
-                  {displayName}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      )}
-
+                return (
+                  <option key={method.key + index} value={method.key}>
+                    {displayName}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
+        {isClothing && parseSizing()?.sizes?.length > 1 && (
+          <div className="flex flex-col">
+            <div className="flex justify-start items-center gap-4">
+              <label htmlFor="print-method" className="w- my-2  font-medium">
+                Size:
+              </label>
+              <select
+                id="print-method"
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                className="w-fll px-2 py-2 border rounded-md outline-none"
+              >
+                {parseSizing().sizes?.map((size, index) => (
+                  <option key={index} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p
+              className="w-full text-right hover:underline text-sm text-black cursor-pointer"
+              onClick={() => setShowSizeGuide(true)}
+            >
+              * See Size Guide
+            </p>
+          </div>
+        )}
+      </div>
       {/* Lead Time Selection for Additions */}
       {leadTimeOptions.length > 0 && (
         <div className="flex justify-start items-start gap-2 mt-3">
@@ -217,33 +245,6 @@ const PricingTab = ({
         </div>
       )}
 
-      {isClothing && parseSizing()?.sizes?.length > 1 && (
-        <div className="flex flex-col w-full mb-3">
-          <div className="flex justify-between items-center gap-4 my-2">
-            <label htmlFor="print-method" className="w-full my-2  font-medium">
-              Size:
-            </label>
-            <select
-              id="print-method"
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-              className="w-full px-2 py-2 border rounded-md outline-none"
-            >
-              {parseSizing().sizes?.map((size, index) => (
-                <option key={index} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </div>
-          <p
-            className="w-full text-right hover:underline text-sm text-black cursor-pointer"
-            onClick={() => setShowSizeGuide(true)}
-          >
-            * See Size Guide
-          </p>
-        </div>
-      )}
       {!isClothing && (
         <span className="text-sm text-black mt-3">
           * The pricing includes 1 col - 1 position
@@ -262,12 +263,12 @@ const PricingTab = ({
           <table className="min-w-full text-xs sm:text-sm">
             <thead>
               <tr className="text-left text-black">
-                <th className="py-2 pr-4 text-base   sm:text-xl">Select</th>
-                <th className="py-2 pr-4 text-base sm:text-xl">Qty</th>
-                <th className="py-2 pr-4 text-base sm:text-xl min-w-[70px]">
-                  Unit <span className=" text-gray-500">(excl GST)</span>
+                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Select</th>
+                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Qty</th>
+                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">
+                  Unit <span className="text-gray-500">(excl GST)</span>
                 </th>
-                <th className="py-2 text-base sm:text-xl">Total</th>
+                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Total</th>
               </tr>
             </thead>
             <tbody>

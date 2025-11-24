@@ -15,6 +15,7 @@ import {
 } from "../../redux/slices/favouriteSlice";
 import Tooltip from "./Tooltip";
 import noimage from "/noimage.png";
+import ausFlag from "@/assets/aus_flag.png";
 
 const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   const dispatch = useDispatch();
@@ -101,8 +102,12 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
         )}
 
         {isAUMade && (
-          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
-            <Flag className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-yellow-100 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden bg-sky-100">
+            <img
+              src={ausFlag}
+              alt="AU Flag"
+              className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0"
+            />
             <span className="truncate max-w-[50px] sm:max-w-none">AU Made</span>
           </span>
         )}
