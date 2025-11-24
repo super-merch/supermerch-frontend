@@ -120,7 +120,7 @@ export default {
         "max-default": {
           max: "650px",
         },
-        xs: { max: "350px" }, 
+        xs: { max: "350px" },
       },
     },
   },

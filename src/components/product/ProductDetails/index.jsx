@@ -889,7 +889,7 @@ const ProductDetails = () => {
           images={product?.images || []}
           productName={product?.name}
         />
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[28%_45%_24%] gap-8 mt-2">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[35%_35%_25%] gap-4 mt-2 justify-between">
           <div>
             <div
               className="mb-4  border-border2 overflow-hidden relative group cursor-zoom-in"

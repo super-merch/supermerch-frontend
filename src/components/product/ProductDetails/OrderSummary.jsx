@@ -64,11 +64,11 @@ const OrderSummary = ({
   };
 
   return (
-    <div className="">
+    <div className="w-full">
       {/* Consolidated Order Summary */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm lg:sticky lg:top-4">
+      <div className="bg-white rounded-lg border border-primary shadow-sm ">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-200 bg-white rounded-t-md">
+        <div className="px-6 py-5 border-b border-primary bg-white rounded-t-md">
           <div className="flex items-start justify-between gap-2 sm:gap-4">
             <div>
               <p className="text-xs font-medium text-gray-600 tracking-wide">
@@ -139,7 +139,7 @@ const OrderSummary = ({
 
           {/* Product Details */}
 
-          <div className="pb-4 mt-2 mb-4 border-b">
+          <div className="pb-4 mt-2 mb-4">
             <div className="flex items-start gap-2 pt-3 ">
               <p className="text-white bg-primary p-1 rounded-[50%] text-xs ">
                 <FaCheck />

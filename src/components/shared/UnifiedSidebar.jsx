@@ -282,7 +282,7 @@ const UnifiedSidebar = ({
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Categories Section */}
           {!isSearchPage && (
-            <CollapsibleSection title={config.title} defaultExpanded={true}>
+            <CollapsibleSection title={config.title} defaultExpanded={false}>
               {/* Categories List */}
               <div className="space-y-0.5">
                 {allCategories

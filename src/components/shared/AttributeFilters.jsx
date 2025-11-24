@@ -40,7 +40,10 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
       setCachedAttributes(incomingAttributes);
     }
     // Special case: show hardcoded attributes for allProducts
-    else if ((categoryType === "allProducts" && cachedAttributes.length === 0) || (!params.get("search") && cachedAttributes.length === 0)) {
+    else if (
+      (categoryType === "allProducts" && cachedAttributes.length === 0) ||
+      (!params.get("search") && cachedAttributes.length === 0)
+    ) {
       setCachedAttributes(allAttributes);
     }
 
@@ -49,26 +52,30 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
   }, [category, search, cacheKey, incomingAttributes.length, categoryType]);
 
   // Use cached attributes if available, otherwise show incoming
-  const attributes = cachedAttributes.length > 0 
-  ? cachedAttributes 
-  : categoryType === "allProducts" 
-    ? allAttributes 
-    : incomingAttributes;
+  const attributes =
+    cachedAttributes.length > 0
+      ? cachedAttributes
+      : categoryType === "allProducts"
+      ? allAttributes
+      : incomingAttributes;
 
   // Reset selected filter when location changes
   useEffect(() => {
     const urlAttrName = params.get("attrName");
     const urlAttrValue = params.get("attrValue");
-    
+
     if (urlAttrName && urlAttrValue) {
       setSelectedFilter({ name: urlAttrName, value: urlAttrValue });
     } else {
       setSelectedFilter(null);
     }
-    
-    setPaginationData((prev) => ({ 
-      ...prev, 
-      attributes: urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null 
+
+    setPaginationData((prev) => ({
+      ...prev,
+      attributes:
+        urlAttrName && urlAttrValue
+          ? { name: urlAttrName, value: urlAttrValue }
+          : null,
     }));
   }, [location.pathname, category, search]);
 
@@ -76,9 +83,9 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     const isCurrentlySelected =
       selectedFilter?.name === attributeName && selectedFilter?.value === value;
 
-    setSearchParams(prevParams => {
+    setSearchParams((prevParams) => {
       const newParams = new URLSearchParams(prevParams);
-      
+
       if (isCurrentlySelected) {
         newParams.delete("attrName");
         newParams.delete("attrValue");
@@ -86,11 +93,11 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
         newParams.set("attrName", attributeName);
         newParams.set("attrValue", value);
       }
-      
+
       newParams.set("page", "1");
       return newParams;
     });
-    
+
     if (isCurrentlySelected) {
       setSelectedFilter(null);
       setPaginationData((prev) => ({
@@ -114,7 +121,6 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
         behavior: "smooth",
       });
     }
-    
 
     if (toggleSidebar && window.innerWidth <= 1025) {
       toggleSidebar();
