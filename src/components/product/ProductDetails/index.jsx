@@ -827,6 +827,7 @@ const ProductDetails = () => {
         printMethodKey: selectedPrintMethod.key,
         userEmail: userEmail || "guest@gmail.com",
         supplierName: single_product.overview.supplier,
+        sample:false
       })
     );
     navigate("/cart");

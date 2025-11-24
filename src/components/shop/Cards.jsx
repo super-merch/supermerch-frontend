@@ -346,8 +346,8 @@ const Cards = ({ category = "" }) => {
     paginationData.category,
     paginationData.searchTerm,
     paginationData.sortOption,
-    paginationData.pricerange,
-    paginationData.colors,
+    // paginationData.pricerange,
+    // paginationData.colors,
   ]);
 
   // Handle scroll restoration from URL
@@ -381,8 +381,8 @@ const Cards = ({ category = "" }) => {
     accumulatedProducts,
     productsLoading,
     isLoadingMore,
-    searchParams,
-    setSearchParams,
+    // searchParams,
+    // setSearchParams,
   ]);
 
   // Reset scroll ref when scrollToProductId is removed

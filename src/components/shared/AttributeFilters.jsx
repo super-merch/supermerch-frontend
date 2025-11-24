@@ -70,7 +70,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
       ...prev, 
       attributes: urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null 
     }));
-  }, [location.pathname, category, search]);
+  }, [location.pathname, category, search,params.get("attrName"), params.get("attrValue")]);
 
   const handleCheckboxChange = (attributeName, value) => {
     const isCurrentlySelected =
