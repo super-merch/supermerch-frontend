@@ -23,12 +23,12 @@ const CartComponent = () => {
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const [value, setValue] = useState("");
-
+  
   // Coupon states
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
-
+  
   const [customQuantities, setCustomQuantities] = useState({});
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";

@@ -18,7 +18,7 @@ const PriceFilter = ({toggleSidebar}) => {
   useEffect(()=>{
     setLocalMin(searchParams.get("minPrice") || "");
     setLocalMax(searchParams.get("maxPrice") || "");
-  },[]) 
+  },[searchParams.get("minPrice")]) 
 
   const applyRangeToBackend = (minValue, maxValue) => {
     dispatch(setMinPrice(minValue));

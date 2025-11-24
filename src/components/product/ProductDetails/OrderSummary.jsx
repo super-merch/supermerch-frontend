@@ -36,10 +36,8 @@ const OrderSummary = ({
         id: productId,
         name: product.name,
         image: product.images?.[0] || "",
-        // add basePrices so reducer can compute correct unit price
         basePrices:
           priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
-        // price optional — reducer currently ignores passed-in price for computation
         price: perUnitWithMargin,
         discountPct,
         totalPrice: perUnitWithMargin * 1, // optional: a helpful hint, reducer recalculates
@@ -49,7 +47,7 @@ const OrderSummary = ({
         print: selectedPrintMethod?.description || "",
         logoColor: logoColor,
         size: selectedSize,
-        setupFee: setupFee || 0,
+        setupFee:  0,
         dragdrop: selectedFile,
         deliveryDate,
         priceBreaks: selectedPrintMethod?.price_breaks || [],
