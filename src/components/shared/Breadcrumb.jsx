@@ -1,5 +1,4 @@
 import React from "react";
-import { MdKeyboardArrowRight } from "react-icons/md";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
@@ -85,8 +84,7 @@ const Breadcrumb = () => {
             to="/"
             className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
           >
-            <p className="truncate">Home</p>
-            <MdKeyboardArrowRight className="text-sm" />
+            <p className="truncate">Home</p>/
           </Link>
 
           {/* Category */}
@@ -95,8 +93,7 @@ const Breadcrumb = () => {
               to="/return-gifts"
               className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
             >
-              <p className="truncate">Category</p>
-              <MdKeyboardArrowRight className="text-sm" />
+              <p className="truncate">Category</p>/
             </Link>
           )}
 
@@ -109,7 +106,7 @@ const Breadcrumb = () => {
               >
                 {categoryName}
               </span>
-              <MdKeyboardArrowRight className="text-sm" />
+              /
             </>
           )}
 
@@ -127,15 +124,13 @@ const Breadcrumb = () => {
         <div className="flex items-center gap-2 text-smallHeader py-2 text-lg">
           {/* Home */}
           <Link to="/" className="flex items-center gap-1">
-            <p>Home</p>
-            <MdKeyboardArrowRight className="text-xl" />
+            <p>Home</p>/
           </Link>
 
           {/* Category */}
           {location.pathname === "/promotional" && (
             <Link to="/return-gifts" className="flex items-center gap-1">
-              <p>Category</p>
-              <MdKeyboardArrowRight className="text-xl" />
+              <p>Category</p>/
             </Link>
           )}
 
@@ -148,7 +143,7 @@ const Breadcrumb = () => {
               >
                 {categoryName}
               </span>
-              <MdKeyboardArrowRight className="text-xl" />
+              /
             </>
           )}
 

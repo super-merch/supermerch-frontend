@@ -1,6 +1,5 @@
 import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
-import axios from "axios";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { IoArrowBack } from "react-icons/io5";
@@ -15,7 +14,6 @@ import {
   incrementQuantity,
   multipleQuantity,
   removeFromCart,
-  updateCartItemImage,
   updateCartItemQuantity,
 } from "../../redux/slices/cartSlice";
 
@@ -24,7 +22,6 @@ const CartComponent = () => {
     useContext(AppContext);
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
-  const { totalQuantity } = useSelector((state) => state.cart);
   const [value, setValue] = useState("");
 
   // Coupon states
@@ -35,34 +32,6 @@ const CartComponent = () => {
   const [customQuantities, setCustomQuantities] = useState({});
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-  const [currentUserEmail, setCurrentUserEmail] = useState(null);
-
-  // useEffect(() => {
-  //   const checkUserAuth = async () => {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) {
-  //       setCurrentUserEmail("guest@gmail.com");
-  //       return;
-  //     }
-
-  //     try {
-  //       const { data } = await axios.get(`${API_BASE}/api/auth/user`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (data.success) {
-  //         setCurrentUserEmail(data.email);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching user:", error);
-  //       setCurrentUserEmail("guest@gmail.com");
-  //     }
-  //   };
-
-  //   checkUserAuth();
-  // }, []);
 
   useEffect(() => {
     const quantities = {};
@@ -70,8 +39,6 @@ const CartComponent = () => {
       quantities[item.id] = item.quantity;
     });
     setCustomQuantities(quantities);
-    const email = userData?.email || "guest@gmail.com";
-    setCurrentUserEmail(email);
   }, [items]);
 
   const totalDiscountPercent = items.reduce(
@@ -97,23 +64,6 @@ const CartComponent = () => {
   const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
-
-  const [uploadedImage, setUploadedImage] = useState("/drag.png");
-  const fileInputRef = useRef(null);
-
-  const handleFileChange = (e, productId) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImage(reader.result);
-        dispatch(
-          updateCartItemImage({ id: productId, dragdrop: reader.result })
-        );
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleChange = (e) => {
     setValue(e.target.value.toUpperCase());
@@ -216,6 +166,8 @@ const CartComponent = () => {
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
+  console.log(items);
+
   return (
     <div className="Mycontainer !mb-10 mt-5">
       {/* Header */}
@@ -264,7 +216,7 @@ const CartComponent = () => {
                           Setup Fee
                         </th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                          Price
+                          Price (per unit)
                         </th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
                           Quantity
@@ -304,7 +256,7 @@ const CartComponent = () => {
                                       handleViewProduct(item.id, item.name)
                                     }
                                   >
-                                    {item.name}
+                                    {item.name} {item.sample ? "(Sample)" : ""}
                                   </h3>
                                   <div className="space-y-1 text-sm text-gray-600">
                                     {item.color && (
@@ -343,9 +295,6 @@ const CartComponent = () => {
                             <td className="px-6 py-4 text-center">
                               <div className="text-2xl font-bold text-smallHeader">
                                 ${item.price.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                per unit
                               </div>
                             </td>
 

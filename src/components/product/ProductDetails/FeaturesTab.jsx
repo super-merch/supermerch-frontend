@@ -46,22 +46,10 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
 
       {single_product?.product?.description ? (
         <div className=" border-gray-200 pb-2">
-          {single_product.product.description.split("Features:")[0] && (
-            <>
-              <p className="text-sm leading-6 text-black text-justify">
-                {single_product.product.description
-                  .split("Features:")[0]
-                  .split("\n")
-                  .map((line, index) => (
-                    <p key={index}>{line}</p>
-                  ))}
-              </p>
-            </>
-          )}
           {(single_product.product.description.includes("Features:") ||
             single_product?.product?.categorisation?.promodata_attributes) && (
             <div className="text-sm leading-6 text-black mb-2 border-b border-gray-200 pb-2 my-4">
-              <span className="font-semibold">Features:</span>
+              <span className="text-lg font-semibold">Features:</span>
 
               <ul className="mt-2 space-y-1 list-disc list-inside">
                 {single_product.product.description
@@ -73,9 +61,13 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                       : item?.trim()
                   )
                   .map((feature, index) => (
-                    <p key={index} className="mb-1 list-disc list-inside">
+                    <li
+                      key={index}
+                      className="mb-1 list-none flex items-start gap-2"
+                    >
+                      <FaCheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />{" "}
                       {feature?.replace("*", "").trim()}
-                    </p>
+                    </li>
                   ))}
                 {single_product?.product?.categorisation?.promodata_attributes?.map(
                   (attribute, index) => (
@@ -83,7 +75,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                       key={index}
                       className="mb-1 list-disc list-inside flex items-center gap-2"
                     >
-                      <FaCheckCircle />{" "}
+                      <FaCheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />{" "}
                       <>
                         <span className="font-semibold">
                           {attribute.split(":")[0]}
@@ -98,6 +90,18 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                 )}
               </ul>
             </div>
+          )}
+          {single_product.product.description.split("Features:")[0] && (
+            <>
+              <p className="text-sm leading-6 text-black text-justify">
+                {single_product.product.description
+                  .split("Features:")[0]
+                  .split("\n")
+                  .map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+              </p>
+            </>
           )}
         </div>
       ) : (
@@ -129,7 +133,9 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
         <div className="space-y-3 text-sm leading-6">
           {filterByNames(single_product?.product?.details)?.map((d, i) => (
             <div key={i} className="border-b last:border-0 pb-3">
-              <p className="font-semibold capitalize">{d.method || d.name}</p>
+              <p className="text-lg font-semibold capitalize">
+                {d.method || d.name}
+              </p>
 
               {d?.detail && (
                 <div className="text-black">

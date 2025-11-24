@@ -31,12 +31,6 @@ const OrderSummary = ({
   const navigate = useNavigate();
 
   const handleBuySample = () => {
-    // if (!userEmail) {
-    //   toast.error("Please login to add items to cart");
-    //   navigate("/signup");
-    //   return;
-    // }
-
     dispatch(
       addToCart({
         id: productId,
@@ -62,6 +56,7 @@ const OrderSummary = ({
         printMethodKey: selectedPrintMethod?.key || "",
         freightFee: freightFee,
         userEmail: userEmail || "guest@gmail.com",
+        sample: true,
       })
     );
 
@@ -108,7 +103,7 @@ const OrderSummary = ({
                 {currentQuantity} units
               </span>
               <div className="flex items-center justify-end gap-2">
-                <p className="sm:text-3xl text-2xl font-extrabold text-smallHeader">
+                <p className="sm:text-2xl text-xl font-extrabold text-smallHeader">
                   $
                   {currentPrice.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -143,16 +138,6 @@ const OrderSummary = ({
           </div>
 
           {/* Product Details */}
-          <div className="mt-6">
-            <p className="text-sm text-black">
-              <span className="font-bold">Est Delivery Date:</span>{" "}
-              {deliveryDate}
-            </p>
-            <p className="pt-2 text-xs text-black ">
-              ${discountedUnitPrice.toFixed(2)} (Non-Branded sample) + $
-              {freightFee} delivery
-            </p>
-          </div>
 
           <div className="pb-4 mt-2 mb-4 border-b">
             <div className="flex items-start gap-2 pt-3 ">

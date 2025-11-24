@@ -1067,7 +1067,7 @@ const ProductDetails = () => {
             {/* Feature/Decoration/Pricing Tabs */}
             <div className="mt-1 mb-0">
               {/* Tab headers */}
-              <div className="flex max-sm:justify-start max-sm:gap-1 sm:gap-2 overflow-x-auto border-b no-scrollbar">
+              <div className="flex max-sm:justify-start max-sm:gap-1 sm:gap-2 border-b">
                 {[
                   { key: "features", label: "Details" },
                   { key: "pricing", label: "Pricing" },
