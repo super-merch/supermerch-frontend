@@ -132,6 +132,7 @@ const PricingTab = ({
   const isClothing = isProductCategory(single_product, "Clothing");
 
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
+
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
       <div className="flex md:flex-row flex-col justify-between items-start gap-2 w-full">
@@ -266,7 +267,7 @@ const PricingTab = ({
                 <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Select</th>
                 <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Qty</th>
                 <th className="py-2 pr-4 text-base sm:text-xl w-1/4">
-                  Unit <span className="text-gray-500">(excl GST)</span>
+                  Unit <span className="text-gray-500 text-xs">(ex GST)</span>
                 </th>
                 <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Total</th>
               </tr>

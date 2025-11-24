@@ -40,7 +40,7 @@ const Breadcrumb = () => {
       return { pageName: "Return Gifts", isSpecialPage: true };
     }
     if (pathname === "/search") {
-      return { pageName: "search", isSpecialPage: true };
+      return { pageName: searchParams.get("search"), isSpecialPage: true };
     }
 
     // Category pages

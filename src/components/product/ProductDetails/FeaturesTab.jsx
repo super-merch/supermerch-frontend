@@ -48,7 +48,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
         <div className=" border-gray-200 pb-2">
           {(single_product.product.description.includes("Features:") ||
             single_product?.product?.categorisation?.promodata_attributes) && (
-            <div className="text-sm leading-6 text-black mb-2 border-b border-gray-200 pb-2 my-4">
+            <div className="text-sm leading-6 text-black mb-2 border-b border-gray-200 pb-2">
               <span className="text-lg font-semibold">Features:</span>
 
               <ul className="mt-2 space-y-1 list-disc list-inside">
@@ -92,8 +92,9 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
             </div>
           )}
           {single_product.product.description.split("Features:")[0] && (
-            <>
-              <p className="text-sm leading-6 text-black text-justify">
+            <div className="border-b border-gray-200 pb-2">
+              <span className="text-lg font-semibold">Description:</span>
+              <p className="text-sm leading-6 text-black text">
                 {single_product.product.description
                   .split("Features:")[0]
                   .split("\n")
@@ -101,7 +102,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                     <p key={index}>{line}</p>
                   ))}
               </p>
-            </>
+            </div>
           )}
         </div>
       ) : (

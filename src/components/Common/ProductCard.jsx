@@ -185,6 +185,11 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                   />
                 );
               })}
+              {uniqueColors.length > 6 && (
+                <span className="text-[10px] sm:text-xs text-gray-600 font-medium whitespace-nowrap">
+                  +{uniqueColors.length - 6} more
+                </span>
+              )}
             </div>
           )}
 

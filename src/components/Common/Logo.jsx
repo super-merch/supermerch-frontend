@@ -30,11 +30,21 @@ const Logo = ({
   return (
     <Link to="/" className={`relative z-10 ${className}`}>
       <div className="flex items-center gap-3">
-        <img src={supermerch} className={`object-contain ${currentSize.logo} ${logoClassName}`} alt="Super Merch Logo" />
+        <img
+          src={supermerch}
+          className={`object-contain ${currentSize.logo} ${logoClassName}`}
+          alt="Super Merch Logo"
+        />
         {showTagline && (
           <div className="hidden sm:block">
-            <div className="text-customBlue font-bold text-lg leading-tight">Super Merch</div>
-            <div className={`text-gray-500 ${currentSize.tagline} ${taglineClassName}`}>Fresh Trends, Lasting Impressions</div>
+            <div className="text-customBlue font-bold text-lg leading-tight">
+              Super Merch
+            </div>
+            <div
+              className={`text-gray-500 ${currentSize.tagline} ${taglineClassName}`}
+            >
+              Fresh Trends, Lasting Impressions
+            </div>
           </div>
         )}
       </div>
