@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { IoMenu, IoClose, IoGolfSharp } from "react-icons/io5";
 import { HiMiniBuildingOffice } from "react-icons/hi2";
+import { X } from "lucide-react";
 import {
   FaShoppingBag,
   FaWater,
@@ -155,6 +156,130 @@ const UnifiedSidebar = ({
   const config = { title: "Categories" };
   const urlSubCategory = searchParams.get("subCategory");
   const urlCategoryName = searchParams.get("categoryName");
+  const [appliedFilters, setAppliedFilters] = useState([]);
+  const getAppliedFilters = (searchParams) => {
+    const filters = [];
+    
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    if (minPrice && maxPrice) {
+      filters.push({
+        type: "price",
+        label: `$${minPrice} - $${maxPrice}`,
+        params: ["minPrice", "maxPrice"]
+      });
+    }
+    
+    const colors = searchParams.get("colors");
+    if (colors) {
+      colors.split(',').forEach(color => {
+        filters.push({
+          type: "color",
+          label: color,
+          value: color,
+          params: ["colors"]
+        });
+      });
+    }
+    
+    const attrName = searchParams.get("attrName");
+    const attrValue = searchParams.get("attrValue");
+    if (attrName && attrValue) {
+      filters.push({
+        type: "attribute",
+        label: `${attrName}: ${attrValue}`,
+        params: ["attrName", "attrValue"]
+      });
+    }
+    
+    return filters;
+  };
+  
+// Add this useEffect to update appliedFilters when URL changes
+useEffect(() => {
+  const filters = getAppliedFilters(searchParams);
+  setAppliedFilters(filters);
+}, [searchParams]);
+
+ const handleRemoveFilter = (filter) => {
+  const newParams = new URLSearchParams(searchParams);
+  
+  if (filter.type === "color") {
+    const currentColors = newParams.get("colors")?.split(',') || [];
+    const updatedColors = currentColors.filter(c => c !== filter.value);
+    
+    if (updatedColors.length > 0) {
+      newParams.set("colors", updatedColors.join(','));
+    } else {
+      newParams.delete("colors");
+    }
+    
+    // Update state immediately
+    setPaginationData(prev => ({
+      ...prev,
+      colors: updatedColors,
+      page: 1
+    }));
+  } else if (filter.type === "price") {
+    newParams.delete("minPrice");
+    newParams.delete("maxPrice");
+    
+    // Update Redux state immediately
+    dispatch(setMinPrice(0));
+    dispatch(setMaxPrice(1000));
+    
+    // Update pagination state
+    setPaginationData(prev => ({
+      ...prev,
+      pricerange: undefined,
+      page: 1
+    }));
+  } else if (filter.type === "attribute") {
+    newParams.delete("attrName");
+    newParams.delete("attrValue");
+    
+    // Update state immediately
+    setPaginationData(prev => ({
+      ...prev,
+      attributes: null,
+      page: 1
+    }));
+  }
+  
+  newParams.set("page", "1");
+  
+  // Update URL - this will trigger the useEffect that reads from URL
+  setSearchParams(newParams, { replace: true });
+};
+
+// Fixed handleClearAllFilters function
+const handleClearAllFilters = () => {
+  const newParams = new URLSearchParams(searchParams);
+  
+  // Remove all filter params
+  newParams.delete("minPrice");
+  newParams.delete("maxPrice");
+  newParams.delete("colors");
+  newParams.delete("attrName");
+  newParams.delete("attrValue");
+  newParams.set("page", "1");
+  
+  // Update all states immediately
+  dispatch(setMinPrice(0));
+  dispatch(setMaxPrice(1000));
+  
+  setPaginationData(prev => ({
+    ...prev,
+    pricerange: undefined,
+    colors: [],
+    attributes: null,
+    page: 1
+  }));
+  
+  // Update URL last
+  setSearchParams(newParams, { replace: true });
+};
+
 
   // Mobile responsiveness
   useEffect(() => {
@@ -280,6 +405,40 @@ const UnifiedSidebar = ({
         }`}
       >
         <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          {appliedFilters.length > 0 && (
+            <div className="mb-4 bg-white border border-gray-200 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-800">
+                  Applied Filters
+                </h3>
+                <button
+                  onClick={handleClearAllFilters}
+                  className="text-xs text-primary hover:text-primary-dark font-medium"
+                >
+                  Clear All
+                </button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {appliedFilters.map((filter, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors group"
+                  >
+                    <span className="max-w-[150px] truncate">{filter.label}</span>
+                    <button
+                      onClick={() => handleRemoveFilter(filter)}
+                      className="flex-shrink-0 hover:bg-gray-300 rounded-full p-0.5 transition-colors"
+                      aria-label={`Remove ${filter.label} filter`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Categories Section */}
           {!isSearchPage && (
             <CollapsibleSection title={config.title} defaultExpanded={false}>

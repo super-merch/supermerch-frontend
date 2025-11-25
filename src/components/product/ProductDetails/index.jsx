@@ -8,7 +8,7 @@ import {
   getProductCategory,
   getProductSupplier,
 } from "@/utils/utils";
-import axios from "axios";
+import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IoMdArrowForward } from "react-icons/io";
@@ -78,6 +78,7 @@ const ProductDetails = () => {
             setLoading(false);
           }, 200);
           setErrorFetching(false);
+          
         }
 
         // First, try to find sizes in details array
@@ -304,9 +305,8 @@ const ProductDetails = () => {
 
         allGroups = [baseGroup, ...additionGroups];
       }
-
       setAvailablePriceGroups(allGroups);
-      setSelectedPrintMethod(allGroups[0]);
+      isClothing  ? setSelectedPrintMethod(allGroups[0]) : setSelectedPrintMethod(allGroups[0]);
       // Initialize quantity and price based on first price break
       const initialMethod = allGroups[0];
       if (initialMethod?.price_breaks?.length > 0) {
@@ -827,6 +827,7 @@ const ProductDetails = () => {
         printMethodKey: selectedPrintMethod.key,
         userEmail: userEmail || "guest@gmail.com",
         supplierName: single_product.overview.supplier,
+        sample:false
       })
     );
     navigate("/cart");

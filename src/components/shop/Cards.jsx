@@ -345,9 +345,9 @@ const Cards = ({ category = "" }) => {
     paginationData.productTypeId,
     paginationData.category,
     paginationData.searchTerm,
-    paginationData.sortOption,
-    paginationData.pricerange,
-    paginationData.colors,
+    // paginationData.sortOption,
+    // paginationData.pricerange,
+    // paginationData.colors,
   ]);
 
   // Handle scroll restoration from URL

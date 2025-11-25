@@ -338,9 +338,9 @@ const Checkout = () => {
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
-      !data.shipping.zip ||
-      !data.shipping.email ||
-      !data.shipping.phone
+      !data.shipping.zip 
+      // !data.shipping.email ||
+      // !data.shipping.phone
     ) {
       setLoading(false);
       return toast.error("Please fill all the fields in shipping address");
