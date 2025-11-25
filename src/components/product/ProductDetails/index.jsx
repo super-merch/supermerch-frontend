@@ -306,7 +306,7 @@ const ProductDetails = () => {
         allGroups = [baseGroup, ...additionGroups];
       }
       setAvailablePriceGroups(allGroups);
-      isClothing  ? setSelectedPrintMethod(allGroups[0]) : setSelectedPrintMethod(allGroups[0]);
+      isClothing  ? setSelectedPrintMethod(allGroups[0]) : setSelectedPrintMethod(allGroups[1]);
       // Initialize quantity and price based on first price break
       const initialMethod = allGroups[0];
       if (initialMethod?.price_breaks?.length > 0) {
