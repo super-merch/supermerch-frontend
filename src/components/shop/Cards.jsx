@@ -381,8 +381,8 @@ const Cards = ({ category = "" }) => {
     accumulatedProducts,
     productsLoading,
     isLoadingMore,
-    searchParams,
-    setSearchParams,
+    // searchParams,
+    // setSearchParams,
   ]);
 
   // Reset scroll ref when scrollToProductId is removed
