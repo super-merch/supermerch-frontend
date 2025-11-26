@@ -29,19 +29,12 @@ const PricingTab = ({
   setQuantity,
   selectedLeadTimeAddition,
   setSelectedLeadTimeAddition,
+  uniquePriceGroups,
 }) => {
+  console.log(selectedLeadTimeAddition);
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
   };
-  const uniquePriceGroups = availablePriceGroups.filter(
-    (group, index, self) =>
-      index ===
-      self.findIndex(
-        (t) =>
-          t.promodata_decoration &&
-          t.promodata_decoration === group.promodata_decoration
-      )
-  );
 
   // Find all additions with the same promodata_decoration as the selected print method
   // Deduplicate by lead_time, keeping the first occurrence for each unique lead_time
@@ -132,7 +125,6 @@ const PricingTab = ({
   const isClothing = isProductCategory(single_product, "Clothing");
 
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
-
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
       <div className="flex md:flex-row flex-col justify-between items-start gap-2 w-full">

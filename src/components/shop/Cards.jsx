@@ -345,7 +345,7 @@ const Cards = ({ category = "" }) => {
     paginationData.productTypeId,
     paginationData.category,
     paginationData.searchTerm,
-    paginationData.sortOption,
+    // paginationData.sortOption,
     // paginationData.pricerange,
     // paginationData.colors,
   ]);
