@@ -8,7 +8,7 @@ import {
   getProductCategory,
   getProductSupplier,
 } from "@/utils/utils";
-import axios from "axios";
+import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IoMdArrowForward } from "react-icons/io";

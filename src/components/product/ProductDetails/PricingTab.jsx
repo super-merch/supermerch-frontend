@@ -31,7 +31,6 @@ const PricingTab = ({
   setSelectedLeadTimeAddition,
   uniquePriceGroups,
 }) => {
-  console.log(selectedLeadTimeAddition);
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
   };
