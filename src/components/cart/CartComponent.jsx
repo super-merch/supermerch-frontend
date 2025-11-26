@@ -23,12 +23,12 @@ const CartComponent = () => {
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const [value, setValue] = useState("");
-  
+
   // Coupon states
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
-  
+
   const [customQuantities, setCustomQuantities] = useState({});
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
@@ -56,8 +56,21 @@ const CartComponent = () => {
   const productDiscountedAmount =
     totalAmount - (totalAmount * totalDiscountPercent) / 100;
 
+  // Calculate coupon discount amount
+  const calculatedCouponDiscount =
+    (productDiscountedAmount * couponDiscount) / 100;
+
+  // Check if discount exceeds max limit
+  const couponDiscountExceedsLimit =
+    appliedCoupon?.maxLimitAmount &&
+    calculatedCouponDiscount > appliedCoupon.maxLimitAmount;
+
+  // Cap the discount at maxLimitAmount if it exceeds the limit
+  const couponDiscountAmount = appliedCoupon?.maxLimitAmount
+    ? Math.min(calculatedCouponDiscount, appliedCoupon.maxLimitAmount)
+    : calculatedCouponDiscount;
+
   // Apply coupon discount to the product-discounted amount
-  const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
@@ -98,7 +111,22 @@ const CartComponent = () => {
       if (response.ok && result.valid) {
         setAppliedCoupon(result.coupon);
         setCouponDiscount(result.discount);
-        toast.success(`Coupon applied! You saved ${result.discount}%`);
+
+        // Check if the discount will exceed the limit
+        const calculatedDiscount =
+          (productDiscountedAmount * result.discount) / 100;
+        if (
+          result.coupon.maxLimitAmount &&
+          calculatedDiscount > result.coupon.maxLimitAmount
+        ) {
+          toast.success(
+            `Coupon applied! Discount capped at maximum limit of $${result.coupon.maxLimitAmount.toFixed(
+              2
+            )}`
+          );
+        } else {
+          toast.success(`Coupon applied! You saved ${result.discount}%`);
+        }
       } else {
         toast.error(result.message || "Invalid coupon code");
       }
@@ -165,8 +193,6 @@ const CartComponent = () => {
     const slug = slugify(name);
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
-
-  console.log(items);
 
   return (
     <div className="Mycontainer !mb-10 mt-5">
@@ -555,14 +581,25 @@ const CartComponent = () => {
                   </div>
 
                   {appliedCoupon && (
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-sm font-medium text-green-600">
-                        Coupon Discount
-                      </span>
-                      <span className="text-lg font-bold text-green-600">
-                        -${(couponDiscountAmount || 0).toFixed(2)}
-                      </span>
-                    </div>
+                    <>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-sm font-medium text-green-600">
+                          Coupon Discount
+                        </span>
+                        <span className="text-lg font-bold text-green-600">
+                          -${(couponDiscountAmount || 0).toFixed(2)}
+                        </span>
+                      </div>
+
+                      {couponDiscountExceedsLimit && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                          <p className="text-xs text-blue-800">
+                            ℹ️ Discount capped at maximum limit of $
+                            {appliedCoupon.maxLimitAmount.toFixed(2)}{" "}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   <div className="flex justify-between items-center py-2">
@@ -604,8 +641,17 @@ const CartComponent = () => {
                     </span>
                     {appliedCoupon && (
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-green-600 font-medium">
-                          {appliedCoupon.coupen} Applied
+                        <span
+                          className={`text-sm font-medium ${
+                            couponDiscountExceedsLimit
+                              ? "text-blue-600"
+                              : "text-green-600"
+                          }`}
+                        >
+                          {appliedCoupon.coupen}{" "}
+                          {couponDiscountExceedsLimit
+                            ? "(Capped at Max Limit)"
+                            : "Applied"}
                         </span>
                         <button
                           onClick={handleRemoveCoupon}

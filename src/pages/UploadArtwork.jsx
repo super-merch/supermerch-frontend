@@ -39,16 +39,26 @@ const UploadArtwork = () => {
     0
   );
 
-  // Apply the same calculation logic as cart page
   // Apply product discounts first
   const productDiscountedAmount =
     totalAmount - (totalAmount * totalDiscountPercent) / 100;
 
-  // Apply coupon discount to the product-discounted amount
-  const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
-  const finalDiscountedAmount =
-    productDiscountedAmount - (couponDiscountAmount || 0);
+  // Calculate coupon discount amount
+  const calculatedCouponDiscount =
+    (productDiscountedAmount * couponDiscount) / 100;
 
+  // Check if discount exceeds max limit
+  const couponDiscountExceedsLimit =
+    appliedCoupon?.maxLimitAmount &&
+    calculatedCouponDiscount > appliedCoupon.maxLimitAmount;
+
+  // Cap the discount at maxLimitAmount if it exceeds the limit
+  const couponDiscountAmount = appliedCoupon?.maxLimitAmount
+    ? Math.min(calculatedCouponDiscount, appliedCoupon.maxLimitAmount)
+    : calculatedCouponDiscount;
+
+  // Apply coupon discount to the product-discounted amount
+  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
   // Calculate GST and final total (same as cart)
   const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
   const total =
@@ -476,13 +486,18 @@ const UploadArtwork = () => {
                 {appliedCoupon && (
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between text-lg">
-                      <span>Coupon ({appliedCoupon.coupen}):</span>
-                      <span className="text-green-600">-{couponDiscount}%</span>
+                      <span className="text-base">
+                        Coupon ({appliedCoupon.coupen}):
+                      </span>
+                      <span className="text-green-600 text-base">
+                        -{couponDiscount}%{" "}
+                        {couponDiscountExceedsLimit && "(Capped at Max Limit)"}
+                      </span>
                     </div>
                     <div className="flex justify-between text-lg">
                       <span>Discounted Price:</span>
                       <span className="text-green-600">
-                        ${finalDiscountedAmount.toFixed(2)}
+                        ${couponDiscountAmount.toFixed(2)}
                       </span>
                     </div>
                   </div>

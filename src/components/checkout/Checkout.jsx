@@ -264,13 +264,25 @@ const Checkout = () => {
     0
   );
 
-  // Apply the same calculation logic as cart page
   // Apply product discounts first
   const productDiscountedAmount =
     totalAmount - (totalAmount * totalDiscountPercent) / 100;
 
+  // Calculate coupon discount amount
+  const calculatedCouponDiscount =
+    (productDiscountedAmount * couponDiscount) / 100;
+
+  // Check if discount exceeds max limit
+  const couponDiscountExceedsLimit =
+    appliedCoupon?.maxLimitAmount &&
+    calculatedCouponDiscount > appliedCoupon.maxLimitAmount;
+
+  // Cap the discount at maxLimitAmount if it exceeds the limit
+  const couponDiscountAmount = appliedCoupon?.maxLimitAmount
+    ? Math.min(calculatedCouponDiscount, appliedCoupon.maxLimitAmount)
+    : calculatedCouponDiscount;
+
   // Apply coupon discount to the product-discounted amount
-  const couponDiscountAmount = (productDiscountedAmount * couponDiscount) / 100;
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   const uploadLogo = async () => {
@@ -338,7 +350,7 @@ const Checkout = () => {
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
-      !data.shipping.zip 
+      !data.shipping.zip
       // !data.shipping.email ||
       // !data.shipping.phone
     ) {
@@ -1957,12 +1969,14 @@ const Checkout = () => {
                           <span>Coupon ({appliedCoupon.coupen}):</span>
                           <span className="text-green-600">
                             -{couponDiscount}%
+                            {couponDiscountExceedsLimit &&
+                              "(Capped at Max Limit)"}
                           </span>
                         </div>
                         <div className="flex justify-between text-base">
                           <span>Discounted Price:</span>
                           <span className="text-green-600">
-                            ${finalDiscountedAmount.toFixed(2)}
+                            ${couponDiscountAmount.toFixed(2)}
                           </span>
                         </div>
                       </div>
