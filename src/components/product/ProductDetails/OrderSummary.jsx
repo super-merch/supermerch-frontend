@@ -47,7 +47,7 @@ const OrderSummary = ({
         print: selectedPrintMethod?.description || "",
         logoColor: logoColor,
         size: selectedSize,
-        setupFee:  0,
+        setupFee: 0,
         dragdrop: selectedFile,
         deliveryDate,
         priceBreaks: selectedPrintMethod?.price_breaks || [],
@@ -153,7 +153,9 @@ const OrderSummary = ({
               </p>
               <p className="text-sm">
                 <span className="font-bold">Print Method:</span>{" "}
-                {selectedPrintMethod?.promodata_decoration || "Not selected"}
+                {selectedPrintMethod?.promodata_decoration ||
+                  selectedPrintMethod?.description ||
+                  "Not selected"}
               </p>
             </div>
             <div className="flex items-start gap-2 pt-3 ">

@@ -78,7 +78,6 @@ const ProductDetails = () => {
             setLoading(false);
           }, 200);
           setErrorFetching(false);
-          
         }
 
         // First, try to find sizes in details array
@@ -306,7 +305,9 @@ const ProductDetails = () => {
         allGroups = [baseGroup, ...additionGroups];
       }
       setAvailablePriceGroups(allGroups);
-      isClothing  ? setSelectedPrintMethod(allGroups[0]) : setSelectedPrintMethod(allGroups[1]);
+      setSelectedPrintMethod(
+        allGroups?.length > 1 ? allGroups[1] : allGroups[0]
+      );
       // Initialize quantity and price based on first price break
       const initialMethod = allGroups[0];
       if (initialMethod?.price_breaks?.length > 0) {
@@ -758,6 +759,17 @@ const ProductDetails = () => {
 
   const setupFee = getSetupFee();
   const productPrice = getProductPrice(single_product, productId);
+
+  const uniquePriceGroups = availablePriceGroups.filter(
+    (group, index, self) =>
+      index ===
+      self.findIndex(
+        (t) =>
+          t.promodata_decoration &&
+          t.promodata_decoration === group.promodata_decoration
+      )
+  );
+
   const handleAddToCart = (e) => {
     if (productPrice == 0) {
       toast.error(
@@ -767,7 +779,6 @@ const ProductDetails = () => {
       return;
     }
     e.preventDefault();
-
     dispatch(
       addToCart({
         id: productId,
@@ -817,7 +828,7 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: currentQuantity, // Use the actual quantity
-        print: selectedPrintMethod.description,
+        print: selectedPrintMethod.promodata_decoration,
         logoColor: logoColor,
         freightFee: freightFee,
         setupFee: setupFee,
@@ -827,7 +838,7 @@ const ProductDetails = () => {
         printMethodKey: selectedPrintMethod.key,
         userEmail: userEmail || "guest@gmail.com",
         supplierName: single_product.overview.supplier,
-        sample:false
+        sample: false,
       })
     );
     navigate("/cart");
@@ -1119,6 +1130,7 @@ const ProductDetails = () => {
                       setShowQuoteForm,
                       selectedLeadTimeAddition,
                       setSelectedLeadTimeAddition,
+                      uniquePriceGroups,
                     }}
                   />
                 )}
