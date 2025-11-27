@@ -2,6 +2,7 @@ import {
   findNearestColor,
   getProductPrice,
   is24HrProduct,
+  isProductCategory,
 } from "@/utils/utils";
 import { Clock, Flag } from "lucide-react";
 import { CiHeart } from "react-icons/ci";
@@ -83,6 +84,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   const isAUMade = product?.product?.categorisation?.promodata_attributes?.some(
     (item) => item === "Local Factors: Made In Australia"
   );
+  const isClothing = isProductCategory(product, "Clothing");
   return (
     <div
       key={productId}
@@ -235,7 +237,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                     <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
                       $
                       {getProductPrice
-                        ? getProductPrice(product, product.meta.id).toFixed(2)
+                        ? getProductPrice(product, product.meta.id,isClothing).toFixed(2)
                         : "0.00"}
                     </span>
                   </div>
