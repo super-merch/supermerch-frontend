@@ -347,10 +347,16 @@ const PricingTab = ({
                       {item.qty}+
                     </td>
                     <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
-                      ${unitDiscounted.toFixed(2)}
+                      ${unitDiscounted.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                     </td>
                     <td className="py-2 align-middle text-base sm:text-lg text-black">
-                      ${total.toFixed(2)}
+                      ${total.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                     </td>
                   </tr>
                 );

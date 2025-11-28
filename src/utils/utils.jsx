@@ -1,13 +1,15 @@
 import { colornames } from "color-name-list";
 
-export const getProductPrice = (product, id) => {
+export const getProductPrice = (product, id,isClothing) => {
   const priceGroups = product?.product?.prices?.price_groups || [];
   const basePrice = priceGroups.find((group) => group?.base_price) || {};
+  const additionalPrice = priceGroups.find((group) => group?.additions.length>0) || {};
+  const firstPrintPrice = additionalPrice?.additions?.[0]?.price_breaks
   const priceBreaks = basePrice.base_price?.price_breaks || [];
   const prices = priceBreaks
     .map((breakItem) => breakItem.price)
     .filter((price) => price !== undefined);
-  let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  let minPrice = prices.length > 0 ? Math.min(...prices) + ( isClothing ? 8 : (firstPrintPrice ? (firstPrintPrice[firstPrintPrice.length-1]?.price || 0) : 0)) : 0;
   let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
   // Convert to USD (assuming the price is in AUD, using approximate conversion rate)
 
