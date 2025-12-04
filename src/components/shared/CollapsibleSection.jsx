@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
 import PropTypes from "prop-types";
+import { useSearchParams } from "react-router-dom";
 
 const CollapsibleSection = ({ title, children, defaultExpanded = true, className = "" }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(()=>{
+    if(title === "Price Range" && searchParams.get("minPrice")){
+      setIsExpanded(true)
+    }else if(title === "Filter by Colour" && searchParams.get("colors")){
+      setIsExpanded(true)
+    }else if(title === "Filter by Attributes" && searchParams.get("attrName")){
+      setIsExpanded(true)
+    }
+  },[])
   return (
     <div className={`border-b border-gray-200 pb-4 ${className}`}>
       <div className="flex items-center justify-between mb-2">

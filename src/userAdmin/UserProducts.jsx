@@ -17,21 +17,7 @@ const UserProducts = () => {
     totalDiscount,
     marginApi,
   } = useContext(AppContext);
-  const [checkoutData, setCheckoutData] = useState(null);
   const navigate = useNavigate();
-
-  const fetchOrdersData = () => {
-    userOrder.forEach((item) => {
-      if (newId === item._id) {
-        setCheckoutData(item);
-      }
-    });
-  };
-
-  useEffect(() => {
-    fetchOrdersData();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [newId, userOrder]);
 
   const handleReOrder = async () => {
     const token = localStorage.getItem("token");
@@ -54,7 +40,7 @@ const UserProducts = () => {
 
     const getDiscount = async () => {
       try {
-        const discountPromises = checkoutData.products.map((item) =>
+        const discountPromises = userOrder.products?.map((item) =>
           fetchProductDiscount(item.id)
         );
 
@@ -64,7 +50,7 @@ const UserProducts = () => {
         return discountResults.map((result) => result.discount || 0);
       } catch (error) {
         console.error("Error fetching discounts:", error);
-        return checkoutData.products.map(() => 0);
+        return userOrder.products.map(() => 0);
       }
     };
 
@@ -72,7 +58,7 @@ const UserProducts = () => {
 
     // 2) Populate context.totalDiscount as { [id]: pct }
     const discountMap = {};
-    checkoutData.products.forEach((p, i) => {
+    userOrder.products.forEach((p, i) => {
       discountMap[p.id] = discountsArray[i];
     });
     setTotalDiscount(discountMap);
@@ -81,8 +67,8 @@ const UserProducts = () => {
     const latestProducts = [];
     const gstRate = 0.1;
 
-    for (let i = 0; i < checkoutData.products.length; i++) {
-      const product = checkoutData.products[i];
+    for (let i = 0; i < userOrder.products.length; i++) {
+      const product = userOrder.products[i];
       const discountPct = discountsArray[i];
 
       const resp = await axios.get(
@@ -140,9 +126,9 @@ const UserProducts = () => {
 
     // 5) Build your payload
     const reOrderData = {
-      user: checkoutData.user,
-      billingAddress: checkoutData.billingAddress,
-      shippingAddress: checkoutData.shippingAddress,
+      user: userOrder.user,
+      billingAddress: userOrder.billingAddress,
+      shippingAddress: userOrder.shippingAddress,
       products: latestProducts.map((p) => ({
         id: p.id,
         name: p.name,
@@ -156,7 +142,7 @@ const UserProducts = () => {
         logoColor: p.logoColor,
         logo: p.logo,
       })),
-      shipping: checkoutData.shipping,
+      shipping: userOrder.shipping,
       discount: totalDiscountPct, // <— A single number now
       gst: gstAmount,
       total: total,
@@ -188,21 +174,21 @@ const UserProducts = () => {
   //   const getDiscounts = async () => {
   //     try {
   //       return await Promise.all(
-  //         checkoutData.products.map((item) =>
+  //         userOrder.products.map((item) =>
   //           fetchProductDiscount(item.id)
   //             .then((r) => r.discount || 0)
   //             .catch(() => 0)
   //         )
   //       );
   //     } catch {
-  //       return checkoutData.products.map(() => 0);
+  //       return userOrder.products.map(() => 0);
   //     }
   //   };
   //   const discountsArray = await getDiscounts();
 
   //   // 2) Build discountMap for context
   //   const discountMap = {};
-  //   checkoutData.products.forEach((p, i) => {
+  //   userOrder.products.forEach((p, i) => {
   //     discountMap[p.id] = discountsArray[i];
   //   });
   //   setTotalDiscount(discountMap);
@@ -211,8 +197,8 @@ const UserProducts = () => {
   //   const latestProducts = [];
   //   const gstRate = 0.1;
 
-  //   for (let i = 0; i < checkoutData.products.length; i++) {
-  //     const cartItem = checkoutData.products[i];
+  //   for (let i = 0; i < userOrder.products.length; i++) {
+  //     const cartItem = userOrder.products[i];
   //     const discountPct = discountsArray[i];
 
   //     // fetch fresh product data
@@ -260,9 +246,9 @@ const UserProducts = () => {
 
   //   // 5) Build payload
   //   const reOrderData = {
-  //     user: checkoutData.user,
-  //     billingAddress: checkoutData.billingAddress,
-  //     shippingAddress: checkoutData.shippingAddress,
+  //     user: userOrder.user,
+  //     billingAddress: userOrder.billingAddress,
+  //     shippingAddress: userOrder.shippingAddress,
   //     products: latestProducts.map((p) => ({
   //       id: p.id,
   //       name: p.name,
@@ -276,7 +262,7 @@ const UserProducts = () => {
   //       logoColor: p.logoColor,
   //       logo: p.logo,
   //     })),
-  //     shipping: checkoutData.shipping,
+  //     shipping: userOrder.shipping,
   //     discountMap,
   //     gst: gstAmount,
   //     total,
@@ -306,7 +292,7 @@ const UserProducts = () => {
     );
   }
 
-  if (!checkoutData) {
+  if (!userOrder) {
     return <div>No checkout data available for this order.</div>;
   }
 
@@ -335,21 +321,21 @@ const UserProducts = () => {
         <p className="flex flex-wrap items-center gap-2 font-medium text-gray-800">
           Order{" "}
           <span className="px-2 font-semibold text-black bg-yellow">
-            {checkoutData.orderId}
+            {userOrder.orderId}
           </span>{" "}
           was placed on{" "}
           <span className="px-2 font-semibold text-black bg-yellow">
-            {new Date(checkoutData.orderDate).toLocaleDateString()}
+            {new Date(userOrder.orderDate).toLocaleDateString()}
           </span>{" "}
           and is currently{" "}
           <span
             className={`${
-              checkoutData.status === "Cancelled"
+              userOrder.status === "Cancelled"
                 ? "text-red-600"
                 : "bg-yellow text-black"
             } font-semibold px-2`}
           >
-            {checkoutData.status}
+            {userOrder.status}
           </span>
         </p>
       </div>
@@ -366,7 +352,7 @@ const UserProducts = () => {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {checkoutData?.products?.map((product, index) => (
+              {userOrder?.products?.map((product, index) => (
                 <tr key={index}>
                   <td>
                     <span className="text-blue-500">{product?.name}</span>{" "}
@@ -393,31 +379,31 @@ const UserProducts = () => {
               <tr>
                 <td className="py-2 text-gray-600">Sub Total:</td>
                 <td className="py-2 font-medium text-right">
-                  ${checkoutData?.total.toFixed(2)}
+                  ${userOrder?.total.toFixed(2)}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Shipping:</td>
                 <td className="py-2 font-medium text-right">
-                  ${checkoutData?.shipping}
+                  ${userOrder?.shipping}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Tax:</td>
                 <td className="py-2 font-medium text-right">
-                  ${checkoutData?.gst}
+                  ${userOrder?.gst}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Discount:</td>
                 <td className="py-2 font-medium text-right">
-                  ${checkoutData?.discount}
+                  ${userOrder?.discount}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Total:</td>
                 <td className="py-2 text-lg font-bold text-right">
-                  ${checkoutData?.total.toFixed(2)}
+                  ${userOrder?.total.toFixed(2)}
                 </td>
               </tr>
             </tbody>
@@ -433,36 +419,36 @@ const UserProducts = () => {
         <div>
           <h2 className="mb-2 font-semibold">Billing Address</h2>
           <p className="pb-1">
-            {checkoutData?.user?.firstName} {checkoutData?.user?.lastName}
+            {userOrder?.user?.firstName} {userOrder?.user?.lastName}
           </p>
-          <p className="pb-1">{checkoutData.billingAddress?.companyName}</p>
-          <p className="pb-1">{checkoutData.billingAddress?.addressLine}</p>
+          <p className="pb-1">{userOrder.billingAddress?.companyName}</p>
+          <p className="pb-1">{userOrder.billingAddress?.addressLine}</p>
           <p className="pb-1">
-            {checkoutData.billingAddress?.city},{" "}
-            {checkoutData.billingAddress?.state}
+            {userOrder.billingAddress?.city},{" "}
+            {userOrder.billingAddress?.state}
           </p>
-          <p className="pb-1">{checkoutData.billingAddress?.country}</p>
-          <p className="pb-1">{checkoutData.billingAddress?.postalCode}</p>
-          <p className="pb-1">{checkoutData.user?.email}</p>
-          <p>{checkoutData.user?.phone}</p>
+          <p className="pb-1">{userOrder.billingAddress?.country}</p>
+          <p className="pb-1">{userOrder.billingAddress?.postalCode}</p>
+          <p className="pb-1">{userOrder.user?.email}</p>
+          <p>{userOrder.user?.phone}</p>
         </div>
 
         {/* Shipping Address */}
         <div>
           <h2 className="mb-2 font-semibold">Shipping Address</h2>
           <p className="pb-1">
-            {checkoutData.user.firstName} {checkoutData.user.lastName}
+            {userOrder.user.firstName} {userOrder.user.lastName}
           </p>
-          <p className="pb-1">{checkoutData.shippingAddress?.companyName}</p>
-          <p className="pb-1">{checkoutData.shippingAddress?.addressLine}</p>
+          <p className="pb-1">{userOrder.shippingAddress?.companyName}</p>
+          <p className="pb-1">{userOrder.shippingAddress?.addressLine}</p>
           <p className="pb-1">
-            {checkoutData.shippingAddress?.city},{" "}
-            {checkoutData.shippingAddress?.state}
+            {userOrder.shippingAddress?.city},{" "}
+            {userOrder.shippingAddress?.state}
           </p>
-          <p className="pb-1">{checkoutData.shippingAddress?.country}</p>
-          <p className="pb-1">{checkoutData.shippingAddress?.postalCode}</p>
-          <p className="pb-1">{checkoutData.user?.email}</p>
-          <p>{checkoutData.user?.phone}</p>
+          <p className="pb-1">{userOrder.shippingAddress?.country}</p>
+          <p className="pb-1">{userOrder.shippingAddress?.postalCode}</p>
+          <p className="pb-1">{userOrder.user?.email}</p>
+          <p>{userOrder.user?.phone}</p>
         </div>
       </div>
     </div>

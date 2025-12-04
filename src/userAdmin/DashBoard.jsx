@@ -12,6 +12,7 @@ const DashBoard = () => {
     setActiveTab,
     userOrder,
     userEmail,
+    userStats
   } = useContext(AppContext);
   // const [loading, setLoading] = useState(FaBullseye);
   // useEffect(() => {
@@ -77,7 +78,7 @@ const DashBoard = () => {
                       Total Orders
                     </p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {userOrder.length}
+                      {userStats?.totalOrders}
                     </p>
                   </div>
                   <div className="p-3 bg-blue-100 rounded-full">
@@ -106,12 +107,7 @@ const DashBoard = () => {
                       Completed Orders
                     </p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {
-                        userOrder.filter(
-                          (order) =>
-                            order.status === "Complete" ||
-                            order.status === "delivered"
-                        ).length
+                      {userStats?.deliveredOrders
                       }
                     </p>
                   </div>
@@ -141,14 +137,7 @@ const DashBoard = () => {
                       Pending Orders
                     </p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {
-                        userOrder.filter(
-                          (order) =>
-                            order.status === "Pending" ||
-                            order.status === "processing" ||
-                            !order.status
-                        ).length
-                      }
+                      {userStats?.pendingOrders}
                     </p>
                   </div>
                   <div className="p-3 bg-yellow-100 rounded-full">
@@ -178,12 +167,7 @@ const DashBoard = () => {
                     </p>
                     <p className="text-xl font-bold text-gray-900">
                       $
-                      {userOrder
-                        .reduce((sum, order) => sum + (order.total || 0), 0)
-                        .toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                      {userStats?.totalSpent.toFixed(2)}
                     </p>
                   </div>
                   <div className="p-3 bg-purple-100 rounded-full">
