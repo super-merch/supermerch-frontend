@@ -26,7 +26,6 @@ const HeroWithHotDeals = () => {
       description:
         "Discover our collection of premium promotional products made right here in Australia. Quality you can trust, delivered fast.",
       buttonText: "Shop Now",
-      // slide 1: use your existing Tailwind utility class
       bgClass: "bg-custom-bg",
       url: "/shop",
     },
@@ -37,7 +36,6 @@ const HeroWithHotDeals = () => {
       description:
         "Create memorable experiences with our custom printing and embroidery services. Perfect for businesses, events, and teams.",
       buttonText: "Contact Us",
-      // slide 2: image in public/pgHome.jpg
       imageUrl: `/pgHome.jpg`,
       url: "/contact",
     },
@@ -48,7 +46,6 @@ const HeroWithHotDeals = () => {
       description:
         "Scale your promotional campaigns with our competitive bulk pricing. Ideal for corporate events, conferences, and marketing campaigns.",
       buttonText: "Contact Us",
-      // slide 3: image in public/phHome1.jpg
       imageUrl: `/pgHome1.jpg`,
       url: "/contact",
     },

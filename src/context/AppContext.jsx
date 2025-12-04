@@ -32,6 +32,13 @@ const AppContextProvider = (props) => {
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
   const pendingParamMultiRequestsRef = useRef({});
+  const [userStats, setUserStats] = useState({
+    deliveredOrders: 0,
+    pendingOrders: 0,
+    totalSpent: 0,
+    totalOrders: 0,
+    pages: 1,
+  });
   const [blogLoading, setBlogLoading] = useState(false);
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : false
@@ -322,15 +329,25 @@ const AppContextProvider = (props) => {
     });
   };
 
-  const loadUserOrder = async () => {
+  const loadUserOrder = async (page,limit=10) => {
     try {
-      const { data } = await axios.get(
-        `${backednUrl}/api/checkout/user-order`,
-        { headers: { token } }
+      if(userData?._id){
+
+        const { data } = await axios.get(
+          `${backednUrl}/api/checkout/user-order/${userData._id}?page=${page}&limit=${limit}`,
+          { headers: { token } }
       );
       if (data.success) {
-        setUserOrder(data.orders.reverse());
+        setUserOrder(data.orders);
+        setUserStats({
+        deliveredOrders: data.delivered,
+        pendingOrders: data.pending,
+        totalSpent: data.totalSpent,
+        totalOrders: data.total,
+        pages: data.pages,
+      });
       }
+    }
     } catch (error) {
       console.log(error);
     } finally {
@@ -1547,9 +1564,14 @@ const AppContextProvider = (props) => {
   useEffect(() => {
     if (token) {
       fetchWebUser();
-      loadUserOrder();
     }
   }, [token]);
+  useEffect(()=>{
+    if(userData?._id){
+      loadUserOrder(1);
+    }
+
+  },[userData])
 
   const value = {
     token,
@@ -1557,6 +1579,7 @@ const AppContextProvider = (props) => {
     userOrder,
     setUserOrder,
     loadUserOrder,
+    userStats,
     loading,
     setLoading,
     shippingCharges,
