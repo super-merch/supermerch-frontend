@@ -155,6 +155,7 @@ const AppContextProvider = (props) => {
     searchTerm: "",
     attributes: null,
     sendAttributes: false,
+    searchTerms: [],
   });
   const [totalCount, setTotalCount] = useState(0);
 
@@ -205,7 +206,7 @@ const AppContextProvider = (props) => {
     }
 
     let url = "";
-
+    let searchTerms = ["gift pack", "HAM10"];
     if (paginationData.category === "australia") {
       url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
     } else if (paginationData.category === "24hr-production") {
@@ -219,7 +220,9 @@ const AppContextProvider = (props) => {
     } else if (paginationData.category === "allProducts") {
       url = `${backednUrl}/api/client-products?${params.toString()}`;
     } else if (paginationData.category === "return-gifts") {
-      url = `${backednUrl}/api/client-products/search?searchTerm=gift pack&page=${paginationData.page}&limit=${paginationData.limit}`;
+      url = `${backednUrl}/api/client-products/search?searchTerms=${searchTerms.join(
+        ","
+      )}&page=${paginationData.page}&limit=${paginationData.limit}`;
     } else if (paginationData.category) {
       url = `${backednUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {

@@ -785,7 +785,8 @@ const Checkout = () => {
                           setOpenCustomer(false);
                           setOpenShipping(true);
                         }}
-                        className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity"
+                        className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!userData?.email && !userData?.phone}
                       >
                         Continue to Shipping
                       </button>
