@@ -108,8 +108,11 @@ const Cards = ({ category = "" }) => {
       });
     }
     let url = "";
+    let searchTerms = ["gift pack", "hampers", "gift"];
     if (paginationData.category === "return-gifts") {
-      url = `${backednUrl}/api/client-products/search?searchTerm=gift pack&page=${page}&limit=${limit}`;
+      url = `${backednUrl}/api/client-products/search?searchTerms=${searchTerms.join(
+        ","
+      )}&page=${page}&limit=${limit}`;
     } else if (paginationData.category === "australia") {
       url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
     } else if (paginationData.category === "24hr-production") {

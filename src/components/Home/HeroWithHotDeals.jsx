@@ -20,6 +20,15 @@ const HeroWithHotDeals = () => {
   // Note: PUBLIC_URL resolves to your /public folder at runtime
   const slider = [
     {
+      id: 21,
+
+      buttonText: "Shop Gift Hampers",
+      imageUrl: `/gift.png`,
+      url: "/return-gifts",
+      dontShowHelpMePick: true,
+    },
+
+    {
       id: 1,
       span: "Premium Australian Made Products",
       title: "Get 15% Off Your First Order",
@@ -153,15 +162,16 @@ const HeroWithHotDeals = () => {
                             {slide.buttonText}
                             <FaArrowRight className="w-4 h-4" />
                           </Button>
-
-                          <Button
-                            variant="white"
-                            size="lg"
-                            onClick={() => setIsHelpModalOpen(true)}
-                            className="rounded-lg"
-                          >
-                            Help me Pick
-                          </Button>
+                          {!slide.dontShowHelpMePick && (
+                            <Button
+                              variant="white"
+                              size="lg"
+                              onClick={() => setIsHelpModalOpen(true)}
+                              className="rounded-lg"
+                            >
+                              Help me Pick
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
