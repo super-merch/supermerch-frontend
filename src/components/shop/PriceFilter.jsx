@@ -72,7 +72,8 @@ const PriceFilter = ({toggleSidebar}) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div onClick={(e) => e.stopPropagation()}
+     className="bg-white border border-gray-200 rounded-lg p-4">
       <div className="mb-4">
         <div className="flex gap-3">
           <div className="flex-1">
