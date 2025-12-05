@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { useSearchParams } from "react-router-dom";
 
-const PriceFilter = ({toggleSidebar}) => {
+const PriceFilter = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
   const { setPaginationData } = useContext(AppContext);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,28 +15,28 @@ const PriceFilter = ({toggleSidebar}) => {
   const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     setLocalMin(searchParams.get("minPrice") || "");
     setLocalMax(searchParams.get("maxPrice") || "");
-  },[searchParams.get("minPrice")]) 
+  }, [searchParams.get("minPrice")]);
 
   const applyRangeToBackend = (minValue, maxValue) => {
     dispatch(setMinPrice(minValue));
     dispatch(setMaxPrice(maxValue));
 
-      setSearchParams(prev => {
-        const newParams = new URLSearchParams(prev);
-        newParams.set("minPrice", minValue.toString());
-        newParams.set("maxPrice", maxValue.toString());
-        newParams.set("page", "1");
-        return newParams;
-      });
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("minPrice", minValue.toString());
+      newParams.set("maxPrice", maxValue.toString());
+      newParams.set("page", "1");
+      return newParams;
+    });
 
     setPaginationData((prev) => ({
       ...prev,
       page: 1, // reset to first page
       pricerange: { min_price: Number(minValue), max_price: Number(maxValue) },
-      sendAttributes:false
+      sendAttributes: false,
     }));
   };
 
@@ -44,7 +44,12 @@ const PriceFilter = ({toggleSidebar}) => {
     const minValue = Number(localMin);
     const maxValue = Number(localMax);
 
-    if (localMin === "" || localMax === "" || isNaN(minValue) || isNaN(maxValue)) {
+    if (
+      localMin === "" ||
+      localMax === "" ||
+      isNaN(minValue) ||
+      isNaN(maxValue)
+    ) {
       toast.error("Please enter valid numbers for Min and Max Price");
       return;
     }
@@ -72,38 +77,56 @@ const PriceFilter = ({toggleSidebar}) => {
   };
 
   return (
-    <div onClick={(e) => e.stopPropagation()}
-     className="bg-white border border-gray-200 rounded-lg p-4">
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="bg-white border border-gray-200 rounded-lg p-4"
+    >
       <div className="mb-4">
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              From
+            </label>
             <input
               type="text"
               placeholder="0"
               value={localMin}
               onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleApplyCustomRange()
-                    }
-                  }}
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleApplyCustomRange();
+                }
+              }}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
-              onChange={(e) => setLocalMin(e.target.value)}
+              onChange={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setLocalMin(e.target.value);
+              }}
             />
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              To
+            </label>
             <input
               type="text"
               placeholder="1000"
               onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleApplyCustomRange()
-                    }
-                  }}
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleApplyCustomRange();
+                }
+              }}
               value={localMax}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
-              onChange={(e) => setLocalMax(e.target.value)}
+              onChange={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setLocalMax(e.target.value);
+              }}
             />
           </div>
         </div>
@@ -115,7 +138,9 @@ const PriceFilter = ({toggleSidebar}) => {
           onClick={handleApplyCustomRange}
           disabled={isApplying}
           className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 ${
-            isApplying ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
+            isApplying
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary hover:bg-primary-dark"
           }`}
         >
           {isApplying ? (
