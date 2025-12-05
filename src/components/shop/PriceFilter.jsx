@@ -40,7 +40,9 @@ const PriceFilter = ({ toggleSidebar }) => {
     }));
   };
 
-  const handleApplyCustomRange = () => {
+  const handleApplyCustomRange = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const minValue = Number(localMin);
     const maxValue = Number(localMax);
 
@@ -95,12 +97,11 @@ const PriceFilter = ({ toggleSidebar }) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleApplyCustomRange();
+                  handleApplyCustomRange(e);
                 }
               }}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
               onChange={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 setLocalMin(e.target.value);
               }}
@@ -117,13 +118,12 @@ const PriceFilter = ({ toggleSidebar }) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleApplyCustomRange();
+                  handleApplyCustomRange(e);
                 }
               }}
               value={localMax}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
               onChange={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 setLocalMax(e.target.value);
               }}
