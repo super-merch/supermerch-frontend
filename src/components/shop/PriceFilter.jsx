@@ -75,24 +75,32 @@ const PriceFilter = ({ toggleSidebar }) => {
     setLocalMin("");
     setLocalMax("");
     applyRangeToBackend(range.min, range.max);
-    setTimeout(() => setIsApplying(false), 500);
+    setTimeout(() => setIsApplying(false), 250);
   };
 
   return (
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="bg-white border border-gray-200 rounded-lg p-4"
-    >
-      <div className="mb-4">
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              From
-            </label>
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      {/* Title */}
+      <h3 className="text-sm font-semibold text-gray-800 mb-4">Price Range</h3>
+
+      {/* Input Fields */}
+      <div className="flex  items-center  gap-x-3 mb-4">
+        {/* Min Price */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1.5">
+            Minimum Price
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+              $
+            </span>
             <input
-              type="text"
+              type="number"
               placeholder="0"
               value={localMin}
+              min="0"
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -100,20 +108,31 @@ const PriceFilter = ({ toggleSidebar }) => {
                   handleApplyCustomRange(e);
                 }
               }}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
               onChange={(e) => {
                 e.stopPropagation();
                 setLocalMin(e.target.value);
               }}
+              className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
             />
           </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              To
-            </label>
+        </div>
+
+        {/* Max Price */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1.5">
+            Maximum Price
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+              $
+            </span>
             <input
-              type="text"
+              type="number"
               placeholder="1000"
+              value={localMax}
+              min="0"
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -121,46 +140,42 @@ const PriceFilter = ({ toggleSidebar }) => {
                   handleApplyCustomRange(e);
                 }
               }}
-              value={localMax}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded outline-none"
               onChange={(e) => {
                 e.stopPropagation();
                 setLocalMax(e.target.value);
               }}
+              className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
             />
           </div>
         </div>
       </div>
 
-      {/* Apply Button (visible, replaces debounce) */}
-      <div className="mb-3">
+      {/* Action Buttons */}
+      <div className="flex gap-2">
         <button
           onClick={handleApplyCustomRange}
           disabled={isApplying}
-          className={`w-full py-2 px-4 text-white text-sm font-medium rounded transition-colors duration-200 ${
+          className={`flex-1 py-2.5 px-4 text-white text-sm font-semibold rounded-lg transition-all duration-200 ${
             isApplying
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-primary hover:bg-primary-dark"
+              : "bg-primary hover:bg-primary/90 hover:shadow-md active:scale-[0.98]"
           }`}
         >
           {isApplying ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-2" />
-              <span>Applying...</span>
-            </>
+            <span className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Applying...
+            </span>
           ) : (
-            <span>Apply</span>
+            "Apply"
           )}
         </button>
-      </div>
 
-      {/* All Prices Link */}
-      <div className="text-center">
         <button
           onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
-          className="text-primary hover:text-blue-800 text-sm"
+          className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200 active:scale-[0.98]"
         >
-          All Prices
+          Reset
         </button>
       </div>
     </div>
