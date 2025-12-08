@@ -159,127 +159,126 @@ const UnifiedSidebar = ({
   const [appliedFilters, setAppliedFilters] = useState([]);
   const getAppliedFilters = (searchParams) => {
     const filters = [];
-    
+
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
     if (minPrice && maxPrice) {
       filters.push({
         type: "price",
         label: `$${minPrice} - $${maxPrice}`,
-        params: ["minPrice", "maxPrice"]
+        params: ["minPrice", "maxPrice"],
       });
     }
-    
+
     const colors = searchParams.get("colors");
     if (colors) {
-      colors.split(',').forEach(color => {
+      colors.split(",").forEach((color) => {
         filters.push({
           type: "color",
           label: color,
           value: color,
-          params: ["colors"]
+          params: ["colors"],
         });
       });
     }
-    
+
     const attrName = searchParams.get("attrName");
     const attrValue = searchParams.get("attrValue");
     if (attrName && attrValue) {
       filters.push({
         type: "attribute",
         label: `${attrName}: ${attrValue}`,
-        params: ["attrName", "attrValue"]
+        params: ["attrName", "attrValue"],
       });
     }
-    
+
     return filters;
   };
-  
-// Add this useEffect to update appliedFilters when URL changes
-useEffect(() => {
-  const filters = getAppliedFilters(searchParams);
-  setAppliedFilters(filters);
-}, [searchParams]);
 
- const handleRemoveFilter = (filter) => {
-  const newParams = new URLSearchParams(searchParams);
-  
-  if (filter.type === "color") {
-    const currentColors = newParams.get("colors")?.split(',') || [];
-    const updatedColors = currentColors.filter(c => c !== filter.value);
-    
-    if (updatedColors.length > 0) {
-      newParams.set("colors", updatedColors.join(','));
-    } else {
-      newParams.delete("colors");
+  // Add this useEffect to update appliedFilters when URL changes
+  useEffect(() => {
+    const filters = getAppliedFilters(searchParams);
+    setAppliedFilters(filters);
+  }, [searchParams]);
+
+  const handleRemoveFilter = (filter) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (filter.type === "color") {
+      const currentColors = newParams.get("colors")?.split(",") || [];
+      const updatedColors = currentColors.filter((c) => c !== filter.value);
+
+      if (updatedColors.length > 0) {
+        newParams.set("colors", updatedColors.join(","));
+      } else {
+        newParams.delete("colors");
+      }
+
+      // Update state immediately
+      setPaginationData((prev) => ({
+        ...prev,
+        colors: updatedColors,
+        page: 1,
+      }));
+    } else if (filter.type === "price") {
+      newParams.delete("minPrice");
+      newParams.delete("maxPrice");
+
+      // Update Redux state immediately
+      dispatch(setMinPrice(0));
+      dispatch(setMaxPrice(1000));
+
+      // Update pagination state
+      setPaginationData((prev) => ({
+        ...prev,
+        pricerange: undefined,
+        page: 1,
+      }));
+    } else if (filter.type === "attribute") {
+      newParams.delete("attrName");
+      newParams.delete("attrValue");
+
+      // Update state immediately
+      setPaginationData((prev) => ({
+        ...prev,
+        attributes: null,
+        page: 1,
+      }));
     }
-    
-    // Update state immediately
-    setPaginationData(prev => ({
-      ...prev,
-      colors: updatedColors,
-      page: 1
-    }));
-  } else if (filter.type === "price") {
+
+    newParams.set("page", "1");
+
+    // Update URL - this will trigger the useEffect that reads from URL
+    setSearchParams(newParams, { replace: true });
+  };
+
+  // Fixed handleClearAllFilters function
+  const handleClearAllFilters = () => {
+    const newParams = new URLSearchParams(searchParams);
+
+    // Remove all filter params
     newParams.delete("minPrice");
     newParams.delete("maxPrice");
-    
-    // Update Redux state immediately
-    dispatch(setMinPrice(0));
-    dispatch(setMaxPrice(1000));
-    
-    // Update pagination state
-    setPaginationData(prev => ({
-      ...prev,
-      pricerange: undefined,
-      page: 1
-    }));
-  } else if (filter.type === "attribute") {
+    newParams.delete("colors");
     newParams.delete("attrName");
     newParams.delete("attrValue");
-    
-    // Update state immediately
-    setPaginationData(prev => ({
+    newParams.set("page", "1");
+
+    // Update all states immediately
+    dispatch(setMinPrice(0));
+    dispatch(setMaxPrice(1000));
+
+    setPaginationData((prev) => ({
       ...prev,
+      pricerange: undefined,
+      colors: [],
       attributes: null,
-      page: 1
+      page: 1,
     }));
-  }
-  
-  newParams.set("page", "1");
-  
-  // Update URL - this will trigger the useEffect that reads from URL
-  setSearchParams(newParams, { replace: true });
-};
 
-// Fixed handleClearAllFilters function
-const handleClearAllFilters = () => {
-  const newParams = new URLSearchParams(searchParams);
-  
-  // Remove all filter params
-  newParams.delete("minPrice");
-  newParams.delete("maxPrice");
-  newParams.delete("colors");
-  newParams.delete("attrName");
-  newParams.delete("attrValue");
-  newParams.set("page", "1");
-  
-  // Update all states immediately
-  dispatch(setMinPrice(0));
-  dispatch(setMaxPrice(1000));
-  
-  setPaginationData(prev => ({
-    ...prev,
-    pricerange: undefined,
-    colors: [],
-    attributes: null,
-    page: 1
-  }));
-  
-  // Update URL last
-  setSearchParams(newParams, { replace: true });
-};
-
+    // Update URL last
+    setSearchParams(newParams, { replace: true });
+  };
 
   // Mobile responsiveness
   useEffect(() => {
@@ -298,31 +297,32 @@ const handleClearAllFilters = () => {
   }, []);
 
   // Add click outside functionality to close sidebar
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMobile && isSidebarOpen) {
-        const sidebar = document.querySelector("[data-sidebar-content]");
-        const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     event.stopPropagation();
+  //     if (isMobile && isSidebarOpen) {
+  //       const sidebar = document.querySelector("[data-sidebar-content]");
+  //       const hamburgerButton = document.querySelector("[data-sidebar-toggle]");
 
-        if (
-          sidebar &&
-          !sidebar.contains(event.target) &&
-          hamburgerButton &&
-          !hamburgerButton.contains(event.target)
-        ) {
-          setIsSidebarOpen(false);
-        }
-      }
-    };
+  //       if (
+  //         sidebar &&
+  //         !sidebar.contains(event.target) &&
+  //         hamburgerButton &&
+  //         !hamburgerButton.contains(event.target)
+  //       ) {
+  //         setIsSidebarOpen(false);
+  //       }
+  //     }
+  //   };
 
-    if (isMobile && isSidebarOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+  //   if (isMobile && isSidebarOpen) {
+  //     document.addEventListener("mousedown", handleClickOutside);
+  //   }
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMobile, isSidebarOpen]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [isMobile, isSidebarOpen]);
 
   useEffect(() => {
     if (!urlCategoryName || allCategories.length === 0) return;
@@ -398,13 +398,17 @@ const handleClearAllFilters = () => {
       {/* Sidebar */}
       <div
         data-sidebar-content
+        onClick={(e) => e.stopPropagation()}
         className={`bg-gray-100 transition-all duration-300 ease-in-out ${
           isSidebarOpen
             ? "lg:w-[100%] z-50 lg:mt-0 md:w-[280px] max-w-[90vw] xs:max-w-[95vw] absolute h-screen md:shadow-xl shadow-xl lg:shadow-none px-3 xs:px-2 lg:px-0 py-4"
             : "hidden"
-        }`}
+        } ${isMobile ? "bg-white rounded-lg h-max w-full" : "bg-gray-100"}`}
       >
-        <div className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="h-full pr-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+        >
           {appliedFilters.length > 0 && (
             <div className="mb-4 bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
@@ -418,14 +422,16 @@ const handleClearAllFilters = () => {
                   Clear All
                 </button>
               </div>
-              
+
               <div className="flex flex-wrap gap-2">
                 {appliedFilters.map((filter, index) => (
                   <div
                     key={index}
                     className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors group"
                   >
-                    <span className="max-w-[150px] truncate">{filter.label}</span>
+                    <span className="max-w-[150px] truncate">
+                      {filter.label}
+                    </span>
                     <button
                       onClick={() => handleRemoveFilter(filter)}
                       className="flex-shrink-0 hover:bg-gray-300 rounded-full p-0.5 transition-colors"
