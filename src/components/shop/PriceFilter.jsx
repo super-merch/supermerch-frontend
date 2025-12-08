@@ -93,6 +93,8 @@ const PriceFilter = ({ toggleSidebar }) => {
               type="text"
               placeholder="0"
               value={localMin}
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -114,6 +116,8 @@ const PriceFilter = ({ toggleSidebar }) => {
             <input
               type="text"
               placeholder="1000"
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
