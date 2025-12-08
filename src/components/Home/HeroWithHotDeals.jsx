@@ -160,14 +160,14 @@ const HeroWithHotDeals = () => {
                             <FaArrowRight className="w-4 h-4" />
                           </Button>
                           {!slide.dontShowHelpMePick && (
-                            <Button
-                              variant="white"
-                              size="lg"
-                              onClick={() => setIsHelpModalOpen(true)}
-                              className="rounded-lg"
-                            >
-                              Help me Pick
-                            </Button>
+                          <Button
+                            variant="white"
+                            size="lg"
+                            onClick={() => setIsHelpModalOpen(true)}
+                            className="rounded-lg"
+                          >
+                            Help me Pick
+                          </Button>
                           )}
                         </div>
                       </div>

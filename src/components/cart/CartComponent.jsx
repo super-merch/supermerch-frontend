@@ -335,7 +335,8 @@ const CartComponent = () => {
                                           decrementQuantity({ id: item.id })
                                         )
                                       }
-                                      className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
+                                      disabled={item.sample}
+                                      className={`p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors ${item.sample && "cursor-not-allowed"}`}
                                     >
                                       <FiMinus className="w-4 h-4" />
                                     </button>
@@ -345,6 +346,7 @@ const CartComponent = () => {
                                         customQuantities[item.id] ||
                                         item.quantity
                                       }
+                                      disabled={item.sample}
                                       onChange={(e) =>
                                         dispatch(
                                           multipleQuantity({
@@ -354,7 +356,7 @@ const CartComponent = () => {
                                           })
                                         )
                                       }
-                                      className="w-32 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
+                                      className={`w-32 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl ${item.sample && "cursor-not-allowed"}`}
                                       min="1"
                                     />
                                     <button
@@ -363,7 +365,8 @@ const CartComponent = () => {
                                           incrementQuantity({ id: item.id })
                                         )
                                       }
-                                      className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
+                                      disabled={item.sample}
+                                      className={`p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors ${item.sample && "cursor-not-allowed"}`}
                                     >
                                       <FiPlus className="w-4 h-4" />
                                     </button>
