@@ -633,9 +633,9 @@ const Cards = ({ category = "" }) => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center rounded-md text-primary shadow-sm hover:bg-primary-dark transition-colors"
+                className="flex items-center justify-center rounded-lg text-black border border-gray-300 bg-white py-1.5 px-2 hover:bg-gray-100 transition-colors text-sm font-medium"
               >
-                <IoMenu className="text-xl" />
+                Filters
               </button>
 
               {/* Sort By - Positioned to the right */}
@@ -643,7 +643,7 @@ const Cards = ({ category = "" }) => {
                 <p className="text-sm font-medium text-gray-700">Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    className="flex items-center justify-between gap-2 px-2 py-1 border w-48 border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 transition-colors"
+                    className="flex items-center justify-between gap-2 px-2 py-1 border w-40 border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 transition-colors"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
                     {sortOption === "lowToHigh"
@@ -663,7 +663,7 @@ const Cards = ({ category = "" }) => {
                     <div className="absolute right-0 z-[100] w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-t-lg ${
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-t-lg ${
                           sortOption === "lowToHigh" ? "bg-gray-50" : ""
                         }`}
                       >
@@ -671,7 +671,7 @@ const Cards = ({ category = "" }) => {
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 ${
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 ${
                           sortOption === "highToLow" ? "bg-gray-50" : ""
                         }`}
                       >
@@ -679,7 +679,7 @@ const Cards = ({ category = "" }) => {
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 rounded-b-lg ${
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-b-lg ${
                           sortOption === "relevancy" ? "bg-gray-50" : ""
                         }`}
                       >
@@ -737,7 +737,7 @@ const Cards = ({ category = "" }) => {
                 <p>Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    className="flex items-center justify-between gap-2 px-4 py-3 border w-52 border-border2 rounded-lg"
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 md:w-52 border-border2 rounded-lg"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
                     {sortOption === "lowToHigh"
@@ -754,10 +754,10 @@ const Cards = ({ category = "" }) => {
                     </span>
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute left-0 z-10 w-full mt-2 bg-white border top-full border-border2">
+                    <div className="absolute left-0 z-50 w-full mt-2 bg-white border top-full border-border2">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "lowToHigh" ? "bg-gray-100" : ""
                         }`}
                       >
@@ -765,7 +765,7 @@ const Cards = ({ category = "" }) => {
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "highToLow" ? "bg-gray-100" : ""
                         }`}
                       >
@@ -773,7 +773,7 @@ const Cards = ({ category = "" }) => {
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-100 ${
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
                           sortOption === "revelancy" ? "bg-gray-100" : ""
                         }`}
                       >
