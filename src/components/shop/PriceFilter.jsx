@@ -75,84 +75,78 @@ const PriceFilter = ({ toggleSidebar }) => {
     setLocalMin("");
     setLocalMax("");
     applyRangeToBackend(range.min, range.max);
-    setTimeout(() => setIsApplying(false), 500);
+    setTimeout(() => setIsApplying(false), 250);
   };
 
   return (
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="bg-white rounded-lg shadow-sm p-4"
-    >
-      {/* Price Range Slider */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-800">Price Range</h3>
-          <div className="text-sm font-medium text-primary">
-            ${localMin || 0} - ${localMax || 500}
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      {/* Title */}
+      <h3 className="text-sm font-semibold text-gray-800 mb-4">Price Range</h3>
+
+      {/* Input Fields */}
+      <div className="flex  items-center  gap-x-3 mb-4">
+        {/* Min Price */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1.5">
+            Minimum Price
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+              $
+            </span>
+            <input
+              type="number"
+              placeholder="0"
+              value={localMin}
+              min="0"
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleApplyCustomRange(e);
+                }
+              }}
+              onChange={(e) => {
+                e.stopPropagation();
+                setLocalMin(e.target.value);
+              }}
+              className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            />
           </div>
         </div>
 
-        {/* Dual Range Slider */}
-        <div className="relative pt-2 pb-6">
-          {/* Track Background */}
-          <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 -translate-y-1/2"></div>
-
-          {/* Active Range Track */}
-          <div
-            className="absolute h-2 bg-primary rounded-full top-1/2 -translate-y-1/2"
-            style={{
-              left: `${((localMin || 0) / 500) * 100}%`,
-              right: `${100 - ((localMax || 500) / 500) * 100}%`,
-            }}
-          ></div>
-
-          {/* Min Range Input */}
-          <input
-            type="range"
-            min="0"
-            max="500"
-            step="10"
-            value={localMin || 0}
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onChange={(e) => {
-              e.stopPropagation();
-              const value = Number(e.target.value);
-              if (value < (localMax || 500)) {
-                setLocalMin(value);
-              }
-            }}
-            className="absolute w-full h-2 bg-transparent appearance-none pointer-events-none cursor-pointer [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:hover:scale-125 [&::-webkit-slider-thumb]:active:scale-110 [&::-webkit-slider-thumb]:transition-transform [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:hover:scale-125 [&::-moz-range-thumb]:active:scale-110 [&::-moz-range-thumb]:transition-transform"
-            style={{ zIndex: localMin > (localMax || 500) - 100 ? 5 : 3 }}
-          />
-
-          {/* Max Range Input */}
-          <input
-            type="range"
-            min="0"
-            max="500"
-            step="10"
-            value={localMax || 500}
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onChange={(e) => {
-              e.stopPropagation();
-              const value = Number(e.target.value);
-              if (value > (localMin || 0)) {
-                setLocalMax(value);
-              }
-            }}
-            className="absolute w-full h-2 bg-transparent appearance-none pointer-events-none cursor-pointer [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:hover:scale-125 [&::-webkit-slider-thumb]:active:scale-110 [&::-webkit-slider-thumb]:transition-transform [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:hover:scale-125 [&::-moz-range-thumb]:active:scale-110 [&::-moz-range-thumb]:transition-transform"
-            style={{ zIndex: 4 }}
-          />
-        </div>
-
-        {/* Price Labels */}
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
-          <span>$0</span>
-          <span>$500+</span>
+        {/* Max Price */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1.5">
+            Maximum Price
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+              $
+            </span>
+            <input
+              type="number"
+              placeholder="1000"
+              value={localMax}
+              min="0"
+              onClick={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleApplyCustomRange(e);
+                }
+              }}
+              onChange={(e) => {
+                e.stopPropagation();
+                setLocalMax(e.target.value);
+              }}
+              className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            />
+          </div>
         </div>
       </div>
 
@@ -173,12 +167,12 @@ const PriceFilter = ({ toggleSidebar }) => {
               Applying...
             </span>
           ) : (
-            "Apply Filter"
+            "Apply"
           )}
         </button>
 
         <button
-          onClick={() => handlePresetRangeClick({ min: 0, max: 500 })}
+          onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
           className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200 active:scale-[0.98]"
         >
           Reset
