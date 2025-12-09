@@ -204,8 +204,8 @@ const SearchBar = ({
 
   const handleSearch = (searchValue = inputValue) => {
     // Close suggestions when searching
-    setIsSuggestionsOpen(false);
-    setSuggestions([]);
+    // setIsSuggestionsOpen(false);
+    // setSuggestions([]);
     setHighlightedIndex(-1);
 
     if (!searchValue.trim()) {
