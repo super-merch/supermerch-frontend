@@ -70,7 +70,7 @@ const UserActions = ({
           </span>
         )}
         <HiOutlineShoppingCart
-          className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors`}
+          className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors text-xl md:text-2xl lg:text-3xl`}
         />
       </Link>
 
@@ -89,7 +89,7 @@ const UserActions = ({
           </span>
         )}
         <HiOutlineHeart
-          className={`${currentSize.icon} text-customBlue hover:text-red-500 transition-colors`}
+          className={`${currentSize.icon} text-customBlue hover:text-red-500 transition-colors text-xl md:text-2xl lg:text-3xl`}
         />
       </Link>
 
@@ -100,7 +100,7 @@ const UserActions = ({
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <HiOutlineUser
-            className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors`}
+            className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors text-xl md:text-2xl lg:text-3xl`}
           />
         </Link>
       ) : (

@@ -21,7 +21,12 @@ const HeroWithHotDeals = () => {
   const slider = [
     {
       id: 21,
+      bgClass: "bg-custom-bg",
+      span: "Gift Hampers",
 
+      title: "Gift Hampers for this Christmas & New Year",
+      description:
+        "Bring joy to your loved ones with our premium gift hampers. Delivered straight to their door, ready to enjoy. Order now and save 15% on your first order.",
       buttonText: "Shop Gift Hampers",
       imageUrl: `/gift.png`,
       url: "/return-gifts",
@@ -76,7 +81,7 @@ const HeroWithHotDeals = () => {
       <div className="Mycontainer lg:h-[55vh] h-full">
         <div className="flex flex-col xl:flex-row gap-6 h-full">
           {/* Image Slider - 75% width */}
-          <div className="w-full xl:w-3/4 h-full min-h-[400px] relative rounded-2xl overflow-hidden shadow-2xl">
+          <div className="w-full xl:w-3/4 h-full min-h-[500px] sm:min-h-[450px] md:min-h-[400px] relative rounded-2xl overflow-hidden shadow-2xl">
             {/* Navigation Arrows */}
             <div className="absolute md:left-4 -left-2 top-1/2 transform -translate-y-1/2 z-20">
               <button className="swiper-button-prev-custom md:w-12 md:h-12 w-8 h-8 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center">
@@ -160,14 +165,14 @@ const HeroWithHotDeals = () => {
                             <FaArrowRight className="w-4 h-4" />
                           </Button>
                           {!slide.dontShowHelpMePick && (
-                          <Button
-                            variant="white"
-                            size="lg"
-                            onClick={() => setIsHelpModalOpen(true)}
-                            className="rounded-lg"
-                          >
-                            Help me Pick
-                          </Button>
+                            <Button
+                              variant="white"
+                              size="lg"
+                              onClick={() => setIsHelpModalOpen(true)}
+                              className="rounded-lg"
+                            >
+                              Help me Pick
+                            </Button>
                           )}
                         </div>
                       </div>

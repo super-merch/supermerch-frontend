@@ -94,22 +94,18 @@ const PriceFilter = ({ toggleSidebar }) => {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
               $
             </span>
+
             <input
               type="number"
               placeholder="0"
               value={localMin}
               min="0"
-              onClick={(e) => e.stopPropagation()}
-              onFocus={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  e.preventDefault();
-                  e.stopPropagation();
                   handleApplyCustomRange(e);
                 }
               }}
               onChange={(e) => {
-                e.stopPropagation();
                 setLocalMin(e.target.value);
               }}
               className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
