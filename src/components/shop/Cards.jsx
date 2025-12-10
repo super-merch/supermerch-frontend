@@ -633,7 +633,7 @@ const Cards = ({ category = "" }) => {
                   );
                   if (sidebarToggle) sidebarToggle.click();
                 }}
-                className="flex items-center justify-center rounded-lg text-black border border-gray-300 bg-white py-1.5 px-2 hover:bg-gray-100 transition-colors text-sm font-medium"
+                className="flex items-center justify-center rounded-lg text-black border border-gray-300 bg-white py-1 px-2 hover:bg-gray-100 transition-colors text-sm font-medium"
               >
                 Filters
               </button>

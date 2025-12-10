@@ -386,8 +386,8 @@ const SearchBar = ({
 
           <div className="flex items-center gap-2 ml-2">
             <IoSearchSharp
-              onClick={()=>{
-                handleSearch
+              onClick={() => {
+                handleSearch;
                 setIsSuggestionsOpen(false);
               }}
               className="text-primary text-xl cursor-pointer hover:text-blue-700 transition-colors"
@@ -474,7 +474,7 @@ const SearchBar = ({
       ref={categoryDropdownRef}
     >
       <div
-        className={`flex items-center bg-white border-2 border-blue-100 rounded-lg px-1 lg:px-3 py-1 lg:py-2 hover:border-blue-200 transition-all duration-300 w-full ${
+        className={`flex items-center bg-white border-2 border-blue-100 rounded-lg px-1 lg:px-3 py-0 lg:py-2 hover:border-blue-200 transition-all duration-300 w-full ${
           collapsible ? "animate-in slide-in-from-right-2 fade-in-0" : ""
         }`}
       >

@@ -98,7 +98,7 @@ const UnifiedSidebar = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedCategory } = useSelector((state) => state.filters);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [openCategory, setOpenCategory] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
@@ -278,7 +278,7 @@ const UnifiedSidebar = ({
   // Mobile responsiveness
   useEffect(() => {
     const handleResize = () => {
-      const isMobileScreen = window.innerWidth <= 1025;
+      const isMobileScreen = window.innerWidth <= 500;
       setIsMobile(isMobileScreen);
 
       // On desktop, keep sidebar open; on mobile, keep it closed by default
@@ -286,9 +286,9 @@ const UnifiedSidebar = ({
         setIsSidebarOpen(true);
       } else {
         // Only close if transitioning to mobile, don't force close if user opened it
-        if (!isMobile) {
-          setIsSidebarOpen(false);
-        }
+        // if (!isMobile) {
+        //   setIsSidebarOpen(false);
+        // }
       }
     };
 
@@ -409,7 +409,7 @@ const UnifiedSidebar = ({
       {isMobile && isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-[60] lg:hidden"
-          onClick={toggleSidebar}
+          onClick={() => toggleSidebar()}
         />
       )}
 
@@ -443,7 +443,7 @@ const UnifiedSidebar = ({
                 Filters & Categories
               </h2>
               <button
-                onClick={toggleSidebar}
+                onClick={() => toggleSidebar()}
                 className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                 aria-label="Close filters"
               >
@@ -453,7 +453,6 @@ const UnifiedSidebar = ({
           )}
 
           <div
-            onClick={(e) => e.stopPropagation()}
             className={`overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent ${
               isMobile
                 ? "h-[calc(100vh-60px)] px-4 py-4 bg-gray-50"
@@ -594,7 +593,7 @@ const UnifiedSidebar = ({
               )}
 
               <CollapsibleSection title="Price Range" defaultExpanded={false}>
-                <PriceFilter toggleSidebar={toggleSidebar} />
+                <PriceFilter toggleSidebar={() => toggleSidebar()} />
               </CollapsibleSection>
 
               <CollapsibleSection

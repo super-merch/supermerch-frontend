@@ -1050,7 +1050,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             onOpenChange={setIsSheetOpen}
             className="xl:hidden"
           >
-            <SheetTrigger className="text-gray-700 focus:outline-none p-2.5 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
+            <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-6 h-6"
