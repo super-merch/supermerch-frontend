@@ -401,12 +401,6 @@ const Checkout = () => {
       addressData?.phone ||
       "1234567890";
     const checkoutData = {
-      //orderId in format of "SM-(DATE)-(Random 5 digits)"
-      orderId: `SM-${new Date()
-        .toISOString()
-        .slice(2, 10)
-        .replace(/-/g, "")
-        .slice(2)}-${Math.floor(Math.random() * 100000)}`,
       user: {
         firstName:
           userData?.name || data.billing.firstName || addressData.firstName,
