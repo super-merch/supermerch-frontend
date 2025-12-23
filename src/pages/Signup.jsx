@@ -35,6 +35,8 @@ const Signup = () => {
 
   const [formData, setFormData] = useState({
     name: "",
+    lastName:"",
+    companyName:"",
     email: "",
     password: "",
     confirmPassword: "",
@@ -69,12 +71,14 @@ const Signup = () => {
     try {
       const response = await axios.post(`${backednUrl}/api/auth/signup`, {
         name: formData.name,
+        lastName: formData.lastName,
+        companyName: formData.companyName,
         email: formData.email,
         password: formData.password,
       });
 
       setError("");
-      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+      setFormData({ name: "", lastName: "", email: "", companyName: "",  password: "", confirmPassword: "" });
       toast.success("SignUp successful!");
       localStorage.setItem("isNewUser", "true");
 
@@ -102,7 +106,7 @@ const Signup = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name *
+              First Name *
             </label>
             <input
               type="text"
@@ -110,8 +114,34 @@ const Signup = () => {
               value={formData.name}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your full name"
+              placeholder="Enter your first name"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Last Name <span className="text-gray-400" >(Optional)</span>
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your last name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Company Name 
+            </label>
+            <input
+              type="text"
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your company name"
             />
           </div>
 
