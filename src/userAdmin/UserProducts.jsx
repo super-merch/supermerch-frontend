@@ -18,7 +18,12 @@ const UserProducts = () => {
     marginApi,
   } = useContext(AppContext);
   const navigate = useNavigate();
-
+  const [selectedOrder, setSelectedOrder] = useState({});
+  useEffect(()=>{
+    console.log(newId)
+    const order = userOrder.filter((order)=> order._id === newId)
+    setSelectedOrder(order[0])
+  },[userOrder])
   const handleReOrder = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -40,7 +45,7 @@ const UserProducts = () => {
 
     const getDiscount = async () => {
       try {
-        const discountPromises = userOrder.products?.map((item) =>
+        const discountPromises = selectedOrder.products?.map((item) =>
           fetchProductDiscount(item.id)
         );
 
@@ -50,7 +55,7 @@ const UserProducts = () => {
         return discountResults.map((result) => result.discount || 0);
       } catch (error) {
         console.error("Error fetching discounts:", error);
-        return userOrder.products.map(() => 0);
+        return selectedOrder.products.map(() => 0);
       }
     };
 
@@ -58,7 +63,7 @@ const UserProducts = () => {
 
     // 2) Populate context.totalDiscount as { [id]: pct }
     const discountMap = {};
-    userOrder.products.forEach((p, i) => {
+    selectedOrder.products.forEach((p, i) => {
       discountMap[p.id] = discountsArray[i];
     });
     setTotalDiscount(discountMap);
@@ -67,8 +72,8 @@ const UserProducts = () => {
     const latestProducts = [];
     const gstRate = 0.1;
 
-    for (let i = 0; i < userOrder.products.length; i++) {
-      const product = userOrder.products[i];
+    for (let i = 0; i < selectedOrder.products.length; i++) {
+      const product = selectedOrder.products[i];
       const discountPct = discountsArray[i];
 
       const resp = await axios.get(
@@ -126,9 +131,9 @@ const UserProducts = () => {
 
     // 5) Build your payload
     const reOrderData = {
-      user: userOrder.user,
-      billingAddress: userOrder.billingAddress,
-      shippingAddress: userOrder.shippingAddress,
+      user: selectedOrder.user,
+      billingAddress: selectedOrder.billingAddress,
+      shippingAddress: selectedOrder.shippingAddress,
       products: latestProducts.map((p) => ({
         id: p.id,
         name: p.name,
@@ -142,7 +147,7 @@ const UserProducts = () => {
         logoColor: p.logoColor,
         logo: p.logo,
       })),
-      shipping: userOrder.shipping,
+      shipping: selectedOrder.shipping,
       discount: totalDiscountPct, // <— A single number now
       gst: gstAmount,
       total: total,
@@ -162,127 +167,6 @@ const UserProducts = () => {
     }
   };
 
-  // const handleReOrder = async () => {
-  //   const token = localStorage.getItem('token');
-  //   if (!token) {
-  //     navigate('/signup');
-  //     toast.error('Please login to re-order.');
-  //     return;
-  //   }
-
-  //   // 1) Fetch current discounts for each product
-  //   const getDiscounts = async () => {
-  //     try {
-  //       return await Promise.all(
-  //         userOrder.products.map((item) =>
-  //           fetchProductDiscount(item.id)
-  //             .then((r) => r.discount || 0)
-  //             .catch(() => 0)
-  //         )
-  //       );
-  //     } catch {
-  //       return userOrder.products.map(() => 0);
-  //     }
-  //   };
-  //   const discountsArray = await getDiscounts();
-
-  //   // 2) Build discountMap for context
-  //   const discountMap = {};
-  //   userOrder.products.forEach((p, i) => {
-  //     discountMap[p.id] = discountsArray[i];
-  //   });
-  //   setTotalDiscount(discountMap);
-
-  //   // 3) Rebuild line‑items using baseMarginPrice from marginApi
-  //   const latestProducts = [];
-  //   const gstRate = 0.1;
-
-  //   for (let i = 0; i < userOrder.products.length; i++) {
-  //     const cartItem = userOrder.products[i];
-  //     const discountPct = discountsArray[i];
-
-  //     // fetch fresh product data
-  //     const resp = await axios.get(
-  //       `${backednUrl}/api/single-product/${cartItem.id}`
-  //     );
-  //     const data = resp.data.data;
-
-  //     // pull backend price+margin+discount
-  //     const marginEntry = marginApi[cartItem.id] || {};
-  //     const finalUnitPrice = Number(marginEntry.baseMarginPrice ?? 0);
-
-  //     // line subtotal
-  //     const subTotal = finalUnitPrice * cartItem.quantity;
-
-  //     latestProducts.push({
-  //       id: data.meta.id,
-  //       name: data.product.name,
-  //       image: cartItem.image,
-  //       quantity: cartItem.quantity,
-  //       price: finalUnitPrice, // already includes margin & discount
-  //       subTotal, // per‑line total
-  //       discount: discountPct, // for admin/reference
-  //       color: cartItem.color,
-  //       print: cartItem.print,
-  //       logoColor: cartItem.logoColor,
-  //       logo: cartItem.logo,
-  //     });
-  //   }
-  //   const netAmount = latestProducts.reduce((sum, p) => sum + p.subTotal, 0);
-  //   //   // const validDiscount = latestProducts
-  //   //   //   .filter((p) => p.discount && p.discount > 0)
-  //   //   //   .map((p) => p.subTotal * (p.discount / 100));
-  //   //   //   const totalDiscount = validDiscount.reduce((sum, val) => sum + val, 0);
-
-  //     const discountedAmount = netAmount - (netAmount * discountsArray) / 100;
-
-  //     const gstAmount =  discountedAmount * gstRate; // 10%
-  //     const total = discountedAmount + gstAmount;
-
-  //     console.log(netAmount, 'netAmount Re‑Order'); // ~148.09
-  //     console.log(discountedAmount, 'discountedAmount Re‑Order');
-  //     console.log(gstAmount, 'gstAmount Re‑Order'); // ~14.81
-  //     console.log(total, 'total Re‑Order'); // ~162.90
-
-  //   // 5) Build payload
-  //   const reOrderData = {
-  //     user: userOrder.user,
-  //     billingAddress: userOrder.billingAddress,
-  //     shippingAddress: userOrder.shippingAddress,
-  //     products: latestProducts.map((p) => ({
-  //       id: p.id,
-  //       name: p.name,
-  //       image: p.image,
-  //       quantity: p.quantity,
-  //       price: p.price,
-  //       subTotal: p.subTotal,
-  //       discount: p.discount,
-  //       color: p.color,
-  //       print: p.print,
-  //       logoColor: p.logoColor,
-  //       logo: p.logo,
-  //     })),
-  //     shipping: userOrder.shipping,
-  //     discountMap,
-  //     gst: gstAmount,
-  //     total,
-  //   };
-
-  //   console.log('reOrderData →', reOrderData);
-
-  //   // 6) Send to backend
-  //   // try {
-  //   //   await axios.post(`${backednUrl}/api/checkout/checkout`, reOrderData, {
-  //   //     headers: { token },
-  //   //   });
-  //   //   toast.success('Order placed successfully!');
-  //   //   navigate('/');
-  //   // } catch (err) {
-  //   //   console.error('Re-order failed:', err.response?.data || err.message);
-  //   //   toast.error('Re-order failed. Try again.');
-  //   // }
-  // };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center">
@@ -292,7 +176,7 @@ const UserProducts = () => {
     );
   }
 
-  if (!userOrder) {
+  if (!selectedOrder) {
     return <div>No checkout data available for this order.</div>;
   }
 
@@ -321,21 +205,21 @@ const UserProducts = () => {
         <p className="flex flex-wrap items-center gap-2 font-medium text-gray-800">
           Order{" "}
           <span className="px-2 font-semibold text-black bg-yellow">
-            {userOrder.orderId}
+            {selectedOrder.orderId}
           </span>{" "}
           was placed on{" "}
           <span className="px-2 font-semibold text-black bg-yellow">
-            {new Date(userOrder.orderDate).toLocaleDateString()}
+            {new Date(selectedOrder.orderDate).toLocaleDateString()}
           </span>{" "}
           and is currently{" "}
           <span
             className={`${
-              userOrder.status === "Cancelled"
+              selectedOrder.status === "Cancelled"
                 ? "text-red-600"
                 : "bg-yellow text-black"
             } font-semibold px-2`}
           >
-            {userOrder.status}
+            {selectedOrder.status}
           </span>
         </p>
       </div>
@@ -352,7 +236,7 @@ const UserProducts = () => {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {userOrder?.products?.map((product, index) => (
+              {selectedOrder?.products?.map((product, index) => (
                 <tr key={index}>
                   <td>
                     <span className="text-blue-500">{product?.name}</span>{" "}
@@ -364,7 +248,7 @@ const UserProducts = () => {
                     </span>
                   </td>
                   <td className="py-2 text-right border-gray-300">
-                    <p>${product?.subTotal.toFixed(2)}</p>
+                    <p>${product?.subTotal?.toFixed(2)}</p>
                   </td>
                 </tr>
               ))}
@@ -379,31 +263,31 @@ const UserProducts = () => {
               <tr>
                 <td className="py-2 text-gray-600">Sub Total:</td>
                 <td className="py-2 font-medium text-right">
-                  ${userOrder?.total.toFixed(2)}
+                  ${selectedOrder?.total?.toFixed(2)}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Shipping:</td>
                 <td className="py-2 font-medium text-right">
-                  ${userOrder?.shipping}
+                  ${selectedOrder?.shipping}
                 </td>
               </tr>
               <tr>
-                <td className="py-2 text-gray-600">Tax:</td>
+                <td className="py-2 text-gray-600">Gst:</td>
                 <td className="py-2 font-medium text-right">
-                  ${userOrder?.gst}
+                  ${selectedOrder?.gst}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Discount:</td>
                 <td className="py-2 font-medium text-right">
-                  ${userOrder?.discount}
+                  ${selectedOrder?.discount}
                 </td>
               </tr>
               <tr>
                 <td className="py-2 text-gray-600">Total:</td>
                 <td className="py-2 text-lg font-bold text-right">
-                  ${userOrder?.total.toFixed(2)}
+                  ${selectedOrder?.total?.toFixed(2)}
                 </td>
               </tr>
             </tbody>
@@ -419,36 +303,36 @@ const UserProducts = () => {
         <div>
           <h2 className="mb-2 font-semibold">Billing Address</h2>
           <p className="pb-1">
-            {userOrder?.user?.firstName} {userOrder?.user?.lastName}
+            {selectedOrder?.user?.firstName} {selectedOrder?.user?.lastName}
           </p>
-          <p className="pb-1">{userOrder.billingAddress?.companyName}</p>
-          <p className="pb-1">{userOrder.billingAddress?.addressLine}</p>
+          <p className="pb-1">{selectedOrder.billingAddress?.companyName}</p>
+          <p className="pb-1">{selectedOrder.billingAddress?.addressLine}</p>
           <p className="pb-1">
-            {userOrder.billingAddress?.city},{" "}
-            {userOrder.billingAddress?.state}
+            {selectedOrder.billingAddress?.city},{" "}
+            {selectedOrder.billingAddress?.state}
           </p>
-          <p className="pb-1">{userOrder.billingAddress?.country}</p>
-          <p className="pb-1">{userOrder.billingAddress?.postalCode}</p>
-          <p className="pb-1">{userOrder.user?.email}</p>
-          <p>{userOrder.user?.phone}</p>
+          <p className="pb-1">{selectedOrder.billingAddress?.country}</p>
+          <p className="pb-1">{selectedOrder.billingAddress?.postalCode}</p>
+          <p className="pb-1">{selectedOrder.user?.email}</p>
+          <p>{selectedOrder.user?.phone}</p>
         </div>
 
         {/* Shipping Address */}
         <div>
           <h2 className="mb-2 font-semibold">Shipping Address</h2>
           <p className="pb-1">
-            {userOrder.user.firstName} {userOrder.user.lastName}
+            {selectedOrder?.user?.firstName} {selectedOrder?.user?.lastName}
           </p>
-          <p className="pb-1">{userOrder.shippingAddress?.companyName}</p>
-          <p className="pb-1">{userOrder.shippingAddress?.addressLine}</p>
+          <p className="pb-1">{selectedOrder?.shippingAddress?.companyName}</p>
+          <p className="pb-1">{selectedOrder?.shippingAddress?.addressLine}</p>
           <p className="pb-1">
-            {userOrder.shippingAddress?.city},{" "}
-            {userOrder.shippingAddress?.state}
+            {selectedOrder?.shippingAddress?.city},{" "}
+            {selectedOrder?.shippingAddress?.state}
           </p>
-          <p className="pb-1">{userOrder.shippingAddress?.country}</p>
-          <p className="pb-1">{userOrder.shippingAddress?.postalCode}</p>
-          <p className="pb-1">{userOrder.user?.email}</p>
-          <p>{userOrder.user?.phone}</p>
+          <p className="pb-1">{selectedOrder?.shippingAddress?.country}</p>
+          <p className="pb-1">{selectedOrder?.shippingAddress?.postalCode}</p>
+          <p className="pb-1">{selectedOrder?.user?.email}</p>
+          <p>{selectedOrder?.user?.phone}</p>
         </div>
       </div>
     </div>

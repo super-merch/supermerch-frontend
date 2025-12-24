@@ -29,6 +29,7 @@ const AppContextProvider = (props) => {
   const [isCacheValid, setIsCacheValid] = useState(false);
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const [sidebarActiveLabel, setSidebarActiveLabel] = useState(null);
+  const [gstCharges, setGstCharges] = useState(10);
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
   const pendingParamMultiRequestsRef = useRef({});
@@ -433,6 +434,7 @@ const AppContextProvider = (props) => {
 
       const data = await response.json();
       setShippingCharges(data.shipping || 20);
+      setGstCharges(data.gst || 10);
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to fetch shipping charges");
@@ -1615,6 +1617,7 @@ const AppContextProvider = (props) => {
     fetchAllAustraliaProducts,
     fetchHourProducts,
     fetchAllHourProducts,
+    gstCharges,
     fetchHour,
     hourProd,
     totalHourPages,

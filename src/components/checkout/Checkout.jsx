@@ -33,6 +33,7 @@ const Checkout = () => {
     loadUserOrder,
     shippingCharges,
     setupFee,
+    gstCharges
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -329,7 +330,7 @@ const Checkout = () => {
     }
   };
   // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
@@ -458,6 +459,7 @@ const Checkout = () => {
           }
         : null,
       gst: gstAmount,
+      gstPercent: gstCharges,
       total,
       paymentStatus: "Paid",
       // Add order-level artwork information
@@ -509,6 +511,7 @@ const Checkout = () => {
               discountAmount: couponDiscountAmount, // This should be the calculated discount amount
             }
           : null,
+        gstPercent:gstCharges
       };
 
       const resp = await axios.post(
@@ -1978,7 +1981,7 @@ const Checkout = () => {
                     )}
 
                     <div className="flex justify-between text-base">
-                      <span>GST(10%):</span>
+                      <span>GST({gstCharges}%):</span>
                       <span>${gstAmount.toFixed(2)}</span>
                     </div>
                   </div>
