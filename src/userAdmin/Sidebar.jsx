@@ -186,8 +186,9 @@ function OrdersContent() {
             <div className="w-12 h-12 border-t-2 border-blue-500 rounded-full animate-spin"></div>
             <p className="ml-4 text-lg font-semibold">Loading orders...</p>
           </div>
-        ) : (
+        ) : userOrder.length >0 ? (
           <div className="overflow-x-auto ">
+            <p className="pb-2 text-sm text-gray-600" >Showing {userOrder.length} orders out of {userStats.totalOrders}</p>
             <table className="w-full border border-collapse border-gray-200 table-auto">
               <thead>
                 <tr className="bg-gray-200">
@@ -206,7 +207,7 @@ function OrdersContent() {
                 {userOrder.map((order) => (
                   <tr key={order._id}>
                     <td className="px-4 py-2 text-center border border-gray-300">
-                      {order._id}
+                      {order.orderId}
                     </td>
                     <td className="px-4 py-2 text-center border border-gray-300">
                       {new Date(order.orderDate).toLocaleDateString()}
@@ -231,6 +232,10 @@ function OrdersContent() {
                 ))}
               </tbody>
             </table>
+          </div>
+        ):(
+          <div className="flex items-center h-48 justify-center">
+            <p className="text-lg font-semibold text-gray-600 ">No orders found</p>
           </div>
         )}
         {totalPages > 1 && (

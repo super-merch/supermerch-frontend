@@ -4,6 +4,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { loadStripe } from "@stripe/stripe-js";
 
 const UserProducts = () => {
   const {
@@ -19,12 +20,15 @@ const UserProducts = () => {
   } = useContext(AppContext);
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState({});
-  useEffect(()=>{
-    console.log(newId)
-    const order = userOrder.filter((order)=> order._id === newId)
-    setSelectedOrder(order[0])
-  },[userOrder])
+  const [reOrderModal, setReOrderModal] = useState(false);
+  const [reOrderLoading, setReOrderLoading] = useState(false);
+  useEffect(() => {
+    console.log(newId);
+    const order = userOrder.filter((order) => order._id === newId);
+    setSelectedOrder(order[0]);
+  }, [userOrder]);
   const handleReOrder = async () => {
+    setReOrderLoading(true);
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/signup");
@@ -109,11 +113,12 @@ const UserProducts = () => {
         print: product.print,
         logoColor: product.logoColor,
         logo: product.logo,
+        size: product.size,
+        supplierName: product.supplierName,
       });
     }
 
     const netAmount = latestProducts.reduce((sum, p) => sum + p.subTotal, 0);
-
     // Step 1: Get combined discount percentage (e.g., 3 + 5 = 8)
     const totalDiscountPct = discountsArray.reduce(
       (acc, curr) => acc + curr,
@@ -128,12 +133,18 @@ const UserProducts = () => {
 
     // Step 4: Final total
     const total = discountedAmount + gstAmount;
-
     // 5) Build your payload
     const reOrderData = {
       user: selectedOrder.user,
+      userId: selectedOrder.userId,
       billingAddress: selectedOrder.billingAddress,
       shippingAddress: selectedOrder.shippingAddress,
+      setupFee: selectedOrder.setupFee,
+      artworkMessage: selectedOrder.artworkMessage,
+      artworkOption: selectedOrder.artworkOption,
+      attachments: selectedOrder.attachments,
+      gstPercent: selectedOrder.gstPercent,
+      paymentStatus: selectedOrder.paymentStatus,
       products: latestProducts.map((p) => ({
         id: p.id,
         name: p.name,
@@ -146,6 +157,8 @@ const UserProducts = () => {
         print: p.print,
         logoColor: p.logoColor,
         logo: p.logo,
+        size: p.size,
+        supplierName: p.supplierName,
       })),
       shipping: selectedOrder.shipping,
       discount: totalDiscountPct, // <— A single number now
@@ -154,16 +167,56 @@ const UserProducts = () => {
     };
 
     try {
-      const res = await axios.post(
-        `${backednUrl}/api/checkout/checkout`,
-        reOrderData,
-        { headers: { token } }
+      localStorage.setItem("pendingCheckoutData", JSON.stringify(reOrderData));
+      const stripe = await loadStripe(
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       );
-      toast.success("Order placed successfully!");
-      navigate("/");
+      const body = {
+        products: latestProducts.map((p) => ({
+          id: p.id,
+          name: p.name,
+          image: p.image,
+          quantity: p.quantity,
+          price: p.price,
+          subTotal: p.subTotal,
+          discount: p.discount,
+          color: p.color,
+          print: p.print,
+          logoColor: p.logoColor,
+          logo: p.logo,
+        })),
+        gst: gstAmount,
+        shipping: selectedOrder.shipping,
+        setupFee: selectedOrder.setupFee,
+        coupon: null,
+        gstPercent: selectedOrder.gst,
+      };
+
+      const resp = await axios.post(
+        `${backednUrl}/create-checkout-session`,
+        body
+      );
+      const session = await resp.data;
+
+      if (!session.id) {
+        setReOrderLoading(false);
+        // Clear stored data on error
+        localStorage.removeItem("pendingCheckoutData");
+        return toast.error(
+          "Failed to create payment session. Please try again."
+        );
+      }
+      setReOrderLoading(false);
+      // Redirect to Stripe Checkout
+      await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
     } catch (err) {
       console.error("Re-order failed:", err.response?.data || err.message);
       toast.error("Re-order failed. Try again.");
+    } finally {
+      setReOrderLoading(false);
+      setReOrderModal(false);
     }
   };
 
@@ -182,6 +235,35 @@ const UserProducts = () => {
 
   return (
     <div className="w-full px-2 lg:px-8 md:px-8">
+      {reOrderModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black opacity-50"></div>
+          <div className="bg-white p-4 rounded shadow-lg z-50">
+            <h2 className="text-lg font-semibold mb-4">Re-order</h2>
+            <p className="mb-4">
+              Are you sure you want to re-order this order?
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setReOrderModal(false)}
+                disabled={reOrderLoading}
+                className="px-4 py-2 font-semibold text-white bg-gray-500 rounded hover:bg-gray-600 mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReOrder}
+                disabled={reOrderLoading}
+                className={`px-4 py-2 font-semibold text-white bg-primary rounded hover:bg-primary/90 ${
+                  reOrderLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {reOrderLoading ? "Re-ordering..." : "Re-order"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <button
           onClick={() => setActiveTab("dashboard")}
@@ -192,7 +274,7 @@ const UserProducts = () => {
         </button>
         <div className="mt-6">
           <button
-            onClick={handleReOrder}
+            onClick={() => setReOrderModal(true)}
             className="px-4 py-2 font-semibold text-white bg-primary rounded hover:bg-primary/90"
           >
             Re-order

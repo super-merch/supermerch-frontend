@@ -496,7 +496,7 @@ const Checkout = () => {
       );
 
       const stripe = await loadStripe(
-        "pk_test_51RqoZXGaJ07cWJBqahLsX614YCqHKSaVwLcxxcYf9kYJbbX0Ww8tRrxfh8neqnoGkqh3ofUJ9qqA6tnavunDTJSY00ovkitoWt"
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       );
       const body = {
         products: items,
