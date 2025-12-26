@@ -76,7 +76,7 @@ const OrderSummary = ({
               <div className="flex items-baseline gap-2">
                 {discountPct > 0 && (
                   <span className="text-sm text-gray-500 line-through">
-                    ${rawPerUnit.toFixed(2)}
+                    ${rawPerUnit?.toFixed(2)}
                   </span>
                 )}
                 <p className="sm:text-2xl text-xl font-bold text-smallHeader">

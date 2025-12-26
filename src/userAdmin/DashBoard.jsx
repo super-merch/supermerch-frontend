@@ -224,7 +224,7 @@ const DashBoard = () => {
                     {userOrder.slice(0, 5).map((order) => (
                       <tr key={order._id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          #{order._id.slice(-8).toUpperCase()}
+                          #{order.orderId.slice(-8).toUpperCase()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(
@@ -271,7 +271,7 @@ const DashBoard = () => {
               {userOrder.length > 5 && (
                 <div className="px-6 py-3 bg-gray-50 text-center">
                   <p className="text-sm text-gray-500">
-                    Showing 5 of {userOrder.length} orders
+                    Showing 5 of {userStats.totalOrders} orders
                   </p>
                 </div>
               )}

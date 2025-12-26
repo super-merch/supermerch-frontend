@@ -33,6 +33,7 @@ const Checkout = () => {
     loadUserOrder,
     shippingCharges,
     setupFee,
+    gstCharges
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -329,7 +330,7 @@ const Checkout = () => {
     }
   };
   // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1; // 10%
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
@@ -401,12 +402,6 @@ const Checkout = () => {
       addressData?.phone ||
       "1234567890";
     const checkoutData = {
-      //orderId in format of "SM-(DATE)-(Random 5 digits)"
-      orderId: `SM-${new Date()
-        .toISOString()
-        .slice(2, 10)
-        .replace(/-/g, "")
-        .slice(2)}-${Math.floor(Math.random() * 100000)}`,
       user: {
         firstName:
           userData?.name || data.billing.firstName || addressData.firstName,
@@ -464,6 +459,7 @@ const Checkout = () => {
           }
         : null,
       gst: gstAmount,
+      gstPercent: gstCharges,
       total,
       paymentStatus: "Paid",
       // Add order-level artwork information
@@ -500,7 +496,7 @@ const Checkout = () => {
       );
 
       const stripe = await loadStripe(
-        "pk_test_51RqoZXGaJ07cWJBqahLsX614YCqHKSaVwLcxxcYf9kYJbbX0Ww8tRrxfh8neqnoGkqh3ofUJ9qqA6tnavunDTJSY00ovkitoWt"
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       );
       const body = {
         products: items,
@@ -515,6 +511,7 @@ const Checkout = () => {
               discountAmount: couponDiscountAmount, // This should be the calculated discount amount
             }
           : null,
+        gstPercent:gstCharges
       };
 
       const resp = await axios.post(
@@ -1984,7 +1981,7 @@ const Checkout = () => {
                     )}
 
                     <div className="flex justify-between text-base">
-                      <span>GST(10%):</span>
+                      <span>GST({gstCharges}%):</span>
                       <span>${gstAmount.toFixed(2)}</span>
                     </div>
                   </div>

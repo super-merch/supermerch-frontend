@@ -15,7 +15,7 @@ const UploadArtwork = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { totalDiscount, shippingCharges, setupFee } = useContext(AppContext);
+  const { totalDiscount, shippingCharges, setupFee,gstCharges } = useContext(AppContext);
 
   // Get cart data from Redux
   const items = useSelector(selectCurrentUserCartItems);
@@ -60,7 +60,7 @@ const UploadArtwork = () => {
   // Apply coupon discount to the product-discounted amount
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
   // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100;
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
@@ -504,7 +504,7 @@ const UploadArtwork = () => {
                 )}
 
                 <div className="flex justify-between text-lg">
-                  <span>GST(10%):</span>
+                  <span>GST({gstCharges}%):</span>
                   <span>${gstAmount.toFixed(2)}</span>
                 </div>
               </div>

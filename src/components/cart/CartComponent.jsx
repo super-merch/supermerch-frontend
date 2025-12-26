@@ -18,7 +18,7 @@ import {
 } from "../../redux/slices/cartSlice";
 
 const CartComponent = () => {
-  const { totalDiscount, shippingCharges, userData, setupFee } =
+  const { totalDiscount, shippingCharges, userData, setupFee,gstCharges } =
     useContext(AppContext);
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
@@ -74,7 +74,7 @@ const CartComponent = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * 0.1;
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100;
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
@@ -576,7 +576,7 @@ const CartComponent = () => {
 
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">
-                      Tax (GST 10%)
+                      Tax (GST {gstCharges}%)
                     </span>
                     <span className="text-lg font-bold text-gray-900">
                       ${(gstAmount || 0).toFixed(2)}
