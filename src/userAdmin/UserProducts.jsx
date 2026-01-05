@@ -34,145 +34,13 @@ const UserProducts = () => {
       navigate("/signup");
       return toast.error("Please login to re-order.");
     }
-
-    const batchPromises = async (promises, batchSize = 10) => {
-      const results = [];
-
-      for (let i = 0; i < promises.length; i += batchSize) {
-        const batch = promises.slice(i, i + batchSize);
-        const batchResults = await Promise.all(batch);
-        results.push(...batchResults);
-      }
-
-      return results;
-    };
-
-    const getDiscount = async () => {
-      try {
-        const discountPromises = selectedOrder.products?.map((item) =>
-          fetchProductDiscount(item.id)
-        );
-
-        // Process in batches of 10 concurrent requests
-        const discountResults = await batchPromises(discountPromises, 10);
-
-        return discountResults.map((result) => result.discount || 0);
-      } catch (error) {
-        console.error("Error fetching discounts:", error);
-        return selectedOrder.products.map(() => 0);
-      }
-    };
-
-    const discountsArray = await getDiscount();
-
-    // 2) Populate context.totalDiscount as { [id]: pct }
-    const discountMap = {};
-    selectedOrder.products.forEach((p, i) => {
-      discountMap[p.id] = discountsArray[i];
-    });
-    setTotalDiscount(discountMap);
-
-    // 3) Build line items with margin + discount baked in
-    const latestProducts = [];
-    const gstRate = 0.1;
-
-    for (let i = 0; i < selectedOrder.products.length; i++) {
-      const product = selectedOrder.products[i];
-      const discountPct = discountsArray[i];
-
-      const resp = await axios.get(
-        `${backednUrl}/api/single-product/${product.id}`
-      );
-      const data = resp.data.data;
-
-      // get base price from your price breaks
-      const groups = data.product?.prices?.price_groups || [];
-      const base = groups.find((g) => g.base_price) || {};
-      const breaks = base.base_price?.price_breaks || [];
-      const realPrice = breaks.length ? breaks[0].price : 0;
-
-      // 3a) add margin
-      const marginEntry = marginApi[product.id] || { marginFlat: 0 };
-      const priceWithMargin = realPrice + marginEntry.marginFlat;
-
-      // 3b) subtract this product’s discount
-      const discountedPrice = priceWithMargin * (1 - discountPct / 100);
-
-      // 3c) line‐item total
-      const subTotal = discountedPrice * product.quantity;
-
-      latestProducts.push({
-        id: data.meta.id,
-        name: data.product.name,
-        image: product.image,
-        quantity: product.quantity,
-        price: discountedPrice, // final per‐unit
-        subTotal, // final line total
-        discount: discountPct, // % for admin
-        color: product.color,
-        print: product.print,
-        logoColor: product.logoColor,
-        logo: product.logo,
-        size: product.size,
-        supplierName: product.supplierName,
-      });
-    }
-
-    const netAmount = latestProducts.reduce((sum, p) => sum + p.subTotal, 0);
-    // Step 1: Get combined discount percentage (e.g., 3 + 5 = 8)
-    const totalDiscountPct = discountsArray.reduce(
-      (acc, curr) => acc + curr,
-      0
-    );
-
-    // Step 2: Apply discount to netAmount
-    const discountedAmount = netAmount - (netAmount * totalDiscountPct) / 100;
-
-    // Step 3: Apply GST to discounted amount
-    const gstAmount = discountedAmount * gstRate;
-
-    // Step 4: Final total
-    const total = discountedAmount + gstAmount;
-    // 5) Build your payload
-    const reOrderData = {
-      user: selectedOrder.user,
-      userId: selectedOrder.userId,
-      billingAddress: selectedOrder.billingAddress,
-      shippingAddress: selectedOrder.shippingAddress,
-      setupFee: selectedOrder.setupFee,
-      artworkMessage: selectedOrder.artworkMessage,
-      artworkOption: selectedOrder.artworkOption,
-      attachments: selectedOrder.attachments,
-      gstPercent: selectedOrder.gstPercent,
-      paymentStatus: selectedOrder.paymentStatus,
-      products: latestProducts.map((p) => ({
-        id: p.id,
-        name: p.name,
-        image: p.image,
-        quantity: p.quantity,
-        price: p.price,
-        subTotal: p.subTotal,
-        discount: p.discount,
-        color: p.color,
-        print: p.print,
-        logoColor: p.logoColor,
-        logo: p.logo,
-        size: p.size,
-        supplierName: p.supplierName,
-      })),
-      shipping: selectedOrder.shipping,
-      discount: totalDiscountPct, // <— A single number now
-      gst: gstAmount,
-      total: total,
-    };
-
     try {
-      localStorage.setItem("pendingCheckoutData", JSON.stringify(reOrderData));
+      localStorage.setItem("pendingCheckoutData", JSON.stringify(selectedOrder));
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       );
       const body = {
-        products: latestProducts.map((p) => ({
+        products: selectedOrder.products.map((p) => ({
           id: p.id,
           name: p.name,
           image: p.image,
@@ -185,7 +53,7 @@ const UserProducts = () => {
           logoColor: p.logoColor,
           logo: p.logo,
         })),
-        gst: gstAmount,
+        gst: selectedOrder.gst,
         shipping: selectedOrder.shipping,
         setupFee: selectedOrder.setupFee,
         coupon: null,
