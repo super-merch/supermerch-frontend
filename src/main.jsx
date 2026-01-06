@@ -33,9 +33,9 @@ createRoot(document.getElementById("root")).render(
           <CartInitializer>
             <AppContextProvider>
               <GoogleOAuthProvider
-                clientId="918141329490-1hgf0gjluv6150suapo736b0tsln63u5.apps.googleusercontent.com"
+                clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 onScriptLoadSuccess={() => {
-                  if (window.google && window.google.accounts) {
+                  if (window.google?.accounts) {
                     window.google.accounts.id.disableAutoSelect();
                   }
                 }}
