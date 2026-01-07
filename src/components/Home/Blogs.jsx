@@ -7,11 +7,11 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { AppContext } from "../../context/AppContext";
+import { BlogContext } from "../../context/BlogContext";
 import BlogCard from "../card/BlogCard";
 import { Heading } from "../Common";
 const Blogs = () => {
-  const { blogs, fetchBlogs, options } = useContext(AppContext);
+  const { blogs, fetchBlogs, options } = useContext(BlogContext);
   useEffect(() => {
     if (!blogs?.length) {
       fetchBlogs();

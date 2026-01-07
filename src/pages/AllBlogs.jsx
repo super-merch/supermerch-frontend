@@ -1,11 +1,10 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "@/context/AppContext";
+import { BlogContext } from "@/context/BlogContext";
 import { FaArrowRight } from "react-icons/fa";
 
 const AllBlogs = () => {
-  const { blogLoading, blogs, options, fetchBlogs } = useContext(AppContext);
-
+  const { blogLoading, blogs, options, fetchBlogs } = useContext(BlogContext);
   //blogs page direct route fetch
   useEffect(() => {
     if (!blogs?.length) {
