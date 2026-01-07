@@ -23,10 +23,16 @@ const Headwear = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi } = useContext(AppContext);
+  const { marginApi, marginAdd} = useContext(AppContext);
   const productsCacheRef = useRef({});
   const pendingClothingRequestsRef = useRef({});
 
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+  }, [marginApi]);
+  
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 

@@ -1514,11 +1514,11 @@ const AppContextProvider = (props) => {
     }
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     fetchDiscountedProducts(1, "", 6);
     fetchProducts(1, "", 8);
     fetchTrendingProducts(1, "", 16);
-  }, []);
+  }, []); 
 
   // console.log(products, "api productss");
 
@@ -1530,7 +1530,7 @@ const AppContextProvider = (props) => {
 
   useEffect(() => {
     marginAdd();
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (!products.length) return;
@@ -1543,11 +1543,13 @@ const AppContextProvider = (props) => {
       }
     };
 
-    fetchDiscounts();
+  fetchDiscounts();
   }, [products]);
   useEffect(() => {
     dispatch(loadFavouritesFromDB(backednUrl));
   }, []);
+
+
   // useEffect(() => {
   //   if (products.length === 0) {
   //     fetchProducts(); // Only fetch if products array is empty
@@ -1633,6 +1635,9 @@ const AppContextProvider = (props) => {
     setProducts,
     handleLogout,
     fetchV1Categories,
+    blogs, //direct way to load blogs 
+    setBlogs,
+    fetchBlogs,
     allProductsCacheRef,
     blogs,
     setBlogs,
@@ -1682,6 +1687,7 @@ const AppContextProvider = (props) => {
     fetchMultipleDiscountedPages,
 
     marginApi,
+    marginAdd,
     setMarginApi,
 
     openLoginModal,

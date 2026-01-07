@@ -23,7 +23,14 @@ const Stationery = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi} = useContext(AppContext);
+  const { marginApi, marginAdd} = useContext(AppContext);
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+  
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
   const productsCacheRef = useRef({});
   const pendingClothingRequestsRef = useRef({});

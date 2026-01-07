@@ -39,10 +39,19 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setCurrentPage,
     setParamProducts,
     v1categories,
+    fetchV1Categories,
     setSidebarActiveCategory,
     setSidebarActiveLabel,
     setPaginationData,
   } = useContext(AppContext);
+
+  useEffect(() => {
+  if (!v1categories?.length) {
+    fetchV1Categories();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [v1categories?.length]);
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
