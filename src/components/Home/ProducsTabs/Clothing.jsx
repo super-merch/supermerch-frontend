@@ -17,10 +17,17 @@ const Clothing = ({ activeTab }) => {
   const [error, setError] = useState(null);
   const {
     marginApi,
+    marginAdd,
     fetchProductsCategory,
     productsCategoryLoading,
     productsCategory,
   } = useContext(AppContext);
+  
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+  }, [marginApi]);
 
   const dispatch = useDispatch();
 
