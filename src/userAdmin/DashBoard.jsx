@@ -107,8 +107,7 @@ const DashBoard = () => {
                       Completed Orders
                     </p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {userStats?.deliveredOrders
-                      }
+                      {userStats?.deliveredOrders}
                     </p>
                   </div>
                   <div className="p-3 bg-green-100 rounded-full">
@@ -166,8 +165,7 @@ const DashBoard = () => {
                       Total Amount
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      $
-                      {userStats?.totalSpent.toFixed(2)}
+                      ${userStats?.totalSpent.toFixed(2)}
                     </p>
                   </div>
                   <div className="p-3 bg-purple-100 rounded-full">
@@ -221,50 +219,51 @@ const DashBoard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {userOrder.slice(0, 5).map((order) => (
-                      <tr key={order._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          #{order.orderId.slice(-8).toUpperCase()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(
-                            order.createdAt || order.orderDate
-                          ).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {order.products?.length || 0} items
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              order.status === "completed" ||
-                              order.status === "delivered"
-                                ? "bg-green-100 text-green-800"
-                                : order.status === "processing"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {order.status || "Pending"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          $
-                          {(order.total || 0).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          <button
-                            onClick={() => handleSetView(order._id)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            View
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {userOrder?.length > 0 &&
+                      userOrder?.slice(0, 5).map((order) => (
+                        <tr key={order._id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            #{order?.orderId?.slice(-8).toUpperCase()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(
+                              order?.createdAt || order?.orderDate
+                            ).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {order?.products?.length || 0} items
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                order?.status === "completed" ||
+                                order.status === "delivered"
+                                  ? "bg-green-100 text-green-800"
+                                  : order.status === "processing"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {order.status || "Pending"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            $
+                            {(order.total || 0).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <button
+                              onClick={() => handleSetView(order._id)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

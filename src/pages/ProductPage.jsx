@@ -6,7 +6,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "@/context/AppContext";
 
-const ProducPage = () => {
+const ProductPage = () => {
   const [searchParams] = useSearchParams();
   const encodedId = searchParams.get("ref");
   const id = encodedId ? atob(encodedId) : null;
@@ -46,4 +46,4 @@ const ProducPage = () => {
   );
 };
 
-export default ProducPage;
+export default ProductPage;

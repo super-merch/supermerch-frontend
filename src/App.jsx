@@ -3,7 +3,7 @@ import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
 import RouteTransition from "./components/Common/RouteTransition";
 import Home from "./pages/Home";
-import ProducPage from "./pages/ProducPage";
+import ProducPage from "./pages/ProductPage";
 import Footer from "./components/Home/Footer";
 import CategoryPage from "./pages/CategoryPage";
 import ShopPage from "./pages/ShopPage";
