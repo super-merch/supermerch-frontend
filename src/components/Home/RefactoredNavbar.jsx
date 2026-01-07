@@ -46,11 +46,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   } = useContext(AppContext);
 
   useEffect(() => {
-  if (!v1categories?.length) {
-    fetchV1Categories();
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [v1categories?.length]);
+    if (!v1categories?.length) {
+      fetchV1Categories();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v1categories?.length]);
 
 
   const dispatch = useDispatch();
