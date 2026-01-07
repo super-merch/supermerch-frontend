@@ -1,7 +1,7 @@
 // main.jsx
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { BlogProvider } from "./context/BlogContext";
+import BlogProvider from "./context/BlogContext";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

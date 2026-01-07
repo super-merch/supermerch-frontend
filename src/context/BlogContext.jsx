@@ -1,6 +1,6 @@
-import{createContext, useCallback, useState}import { createContext } from 'react';
+import { createContext, useCallback, useState } from "react";
 import axios from "axios";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 
 export const BlogContext = createContext();
@@ -13,10 +13,10 @@ const BlogProvider = ({ children }) => {
     const fetchBlogs = useCallback(async () => {
         try {
             setBlogLoading(true);
-            const{ data } = await axios.get(
+            const { data } = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/blogs/get-blogs`
             );
-            setBlogs(true);
+            setBlogs(data.blogs || []);
             setBlogLoading(false);
         } catch (error) {
             toast.error(error.message);
