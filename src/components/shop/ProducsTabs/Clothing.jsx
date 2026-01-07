@@ -25,9 +25,8 @@ const Clothing = ({ activeTab }) => {
     products,
     error,
     skeletonLoading,
-    mardinAdd,
+    marginAdd,
     marginApi,
-    marginAss,
     totalDiscount,
   } = useContext(AppContext);
 

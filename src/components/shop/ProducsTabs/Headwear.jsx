@@ -26,7 +26,7 @@ const Headwear = ({ activeTab }) => {
     error,
     skeletonLoading,
     marginApi,
-    marginAsdd,
+    marginAdd,
     totalDiscount,
   } = useContext(AppContext);
   useEffect(() => {

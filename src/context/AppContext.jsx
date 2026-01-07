@@ -1639,8 +1639,6 @@ const AppContextProvider = (props) => {
     setBlogs,
     fetchBlogs,
     allProductsCacheRef,
-    blogs,
-    setBlogs,
     totalCount,
     options,
     categoryProducts,

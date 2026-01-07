@@ -1,10 +1,20 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "@/context/AppContext";
 import { FaArrowRight } from "react-icons/fa";
 
 const AllBlogs = () => {
-  const { blogLoading,blogs, options } = useContext(AppContext);
+  const { blogLoading, blogs, options, fetchBlogs } = useContext(AppContext);
+
+  //blogs page direct route fetch
+  useEffect(() => {
+    if (!blogs?.length) {
+      fetchBlogs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogs?.length]);
+
+
   const navigate = useNavigate();
   if(blogLoading){
     return <div className="flex justify-center items-center min-h-screen" >

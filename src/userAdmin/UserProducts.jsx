@@ -17,7 +17,16 @@ const UserProducts = () => {
     setTotalDiscount,
     totalDiscount,
     marginApi,
+    marginAdd
   } = useContext(AppContext);
+  
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+  
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState({});
   const [reOrderModal, setReOrderModal] = useState(false);
