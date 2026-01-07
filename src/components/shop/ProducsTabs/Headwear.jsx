@@ -26,8 +26,15 @@ const Headwear = ({ activeTab }) => {
     error,
     skeletonLoading,
     marginApi,
+    marginAsdd,
     totalDiscount,
   } = useContext(AppContext);
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
 
   const dispatch = useDispatch();
 

@@ -17,10 +17,18 @@ const AllProducts = ({ activeTab }) => {
   const {
     fetchProducts,
     error,
+    marginAdd,
     marginApi,
     getGlobalDiscount,
     totalDiscount,
   } = useContext(AppContext);
+
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
 
   // Local state for products to avoid conflicts with other tabs
   const [products, setProducts] = useState([]);

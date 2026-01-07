@@ -17,8 +17,21 @@ const Stationery = ({ activeTab }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { fetchProducts, products, error, skeletonLoading, marginApi } =
-    useContext(AppContext);
+  const { 
+    fetchProducts,
+    products,
+    error, 
+    skeletonLoading,
+    marginApi,
+    marginAdd 
+    } = useContext(AppContext);
+
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
 
   useEffect(() => {
     fetchProducts();
