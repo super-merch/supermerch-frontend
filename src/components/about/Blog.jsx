@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -7,10 +7,17 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { IoMdArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { blogsDataArray } from "../../assets/assets";
-import { AppContext } from "../../context/AppContext";
+import { BlogContext } from "../../context/BlogContext";
 
 const BlogCards = () => {
-  const { blogs, setBlogs, options } = useContext(AppContext);
+  const { blogs, fetchBlogs, options } = useContext(BlogContext);
+  useEffect(() => {
+    if (!blogs?.length) {
+      fetchBlogs();
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogs?.length]);
+
   const navigate = useNavigate();
   return (
     <section className="Mycontainer">

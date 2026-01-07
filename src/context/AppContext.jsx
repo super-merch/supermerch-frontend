@@ -40,11 +40,9 @@ const AppContextProvider = (props) => {
     totalOrders: 0,
     pages: 1,
   });
-  const [blogLoading, setBlogLoading] = useState(false);
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
-  const [blogs, setBlogs] = useState([]);
   const [setupFee, setSetupFee] = useState(0);
   const items = useSelector(selectCurrentUserCartItems);
   useEffect(() => {
@@ -142,8 +140,6 @@ const AppContextProvider = (props) => {
   // New arrivals
   const arrivalCacheRef = useRef({});
   const pendingArrivalRef = useRef({});
-
-  const options = { day: "2-digit", month: "short", year: "numeric" };
 
   // Function to get responsive limit based on screen size
   const getResponsiveLimit = () => {
@@ -1501,19 +1497,6 @@ const AppContextProvider = (props) => {
     }
   };
 
-  const fetchBlogs = async () => {
-    try {
-      setBlogLoading(true);
-      const { data } = await axios.get(`${backednUrl}/api/blogs/get-blogs`);
-      setBlogs(data.blogs);
-      setBlogLoading(false);
-    } catch (error) {
-      toast.error(error.message);
-      console.error(error);
-      setBlogLoading(false);
-    }
-  };
-
   /*useEffect(() => {
     fetchDiscountedProducts(1, "", 6);
     fetchProducts(1, "", 8);
@@ -1635,15 +1618,10 @@ const AppContextProvider = (props) => {
     setProducts,
     handleLogout,
     fetchV1Categories,
-    blogs, //direct way to load blogs 
-    setBlogs,
-    fetchBlogs,
     allProductsCacheRef,
     totalCount,
-    options,
     categoryProducts,
     fetchDiscountedProducts,
-    blogLoading,
     discountedProducts,
     fetchMultipleBestSellerPages,
     setCategoryProducts,

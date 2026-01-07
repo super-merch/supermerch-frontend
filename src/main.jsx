@@ -1,6 +1,7 @@
 // main.jsx
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { BlogProvider } from "./context/BlogContext";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -31,7 +32,8 @@ createRoot(document.getElementById("root")).render(
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
           <CartInitializer>
-            <AppContextProvider>
+            <BlogProvider>
+              <AppContextProvider>
               <GoogleOAuthProvider
                 clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 onScriptLoadSuccess={() => {
@@ -42,7 +44,8 @@ createRoot(document.getElementById("root")).render(
               >
                 <App />
               </GoogleOAuthProvider>
-            </AppContextProvider>
+              </AppContextProvider>
+            </BlogProvider>
           </CartInitializer>
         </QueryClientProvider>
       </PersistGate>
