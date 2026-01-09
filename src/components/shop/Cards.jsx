@@ -46,7 +46,7 @@ const Cards = ({ category = "" }) => {
     setPaginationData,
     getProducts,
     productsLoading,
-    backednUrl,
+    backendUrl,
     refetchProducts,
   } = useContext(AppContext);
 
@@ -110,25 +110,25 @@ const Cards = ({ category = "" }) => {
     let url = "";
     let searchTerms = ["gift pack", "hampers", "gift"];
     if (paginationData.category === "return-gifts") {
-      url = `${backednUrl}/api/client-products/search?searchTerms=${searchTerms.join(
+      url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
         ","
       )}&page=${page}&limit=${limit}`;
     } else if (paginationData.category === "australia") {
-      url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+      url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
     } else if (paginationData.category === "24hr-production") {
-      url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
+      url = `${backendUrl}/api/24hour/get-products?${params.toString()}`;
     } else if (paginationData.category === "sales") {
-      url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
+      url = `${backendUrl}/api/client-products-discounted?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
+      url = `${backendUrl}/api/client-products?${params.toString()}`;
     } else if (paginationData.category === "search") {
-      url = `${backednUrl}/api/client-products/search?${params.toString()}`;
+      url = `${backendUrl}/api/client-products/search?${params.toString()}`;
     } else if (paginationData.category) {
-      url = `${backednUrl}/api/client-products/category?${params.toString()}`;
+      url = `${backendUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {
-      url = `${backednUrl}/api/params-products?${params.toString()}`;
+      url = `${backendUrl}/api/params-products?${params.toString()}`;
     } else {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
+      url = `${backendUrl}/api/client-products?${params.toString()}`;
     }
     return url;
   };

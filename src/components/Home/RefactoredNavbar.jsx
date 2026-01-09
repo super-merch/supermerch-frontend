@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 
 // Import reusable components
 import { AppContext } from "../../context/AppContext";
+import { AuthContext } from "../../context/AuthContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
 import supermerch from "../../../public/logo.png";
 import { useCoupons } from "@/hooks/useCoupons";
@@ -29,9 +30,8 @@ import {
 } from "../../redux/slices/filterSlice";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
+  const { token, setToken } = useContext(AuthContext);
   const {
-    token,
-    setToken,
     products,
     categoryProducts,
     setActiveFilterCategory,

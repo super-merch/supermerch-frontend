@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { IoPricetagSharp } from "react-icons/io5";
 import { AppContext } from "../../context/AppContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
@@ -108,9 +109,8 @@ const MiniNav = () => {
     ],
   ];
 
+  const { token, setToken } = useContext(AuthContext);
   const {
-    token,
-    setToken,
     products,
     setProducts,
     fetchProducts,

@@ -26,6 +26,7 @@ import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import banner from "../../../../public/BANNER/cuo.jpg";
 import { AppContext } from "../../../context/AppContext";
+import { AuthContext } from "../../../context/AuthContext";
 import { addToCart } from "../../../redux/slices/cartSlice";
 import ProductNotFound from "../ProductNotFound";
 import QuoteFormModal from "../QuoteFormModal";
@@ -48,13 +49,12 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { token, userData } = useContext(AuthContext);
   const {
-    backednUrl,
-    token,
+    backendUrl,
     error,
     totalDiscount,
     shippingCharges: freightFee,
-    userData,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,7 @@ const ProductDetails = () => {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `${backednUrl}/api/single-product/${id}`
+          `${backendUrl}/api/single-product/${id}`
         );
         if (data) {
           setSingle_Product(data.data, "fetchSingleProduct");
@@ -695,7 +695,7 @@ const ProductDetails = () => {
       }
 
       const { data } = await axios.post(
-        `${backednUrl}/api/checkout/quote`,
+        `${backendUrl}/api/checkout/quote`,
         formData1,
         {
           headers: { token },

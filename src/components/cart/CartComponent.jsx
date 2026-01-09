@@ -18,8 +18,7 @@ import {
 } from "../../redux/slices/cartSlice";
 
 const CartComponent = () => {
-  const { totalDiscount, shippingCharges, userData, setupFee,gstCharges } =
-    useContext(AppContext);
+  const { totalDiscount, shippingCharges, setupFee, gstCharges } = useContext(AppContext);
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const [value, setValue] = useState("");

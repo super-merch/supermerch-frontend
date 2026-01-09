@@ -1,25 +1,18 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { googleLogout } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  clearFavourites,
-  loadFavouritesFromDB,
-} from "@/redux/slices/favouriteSlice";
 import {
   clearCart,
   initializeCartFromStorage,
   selectCurrentUserCartItems,
 } from "@/redux/slices/cartSlice";
-import { clearCurrentUser } from "@/redux/slices/cartSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
-  const backednUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [filterLocalProducts, setFilterLocalProducts] = useState([]);
   const [activeFilterCategory, setActiveFilterCategory] = useState(null);
   const [sidebarActiveCategory, setSidebarActiveCategory] = useState(null);
@@ -33,18 +26,9 @@ const AppContextProvider = (props) => {
   const paramProductsCacheRef = useRef({});
   const pendingParamRequestsRef = useRef({});
   const pendingParamMultiRequestsRef = useRef({});
-  const [userStats, setUserStats] = useState({
-    deliveredOrders: 0,
-    pendingOrders: 0,
-    totalSpent: 0,
-    totalOrders: 0,
-    pages: 1,
-  });
-  const [token, setToken] = useState(
-    localStorage.getItem("token") ? localStorage.getItem("token") : false
-  );
   const [setupFee, setSetupFee] = useState(0);
   const items = useSelector(selectCurrentUserCartItems);
+
   useEffect(() => {
     const setup = items.reduce(
       (total, item) => total + (item.setupFee || 0),
@@ -56,7 +40,7 @@ const AppContextProvider = (props) => {
   const getGlobalDiscount = async () => {
     try {
       const response = await axios.get(
-        `${backednUrl}/api/add-discount/global-discount`
+        `${backendUrl}/api/add-discount/global-discount`
       );
       if (response.data.data) {
         setGlobalDiscount(response.data.data);
@@ -68,46 +52,8 @@ const AppContextProvider = (props) => {
       return null;
     }
   };
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    dispatch(clearFavourites());
-    dispatch(clearCurrentUser());
-    setToken("");
-    googleLogout();
-    dispatch(selectCurrentUserCartItems());
-    if (window.google && window.google.accounts) {
-      window.google.accounts.id.disableAutoSelect();
-    }
-    navigate("/login");
-  };
-  const [shippingAddressData, setShippingAddressData] = useState({
-    firstName: "",
-    lastName: "",
-    companyName: "",
-    addressLine: "",
-    city: "",
-    postalCode: "",
-    state: "",
-    country: "",
-    email: "",
-    phone: "",
-  });
-  const [addressData, setAddressData] = useState({
-    firstName: "",
-    lastName: "",
-    companyName: "",
-    addressLine: "",
-    country: "",
-    state: "",
-    city: "",
-    postalCode: "",
-    email: "",
-    phone: "",
-  });
   const queryClient = useQueryClient();
-  const [userOrder, setUserOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [skeletonLoading, setSkeletonLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
@@ -115,10 +61,8 @@ const AppContextProvider = (props) => {
   const [fetchedPagesCount, setFetchedPagesCount] = useState(0);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [newId, setNewId] = useState(null);
-  const [userData, setUserData] = useState(null);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
 
   const [totalApiPages, setTotalApiPages] = useState(0);
   const [selectedParamCategoryId, setSelectedParamCategoryId] = useState(null);
@@ -212,27 +156,27 @@ const AppContextProvider = (props) => {
     let url = "";
     let searchTerms = ["gift pack", "HAM10"];
     if (paginationData.category === "australia") {
-      url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+      url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
     } else if (paginationData.category === "24hr-production") {
-      url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
+      url = `${backendUrl}/api/24hour/get-products?${params.toString()}`;
     } else if (paginationData.category === "sales") {
-      url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
+      url = `${backendUrl}/api/client-products-discounted?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
+      url = `${backendUrl}/api/client-products?${params.toString()}`;
     } else if (paginationData.category === "search") {
-      url = `${backednUrl}/api/client-products/search?${params.toString()}`;
+      url = `${backendUrl}/api/client-products/search?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
+      url = `${backendUrl}/api/client-products?${params.toString()}`;
     } else if (paginationData.category === "return-gifts") {
-      url = `${backednUrl}/api/client-products/search?searchTerms=${searchTerms.join(
+      url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
         ","
       )}&page=${paginationData.page}&limit=${paginationData.limit}`;
     } else if (paginationData.category) {
-      url = `${backednUrl}/api/client-products/category?${params.toString()}`;
+      url = `${backendUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {
-      url = `${backednUrl}/api/params-products?${params.toString()}`;
+      url = `${backendUrl}/api/params-products?${params.toString()}`;
     } else {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
+      url = `${backendUrl}/api/client-products?${params.toString()}`;
     }
 
     const res = await fetch(url);
@@ -301,7 +245,7 @@ const AppContextProvider = (props) => {
       limit: australiaPaginationData.limit,
     });
     const response = await fetch(
-      `${backednUrl}/api/australia/get-products?${params.toString()}`
+      `${backendUrl}/api/australia/get-products?${params.toString()}`
     );
     const data = await response.json();
     return data;
@@ -329,55 +273,7 @@ const AppContextProvider = (props) => {
     });
   };
 
-  const loadUserOrder = async (page,limit=10) => {
-    try {
-      if(userData?._id){
 
-        const { data } = await axios.get(
-          `${backednUrl}/api/checkout/user-order/${userData._id}?page=${page}&limit=${limit}`,
-          { headers: { token } }
-      );
-      if (data.success) {
-        setUserOrder(data.orders);
-        setUserStats({
-        deliveredOrders: data.delivered,
-        pendingOrders: data.pending,
-        totalSpent: data.totalSpent,
-        totalOrders: data.total,
-        pages: data.pages,
-      });
-      }
-    }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchWebUser = async () => {
-    try {
-      const { data } = await axios.get(`${backednUrl}/api/auth/get-web-user`, {
-        headers: { token },
-      });
-      if (data.success) {
-        setUserEmail(data.user.email);
-        if (data.user.defaultAddress) {
-          setAddressData(data.user.defaultAddress);
-        }
-        if (data.user.defaultShippingAddress) {
-          setShippingAddressData(data.user.defaultShippingAddress);
-        }
-        if (data.success) {
-          setUserData(data.user);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      toast.error("User Logged out");
-      handleLogout();
-    }
-  };
   const [productsCategory, setProductsCategory] = useState([]);
   const [productsCategoryLoading, setProductsCategoryLoading] = useState(false);
   const fetchProductsCategory = async (
@@ -391,7 +287,7 @@ const AppContextProvider = (props) => {
       const limitParam = limit ?? 10;
       // Fixed: Removed duplicate ? and properly formatted query string
       const response = await fetch(
-        `${backednUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limitParam}&sort=${sort}&filter=true`
+        `${backendUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limitParam}&sort=${sort}&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
@@ -458,7 +354,7 @@ const AppContextProvider = (props) => {
     try {
       if (!limit) limit = 10; // Default to 100 if limit is not provided
       const response = await fetch(
-        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        `${backendUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
@@ -567,7 +463,7 @@ const AppContextProvider = (props) => {
       // 3) Create and store promise
       const promise = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
+          `${backendUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
         );
         if (!response.ok) throw new Error("Failed to fetch products");
 
@@ -627,7 +523,7 @@ const AppContextProvider = (props) => {
     try {
       while (currentPage <= endPage) {
         const response = await fetch(
-          `${backednUrl}/api/client-products-trending?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+          `${backendUrl}/api/client-products-trending?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
         );
 
         if (!response.ok) break;
@@ -675,7 +571,7 @@ const AppContextProvider = (props) => {
 
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backendUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -723,7 +619,7 @@ const AppContextProvider = (props) => {
 
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backendUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -847,7 +743,7 @@ const AppContextProvider = (props) => {
 
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backendUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -934,7 +830,7 @@ const AppContextProvider = (props) => {
       // Create promise and store in pending map (dedupe)
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backendUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -1084,7 +980,7 @@ const AppContextProvider = (props) => {
       const promise = (async () => {
         const itemCount = 9;
         const response = await fetch(
-          `${backednUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${itemCount}&page=${page}`
+          `${backendUrl}/api/params-products?product_type_ids=${categoryId}&items_per_page=${itemCount}&page=${page}`
         );
         if (!response.ok) throw new Error("Failed to fetch products");
         const data = await response.json();
@@ -1129,7 +1025,7 @@ const AppContextProvider = (props) => {
   };
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${backednUrl}/api/category-products`);
+      const response = await fetch(`${backendUrl}/api/category-products`);
       if (!response.ok) throw new Error("Failed to fetch products");
 
       const data = await response.json();
@@ -1152,7 +1048,7 @@ const AppContextProvider = (props) => {
   const fetchV1Categories = async () => {
     // setSkeletonLoading(true);
     try {
-      const response = await fetch(`${backednUrl}/api/v1-categories`);
+      const response = await fetch(`${backendUrl}/api/v1-categories`);
       if (!response.ok) throw new Error("Failed to fetch products");
 
       const data = await response.json();
@@ -1418,7 +1314,7 @@ const AppContextProvider = (props) => {
   const listDiscount = async () => {
     try {
       const { data } = await axios.get(
-        `${backednUrl}/api/add-discount/list-discounts`
+        `${backendUrl}/api/add-discount/list-discounts`
       );
       if (data.success) {
         setDiscountPromo(data.discounts);
@@ -1439,7 +1335,7 @@ const AppContextProvider = (props) => {
 
     try {
       const res = await axios.get(
-        `${backednUrl}/api/add-discount/discounts/${productId}`,
+        `${backendUrl}/api/add-discount/discounts/${productId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -1476,7 +1372,7 @@ const AppContextProvider = (props) => {
   const marginAdd = async () => {
     try {
       const { data } = await axios.get(
-        `${backednUrl}/api/product-margin/list-margin`
+        `${backendUrl}/api/product-margin/list-margin`
       );
 
       if (data.success) {
@@ -1529,7 +1425,7 @@ const AppContextProvider = (props) => {
   fetchDiscounts();
   }, [products]);
   useEffect(() => {
-    dispatch(loadFavouritesFromDB(backednUrl));
+    dispatch(loadFavouritesFromDB(backendUrl));
   }, []);
 
 
@@ -1551,39 +1447,12 @@ const AppContextProvider = (props) => {
   //   }
   // }, []);
 
-  useEffect(() => {
-    if (token) {
-      fetchWebUser();
-    }
-  }, [token]);
-  useEffect(()=>{
-    if(userData?._id){
-      loadUserOrder(1);
-    }
-
-  },[userData])
-
   const value = {
-    token,
-    setToken,
-    userOrder,
-    setUserOrder,
-    loadUserOrder,
-    userStats,
-    loading,
-    setLoading,
-    shippingCharges,
-    setShippingCharges,
-    userEmail,
-    fetchWebUser,
-    addressData,
-    setAddressData,
     fetchMultipleParamPages,
     activeTab,
     setActiveTab,
     newId,
     setNewId,
-    userData,
     clearProductsCache,
     fetchTrendingProducts,
     trendingProducts,
@@ -1607,7 +1476,7 @@ const AppContextProvider = (props) => {
     hourProd,
     totalHourPages,
     setTotalHourPages,
-    backednUrl,
+    backendUrl,
     totalDiscount,
     setTotalDiscount,
     fetchProducts,
@@ -1616,7 +1485,6 @@ const AppContextProvider = (props) => {
     error,
     skeletonLoading,
     setProducts,
-    handleLogout,
     fetchV1Categories,
     allProductsCacheRef,
     totalCount,
@@ -1632,8 +1500,6 @@ const AppContextProvider = (props) => {
     arrivalProducts,
     filterLocalProducts,
     setFilterLocalProducts,
-    shippingAddressData,
-    setShippingAddressData,
     discountPromo,
     globalDiscount,
     getGlobalDiscount,

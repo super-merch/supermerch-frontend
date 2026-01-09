@@ -1,26 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 import { FaBullseye } from "react-icons/fa";
 
 const DashBoard = () => {
-  const {
-    backednUrl,
-    handleLogout,
-    setNewId,
-    activeTab,
-    setActiveTab,
-    userOrder,
-    userEmail,
-    userStats
-  } = useContext(AppContext);
+  const { handleLogout, userOrder, userEmail, userStats } =
+    useContext(AuthContext);
+  const { setNewId, setActiveTab } = useContext(AppContext);
+
   // const [loading, setLoading] = useState(FaBullseye);
   // useEffect(() => {
   //   const fetchUserEmail = async () => {
   //     try {
   //       setLoading(true);
   //       const token = localStorage.getItem("token");
-  //       const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+  //       const { data } = await axios.get(`${backendUrl}/api/auth/user`, {
   //         headers: {
   //           Authorization: `Bearer ${token}`,
   //         },
