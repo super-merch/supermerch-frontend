@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const CartInitializer = ({ children }) => {
   const dispatch = useDispatch();
-  const backednUrl = import.meta.env.VITE_BACKEND_URL; // Adjust based on your environment variable setup
+  const backendUrl = import.meta.env.VITE_BACKEND_URL; // Adjust based on your environment variable setup
 
   useEffect(() => {
     const initializeCart = async () => {
@@ -15,7 +15,7 @@ const CartInitializer = ({ children }) => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+        const { data } = await axios.get(`${backendUrl}/api/auth/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -28,7 +28,7 @@ const CartInitializer = ({ children }) => {
     };
 
     initializeCart();
-  }, [dispatch, backednUrl]);
+  }, [dispatch, backendUrl]);
 
   return children;
 };

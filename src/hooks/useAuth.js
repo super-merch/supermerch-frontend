@@ -4,14 +4,16 @@ import { useDispatch } from "react-redux";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
+import { AppContext } from "../context/AppContext"; 
 import { loadFavouritesFromDB } from "../redux/slices/favouriteSlice";
 import { initializeCartFromStorage } from "../redux/slices/cartSlice";
 
 export const useAuth = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { setToken, backednUrl } = useContext(AppContext);
+  const { setToken } = useContext(AuthContext);
+  const { backendUrl } = useContext(AppContext);
 
   // Common auth states
   const [loading, setLoading] = useState(false);
@@ -81,7 +83,7 @@ export const useAuth = () => {
 
     try {
       const endpoint = isSignup ? "/api/auth/signup" : "/api/auth/login";
-      const response = await axios.post(`${backednUrl}${endpoint}`, {
+      const response = await axios.post(`${backendUrl}${endpoint}`, {
         name: googleData.name,
         email: googleData.email,
         password: googlePassword,
@@ -105,7 +107,7 @@ export const useAuth = () => {
 
         if (!isSignup) {
           dispatch(initializeCartFromStorage({ email: user.email }));
-          dispatch(loadFavouritesFromDB(backednUrl));
+          dispatch(loadFavouritesFromDB(backendUrl));
           navigate("/");
         } else {
           navigate("/login");
@@ -144,7 +146,7 @@ export const useAuth = () => {
     setResetLoading(true);
 
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/reset`, {
+      const response = await axios.post(`${backendUrl}/api/auth/reset`, {
         email: resetEmail,
       });
 
@@ -175,7 +177,7 @@ export const useAuth = () => {
     setResetLoading(true);
 
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/verify-reset-code`, {
+      const response = await axios.post(`${backendUrl}/api/auth/verify-reset-code`, {
         email: resetEmail,
         code: resetCode,
       });
@@ -220,7 +222,7 @@ export const useAuth = () => {
     setResetLoading(true);
 
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/reset-password`, {
+      const response = await axios.post(`${backendUrl}/api/auth/reset-password`, {
         email: resetEmail,
         code: resetCode,
         newPassword: newPassword,

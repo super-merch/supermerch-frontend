@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
 import { AppContext } from "../context/AppContext";
-
 // Reusable components
 import AuthLayout from "../components/auth/AuthLayout";
 import PasswordInput from "../components/auth/PasswordInput";
@@ -13,7 +13,8 @@ import ResetPasswordModal from "../components/auth/ResetPasswordModal";
 import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
-  const { setToken, backednUrl } = useContext(AppContext);
+  const { setToken } = useContext(AuthContext);
+  const { backendUrl } = useContext(AppContext);
 
   const {
     loading,
@@ -73,7 +74,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/login`, {
+      const response = await axios.post(`${backendUrl}/api/auth/login`, {
         email: formData.email,
         password: formData.password,
       });

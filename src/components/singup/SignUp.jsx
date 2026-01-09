@@ -13,6 +13,7 @@ import {
   clearFavourites,
 } from "../../redux/slices/favouriteSlice";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import { AppContext } from "../../context/AppContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
@@ -26,7 +27,8 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const [isSignUp, setIsSignUp] = useState(true);
 
-  const { token, setToken, backednUrl } = useContext(AppContext);
+  const { token, setToken } = useContext(AuthContext);
+  const { backendUrl } = useContext(AppContext);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -66,8 +68,8 @@ const SignUp = () => {
     setLoading(true);
 
     const apiUrl = isSignUp
-      ? `${backednUrl}/api/auth/signup`
-      : `${backednUrl}/api/auth/login`;
+      ? `${backendUrl}/api/auth/signup`
+      : `${backendUrl}/api/auth/login`;
 
     if (isSignUp && formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
@@ -108,7 +110,7 @@ const SignUp = () => {
             dispatch(initializeCartFromStorage({ email: user.email }));
 
             // Load user's favourites from database
-            dispatch(loadFavouritesFromDB(backednUrl));
+            dispatch(loadFavouritesFromDB(backendUrl));
 
             navigate("/");
           }
@@ -177,8 +179,8 @@ const SignUp = () => {
     setLoadingGoogle(true);
 
     const apiUrl = isSignUp
-      ? `${backednUrl}/api/auth/signup`
-      : `${backednUrl}/api/auth/login`;
+      ? `${backendUrl}/api/auth/signup`
+      : `${backendUrl}/api/auth/login`;
 
     try {
       const response = await axios.post(apiUrl, {
@@ -212,7 +214,7 @@ const SignUp = () => {
             setGooglePassword("");
 
             // Load user's favourites from database
-            dispatch(loadFavouritesFromDB(backednUrl));
+            dispatch(loadFavouritesFromDB(backendUrl));
 
             navigate("/");
           }
@@ -252,7 +254,7 @@ const SignUp = () => {
     setResetLoading(true);
 
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/reset`, {
+      const response = await axios.post(`${backendUrl}/api/auth/reset`, {
         email: resetEmail, // Send email directly, not wrapped in body
       });
 
@@ -291,7 +293,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        `${backednUrl}/api/auth/verify-reset-code`,
+        `${backendUrl}/api/auth/verify-reset-code`,
         {
           email: resetEmail,
           code: resetCode,
@@ -340,7 +342,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        `${backednUrl}/api/auth/reset-password`,
+        `${backendUrl}/api/auth/reset-password`,
         {
           email: resetEmail,
           code: resetCode,

@@ -25,8 +25,17 @@ const AllProducts = ({ activeTab }) => {
     error,
     skeletonLoading,
     marginApi,
+    marginAdd,
     totalDiscount,
   } = useContext(AppContext);
+  
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+
 
   useEffect(() => {
     fetchProducts();
