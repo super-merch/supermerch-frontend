@@ -10,7 +10,7 @@ const ProducPage = () => {
   const [searchParams] = useSearchParams();
   const encodedId = searchParams.get("ref");
   const id = encodedId ? atob(encodedId) : null;
-  const { backednUrl } = useContext(AppContext);
+  const { backendUrl } = useContext(AppContext);
   const [product, setProduct] = useState(null);
   const { pathname } = useLocation();
 
@@ -22,7 +22,7 @@ const ProducPage = () => {
     const fetchProduct = async () => {
       try {
         const { data } = await axios.get(
-          `${backednUrl}/api/single-product/${id}`
+          `${backendUrl}/api/single-product/${id}`
         );
         if (data) {
           setProduct(data.data);
@@ -32,7 +32,7 @@ const ProducPage = () => {
       }
     };
     fetchProduct();
-  }, [id, backednUrl]);
+  }, [id, backendUrl]);
 
   return (
     <div>

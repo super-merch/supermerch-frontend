@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -9,17 +10,9 @@ import { loadStripe } from "@stripe/stripe-js";
 const UserProducts = () => {
   const {
     userOrder,
-    loading,
-    newId,
-    setActiveTab,
-    backednUrl,
-    fetchProductDiscount,
-    setTotalDiscount,
-    totalDiscount,
-    marginApi,
-    marginAdd
-  } = useContext(AppContext);
-  
+    loading
+  } = useContext(AuthContext);
+  const {newId, setActiveTab, backendUrl, marginApi, marginAdd} = useContext(AppContext);
   useEffect(() => {
     if (!Object.keys(marginApi).length) {
       marginAdd();
@@ -70,7 +63,7 @@ const UserProducts = () => {
       };
 
       const resp = await axios.post(
-        `${backednUrl}/create-checkout-session`,
+        `${backendUrl}/create-checkout-session`,
         body
       );
       const session = await resp.data;
