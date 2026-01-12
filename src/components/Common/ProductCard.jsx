@@ -18,7 +18,7 @@ import Tooltip from "./Tooltip";
 import noimage from "/noimage.png";
 import ausFlag from "@/assets/aus_flag.png";
 
-const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
+const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -73,12 +73,12 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
   const uniqueColors =
     product?.product?.colours?.list?.length > 1
       ? [
-          ...new Set(
-            product?.product?.colours?.list
-              .flatMap((colorObj) => colorObj.colours)
-              .filter((color) => !color.includes(" "))
-          ),
-        ]
+        ...new Set(
+          product?.product?.colours?.list
+            .flatMap((colorObj) => colorObj.colours)
+            .filter((color) => !color.includes(" "))
+        ),
+      ]
       : [];
   const is24Hr = is24HrProduct(product);
   const isAUMade = product?.product?.categorisation?.promodata_attributes?.some(
@@ -146,7 +146,8 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
             width: "auto",
             height: "auto",
           }}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
         />
 
         {/* Discount Badge */}
@@ -237,7 +238,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct }) => {
                     <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
                       $
                       {getProductPrice
-                        ? getProductPrice(product, product.meta.id,isClothing).toFixed(2)
+                        ? getProductPrice(product, product.meta.id, isClothing).toFixed(2)
                         : "0.00"}
                     </span>
                   </div>

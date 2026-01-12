@@ -219,6 +219,7 @@ const ProductsContextProvider = ({ children }) => {
             ],
             queryFn: () => getAustraliaProductsFromApi(),
             enabled: false,
+            refetchOnWindowFocus: false,
         });
 
 

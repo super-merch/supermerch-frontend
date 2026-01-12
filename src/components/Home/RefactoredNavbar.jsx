@@ -644,7 +644,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     handleSubCategories(
                       itemName,
                       subType?.id ||
-                        itemName.toLowerCase().replace(/\s+/g, "-"),
+                      itemName.toLowerCase().replace(/\s+/g, "-"),
                       v1Cat?.name || category.name,
                       "Promotional"
                     ),
@@ -890,7 +890,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     handleSubCategories(
                       itemName,
                       subType?.id ||
-                        itemName.toLowerCase().replace(/\s+/g, "-"),
+                      itemName.toLowerCase().replace(/\s+/g, "-"),
                       v1Cat?.name || category.name,
                       "Clothing"
                     ),
@@ -955,10 +955,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleSearch = (searchTerm) => {
-    navigate(
-      `/search?search=${searchTerm}${
-        selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""
-      }`
+    navigate(`/search?search=${searchTerm}${selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""}`
     );
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));

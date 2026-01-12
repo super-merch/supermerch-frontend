@@ -798,7 +798,7 @@ const Cards = ({ category = "" }) => {
             ) : accumulatedProducts?.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
-                  {accumulatedProducts.map((product) => {
+                  {accumulatedProducts.map((product, index) => {
                     const productId = product.meta?.id?.toString();
                     return (
                       <div
@@ -815,6 +815,7 @@ const Cards = ({ category = "" }) => {
                           product={product}
                           favSet={favSet}
                           onViewProduct={handleViewProduct}
+                          priority={index < 4}
                         />
                       </div>
                     );

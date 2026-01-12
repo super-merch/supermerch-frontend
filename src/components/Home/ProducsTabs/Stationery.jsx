@@ -251,7 +251,7 @@ const Stationery = ({ activeTab }) => {
                       priceBreaks[0]?.price !== undefined
                     );
                   })
-                  .map((product) => {
+                  .map((product, index) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
                     const basePrice =
@@ -291,6 +291,7 @@ const Stationery = ({ activeTab }) => {
 
                     return (
                       <ProductCard
+                        priority={index < 4}
                         key={productId}
                         product={product}
                         minPrice={minPrice}

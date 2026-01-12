@@ -221,7 +221,7 @@ const AllProducts = ({ activeTab }) => {
                     );
                   })
                   .slice(0, 4)
-                  .map((product) => {
+                  .map((product, index) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
                     const basePrice =
@@ -260,7 +260,8 @@ const AllProducts = ({ activeTab }) => {
                       product.discountInfo?.isGlobal || false;
 
                     return (
-                      <ProductCard
+                      <ProductCard 
+                        priority={index < 4}
                         key={productId}
                         product={product}
                         minPrice={minPrice}

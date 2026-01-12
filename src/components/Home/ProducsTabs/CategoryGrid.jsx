@@ -88,9 +88,10 @@ const CategoryGrid = ({ activeTab }) => {
   }
 
   const renderGrid = (list) => {
-    return list?.map((product) => {
+    return list?.map((product, index) => {
       return (
         <ProductCard
+          priority={index < 4}
           key={product?.meta?.id}
           product={product}
           favSet={favSet}

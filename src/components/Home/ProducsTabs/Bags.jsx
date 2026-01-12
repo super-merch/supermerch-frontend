@@ -89,7 +89,7 @@ const Bags = ({ activeTab }) => {
                       priceBreaks[0]?.price !== undefined
                     );
                   })
-                  .map((product) => {
+                  .map((product, index) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
                     const basePrice =
@@ -129,6 +129,7 @@ const Bags = ({ activeTab }) => {
 
                     return (
                       <ProductCard
+                        priority={index < 4}
                         key={productId}
                         product={product}
                         minPrice={minPrice}
