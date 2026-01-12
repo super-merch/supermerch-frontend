@@ -1,5 +1,5 @@
 import { megaMenu } from "@/assets/assets";
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heading } from "../Common";
@@ -25,7 +25,7 @@ import mug from "../../assets/mug.jpg";
 
 const TabsCategory = () => {
   const navigate = useNavigate();
-  const { shopCategory, setShopCategory } = useContext(AppContext);
+  const { shopCategory, setShopCategory } = useContext(ProductsContext);
   // Set the first category (Writing) as default active tab
   const [activeTab, setActiveTab] = useState(megaMenu[0].id);
   const [isAnimating, setIsAnimating] = useState(false);

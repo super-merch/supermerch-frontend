@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { ProductsContext } from "../context/ProductsContext";
 import { AuthContext } from "../context/AuthContext";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from "axios";
@@ -12,7 +13,8 @@ const UserProducts = () => {
     userOrder,
     loading
   } = useContext(AuthContext);
-  const {newId, setActiveTab, backendUrl, marginApi, marginAdd} = useContext(AppContext);
+  const { marginAdd, marginApi } = useContext(ProductsContext);
+  const { newId, setActiveTab, backendUrl } = useContext(AppContext);
   useEffect(() => {
     if (!Object.keys(marginApi).length) {
       marginAdd();

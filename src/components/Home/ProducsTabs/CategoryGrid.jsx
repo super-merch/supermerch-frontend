@@ -3,7 +3,7 @@ import { slugify } from "@/utils/utils";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import SkeletonLoading from "./SkeletonLoading";
 
 const tabToCategory = {
@@ -22,7 +22,7 @@ const CategoryGrid = ({ activeTab }) => {
     products,
     fetchProductsCategory,
     productsCategory,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   const [productsLocal, setProductsLocal] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -69,7 +69,7 @@ const CategoryGrid = ({ activeTab }) => {
   const finalProducts =
     activeTab === "All Product" ? products : productsCategory;
 
-  // Fetch logic per tab (via AppContext)
+  // Fetch logic per tab (via ProductsContext)
   // useEffect(() => {
   //   if (finalProducts.length === 0) {
   //     fetchForTab();

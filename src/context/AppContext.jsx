@@ -52,8 +52,7 @@ const AppContextProvider = (props) => {
       return null;
     }
   };
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
+
   const [loading, setLoading] = useState(true);
   const [skeletonLoading, setSkeletonLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
@@ -1424,10 +1423,6 @@ const AppContextProvider = (props) => {
 
   fetchDiscounts();
   }, [products]);
-  useEffect(() => {
-    dispatch(loadFavouritesFromDB(backendUrl));
-  }, []);
-
 
   // useEffect(() => {
   //   if (products.length === 0) {
@@ -1448,106 +1443,16 @@ const AppContextProvider = (props) => {
   // }, []);
 
   const value = {
-    fetchMultipleParamPages,
+    backendUrl,
     activeTab,
     setActiveTab,
     newId,
     setNewId,
-    clearProductsCache,
-    fetchTrendingProducts,
-    trendingProducts,
-    trendingProductsLoading,
-    fetchProductDiscount,
-    fetchSearchedProducts,
-    fetchProductsCategory,
-    productsCategory,
-    searchedProducts,
-    fetchBestSellerProducts,
-    bestSellerProducts,
-    australia,
-    setAustralia,
-    totalAustraliaPages,
-    fetchAustraliaProducts,
-    fetchAllAustraliaProducts,
-    fetchHourProducts,
-    fetchAllHourProducts,
-    gstCharges,
-    fetchHour,
-    hourProd,
-    totalHourPages,
-    setTotalHourPages,
-    backendUrl,
-    totalDiscount,
-    setTotalDiscount,
-    fetchProducts,
-    fetchMultipleArrivalPages,
-    products,
-    error,
-    skeletonLoading,
-    setProducts,
-    fetchV1Categories,
-    allProductsCacheRef,
-    totalCount,
-    categoryProducts,
-    fetchDiscountedProducts,
-    discountedProducts,
-    fetchMultipleBestSellerPages,
-    setCategoryProducts,
-    fetchCategories,
-    setDiscountPromo,
-    fetchNewArrivalProducts,
-    fetchMultipleSearchPages,
-    arrivalProducts,
-    filterLocalProducts,
-    setFilterLocalProducts,
-    discountPromo,
-    globalDiscount,
-    getGlobalDiscount,
-    searchLoading,
-    listDiscount,
-    activeFilterCategory,
-    setActiveFilterCategory,
-    fetchParamProducts,
-    paramProducts,
-    setParamProducts,
-    selectedParamCategoryId,
-    setSelectedParamCategoryId,
-    setupFee,
-    totalApiPages,
-    setTotalApiPages,
-    v1categories,
-    setV1categories,
-    currentPage,
-    setCurrentPage,
-    sidebarActiveCategory,
-    setSidebarActiveCategory,
-    shopCategory,
-    setShopCategory,
-    sidebarActiveLabel,
-    setSidebarActiveLabel,
-    fetchMultipleTrendingPages,
-    fetchMultipleDiscountedPages,
-
-    marginApi,
-    marginAdd,
-    setMarginApi,
-
     openLoginModal,
     setOpenLoginModal,
-    productsCategoryLoading,
-    setProductsCategory,
-
-    paginationData,
-    setPaginationData,
-    getProducts,
-    productsLoading,
-    refetchProducts,
-
-    australiaPaginationData,
-    setAustraliaPaginationData,
-    getAustraliaProducts,
-    australiaProductsLoading,
-    refetchAustraliaProducts,
+    shippingCharges,
+    gstCharges,
+    setupFee,
   };
 
   return (

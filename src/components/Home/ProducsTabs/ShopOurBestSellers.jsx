@@ -8,12 +8,12 @@ import Bags from "./Bags";
 import Stationery from "./Stationery";
 import CategoryGrid from "./CategoryGrid";
 import { Heading } from "../../Common";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 // import Promotional from './Promotional';
 
 const ShopOurBestSellers = ({ changeBg = false }) => {
   const [activeTab, setActiveTab] = useState("All Product");
-  const { setProducts, setProductsCategory } = useContext(AppContext);
+  const { setProducts, setProductsCategory } = useContext(ProductsContext);
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setProducts([]);

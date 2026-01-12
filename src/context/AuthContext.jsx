@@ -4,9 +4,9 @@ import { googleLogout } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 
-import { clearFavourites } from "@/redux/slices/favouriteSlice";
+import { clearFavourites, loadFavouritesFromDB } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
-import { clearCurrentUser, selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
+import { clearCurrentUser, clearUserCart } from "@/redux/slices/cartSlice";
 
 export const AuthContext = createContext();
 
@@ -57,15 +57,10 @@ const AuthContextProvider = ({ children }) => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         dispatch(clearFavourites());
+        dispatch(clearUserCart());
         dispatch(clearCurrentUser());
         setToken("");
         googleLogout();
-        dispatch(selectCurrentUserCartItems());
-        if (window.google && window.google.accounts) {
-            window.google.accounts.id.disableAutoSelect();
-        }
-        navigate("/login");
-
     };
     const fetchWebUser = async () => {
         try {
@@ -117,8 +112,9 @@ const AuthContextProvider = ({ children }) => {
     useEffect(() => {
         if (token) {
             fetchWebUser(); 
+            dispatch(loadFavouritesFromDB());
         }
-    }, [token]);
+    }, [token, dispatch]);
 
     useEffect(() => {
         if (userData?._id) {

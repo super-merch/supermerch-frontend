@@ -9,7 +9,7 @@ import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useContext } from "react";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import noimage from "/noimage.png";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +23,7 @@ const Headwear = ({ activeTab }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { marginApi, marginAdd} = useContext(AppContext);
+  const { marginApi, marginAdd} = useContext(ProductsContext);
   const productsCacheRef = useRef({});
   const pendingClothingRequestsRef = useRef({});
 

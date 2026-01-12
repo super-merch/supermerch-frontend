@@ -5,7 +5,7 @@ import { setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 // import { megaMenu } from "../../assets/assets.js";
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 
 // Price ranges for Help me Pick
 const priceRanges = [
@@ -23,7 +23,7 @@ const priceRanges = [
 const HelpMePickModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { v1categories, setPaginationData } = useContext(AppContext);
+  const { v1categories, setPaginationData } = useContext(ProductsContext);
   const customClothingCategories = v1categories?.filter((category) =>
     [
       "Bottoms",

@@ -12,6 +12,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import App from "./App.jsx";
 import { AppContextProvider } from "./context/AppContext";
+import { ProductsContextProvider } from "./context/ProductsContext.jsx";
 import CartInitializer from "./pages/cartInitializer.jsx";
 
 // Create a QueryClient instance
@@ -36,16 +37,18 @@ createRoot(document.getElementById("root")).render(
             <BlogProvider>
               <AuthContextProvider>
                 <AppContextProvider>
-                <GoogleOAuthProvider
-                  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-                  onScriptLoadSuccess={() => {
-                    if (window.google?.accounts) {
-                      window.google.accounts.id.disableAutoSelect();
-                    }
-                  }}
-                >
-                  <App />
-                </GoogleOAuthProvider>
+                  <ProductsContextProvider>
+                    <GoogleOAuthProvider
+                      clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                      onScriptLoadSuccess={() => {
+                        if (window.google?.accounts) {
+                          window.google.accounts.id.disableAutoSelect();
+                        }
+                      }}
+                    >
+                      <App />
+                  </GoogleOAuthProvider>
+                  </ProductsContextProvider>
                 </AppContextProvider>
               </AuthContextProvider>
             </BlogProvider>

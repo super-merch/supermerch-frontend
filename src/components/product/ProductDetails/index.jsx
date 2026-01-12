@@ -26,6 +26,7 @@ import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import banner from "../../../../public/BANNER/cuo.jpg";
 import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import { AuthContext } from "../../../context/AuthContext";
 import { addToCart } from "../../../redux/slices/cartSlice";
 import ProductNotFound from "../ProductNotFound";
@@ -50,10 +51,9 @@ const ProductDetails = () => {
   const dispatch = useDispatch();
 
   const { token, userData } = useContext(AuthContext);
+  const{ error, totalDiscount } = useContext(ProductsContext)
   const {
     backendUrl,
-    error,
-    totalDiscount,
     shippingCharges: freightFee,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);

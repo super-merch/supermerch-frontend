@@ -12,7 +12,7 @@ import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { IoPricetagSharp } from "react-icons/io5";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { motion } from "framer-motion";
@@ -114,11 +114,10 @@ const MiniNav = () => {
     products,
     setProducts,
     fetchProducts,
-    handleLogout,
     categoryProducts,
     setCategoryProducts,
     fetchCategories,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
   const { coupons, coupenLoading } = useCoupons();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

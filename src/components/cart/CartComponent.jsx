@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import {
   clearCart,
   decrementQuantity,
@@ -18,7 +19,8 @@ import {
 } from "../../redux/slices/cartSlice";
 
 const CartComponent = () => {
-  const { totalDiscount, shippingCharges, setupFee, gstCharges } = useContext(AppContext);
+  const { totalDiscount } = useContext(ProductsContext);
+  const { shippingCharges, setupFee, gstCharges } = useContext(AppContext);
   const dispatch = useDispatch();
   const items = useSelector(selectCurrentUserCartItems);
   const [value, setValue] = useState("");

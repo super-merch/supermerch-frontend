@@ -4,12 +4,12 @@ import { useDispatch } from "react-redux";
 import { setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import { toast } from "react-toastify";
 import { useContext } from "react";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { useSearchParams } from "react-router-dom";
 
 const PriceFilter = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
-  const { setPaginationData } = useContext(AppContext);
+  const { setPaginationData } = useContext(ProductsContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const [localMin, setLocalMin] = useState("");
   const [localMax, setLocalMax] = useState("");

@@ -8,10 +8,13 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
+import { ProductsContext } from '@/context/ProductsContext';
+import Products from './../../../../supermerch-admin-frontend/src/components/maincomponent/Products';
 
 const Cards = ({ category = "" }) => {
   const [sortOption, setSortOption] = useState("");
@@ -41,14 +44,9 @@ const Cards = ({ category = "" }) => {
   const navigate = useNavigate();
   const pageType = getPageTypeFromRoute(location.pathname);
 
-  const {
-    paginationData,
-    setPaginationData,
-    getProducts,
-    productsLoading,
-    backendUrl,
-    refetchProducts,
-  } = useContext(AppContext);
+  const { paginationData, setPaginationData, getProducts, productsLoading, refetchProducts } = useContext(ProductsContext);
+
+  const { backendUrl } = useContext(AppContext);
 
   // State for accumulated products and loading more
   const [accumulatedProducts, setAccumulatedProducts] = useState(
@@ -312,7 +310,10 @@ const Cards = ({ category = "" }) => {
   ]);
 
   // Track when filters/category change to reset accumulated products
-  const filtersKeyRef = useRef(null);
+  useEffect(() => {
+    const filtersKeyRef = useRef(null);
+    refetchProducts();
+  }, [paginationData, refetchProducts]);
   const isInitialLoadRef = useRef(true);
 
   // Reset accumulated products when filters change (before data is fetched)

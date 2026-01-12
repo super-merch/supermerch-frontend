@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { FaFire } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import noimage from "/noimage.png";
 import { getProductPrice, slugify } from "@/utils/utils";
 import Tooltip from "../Common/Tooltip";
@@ -13,7 +13,7 @@ const HotDeals = () => {
     discountedProducts,
     products,
     skeletonLoading,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   useEffect(() => {
     if (discountedProducts.length === 0 && products.length === 0) {

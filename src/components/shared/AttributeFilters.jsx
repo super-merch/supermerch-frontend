@@ -1,11 +1,11 @@
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import allAttributes from "./attributes";
 
 export default function AttributeFilters({ toggleSidebar, categoryType }) {
-  const { getProducts, setPaginationData } = useContext(AppContext);
+  const { getProducts, setPaginationData } = useContext(ProductsContext);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [expandedAttributes, setExpandedAttributes] = useState({});
   const [cachedAttributes, setCachedAttributes] = useState([]);

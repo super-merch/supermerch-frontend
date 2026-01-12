@@ -7,6 +7,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { toast } from "react-toastify";
 import CreditCard from "../creditcard/CreditCard";
 import {
@@ -29,9 +30,9 @@ const Checkout = () => {
     userData,
     loadUserOrder,
   } = useContext(AuthContext);
+  const { totalDiscount } = useContext(ProductsContext);
   const {
     backendUrl,
-    totalDiscount,
     openLoginModal,
     setOpenLoginModal,
     shippingCharges,

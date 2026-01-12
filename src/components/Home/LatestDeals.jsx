@@ -12,13 +12,13 @@ import { Heading } from "../Common";
 import "react-loading-skeleton/dist/skeleton.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import noimage from "/noimage.png";
 
 const LatestDeals = () => {
   const navigate = useNavigate();
   const { fetchProducts, products, error, skeletonLoading } =
-    useContext(AppContext);
+    useContext(ProductsContext);
 
   useEffect(() => {
     fetchProducts();

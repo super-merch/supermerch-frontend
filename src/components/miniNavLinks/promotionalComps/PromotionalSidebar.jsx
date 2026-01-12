@@ -6,7 +6,7 @@
 //     setSelectedCategory,
 //     applyFilters,
 // } from "../../../redux/slices/filterSlice";
-// import { AppContext } from "../../../context/AppContext";
+// import { ProductsContext } from "../../../context/ProductsContext";
 // import PromotionalBrandFilter from "./PromotionalBrandFilter";
 // import PromotionalPriceFilter from "./PromotionalPriceFilter";
 // import PromotionalPopularTags from "./PromotionalPopularTags";
@@ -19,7 +19,7 @@
 //     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 //     const [isMobile, setIsMobile] = useState(false);
 //     const [isPromotionClickeed, setIsPromotionClickeed] = useState(false)
-//     const { products, categoryProducts, setProducts } = useContext(AppContext)
+//     const { products, categoryProducts, setProducts } = useContext(ProductsContext)
 
 //     let checkcatPro = useSelector((state) => state.categoryProduct.categoryProduct);
 
@@ -297,7 +297,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import PromotionalBrandFilter from "./PromotionalBrandFilter";
 import PromotionalPriceFilter from "./PromotionalPriceFilter";
 import PromotionalPopularTags from "./PromotionalPopularTags";
@@ -309,9 +309,9 @@ import { Link } from "react-router-dom";
 
 const PromotionalSidebar = () => {
   const dispatch = useDispatch();
-  // Although you might be using AppContext for some data,
+  // Although you might be using ProductsContext for some data,
   // for filtering we now rely on Redux’s category slice.
-  const { categoryProducts } = useContext(AppContext);
+  const { categoryProducts } = useContext(ProductsContext);
   const checkcatPro = useSelector(
     (state) => state.categoryProduct.categoryProduct
   );

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
-import { AppContext } from "../context/AppContext";
+import { ProductsContext } from "../context/ProductsContext";
 import noimage from "/noimage.png";
 import { getProductPrice } from "@/utils/utils";
 import { Clock, Flag } from "lucide-react";
@@ -18,7 +18,7 @@ const HotDeals = () => {
     discountedProducts,
     fetchDiscountedProducts,
     fetchProducts,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   const [isLoading, setIsLoading] = useState(false);
   

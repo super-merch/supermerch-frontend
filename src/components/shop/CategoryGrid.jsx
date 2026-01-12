@@ -1,9 +1,9 @@
 import { useContext, useMemo } from "react";
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import CategoryCard from "./CategoryCard";
 
 const CategoryGrid = () => {
-  const { v1categories } = useContext(AppContext);
+  const { v1categories } = useContext(ProductsContext);
 
   // Define the main categories to display based on the image
   // Top row: Pens, Gift Sets, Mugs/Tumblers & Bottles, Bags, Apparel

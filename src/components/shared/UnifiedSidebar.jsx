@@ -26,7 +26,7 @@ import { HiMiniBuildingOffice } from "react-icons/hi2";
 import { IoGolfSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 // import {
 //   getSidebarConfig,
 //   getCategoriesForConfig,
@@ -110,7 +110,7 @@ const UnifiedSidebar = ({
     setActiveFilterCategory,
     v1categories, // Add this from context
     setPaginationData,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
   const dropdownCategoryMap = {
     promotional: [
       "Writing",

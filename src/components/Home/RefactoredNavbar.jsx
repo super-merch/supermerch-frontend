@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // Import reusable components
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { AuthContext } from "../../context/AuthContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
 import supermerch from "../../../public/logo.png";
@@ -43,7 +43,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setSidebarActiveCategory,
     setSidebarActiveLabel,
     setPaginationData,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   useEffect(() => {
     if (!v1categories?.length) {

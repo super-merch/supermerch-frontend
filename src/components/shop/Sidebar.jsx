@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import {
   applyFilters,
   setCategoryId,
@@ -14,7 +14,7 @@ const Sidebar = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { products, skeletonLoading } = useContext(AppContext);
+  const { products, skeletonLoading } = useContext(ProductsContext);
 
   const [categoriesData, setCategoriesData] = useState([]);
   const [showAllCategories, setShowAllCategories] = useState(false); // <-- new

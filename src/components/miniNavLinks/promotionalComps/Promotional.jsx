@@ -25,7 +25,7 @@ import {
   setMaxPrice,
   setSelectedCategory,
 } from "../../../redux/slices/filterSlice";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import PromotionalSidebar from "./PromotionalSidebar";
 import { matchProduct } from "@/redux/slices/categorySlice";
 
@@ -49,7 +49,7 @@ const Promotional = () => {
     discountPromo,
     setDiscountPromo,
     categoryProducts,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   const { searchText, activeFilters, filteredCount } = useSelector(
     (state) => state.filters
