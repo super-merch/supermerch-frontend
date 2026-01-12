@@ -13,8 +13,6 @@ import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
-import { ProductsContext } from '@/context/ProductsContext';
-import Products from './../../../../supermerch-admin-frontend/src/components/maincomponent/Products';
 
 const Cards = ({ category = "" }) => {
   const [sortOption, setSortOption] = useState("");
