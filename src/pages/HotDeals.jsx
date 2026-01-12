@@ -12,6 +12,7 @@ const HotDeals = () => {
     fetchMultipleDiscountedPages,
     skeletonLoading,
     marginApi,
+    marginAdd,
 
     products,
     discountedProducts,
@@ -20,6 +21,14 @@ const HotDeals = () => {
   } = useContext(AppContext);
 
   const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+
   const [error, setError] = useState("");
 
   useEffect(() => {
