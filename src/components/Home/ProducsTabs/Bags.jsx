@@ -22,11 +22,7 @@ const Bags = ({ activeTab }) => {
     fetchProductsCategory,
     productsCategoryLoading,
     productsCategory,
-<<<<<<< HEAD
   } = useContext(ProductsContext);
-=======
-  } = useContext(AppContext);
->>>>>>> 4b6d1c80ff5b98813b386bbf5304bca9fa2816f7
   
   useEffect(() => {
     if (!Object.keys(marginApi).length) {
