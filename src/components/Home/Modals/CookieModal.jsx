@@ -60,7 +60,6 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
               <button
                 onClick={() => {
                   onDecline();
-                  setTimeout(() => setDiscountModal(true), 500);
                 }}
                 className="px-6 py-3 text-white hover:text-white text-base font-medium transition-colors duration-200 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
@@ -79,7 +78,6 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
               <button
                 onClick={() => {
                   onClose();
-                  setTimeout(() => setDiscountModal(true), 500);
                 }}
                 className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors duration-200 self-center sm:self-auto"
               >

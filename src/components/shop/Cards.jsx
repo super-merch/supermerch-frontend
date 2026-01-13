@@ -42,10 +42,17 @@ const Cards = ({ category = "" }) => {
   const navigate = useNavigate();
   const pageType = getPageTypeFromRoute(location.pathname);
 
-  const { paginationData, setPaginationData, getProducts, productsLoading, refetchProducts } = useContext(ProductsContext);
+  const {
+    paginationData,
+    setPaginationData,
+    getProducts,
+    productsLoading,
+    refetchProducts,
+  } = useContext(ProductsContext);
 
   const { backendUrl } = useContext(AppContext);
-
+  const filtersKeyRef = useRef(null);
+  const isInitialLoadRef = useRef(true);
   // State for accumulated products and loading more
   const [accumulatedProducts, setAccumulatedProducts] = useState(
     getProducts?.data ?? []
@@ -309,10 +316,8 @@ const Cards = ({ category = "" }) => {
 
   // Track when filters/category change to reset accumulated products
   useEffect(() => {
-    const filtersKeyRef = useRef(null);
     refetchProducts();
   }, [paginationData, refetchProducts]);
-  const isInitialLoadRef = useRef(true);
 
   // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
