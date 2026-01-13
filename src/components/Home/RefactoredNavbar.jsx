@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import { ProductsContext } from "../../context/ProductsContext";
 import { AuthContext } from "../../context/AuthContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
-import supermerch from "../../../public/logo.png";
+import supermerch from "@/assets/logo.png";
 import { useCoupons } from "@/hooks/useCoupons";
 import {
   clearCurrentUser,
