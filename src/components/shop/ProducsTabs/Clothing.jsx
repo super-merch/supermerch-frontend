@@ -38,6 +38,14 @@ const Clothing = ({ activeTab }) => {
   }, [marginApi]);
 
 
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+
+
   const dispatch = useDispatch();
 
   const handleOpenModal = (product) => {

@@ -53,6 +53,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   }, [v1categories?.length]);
 
 
+  useEffect(() => {
+  if (!v1categories?.length) {
+    fetchV1Categories();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [v1categories?.length]);
+
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const totalQuantity = useSelector(currentUserCartAmount);

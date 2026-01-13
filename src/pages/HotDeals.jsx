@@ -13,7 +13,10 @@ const HotDeals = () => {
     skeletonLoading,
     marginApi,
     marginAdd,
+<<<<<<< HEAD
   } = useContext(ProductsContext);
+=======
+>>>>>>> 4b6d1c80ff5b98813b386bbf5304bca9fa2816f7
 
   useEffect(() => {
     if(!Object.keys(marginApi).length){
@@ -23,6 +26,14 @@ const HotDeals = () => {
   }, [marginApi]);
 
   const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+
   const [error, setError] = useState("");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [items, setItems] = useState([]);

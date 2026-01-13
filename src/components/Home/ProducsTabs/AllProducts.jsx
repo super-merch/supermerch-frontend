@@ -30,6 +30,13 @@ const AllProducts = ({ activeTab }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marginApi]);
 
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+
   // Local state for products to avoid conflicts with other tabs
   const [products, setProducts] = useState([]);
   const [skeletonLoading, setSkeletonLoading] = useState(false);
