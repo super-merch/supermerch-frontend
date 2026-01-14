@@ -13,6 +13,8 @@ import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
+import { headWear } from "@/assets/asset";
+import { GiDress } from "react-icons/gi";
 
 const Cards = ({ category = "" }) => {
   const [sortOption, setSortOption] = useState("");
@@ -23,7 +25,7 @@ const Cards = ({ category = "" }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = parseInt(searchParams.get("page"));
+  const pageFromURL = Number(searchParams.get("page")) || 1;
   const urlType = searchParams.get("type");
   const isSearchRoute = location.pathname.includes("/search");
   const limit = 20;
@@ -47,12 +49,11 @@ const Cards = ({ category = "" }) => {
     setPaginationData,
     getProducts,
     productsLoading,
-    refetchProducts,
+    productsFetching,
   } = useContext(ProductsContext);
-
+  const isProductsLoading = productsLoading || productsFetching;
   const { backendUrl } = useContext(AppContext);
-  const filtersKeyRef = useRef(null);
-  const isInitialLoadRef = useRef(true);
+
   // State for accumulated products and loading more
   const [accumulatedProducts, setAccumulatedProducts] = useState(
     getProducts?.data ?? []
@@ -64,6 +65,7 @@ const Cards = ({ category = "" }) => {
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
   const prevCategoryKeyRef = useRef(null);
+  const filtersKeyRef = useRef(null);
   const productRefs = useRef(new Map());
   const hasScrolledRef = useRef(false);
   const scrollToProductId = searchParams.get("scrollTo");
@@ -189,12 +191,11 @@ const Cards = ({ category = "" }) => {
 
   // Reset accumulated products when category/filters change
   useEffect(() => {
-    const currentCategoryKey = urlCategoryParam
-      ? `cat:${urlCategoryParam}:type:${urlType || ""}`
-      : isSearchRoute
-      ? `search:${searchParams.get("search") || ""}`
-      : `route:${category || ""}`;
-
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.delete("page");
+    currentParams.delete("limit");
+    currentParams.delete("scrollTo");
+    const currentCategoryKey = `${location.pathname}|${category}|${currentParams.toString()}`;
     const categoryChanged = prevCategoryKeyRef.current !== currentCategoryKey;
     prevCategoryKeyRef.current = currentCategoryKey;
 
@@ -228,6 +229,7 @@ const Cards = ({ category = "" }) => {
           setPaginationData((prev) => ({
             ...prev,
             category: urlCategoryParam,
+            productTypeId: null,
             page: 1,
             limit: pageLimit,
             sortOption: "",
@@ -240,22 +242,18 @@ const Cards = ({ category = "" }) => {
           setPaginationData((prev) => ({
             ...prev,
             productTypeId: urlCategoryParam,
+            category: null,
+            searchTerm: "",
             sendAttributes: true,
             limit: pageLimit,
-            category: null,
-            page: pageFromURL,
+            page: pageFromURL || 1,
             sortOption: urlSort,
             colors: urlColors ? urlColors.split(",") : [],
             attributes:
-              urlAttrName && urlAttrValue
-                ? { name: urlAttrName, value: urlAttrValue }
-                : null,
+              urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null,
             pricerange:
               urlMinPrice && urlMaxPrice
-                ? {
-                    min_price: Number(urlMinPrice),
-                    max_price: Number(urlMaxPrice),
-                  }
+                ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
                 : undefined,
           }));
         }
@@ -266,7 +264,7 @@ const Cards = ({ category = "" }) => {
           page: 1,
           sendAttributes: true,
           limit: pageLimit,
-          searchTerm: searchParams.get("search"),
+          searchTerm: searchParams.get("search") || "",
           productTypeId: searchParams.get("categoryId"),
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
@@ -277,29 +275,27 @@ const Cards = ({ category = "" }) => {
           pricerange:
             urlMinPrice && urlMaxPrice
               ? {
-                  min_price: Number(urlMinPrice),
-                  max_price: Number(urlMaxPrice),
-                }
+                min_price: Number(urlMinPrice),
+                max_price: Number(urlMaxPrice),
+              }
               : undefined,
         }));
       } else {
+        const isTopLevel = ["promotional", "clothing", "headwear", "dress"].includes(category);
         setPaginationData((prev) => ({
           ...prev,
-          category: category,
-          page: pageFromURL,
+          category: isTopLevel ? null : category,
+          productTypeId: null,
+          searchTerm: "",
+          page: pageFromURL || 1,
           limit: pageLimit,
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
           attributes:
-            urlAttrName && urlAttrValue
-              ? { name: urlAttrName, value: urlAttrValue }
-              : null,
+            urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null,
           pricerange:
             urlMinPrice && urlMaxPrice
-              ? {
-                  min_price: Number(urlMinPrice),
-                  max_price: Number(urlMaxPrice),
-                }
+              ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
               : undefined,
           sendAttributes: false,
         }));
@@ -314,20 +310,15 @@ const Cards = ({ category = "" }) => {
     urlMaxPrice,
   ]);
 
-  // Track when filters/category change to reset accumulated products
-  useEffect(() => {
-    refetchProducts();
-  }, [paginationData, refetchProducts]);
+  const isInitialLoadRef = useRef(true);
 
   // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
-    const currentFiltersKey = `${paginationData.productTypeId}-${
-      paginationData.category
-    }-${paginationData.searchTerm}-${
-      paginationData.sortOption
-    }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
-      paginationData.colors
-    )}`;
+    const currentFiltersKey = `${paginationData.productTypeId}-${paginationData.category
+      }-${paginationData.searchTerm}-${paginationData.sortOption
+      }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
+        paginationData.colors
+      )}`;
 
     if (
       filtersKeyRef.current !== null &&
@@ -363,7 +354,7 @@ const Cards = ({ category = "" }) => {
       scrollToProductId &&
       !hasScrolledRef.current &&
       accumulatedProducts.length > 0 &&
-      !productsLoading &&
+      !isProductsLoading &&
       !isLoadingMore
     ) {
       const productElement = productRefs.current.get(scrollToProductId);
@@ -386,7 +377,7 @@ const Cards = ({ category = "" }) => {
   }, [
     scrollToProductId,
     accumulatedProducts,
-    productsLoading,
+    isProductsLoading,
     isLoadingMore,
     // searchParams,
     // setSearchParams,
@@ -404,17 +395,17 @@ const Cards = ({ category = "" }) => {
     if (
       getProducts?.data &&
       Array.isArray(getProducts.data) &&
-      !productsLoading
+      !isProductsLoading
     ) {
       // Check if we're restoring from URL page parameter
       const urlPage = parseInt(searchParams.get("page")) || 1;
       const isRestoringFromURL = urlPage > 1;
 
       // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
+        // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
+      const effectivePage = paginationData.page ?? 1;
       if (
-        (isInitialLoadRef.current || currentPage === 1) &&
-        !isRestoringFromURL
+        ((isInitialLoadRef.current || effectivePage === 1) && !isRestoringFromURL)
       ) {
         setAccumulatedProducts(getProducts.data);
         setCurrentPage(1);
@@ -441,7 +432,7 @@ const Cards = ({ category = "" }) => {
         setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
       }
     } else if (
-      !productsLoading &&
+      !isProductsLoading &&
       (!getProducts?.data ||
         (Array.isArray(getProducts.data) && getProducts.data.length === 0))
     ) {
@@ -552,7 +543,7 @@ const Cards = ({ category = "" }) => {
     getProducts?.data,
     getProducts?.total_pages,
     getProducts?.totalPages,
-    productsLoading,
+    isProductsLoading,
     paginationData.page,
   ]);
 
@@ -653,8 +644,8 @@ const Cards = ({ category = "" }) => {
                     {sortOption === "lowToHigh"
                       ? "Lowest to Highest"
                       : sortOption === "highToLow"
-                      ? "Highest to Lowest"
-                      : "Relevancy"}
+                        ? "Highest to Lowest"
+                        : "Relevancy"}
                     <span className="">
                       {isDropdownOpen ? (
                         <IoIosArrowUp className="text-gray-600" />
@@ -667,25 +658,22 @@ const Cards = ({ category = "" }) => {
                     <div className="absolute right-0 z-[100] w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-t-lg ${
-                          sortOption === "lowToHigh" ? "bg-gray-50" : ""
-                        }`}
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-t-lg ${sortOption === "lowToHigh" ? "bg-gray-50" : ""
+                          }`}
                       >
                         Lowest to Highest
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 ${
-                          sortOption === "highToLow" ? "bg-gray-50" : ""
-                        }`}
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 ${sortOption === "highToLow" ? "bg-gray-50" : ""
+                          }`}
                       >
                         Highest to Lowest
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-b-lg ${
-                          sortOption === "relevancy" ? "bg-gray-50" : ""
-                        }`}
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-b-lg ${sortOption === "relevancy" ? "bg-gray-50" : ""
+                          }`}
                       >
                         Relevancy
                       </button>
@@ -699,16 +687,16 @@ const Cards = ({ category = "" }) => {
             <div className="mb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
-                  {!productsLoading &&
+                  {!isProductsLoading &&
                     (getProducts?.item_count ||
                       getProducts?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {productsLoading ? "Loading..." : `product found `}
-                  {productsLoading && " Please wait a while..."}
-                  {isPriceFilterActive && !productsLoading
+                  {isProductsLoading ? "Loading..." : `product found `}
+                  {isProductsLoading && " Please wait a while..."}
+                  {isPriceFilterActive && !isProductsLoading
                     ? `between $${minPrice} and $${maxPrice}`
                     : ""}
                 </p>
@@ -721,16 +709,16 @@ const Cards = ({ category = "" }) => {
               {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
-                  {!productsLoading &&
+                  {!isProductsLoading &&
                     (getProducts?.item_count ||
                       getProducts?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
                 <p className="">
-                  {productsLoading ? "Loading..." : `product found`}
-                  {productsLoading && " Please wait a while..."}
-                  {isPriceFilterActive && !productsLoading
+                  {isProductsLoading ? "Loading..." : `product found`}
+                  {isProductsLoading && " Please wait a while..."}
+                  {isPriceFilterActive && !isProductsLoading
                     ? ` between $${minPrice} and $${maxPrice}`
                     : ""}
                 </p>
@@ -747,8 +735,8 @@ const Cards = ({ category = "" }) => {
                     {sortOption === "lowToHigh"
                       ? "Lowest to Highest"
                       : sortOption === "highToLow"
-                      ? "Highest to Lowest"
-                      : "Relevancy"}
+                        ? "Highest to Lowest"
+                        : "Relevancy"}
                     <span className="">
                       {isDropdownOpen ? (
                         <IoIosArrowUp className="text-black" />
@@ -761,25 +749,22 @@ const Cards = ({ category = "" }) => {
                     <div className="absolute left-0 z-50 w-full mt-2 bg-white border top-full border-border2">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
-                          sortOption === "lowToHigh" ? "bg-gray-100" : ""
-                        }`}
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""
+                          }`}
                       >
                         Lowest to Highest
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
-                          sortOption === "highToLow" ? "bg-gray-100" : ""
-                        }`}
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""
+                          }`}
                       >
                         Highest to Lowest
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
-                          sortOption === "revelancy" ? "bg-gray-100" : ""
-                        }`}
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "revelancy" ? "bg-gray-100" : ""
+                          }`}
                       >
                         Relevancy
                       </button>
@@ -790,13 +775,12 @@ const Cards = ({ category = "" }) => {
             </div>
           </div>
           <div
-            className={`${
-              productsLoading
-                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
-                : ""
-            }`}
+            className={`${isProductsLoading
+              ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
+              : ""
+              }`}
           >
-            {productsLoading ? (
+            {isProductsLoading ? (
               Array.from({ length: 20 }, (_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
@@ -828,7 +812,7 @@ const Cards = ({ category = "" }) => {
                 </div>
 
                 {/* Load More Button */}
-                {hasMoreProducts && !productsLoading && (
+                {hasMoreProducts && !isProductsLoading && (
                   <div className="flex justify-center mt-8 mb-4">
                     <button
                       onClick={handleLoadMore}
@@ -847,7 +831,7 @@ const Cards = ({ category = "" }) => {
                 )}
 
                 {/* Product Count Display */}
-                {accumulatedProducts.length > 0 && !productsLoading && (
+                {accumulatedProducts.length > 0 && !isProductsLoading && (
                   <div className="flex justify-center mb-8 mt-2">
                     <p className="text-sm sm:text-base text-gray-600 text-center">
                       Showing{" "}

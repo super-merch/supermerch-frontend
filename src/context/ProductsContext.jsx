@@ -168,7 +168,7 @@ const ProductsContextProvider = ({ children }) => {
         return data;
     };
 
-    const { data: getProducts, isLoading: productsLoading, refetch: refetchProducts } = useQuery({
+    const { data: getProducts, isLoading: productsLoading, isFetching: productsFetching, refetch: refetchProducts } = useQuery({
         queryKey: [
             paginationData.productTypeId,
             paginationData.page,
@@ -185,7 +185,7 @@ const ProductsContextProvider = ({ children }) => {
             paginationData.sendAttributes,
         ],
         queryFn: () => getProductsFromApi(),
-        enabled: false,
+        enabled: Boolean(backendUrl),
         keepPreviousData: true,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false,
@@ -1278,7 +1278,9 @@ const ProductsContextProvider = ({ children }) => {
             setPaginationData,
             getProducts,
             productsLoading,
+            productsFetching,
             refetchProducts,
+
 
             products,
             setProducts,
@@ -1332,6 +1334,7 @@ const ProductsContextProvider = ({ children }) => {
             paginationData,
             getProducts,
             productsLoading,
+            productsFetching,
             refetchProducts,
 
             products,
