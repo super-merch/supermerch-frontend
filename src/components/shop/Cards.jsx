@@ -66,6 +66,7 @@ const Cards = ({ category = "" }) => {
   );
   const prevCategoryKeyRef = useRef(null);
   const filtersKeyRef = useRef(null);
+  const paginationModeRef = useRef("unknown"); // "page" | "limit"
   const productRefs = useRef(new Map());
   const hasScrolledRef = useRef(false);
   const scrollToProductId = searchParams.get("scrollTo");
@@ -138,10 +139,10 @@ const Cards = ({ category = "" }) => {
     return url;
   };
 
-  // Function to fetch products for a specific page
-  const fetchProductsPage = async (page) => {
-    const limit = 20;
-    const url = buildApiUrl(page, limit);
+  // Function to fetch products for a specific page/limit
+  const fetchProductsPage = async (page, limitOverride) => {
+    const effectiveLimit = limitOverride ?? 20;
+    const url = buildApiUrl(page, effectiveLimit);
 
     try {
       const res = await fetch(url);
@@ -156,28 +157,62 @@ const Cards = ({ category = "" }) => {
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
-    const limit = Number(searchParams.get("limit")) || 20;
-    const newLimit = limit + 20;
+    const currentLimit =
+      Number(searchParams.get("limit")) || paginationData?.limit || 20;
     setIsLoadingMore(true);
     try {
-      const nextPage = currentPage + 1;
-      const data = await fetchProductsPage(nextPage);
+      if (paginationModeRef.current !== "limit") {
+        const nextPage = currentPage + 1;
+        const pageData = await fetchProductsPage(nextPage, currentLimit);
+        if (pageData?.data && Array.isArray(pageData.data)) {
+          const existingIds = new Set(
+            accumulatedProducts
+              .map((product) => product.meta?.id ?? product.product?.id ?? product.id)
+              .filter(Boolean)
+          );
+          const fresh = pageData.data.filter((product) => {
+            const id = product.meta?.id ?? product.product?.id ?? product.id;
+            return id ? !existingIds.has(id) : true;
+          });
+          if (fresh.length > 0) {
+            paginationModeRef.current = "page";
+            setAccumulatedProducts((prev) => [...prev, ...fresh]);
+            setCurrentPage(nextPage);
+            setSearchParams((prev) => {
+              prev.set("page", nextPage.toString());
+              prev.set("limit", currentLimit.toString());
+              return prev;
+            });
+            const totalPages = pageData.total_pages || pageData.totalPages || 0;
+            if (totalPages && nextPage >= totalPages) {
+              setHasMoreProducts(false);
+            }
+            return;
+          }
+        }
+        paginationModeRef.current = "limit";
+      }
+
+      const newLimit = currentLimit + 20;
+      const data = await fetchProductsPage(1, newLimit);
 
       if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-        // Append new products to accumulated products
-        setAccumulatedProducts((prev) => [...prev, ...data.data]);
-        setCurrentPage(nextPage);
+        // Replace with a larger page-size result set
+        setAccumulatedProducts(data.data);
+        setCurrentPage(1);
         setSearchParams((prev) => {
-          prev.set("page", nextPage.toString());
+          prev.set("page", "1");
           prev.set("limit", newLimit.toString());
           return prev;
         });
 
-        // Check if there are more products to load
-        const totalPages = data.total_pages || data.totalPages || 0;
-        if (nextPage >= totalPages) {
-          setHasMoreProducts(false);
-        }
+        const totalCount =
+          data.item_count ||
+          data.totalCount ||
+          data.total_count ||
+          data.meta?.total ||
+          data.data.length;
+        setHasMoreProducts(data.data.length < totalCount);
       } else {
         setHasMoreProducts(false);
       }
@@ -200,6 +235,7 @@ const Cards = ({ category = "" }) => {
     prevCategoryKeyRef.current = currentCategoryKey;
 
     if (categoryChanged) {
+      paginationModeRef.current = "unknown";
       // Reset accumulated products and page when category/filters change
       setAccumulatedProducts([]);
       setCurrentPage(1);
