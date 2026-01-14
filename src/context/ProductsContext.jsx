@@ -112,13 +112,17 @@ const ProductsContextProvider = ({ children }) => {
             ...(paginationData.sendAttributes != null && {
                 send_attributes: paginationData.sendAttributes,
             }),
-            ...(paginationData.attributes?.name && {
-                attribute_name: paginationData.attributes.name,
-            }),
-            ...(paginationData.attributes?.value && {
-                attribute_value: paginationData.attributes.value,
-            }),
         });
+        if (Array.isArray(paginationData.attributes) && paginationData.attributes.length > 0) {
+            paginationData.attributes.forEach((attr) => {
+                params.append("attribute_name", attr.name);
+                params.append("attribute_value", attr.value);
+            });
+        } else if (paginationData.attributes?.name && paginationData.attributes?.value) {
+        params.append("attribute_name", paginationData.attributes.name);
+        params.append("attribute_value", paginationData.attributes.value);
+        }
+
         if (
             paginationData.colors &&
             Array.isArray(paginationData.colors) &&

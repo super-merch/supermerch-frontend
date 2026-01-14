@@ -32,8 +32,19 @@ const Cards = ({ category = "" }) => {
   const pageLimit = limit;
   const urlSort = searchParams.get("sort") || "";
   const urlColors = searchParams.get("colors");
-  const urlAttrName = searchParams.get("attrName");
-  const urlAttrValue = searchParams.get("attrValue");
+  const urlAttrNames = searchParams.getAll("attrName");
+  const urlAttrValues = searchParams.getAll("attrValue");
+  const urlAttributes = urlAttrNames
+    .map((name, idx) => ({
+      name,
+      value: (urlAttrValues[idx] || "")
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+        .join(","),
+    }))
+    .filter((attr) => attr.name && attr.value);
+
   const { activeFilters, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
@@ -96,23 +107,18 @@ const Cards = ({ category = "" }) => {
       ...(paginationData.sendAttributes != null && {
         send_attributes: paginationData.sendAttributes,
       }),
-      ...(paginationData.attributes?.name && {
-        attribute_name: paginationData.attributes.name,
-      }),
-      ...(paginationData.attributes?.value && {
-        attribute_value: paginationData.attributes.value,
-      }),
     });
 
-    if (
-      paginationData.colors &&
-      Array.isArray(paginationData.colors) &&
-      paginationData.colors.length > 0
-    ) {
-      paginationData.colors.forEach((color) => {
-        params.append("colors[]", color);
+    if (Array.isArray(paginationData.attributes) && paginationData.attributes.length > 0) {
+      paginationData.attributes.forEach((attr) => {
+        params.append("attribute_name", attr.name);
+        params.append("attribute_value", attr.value);
       });
+    } else if (paginationData.attributes?.name && paginationData.attributes?.value) {
+      params.append("attribute_name", paginationData.attributes.name);
+      params.append("attribute_value", paginationData.attributes.value);
     }
+
     let url = "";
     let searchTerms = ["gift pack", "hampers", "gift"];
     if (paginationData.category === "return-gifts") {
@@ -285,8 +291,7 @@ const Cards = ({ category = "" }) => {
             page: pageFromURL || 1,
             sortOption: urlSort,
             colors: urlColors ? urlColors.split(",") : [],
-            attributes:
-              urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null,
+            attributes: urlAttributes.length > 0 ? urlAttributes : null,
             pricerange:
               urlMinPrice && urlMaxPrice
                 ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
@@ -304,10 +309,7 @@ const Cards = ({ category = "" }) => {
           productTypeId: searchParams.get("categoryId"),
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
-          attributes:
-            urlAttrName && urlAttrValue
-              ? { name: urlAttrName, value: urlAttrValue }
-              : null,
+          attributes: urlAttributes.length > 0 ? urlAttributes : null,
           pricerange:
             urlMinPrice && urlMaxPrice
               ? {
@@ -327,8 +329,7 @@ const Cards = ({ category = "" }) => {
           limit: pageLimit,
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
-          attributes:
-            urlAttrName && urlAttrValue ? { name: urlAttrName, value: urlAttrValue } : null,
+          attributes: urlAttributes.length > 0 ? urlAttributes : null,
           pricerange:
             urlMinPrice && urlMaxPrice
               ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
@@ -438,7 +439,7 @@ const Cards = ({ category = "" }) => {
       const isRestoringFromURL = urlPage > 1;
 
       // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-        // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
+      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
       const effectivePage = paginationData.page ?? 1;
       if (
         ((isInitialLoadRef.current || effectivePage === 1) && !isRestoringFromURL)
