@@ -37,6 +37,7 @@ import UploadArtwork from "./pages/UploadArtwork";
 import Terms from "./pages/Terms";
 import QuoteResponse from "./pages/QuoteResponse";
 import ChatWidget from "./components/Chat/ChatWidget";
+import AustraliaMade from "./pages/AustraliaMade";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -107,7 +108,7 @@ const App = () => {
             <Route path="/shop" element={<ShopPage general={true} />} />
             <Route
               path="/australia-made"
-              element={<ShopPage category="australia" />}
+              element={<AustraliaMade category="australia" />}
             />
             <Route path="/search" element={<ShopPage category="search" />} />
             <Route path="/success" element={<Success />} />
