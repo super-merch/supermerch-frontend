@@ -36,6 +36,7 @@ import TrackOrder from "./pages/TrackOrder";
 import UploadArtwork from "./pages/UploadArtwork";
 import Terms from "./pages/Terms";
 import QuoteResponse from "./pages/QuoteResponse";
+import ChatWidget from "./components/Chat/ChatWidget";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -137,6 +138,7 @@ const App = () => {
       </HelmetProvider>
       {/* <Sidebar /> */}
       {/* <Sidebar /> */}
+      <ChatWidget />
       <Footer />
     </div>
   );
