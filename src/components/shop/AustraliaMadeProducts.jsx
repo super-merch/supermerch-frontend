@@ -1,7 +1,8 @@
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
 import { slugify } from "@/utils/utils";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoMenu } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -12,16 +13,34 @@ import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
 
-const Cards = ({ category = "" }) => {
-  // ============================================================================
-  // HOOKS - Router & Context
-  // ============================================================================
+const AustraliaMadeProducts = ({ category = "" }) => {
+  const [sortOption, setSortOption] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate();
+
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const urlCategoryParam = searchParams.get("category");
+  const pageFromURL = parseInt(searchParams.get("page"));
+  const urlType = searchParams.get("type");
+  const isSearchRoute = location.pathname.includes("/search");
+  const limit = 20;
+  const pageLimit = limit;
+  const urlSort = searchParams.get("sort") || "";
+  const urlColors = searchParams.get("colors");
+  const urlAttrName = searchParams.get("attrName");
+  const urlAttrValue = searchParams.get("attrValue");
+  const { activeFilters, minPrice, maxPrice } = useSelector(
+    (state) => state.filters
+  );
+  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
+  const urlMinPrice = searchParams.get("minPrice");
+  const urlMaxPrice = searchParams.get("maxPrice");
   const dispatch = useDispatch();
-  
-  // Context
+  const navigate = useNavigate();
+  const pageType = getPageTypeFromRoute(location.pathname);
+
   const {
     paginationData,
     setPaginationData,
@@ -30,145 +49,33 @@ const Cards = ({ category = "" }) => {
     backednUrl,
     refetchProducts,
   } = useContext(AppContext);
-  
-  // Redux
-  const { activeFilters, minPrice, maxPrice } = useSelector(
-    (state) => state.filters
-  );
 
-  // ============================================================================
-  // URL PARAMETERS & DERIVED VALUES
-  // ============================================================================
-  const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = parseInt(searchParams.get("page"));
-  const urlType = searchParams.get("type");
-  const urlSort = searchParams.get("sort") || "";
-  const urlColors = searchParams.get("colors");
-  const urlAttrName = searchParams.get("attrName");
-  const urlAttrValue = searchParams.get("attrValue");
-  const urlMinPrice = searchParams.get("minPrice");
-  const urlMaxPrice = searchParams.get("maxPrice");
-  const scrollToProductId = searchParams.get("scrollTo");
-  
-  // Derived values
-  const isSearchRoute = location.pathname.includes("/search");
-  const pageType = getPageTypeFromRoute(location.pathname);
-  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
-  const limit = parseInt(searchParams.get("limit")) || 20;
-  const pageLimit = limit;
-
-  // ============================================================================
-  // STATE DECLARATIONS
-  // ============================================================================
-  // UI State
-  const [sortOption, setSortOption] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  // Product State
+  // State for accumulated products and loading more
   const [accumulatedProducts, setAccumulatedProducts] = useState(
     getProducts?.data ?? []
   );
+
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
-  console.log(pageFromURL)
   const [currentPage, setCurrentPage] = useState(
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
-  
-
-  // ============================================================================
-  // REFS
-  // ============================================================================
-  const dropdownRef = useRef(null);
   const prevCategoryKeyRef = useRef(null);
   const productRefs = useRef(new Map());
   const hasScrolledRef = useRef(false);
-  const filtersKeyRef = useRef(null);
-  const isInitialLoadRef = useRef(true);
+  const scrollToProductId = searchParams.get("scrollTo");
 
-  // ============================================================================
-  // CONSTANTS
-  // ============================================================================
   const favSet = new Set();
 
-  // ============================================================================
-  // UTILITY FUNCTIONS
-  // ============================================================================
-  
-  /**
-   * Builds API URL based on pagination data and category
-   */
-  const buildApiUrl = (page, limit) => {
-    const params = new URLSearchParams({
-      ...(paginationData.productTypeId && {
-        product_type_ids: paginationData.productTypeId,
-      }),
-      page: page.toString(),
-      limit: limit.toString(),
-      ...(paginationData.sortOption && { sort: paginationData.sortOption }),
-      ...(paginationData.filter && { filter: paginationData.filter }),
-      ...(paginationData.category && { category: paginationData.category }),
-      ...(paginationData.searchTerm !== undefined && {
-        searchTerm: paginationData.searchTerm,
-      }),
-      ...(paginationData.pricerange?.min_price != null && {
-        min_price: paginationData.pricerange.min_price,
-      }),
-      ...(paginationData.pricerange?.max_price != null && {
-        max_price: paginationData.pricerange.max_price,
-      }),
-      ...(paginationData.sendAttributes != null && {
-        send_attributes: paginationData.sendAttributes,
-      }),
-      ...(paginationData.attributes?.name && {
-        attribute_name: paginationData.attributes.name,
-      }),
-      ...(paginationData.attributes?.value && {
-        attribute_value: paginationData.attributes.value,
-      }),
-    });
 
-    if (
-      paginationData.colors &&
-      Array.isArray(paginationData.colors) &&
-      paginationData.colors.length > 0
-    ) {
-      paginationData.colors.forEach((color) => {
-        params.append("colors[]", color);
-      });
-    }
-    let url = "";
-    let searchTerms = ["gift pack", "hampers", "gift"];
-    if (paginationData.category === "return-gifts") {
-      url = `${backednUrl}/api/client-products/search?searchTerms=${searchTerms.join(
-        ","
-      )}&page=${page}&limit=${limit}`;
-    } else if (paginationData.category === "australia") {
-      url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
-    } else if (paginationData.category === "24hr-production") {
-      url = `${backednUrl}/api/24hour/get-products?${params.toString()}`;
-    } else if (paginationData.category === "sales") {
-      url = `${backednUrl}/api/client-products-discounted?${params.toString()}`;
-    } else if (paginationData.category === "allProducts") {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
-    } else if (paginationData.category === "search") {
-      url = `${backednUrl}/api/client-products/search?${params.toString()}`;
-    } else if (paginationData.category) {
-      url = `${backednUrl}/api/client-products/category?${params.toString()}`;
-    } else if (paginationData.productTypeId) {
-      url = `${backednUrl}/api/params-products?${params.toString()}`;
-    } else {
-      url = `${backednUrl}/api/client-products?${params.toString()}`;
-    }
-    return url;
-  };
 
-  /**
-   * Fetches products for a specific page
-   */
+  // Function to fetch products for a specific page
   const fetchProductsPage = async (page) => {
-    const urlLimit = parseInt(searchParams.get("limit")) || 20;
-    const url = buildApiUrl(page, urlLimit);
+   const params = new URLSearchParams({
+    page: page.toString()||"1",
+    limit: limit.toString(),
+   });
+    const url = url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
 
     try {
       const res = await fetch(url);
@@ -181,9 +88,12 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-  /**
-   * Load more products (infinite scroll)
-   */
+  useEffect(() => {
+    if (getProducts?.data?.length > 0) {
+      fetchProductsPage(paginationData.page);
+    }
+  }, [getProducts?.data]);
+
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
     const limit = Number(searchParams.get("limit")) || 20;
@@ -219,16 +129,7 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-  // ============================================================================
-  // USEEFFECTS
-  // ============================================================================
-  
-  /**
-   * 1. Reset accumulated products when category/filters change (URL-based)
-   *    - Monitors URL parameters to detect navigation to new categories
-   *    - Resets pagination and product list
-   *    - Updates paginationData context
-   */
+  // Reset accumulated products when category/filters change
   useEffect(() => {
     const currentCategoryKey = urlCategoryParam
       ? `cat:${urlCategoryParam}:type:${urlType || ""}`
@@ -264,14 +165,12 @@ const Cards = ({ category = "" }) => {
           urlCategoryParam === "australia" ||
           urlCategoryParam === "24hr-production" ||
           urlCategoryParam === "sales" ||
-          urlCategoryParam === "return-gifts" ||
           urlCategoryParam === "allProducts"
         ) {
           setPaginationData((prev) => ({
             ...prev,
             category: urlCategoryParam,
-            productTypeId: null, // Clear productTypeId when navigating to special categories
-            page: pageFromURL || 1,
+            page: 1,
             limit: pageLimit,
             sortOption: "",
             colors: [],
@@ -306,11 +205,11 @@ const Cards = ({ category = "" }) => {
         setPaginationData((prev) => ({
           ...prev,
           category: "search",
-          page: pageFromURL || 1,
+          page: 1,
           sendAttributes: true,
           limit: pageLimit,
           searchTerm: searchParams.get("search"),
-          productTypeId: searchParams.get("categoryId") || null, // Clear if not in URL
+          productTypeId: searchParams.get("categoryId"),
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
           attributes:
@@ -329,7 +228,6 @@ const Cards = ({ category = "" }) => {
         setPaginationData((prev) => ({
           ...prev,
           category: category,
-          productTypeId: null, // Clear productTypeId when navigating to regular categories
           page: pageFromURL,
           limit: pageLimit,
           sortOption: urlSort,
@@ -358,12 +256,11 @@ const Cards = ({ category = "" }) => {
     urlMaxPrice,
   ]);
 
-  /**
-   * 2. Reset accumulated products when filters change (State-based)
-   *    - Monitors paginationData changes (filters, colors, attributes)
-   *    - Resets product list when user applies new filters
-   *    - More granular than URL-based reset
-   */
+  // Track when filters/category change to reset accumulated products
+  const filtersKeyRef = useRef(null);
+  const isInitialLoadRef = useRef(true);
+
+  // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
     const currentFiltersKey = `${paginationData.productTypeId}-${
       paginationData.category
@@ -401,12 +298,49 @@ const Cards = ({ category = "" }) => {
     // paginationData.colors,
   ]);
 
-  /**
-   * 3. Update accumulated products when getProducts.data changes
-   *    - Receives new data from React Query
-   *    - Handles initial load and page restoration
-   *    - Sets hasMoreProducts based on total pages
-   */
+  // Handle scroll restoration from URL
+  useEffect(() => {
+    if (
+      scrollToProductId &&
+      !hasScrolledRef.current &&
+      accumulatedProducts.length > 0 &&
+      !productsLoading &&
+      !isLoadingMore
+    ) {
+      const productElement = productRefs.current.get(scrollToProductId);
+
+      if (productElement) {
+        setTimeout(() => {
+          productElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          hasScrolledRef.current = true;
+
+          // Remove scrollTo from URL after scrolling
+          const currentParams = new URLSearchParams(searchParams);
+          currentParams.delete("scrollTo");
+          setSearchParams(currentParams, { replace: true });
+        }, 300);
+      }
+    }
+  }, [
+    scrollToProductId,
+    accumulatedProducts,
+    productsLoading,
+    isLoadingMore,
+    // searchParams,
+    // setSearchParams,
+  ]);
+
+  // Reset scroll ref when scrollToProductId is removed
+  useEffect(() => {
+    if (!scrollToProductId) {
+      hasScrolledRef.current = false;
+    }
+  }, [scrollToProductId]);
+
+  // Update accumulated products when getProducts.data changes
   useEffect(() => {
     if (
       getProducts?.data &&
@@ -466,57 +400,7 @@ const Cards = ({ category = "" }) => {
     paginationData.page,
   ]);
 
-  /**
-   * 4. Handle scroll restoration from URL
-   *    - Scrolls to specific product after page load
-   *    - Triggered when returning from product detail page
-   */
-  useEffect(() => {
-    if (
-      scrollToProductId &&
-      !hasScrolledRef.current &&
-      accumulatedProducts.length > 0 &&
-      !productsLoading &&
-      !isLoadingMore
-    ) {
-      const productElement = productRefs.current.get(scrollToProductId);
-
-      if (productElement) {
-        setTimeout(() => {
-          productElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-          hasScrolledRef.current = true;
-
-          // Remove scrollTo from URL after scrolling
-          const currentParams = new URLSearchParams(searchParams);
-          currentParams.delete("scrollTo");
-          setSearchParams(currentParams, { replace: true });
-        }, 300);
-      }
-    }
-  }, [
-    scrollToProductId,
-    accumulatedProducts,
-    productsLoading,
-    isLoadingMore,
-    // searchParams,
-    // setSearchParams,
-  ]);
-
-  /**
-   * 6. Reset scroll ref when scrollToProductId is removed
-   *    - Clears scroll restoration flag
-   */
-  useEffect(() => {
-    if (!scrollToProductId) {
-      hasScrolledRef.current = false;
-    }
-  }, [scrollToProductId]);
-
-  /**
-   * 7. Update limit when screen size changes (but don't reset products)
+  // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
       const newLimit = Number(searchParams.get("limit")) || 20;
@@ -532,14 +416,6 @@ const Cards = ({ category = "" }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [pageLimit, setPaginationData]);
 
-  // ============================================================================
-  // EVENT HANDLERS
-  // ============================================================================
-  
-  /**
-   * Handle sort option selection
-   * Resets pagination and updates URL with new sort parameter
-   */
   const handleSortSelection = (option) => {
     setSortOption(option);
     // Reset accumulated products and page when sort changes
@@ -565,10 +441,6 @@ const Cards = ({ category = "" }) => {
     setIsDropdownOpen(false);
   };
 
-  /**
-   * Navigate to product detail page
-   * Stores current page and scroll position for restoration
-   */
   const handleViewProduct = (productId, name) => {
     // Store current page and product ID in URL for scroll restoration
     const currentParams = new URLSearchParams(searchParams);
@@ -713,7 +585,7 @@ const Cards = ({ category = "" }) => {
                 <p>Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 md:w-52 bg-white rounded-lg"
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 md:w-52 border-border2 rounded-lg"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
                     {sortOption === "lowToHigh"
@@ -860,4 +732,4 @@ const Cards = ({ category = "" }) => {
   );
 };
 
-export default Cards;
+export default AustraliaMadeProducts;
