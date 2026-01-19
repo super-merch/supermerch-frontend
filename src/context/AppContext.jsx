@@ -1,6 +1,6 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -152,10 +152,11 @@ const AppContextProvider = (props) => {
     }
     return 9; // Default for SSR
   };
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [paginationData, setPaginationData] = useState({
-    page: 1,
-    limit: getResponsiveLimit(),
+    page: parseInt(searchParams.get("page")) || 1,
+    limit: parseInt(searchParams.get("limit")) || getResponsiveLimit(),
     sortOption: "",
     filter: true,
     productTypeId: null,
@@ -834,18 +835,22 @@ const AppContextProvider = (props) => {
     }
   };
   const [discountedProducts, setDiscountedProducts] = useState([]);
+  const [discountedProductsLoading, setDiscountedProductsLoading] = useState(false);
   const fetchDiscountedProducts = async (page = 1, sort = "", limit) => {
     try {
       if (!limit) limit = 10;
+      setDiscountedProductsLoading(true);
       const key = `${page}_${sort}_${limit}`;
 
       if (discountedCacheRef.current[key]) {
         setDiscountedProducts(discountedCacheRef.current[key]);
+        setDiscountedProductsLoading(false);
         return;
       }
 
       if (pendingDiscountedRef.current[key]) {
         await pendingDiscountedRef.current[key];
+        setDiscountedProductsLoading(false);
         return;
       }
 
@@ -864,6 +869,7 @@ const AppContextProvider = (props) => {
 
         discountedCacheRef.current[key] = data.data;
         setDiscountedProducts(data.data);
+        setDiscountedProductsLoading(false);
       })();
 
       pendingDiscountedRef.current[key] = p;
@@ -872,9 +878,11 @@ const AppContextProvider = (props) => {
         await p;
       } finally {
         delete pendingDiscountedRef.current[key];
-      }
+        setDiscountedProductsLoading(false);
+        }
     } catch (err) {
       setError(err.message);
+      setDiscountedProductsLoading(false);
     }
   };
 
@@ -1647,6 +1655,7 @@ const AppContextProvider = (props) => {
     fetchDiscountedProducts,
     blogLoading,
     discountedProducts,
+    discountedProductsLoading,
     fetchMultipleBestSellerPages,
     setCategoryProducts,
     fetchCategories,
