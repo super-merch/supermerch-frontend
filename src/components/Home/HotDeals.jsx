@@ -13,7 +13,9 @@ const HotDeals = () => {
     discountedProducts,
     products,
     skeletonLoading,
+    discountedProductsLoading,
   } = useContext(AppContext);
+
 
   useEffect(() => {
     if (discountedProducts.length === 0 && products.length === 0) {
@@ -30,12 +32,10 @@ const HotDeals = () => {
           return price > 0; // Only show products with valid prices
         })
       : products || [];
+  
+  console.log(skeletonLoading,displayProducts);
 
-  const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
-  };
+
 
   return (
     <div className="border border-primary rounded-lg p-4 h-full flex flex-col shadow-lg shadow-primary/20 min-h-96 bg-white">
@@ -47,7 +47,7 @@ const HotDeals = () => {
 
       {/* Hot Deals List */}
       <div className="flex-1 flex flex-col justify-start overflow-y-auto ">
-        {skeletonLoading
+        {discountedProductsLoading
           ? // Loading skeleton
             [...Array(4)].map((_, index) => {
               const isLastItem = index === 3;
