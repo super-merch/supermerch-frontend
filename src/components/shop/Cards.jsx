@@ -12,23 +12,17 @@ import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
-import { headWear } from "@/assets/asset";
-import { GiDress } from "react-icons/gi";
-
 const Cards = ({ category = "" }) => {
   // ============================================================================
   // HOOKS - Router & Context
   // ============================================================================
   const location = useLocation();
-
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
 
   const urlCategoryParam = searchParams.get("category");
   const pageFromURL = Number(searchParams.get("page")) || 1;
-  const urlType = searchParams.get("type");
-  const isSearchRoute = location.pathname.includes("/search");
-  const limit = 20;
-  const pageLimit = limit;
   const urlSort = searchParams.get("sort") || "";
   const urlColors = searchParams.get("colors");
   const urlAttrNames = searchParams.getAll("attrName");
@@ -43,19 +37,17 @@ const Cards = ({ category = "" }) => {
         .join(","),
     }))
     .filter((attr) => attr.name && attr.value);
-
-  const { activeFilters, minPrice, maxPrice } = useSelector(
-    (state) => state.filters
-  );
-  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
   const urlMinPrice = searchParams.get("minPrice");
   const urlMaxPrice = searchParams.get("maxPrice");
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const dispatch = useDispatch();
-  
-  // Context
+  const scrollToProductId = searchParams.get("scrollTo");
+
+  const { minPrice, maxPrice } = useSelector((state) => state.filters);
+  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
+  const isSearchRoute = location.pathname.includes("/search");
+  const pageType = getPageTypeFromRoute(location.pathname);
+  const limit = parseInt(searchParams.get("limit")) || 20;
+  const pageLimit = limit;
+
   const {
     paginationData,
     setPaginationData,
@@ -65,27 +57,6 @@ const Cards = ({ category = "" }) => {
   } = useContext(ProductsContext);
   const isProductsLoading = productsLoading || productsFetching;
   const { backendUrl } = useContext(AppContext);
-
-  // ============================================================================
-  // URL PARAMETERS & DERIVED VALUES
-  // ============================================================================
-  const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = parseInt(searchParams.get("page"));
-  const urlType = searchParams.get("type");
-  const urlSort = searchParams.get("sort") || "";
-  const urlColors = searchParams.get("colors");
-  const urlAttrName = searchParams.get("attrName");
-  const urlAttrValue = searchParams.get("attrValue");
-  const urlMinPrice = searchParams.get("minPrice");
-  const urlMaxPrice = searchParams.get("maxPrice");
-  const scrollToProductId = searchParams.get("scrollTo");
-  
-  // Derived values
-  const isSearchRoute = location.pathname.includes("/search");
-  const pageType = getPageTypeFromRoute(location.pathname);
-  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
-  const limit = parseInt(searchParams.get("limit")) || 20;
-  const pageLimit = limit;
 
   // ============================================================================
   // STATE DECLARATIONS
@@ -100,7 +71,6 @@ const Cards = ({ category = "" }) => {
   );
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
-  console.log(pageFromURL)
   const [currentPage, setCurrentPage] = useState(
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
@@ -115,7 +85,6 @@ const Cards = ({ category = "" }) => {
   const paginationModeRef = useRef("unknown"); // "page" | "limit"
   const productRefs = useRef(new Map());
   const hasScrolledRef = useRef(false);
-  const filtersKeyRef = useRef(null);
   const isInitialLoadRef = useRef(true);
 
   // ============================================================================
@@ -404,8 +373,6 @@ const Cards = ({ category = "" }) => {
     urlMinPrice,
     urlMaxPrice,
   ]);
-
-  const isInitialLoadRef = useRef(true);
 
   // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {

@@ -1,13 +1,13 @@
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
 import { slugify } from "@/utils/utils";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { IoMenu } from "react-icons/io5";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
@@ -21,44 +21,35 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = parseInt(searchParams.get("page"));
-  const urlType = searchParams.get("type");
-  const isSearchRoute = location.pathname.includes("/search");
-  const limit = 20;
-  const pageLimit = limit;
+  const pageFromURL = parseInt(searchParams.get("page")) || 1;
   const urlSort = searchParams.get("sort") || "";
-  const urlColors = searchParams.get("colors");
-  const urlAttrName = searchParams.get("attrName");
-  const urlAttrValue = searchParams.get("attrValue");
-  const { activeFilters, minPrice, maxPrice } = useSelector(
-    (state) => state.filters
-  );
-  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
   const urlMinPrice = searchParams.get("minPrice");
   const urlMaxPrice = searchParams.get("maxPrice");
+  const { minPrice, maxPrice } = useSelector((state) => state.filters);
+  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
+  const limit = 20;
+  const pageLimit = limit;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pageType = getPageTypeFromRoute(location.pathname);
 
   const {
-    paginationData,
-    setPaginationData,
-    getProducts,
-    productsLoading,
-    backednUrl,
-    refetchProducts,
-  } = useContext(AppContext);
+    australiaPaginationData,
+    setAustraliaPaginationData,
+    getAustraliaProducts,
+    australiaProductsLoading,
+  } = useContext(ProductsContext);
+  const { backendUrl } = useContext(AppContext);
 
   // State for accumulated products and loading more
   const [accumulatedProducts, setAccumulatedProducts] = useState(
-    getProducts?.data ?? []
+    getAustraliaProducts?.data ?? []
   );
 
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const [currentPage, setCurrentPage] = useState(
-    pageFromURL || paginationData?.page || paginationData?.currentPage
+    pageFromURL || australiaPaginationData?.page || australiaPaginationData?.currentPage
   );
   const prevCategoryKeyRef = useRef(null);
   const productRefs = useRef(new Map());
@@ -71,11 +62,11 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
   // Function to fetch products for a specific page
   const fetchProductsPage = async (page) => {
-   const params = new URLSearchParams({
-    page: page.toString()||"1",
-    limit: limit.toString(),
-   });
-    const url = url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
+    const params = new URLSearchParams({
+      page: page.toString() || "1",
+      limit: limit.toString(),
+    });
+    const url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
 
     try {
       const res = await fetch(url);
@@ -89,14 +80,13 @@ const AustraliaMadeProducts = ({ category = "" }) => {
   };
 
   useEffect(() => {
-    if (getProducts?.data?.length > 0) {
-      fetchProductsPage(paginationData.page);
+    if (getAustraliaProducts?.data?.length > 0) {
+      fetchProductsPage(australiaPaginationData.page);
     }
-  }, [getProducts?.data]);
+  }, [getAustraliaProducts?.data, australiaPaginationData.page]);
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
-    const limit = Number(searchParams.get("limit")) || 20;
     const newLimit = limit + 20;
     setIsLoadingMore(true);
     try {
@@ -131,21 +121,14 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
   // Reset accumulated products when category/filters change
   useEffect(() => {
-    const currentCategoryKey = urlCategoryParam
-      ? `cat:${urlCategoryParam}:type:${urlType || ""}`
-      : isSearchRoute
-      ? `search:${searchParams.get("search") || ""}`
-      : `route:${category || ""}`;
-
-    const categoryChanged = prevCategoryKeyRef.current !== currentCategoryKey;
-    prevCategoryKeyRef.current = currentCategoryKey;
+    const currentKey = `${location.pathname}|${searchParams.toString()}`;
+    const categoryChanged = prevCategoryKeyRef.current !== currentKey;
+    prevCategoryKeyRef.current = currentKey;
 
     if (categoryChanged) {
-      // Reset accumulated products and page when category/filters change
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
-      // Reset page in URL to 1
       const currentParams = new URLSearchParams(searchParams);
       currentParams.set("page", "1");
       currentParams.delete("scrollTo");
@@ -160,100 +143,23 @@ const AustraliaMadeProducts = ({ category = "" }) => {
         dispatch(setMaxPrice(1000));
       }
 
-      if (urlCategoryParam) {
-        if (
-          urlCategoryParam === "australia" ||
-          urlCategoryParam === "24hr-production" ||
-          urlCategoryParam === "sales" ||
-          urlCategoryParam === "allProducts"
-        ) {
-          setPaginationData((prev) => ({
-            ...prev,
-            category: urlCategoryParam,
-            page: 1,
-            limit: pageLimit,
-            sortOption: "",
-            colors: [],
-            attributes: null,
-            pricerange: undefined,
-            sendAttributes: false,
-          }));
-        } else {
-          setPaginationData((prev) => ({
-            ...prev,
-            productTypeId: urlCategoryParam,
-            sendAttributes: true,
-            limit: pageLimit,
-            category: null,
-            page: pageFromURL,
-            sortOption: urlSort,
-            colors: urlColors ? urlColors.split(",") : [],
-            attributes:
-              urlAttrName && urlAttrValue
-                ? { name: urlAttrName, value: urlAttrValue }
-                : null,
-            pricerange:
-              urlMinPrice && urlMaxPrice
-                ? {
-                    min_price: Number(urlMinPrice),
-                    max_price: Number(urlMaxPrice),
-                  }
-                : undefined,
-          }));
-        }
-      } else if (isSearchRoute) {
-        setPaginationData((prev) => ({
-          ...prev,
-          category: "search",
-          page: 1,
-          sendAttributes: true,
-          limit: pageLimit,
-          searchTerm: searchParams.get("search"),
-          productTypeId: searchParams.get("categoryId"),
-          sortOption: urlSort,
-          colors: urlColors ? urlColors.split(",") : [],
-          attributes:
-            urlAttrName && urlAttrValue
-              ? { name: urlAttrName, value: urlAttrValue }
-              : null,
-          pricerange:
-            urlMinPrice && urlMaxPrice
-              ? {
-                  min_price: Number(urlMinPrice),
-                  max_price: Number(urlMaxPrice),
-                }
-              : undefined,
-        }));
-      } else {
-        setPaginationData((prev) => ({
-          ...prev,
-          category: category,
-          page: pageFromURL,
-          limit: pageLimit,
-          sortOption: urlSort,
-          colors: urlColors ? urlColors.split(",") : [],
-          attributes:
-            urlAttrName && urlAttrValue
-              ? { name: urlAttrName, value: urlAttrValue }
-              : null,
-          pricerange:
-            urlMinPrice && urlMaxPrice
-              ? {
-                  min_price: Number(urlMinPrice),
-                  max_price: Number(urlMaxPrice),
-                }
-              : undefined,
-          sendAttributes: false,
-        }));
-      }
+      setAustraliaPaginationData((prev) => ({
+        ...prev,
+        page: 1,
+        limit: pageLimit,
+        sortOption: urlSort,
+        filter: prev.filter,
+      }));
     }
   }, [
     searchParams,
-    category,
     location.pathname,
     dispatch,
     urlMinPrice,
     urlMaxPrice,
+    urlSort,
+    pageLimit,
+    setSearchParams,
   ]);
 
   // Track when filters/category change to reset accumulated products
@@ -262,13 +168,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
   // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
-    const currentFiltersKey = `${paginationData.productTypeId}-${
-      paginationData.category
-    }-${paginationData.searchTerm}-${
-      paginationData.sortOption
-    }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
-      paginationData.colors
-    )}`;
+    const currentFiltersKey = `${australiaPaginationData.sortOption}-${australiaPaginationData.filter}-${australiaPaginationData.page}-${australiaPaginationData.limit}`;
 
     if (
       filtersKeyRef.current !== null &&
@@ -290,12 +190,10 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       filtersKeyRef.current = currentFiltersKey;
     }
   }, [
-    paginationData.productTypeId,
-    paginationData.category,
-    paginationData.searchTerm,
-    // paginationData.sortOption,
-    // paginationData.pricerange,
-    // paginationData.colors,
+    australiaPaginationData.sortOption,
+    australiaPaginationData.filter,
+    australiaPaginationData.page,
+    australiaPaginationData.limit,
   ]);
 
   // Handle scroll restoration from URL
@@ -304,7 +202,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       scrollToProductId &&
       !hasScrolledRef.current &&
       accumulatedProducts.length > 0 &&
-      !productsLoading &&
+      !australiaProductsLoading &&
       !isLoadingMore
     ) {
       const productElement = productRefs.current.get(scrollToProductId);
@@ -327,7 +225,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
   }, [
     scrollToProductId,
     accumulatedProducts,
-    productsLoading,
+    australiaProductsLoading,
     isLoadingMore,
     // searchParams,
     // setSearchParams,
@@ -340,12 +238,12 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     }
   }, [scrollToProductId]);
 
-  // Update accumulated products when getProducts.data changes
+  // Update accumulated products when getAustraliaProducts.data changes
   useEffect(() => {
     if (
-      getProducts?.data &&
-      Array.isArray(getProducts.data) &&
-      !productsLoading
+      getAustraliaProducts?.data &&
+      Array.isArray(getAustraliaProducts.data) &&
+      !australiaProductsLoading
     ) {
       // Check if we're restoring from URL page parameter
       const urlPage = parseInt(searchParams.get("page")) || 1;
@@ -357,7 +255,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
         (isInitialLoadRef.current || currentPage === 1) &&
         !isRestoringFromURL
       ) {
-        setAccumulatedProducts(getProducts.data);
+        setAccumulatedProducts(getAustraliaProducts.data);
         setCurrentPage(1);
         isInitialLoadRef.current = false;
 
@@ -370,21 +268,21 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
         // Check if there are more products to load
         const totalPages =
-          getProducts.total_pages || getProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
+          getAustraliaProducts.total_pages || getAustraliaProducts.totalPages || 0;
+        setHasMoreProducts(totalPages > 1 && getAustraliaProducts.data.length > 0);
       } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
         // If restoring from URL and no products loaded yet, start with page 1 data
         // The loadProductsUpToPage will append more products
-        setAccumulatedProducts(getProducts.data);
+        setAccumulatedProducts(getAustraliaProducts.data);
         // Don't reset currentPage here, let loadProductsUpToPage handle it
         const totalPages =
-          getProducts.total_pages || getProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
+          getAustraliaProducts.total_pages || getAustraliaProducts.totalPages || 0;
+        setHasMoreProducts(totalPages > 1 && getAustraliaProducts.data.length > 0);
       }
     } else if (
-      !productsLoading &&
-      (!getProducts?.data ||
-        (Array.isArray(getProducts.data) && getProducts.data.length === 0))
+      !australiaProductsLoading &&
+      (!getAustraliaProducts?.data ||
+        (Array.isArray(getAustraliaProducts.data) && getAustraliaProducts.data.length === 0))
     ) {
       // No products and not loading - only clear if we don't have accumulated products or if it's the initial load
       if (isInitialLoadRef.current || accumulatedProducts.length === 0) {
@@ -393,18 +291,18 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       }
     }
   }, [
-    getProducts?.data,
-    getProducts?.total_pages,
-    getProducts?.totalPages,
-    productsLoading,
-    paginationData.page,
+    getAustraliaProducts?.data,
+    getAustraliaProducts?.total_pages,
+    getAustraliaProducts?.totalPages,
+    australiaProductsLoading,
+    australiaPaginationData.page,
   ]);
 
   // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
       const newLimit = Number(searchParams.get("limit")) || 20;
-      setPaginationData((prev) => {
+      setAustraliaPaginationData((prev) => {
         if (prev.limit !== newLimit) {
           return { ...prev, limit: newLimit };
         }
@@ -414,7 +312,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [pageLimit, setPaginationData]);
+  }, [pageLimit, setAustraliaPaginationData]);
 
   const handleSortSelection = (option) => {
     setSortOption(option);
@@ -431,7 +329,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     currentParams.set("page", "1");
     setSearchParams(currentParams);
 
-    setPaginationData((prev) => ({
+    setAustraliaPaginationData((prev) => ({
       ...prev,
       sortOption: option === "relevancy" ? "" : option,
       page: 1,
@@ -543,16 +441,16 @@ const AustraliaMadeProducts = ({ category = "" }) => {
             <div className="mb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
-                  {!productsLoading &&
-                    (getProducts?.item_count ||
-                      getProducts?.totalCount ||
+                  {!australiaProductsLoading &&
+                    (getAustraliaProducts?.item_count ||
+                      getAustraliaProducts?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {productsLoading ? "Loading..." : `product found `}
-                  {productsLoading && " Please wait a while..."}
-                  {isPriceFilterActive && !productsLoading
+                  {australiaProductsLoading ? "Loading..." : `product found `}
+                  {australiaProductsLoading && " Please wait a while..."}
+                  {isPriceFilterActive && !australiaProductsLoading
                     ? `between $${minPrice} and $${maxPrice}`
                     : ""}
                 </p>
@@ -565,16 +463,16 @@ const AustraliaMadeProducts = ({ category = "" }) => {
               {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
-                  {!productsLoading &&
-                    (getProducts?.item_count ||
-                      getProducts?.totalCount ||
+                  {!australiaProductsLoading &&
+                    (getAustraliaProducts?.item_count ||
+                      getAustraliaProducts?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
                 <p className="">
-                  {productsLoading ? "Loading..." : `product found`}
-                  {productsLoading && " Please wait a while..."}
-                  {isPriceFilterActive && !productsLoading
+                  {australiaProductsLoading ? "Loading..." : `product found`}
+                  {australiaProductsLoading && " Please wait a while..."}
+                  {isPriceFilterActive && !australiaProductsLoading
                     ? ` between $${minPrice} and $${maxPrice}`
                     : ""}
                 </p>
@@ -635,12 +533,12 @@ const AustraliaMadeProducts = ({ category = "" }) => {
           </div>
           <div
             className={`${
-              productsLoading
+              australiaProductsLoading
                 ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
                 : ""
             }`}
           >
-            {productsLoading ? (
+            {australiaProductsLoading ? (
               Array.from({ length: 20 }, (_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
@@ -671,7 +569,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
                 </div>
 
                 {/* Load More Button */}
-                {hasMoreProducts && !productsLoading && (
+                {hasMoreProducts && !australiaProductsLoading && (
                   <div className="flex justify-center mt-8 mb-4">
                     <button
                       onClick={handleLoadMore}
@@ -690,7 +588,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
                 )}
 
                 {/* Product Count Display */}
-                {accumulatedProducts.length > 0 && !productsLoading && (
+                {accumulatedProducts.length > 0 && !australiaProductsLoading && (
                   <div className="flex justify-center mb-8 mt-2">
                     <p className="text-sm sm:text-base text-gray-600 text-center">
                       Showing{" "}
@@ -700,9 +598,9 @@ const AustraliaMadeProducts = ({ category = "" }) => {
                       </span>{" "}
                       of{" "}
                       <span className="font-semibold text-gray-900">
-                        {getProducts?.item_count ||
-                          getProducts?.totalCount ||
-                          getProducts?.total_count ||
+                        {getAustraliaProducts?.item_count ||
+                          getAustraliaProducts?.totalCount ||
+                          getAustraliaProducts?.total_count ||
                           accumulatedProducts.length}
                       </span>{" "}
                       products
@@ -733,3 +631,4 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 };
 
 export default AustraliaMadeProducts;
+

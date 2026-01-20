@@ -32,10 +32,6 @@ const HotDeals = () => {
         })
       : products || [];
   
-  console.log(skeletonLoading,displayProducts);
-
-
-
   return (
     <div className="border border-primary rounded-lg p-4 h-full flex flex-col shadow-lg shadow-primary/20 min-h-96 bg-white">
       {/* Header */}
@@ -46,7 +42,7 @@ const HotDeals = () => {
 
       {/* Hot Deals List */}
       <div className="flex-1 flex flex-col justify-start overflow-y-auto ">
-        {discountedProductsLoading
+        {skeletonLoading
           ? // Loading skeleton
             [...Array(4)].map((_, index) => {
               const isLastItem = index === 3;
