@@ -1,49 +1,36 @@
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
 import { slugify } from "@/utils/utils";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoMenu } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getPageTypeFromRoute } from "../../config/sidebarConfig";
 import { AppContext } from "../../context/AppContext";
-import { ProductsContext } from "../../context/ProductsContext";
 import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
-import { headWear } from "@/assets/asset";
-import { GiDress } from "react-icons/gi";
 
-const Cards = ({ category = "" }) => {
-  // ============================================================================
-  // HOOKS - Router & Context
-  // ============================================================================
+const AustraliaMadeProducts = ({ category = "" }) => {
+  const [sortOption, setSortOption] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const location = useLocation();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = Number(searchParams.get("page")) || 1;
+  const pageFromURL = parseInt(searchParams.get("page"));
   const urlType = searchParams.get("type");
   const isSearchRoute = location.pathname.includes("/search");
   const limit = 20;
   const pageLimit = limit;
   const urlSort = searchParams.get("sort") || "";
   const urlColors = searchParams.get("colors");
-  const urlAttrNames = searchParams.getAll("attrName");
-  const urlAttrValues = searchParams.getAll("attrValue");
-  const urlAttributes = urlAttrNames
-    .map((name, idx) => ({
-      name,
-      value: (urlAttrValues[idx] || "")
-        .split(",")
-        .map((v) => v.trim())
-        .filter(Boolean)
-        .join(","),
-    }))
-    .filter((attr) => attr.name && attr.value);
-
+  const urlAttrName = searchParams.get("attrName");
+  const urlAttrValue = searchParams.get("attrValue");
   const { activeFilters, minPrice, maxPrice } = useSelector(
     (state) => state.filters
   );
@@ -52,148 +39,43 @@ const Cards = ({ category = "" }) => {
   const urlMaxPrice = searchParams.get("maxPrice");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const dispatch = useDispatch();
-  
-  // Context
+  const pageType = getPageTypeFromRoute(location.pathname);
+
   const {
     paginationData,
     setPaginationData,
     getProducts,
     productsLoading,
-    productsFetching,
-  } = useContext(ProductsContext);
-  const isProductsLoading = productsLoading || productsFetching;
-  const { backendUrl } = useContext(AppContext);
+    backednUrl,
+    refetchProducts,
+  } = useContext(AppContext);
 
-  // ============================================================================
-  // URL PARAMETERS & DERIVED VALUES
-  // ============================================================================
-  const urlCategoryParam = searchParams.get("category");
-  const pageFromURL = parseInt(searchParams.get("page"));
-  const urlType = searchParams.get("type");
-  const urlSort = searchParams.get("sort") || "";
-  const urlColors = searchParams.get("colors");
-  const urlAttrName = searchParams.get("attrName");
-  const urlAttrValue = searchParams.get("attrValue");
-  const urlMinPrice = searchParams.get("minPrice");
-  const urlMaxPrice = searchParams.get("maxPrice");
-  const scrollToProductId = searchParams.get("scrollTo");
-  
-  // Derived values
-  const isSearchRoute = location.pathname.includes("/search");
-  const pageType = getPageTypeFromRoute(location.pathname);
-  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
-  const limit = parseInt(searchParams.get("limit")) || 20;
-  const pageLimit = limit;
-
-  // ============================================================================
-  // STATE DECLARATIONS
-  // ============================================================================
-  // UI State
-  const [sortOption, setSortOption] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  // Product State
+  // State for accumulated products and loading more
   const [accumulatedProducts, setAccumulatedProducts] = useState(
     getProducts?.data ?? []
   );
+
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
-  console.log(pageFromURL)
   const [currentPage, setCurrentPage] = useState(
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
-  
-
-  // ============================================================================
-  // REFS
-  // ============================================================================
-  const dropdownRef = useRef(null);
   const prevCategoryKeyRef = useRef(null);
-  const filtersKeyRef = useRef(null);
-  const paginationModeRef = useRef("unknown"); // "page" | "limit"
   const productRefs = useRef(new Map());
   const hasScrolledRef = useRef(false);
-  const filtersKeyRef = useRef(null);
-  const isInitialLoadRef = useRef(true);
+  const scrollToProductId = searchParams.get("scrollTo");
 
-  // ============================================================================
-  // CONSTANTS
-  // ============================================================================
   const favSet = new Set();
 
-  // ============================================================================
-  // UTILITY FUNCTIONS
-  // ============================================================================
-  
-  /**
-   * Builds API URL based on pagination data and category
-   */
-  const buildApiUrl = (page, limit) => {
-    const params = new URLSearchParams({
-      ...(paginationData.productTypeId && {
-        product_type_ids: paginationData.productTypeId,
-      }),
-      page: page.toString(),
-      limit: limit.toString(),
-      ...(paginationData.sortOption && { sort: paginationData.sortOption }),
-      ...(paginationData.filter && { filter: paginationData.filter }),
-      ...(paginationData.category && { category: paginationData.category }),
-      ...(paginationData.searchTerm !== undefined && {
-        searchTerm: paginationData.searchTerm,
-      }),
-      ...(paginationData.pricerange?.min_price != null && {
-        min_price: paginationData.pricerange.min_price,
-      }),
-      ...(paginationData.pricerange?.max_price != null && {
-        max_price: paginationData.pricerange.max_price,
-      }),
-      ...(paginationData.sendAttributes != null && {
-        send_attributes: paginationData.sendAttributes,
-      }),
-    });
 
-    if (Array.isArray(paginationData.attributes) && paginationData.attributes.length > 0) {
-      paginationData.attributes.forEach((attr) => {
-        params.append("attribute_name", attr.name);
-        params.append("attribute_value", attr.value);
-      });
-    } else if (paginationData.attributes?.name && paginationData.attributes?.value) {
-      params.append("attribute_name", paginationData.attributes.name);
-      params.append("attribute_value", paginationData.attributes.value);
-    }
 
-    let url = "";
-    let searchTerms = ["gift pack", "hampers", "gift"];
-    if (paginationData.category === "return-gifts") {
-      url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
-        ","
-      )}&page=${page}&limit=${limit}`;
-    } else if (paginationData.category === "australia") {
-      url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
-    } else if (paginationData.category === "24hr-production") {
-      url = `${backendUrl}/api/24hour/get-products?${params.toString()}`;
-    } else if (paginationData.category === "sales") {
-      url = `${backendUrl}/api/client-products-discounted?${params.toString()}`;
-    } else if (paginationData.category === "allProducts") {
-      url = `${backendUrl}/api/client-products?${params.toString()}`;
-    } else if (paginationData.category === "search") {
-      url = `${backendUrl}/api/client-products/search?${params.toString()}`;
-    } else if (paginationData.category) {
-      url = `${backendUrl}/api/client-products/category?${params.toString()}`;
-    } else if (paginationData.productTypeId) {
-      url = `${backendUrl}/api/params-products?${params.toString()}`;
-    } else {
-      url = `${backendUrl}/api/client-products?${params.toString()}`;
-    }
-    return url;
-  };
-
-  // Function to fetch products for a specific page/limit
-  const fetchProductsPage = async (page, limitOverride) => {
-    const effectiveLimit = limitOverride ?? 20;
-    const url = buildApiUrl(page, effectiveLimit);
+  // Function to fetch products for a specific page
+  const fetchProductsPage = async (page) => {
+   const params = new URLSearchParams({
+    page: page.toString()||"1",
+    limit: limit.toString(),
+   });
+    const url = url = `${backednUrl}/api/australia/get-products?${params.toString()}`;
 
     try {
       const res = await fetch(url);
@@ -206,67 +88,36 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-  /**
-   * Load more products (infinite scroll)
-   */
+  useEffect(() => {
+    if (getProducts?.data?.length > 0) {
+      fetchProductsPage(paginationData.page);
+    }
+  }, [getProducts?.data]);
+
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
-    const currentLimit =
-      Number(searchParams.get("limit")) || paginationData?.limit || 20;
+    const limit = Number(searchParams.get("limit")) || 20;
+    const newLimit = limit + 20;
     setIsLoadingMore(true);
     try {
-      if (paginationModeRef.current !== "limit") {
-        const nextPage = currentPage + 1;
-        const pageData = await fetchProductsPage(nextPage, currentLimit);
-        if (pageData?.data && Array.isArray(pageData.data)) {
-          const existingIds = new Set(
-            accumulatedProducts
-              .map((product) => product.meta?.id ?? product.product?.id ?? product.id)
-              .filter(Boolean)
-          );
-          const fresh = pageData.data.filter((product) => {
-            const id = product.meta?.id ?? product.product?.id ?? product.id;
-            return id ? !existingIds.has(id) : true;
-          });
-          if (fresh.length > 0) {
-            paginationModeRef.current = "page";
-            setAccumulatedProducts((prev) => [...prev, ...fresh]);
-            setCurrentPage(nextPage);
-            setSearchParams((prev) => {
-              prev.set("page", nextPage.toString());
-              prev.set("limit", currentLimit.toString());
-              return prev;
-            });
-            const totalPages = pageData.total_pages || pageData.totalPages || 0;
-            if (totalPages && nextPage >= totalPages) {
-              setHasMoreProducts(false);
-            }
-            return;
-          }
-        }
-        paginationModeRef.current = "limit";
-      }
-
-      const newLimit = currentLimit + 20;
-      const data = await fetchProductsPage(1, newLimit);
+      const nextPage = currentPage + 1;
+      const data = await fetchProductsPage(nextPage);
 
       if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-        // Replace with a larger page-size result set
-        setAccumulatedProducts(data.data);
-        setCurrentPage(1);
+        // Append new products to accumulated products
+        setAccumulatedProducts((prev) => [...prev, ...data.data]);
+        setCurrentPage(nextPage);
         setSearchParams((prev) => {
-          prev.set("page", "1");
+          prev.set("page", nextPage.toString());
           prev.set("limit", newLimit.toString());
           return prev;
         });
 
-        const totalCount =
-          data.item_count ||
-          data.totalCount ||
-          data.total_count ||
-          data.meta?.total ||
-          data.data.length;
-        setHasMoreProducts(data.data.length < totalCount);
+        // Check if there are more products to load
+        const totalPages = data.total_pages || data.totalPages || 0;
+        if (nextPage >= totalPages) {
+          setHasMoreProducts(false);
+        }
       } else {
         setHasMoreProducts(false);
       }
@@ -278,27 +129,18 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-  // ============================================================================
-  // USEEFFECTS
-  // ============================================================================
-  
-  /**
-   * 1. Reset accumulated products when category/filters change (URL-based)
-   *    - Monitors URL parameters to detect navigation to new categories
-   *    - Resets pagination and product list
-   *    - Updates paginationData context
-   */
+  // Reset accumulated products when category/filters change
   useEffect(() => {
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.delete("page");
-    currentParams.delete("limit");
-    currentParams.delete("scrollTo");
-    const currentCategoryKey = `${location.pathname}|${category}|${currentParams.toString()}`;
+    const currentCategoryKey = urlCategoryParam
+      ? `cat:${urlCategoryParam}:type:${urlType || ""}`
+      : isSearchRoute
+      ? `search:${searchParams.get("search") || ""}`
+      : `route:${category || ""}`;
+
     const categoryChanged = prevCategoryKeyRef.current !== currentCategoryKey;
     prevCategoryKeyRef.current = currentCategoryKey;
 
     if (categoryChanged) {
-      paginationModeRef.current = "unknown";
       // Reset accumulated products and page when category/filters change
       setAccumulatedProducts([]);
       setCurrentPage(1);
@@ -323,13 +165,11 @@ const Cards = ({ category = "" }) => {
           urlCategoryParam === "australia" ||
           urlCategoryParam === "24hr-production" ||
           urlCategoryParam === "sales" ||
-          urlCategoryParam === "return-gifts" ||
           urlCategoryParam === "allProducts"
         ) {
           setPaginationData((prev) => ({
             ...prev,
             category: urlCategoryParam,
-            productTypeId: null,
             page: 1,
             limit: pageLimit,
             sortOption: "",
@@ -342,17 +182,22 @@ const Cards = ({ category = "" }) => {
           setPaginationData((prev) => ({
             ...prev,
             productTypeId: urlCategoryParam,
-            category: null,
-            searchTerm: "",
             sendAttributes: true,
             limit: pageLimit,
-            page: pageFromURL || 1,
+            category: null,
+            page: pageFromURL,
             sortOption: urlSort,
             colors: urlColors ? urlColors.split(",") : [],
-            attributes: urlAttributes.length > 0 ? urlAttributes : null,
+            attributes:
+              urlAttrName && urlAttrValue
+                ? { name: urlAttrName, value: urlAttrValue }
+                : null,
             pricerange:
               urlMinPrice && urlMaxPrice
-                ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
+                ? {
+                    min_price: Number(urlMinPrice),
+                    max_price: Number(urlMaxPrice),
+                  }
                 : undefined,
           }));
         }
@@ -360,37 +205,43 @@ const Cards = ({ category = "" }) => {
         setPaginationData((prev) => ({
           ...prev,
           category: "search",
-          page: pageFromURL || 1,
+          page: 1,
           sendAttributes: true,
           limit: pageLimit,
-          searchTerm: searchParams.get("search") || "",
+          searchTerm: searchParams.get("search"),
           productTypeId: searchParams.get("categoryId"),
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
-          attributes: urlAttributes.length > 0 ? urlAttributes : null,
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
           pricerange:
             urlMinPrice && urlMaxPrice
               ? {
-                min_price: Number(urlMinPrice),
-                max_price: Number(urlMaxPrice),
-              }
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
               : undefined,
         }));
       } else {
-        const isTopLevel = ["promotional", "clothing", "headwear", "dress"].includes(category);
         setPaginationData((prev) => ({
           ...prev,
-          category: isTopLevel ? null : category,
-          productTypeId: null,
-          searchTerm: "",
-          page: pageFromURL || 1,
+          category: category,
+          page: pageFromURL,
           limit: pageLimit,
           sortOption: urlSort,
           colors: urlColors ? urlColors.split(",") : [],
-          attributes: urlAttributes.length > 0 ? urlAttributes : null,
+          attributes:
+            urlAttrName && urlAttrValue
+              ? { name: urlAttrName, value: urlAttrValue }
+              : null,
           pricerange:
             urlMinPrice && urlMaxPrice
-              ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
+              ? {
+                  min_price: Number(urlMinPrice),
+                  max_price: Number(urlMaxPrice),
+                }
               : undefined,
           sendAttributes: false,
         }));
@@ -405,15 +256,19 @@ const Cards = ({ category = "" }) => {
     urlMaxPrice,
   ]);
 
+  // Track when filters/category change to reset accumulated products
+  const filtersKeyRef = useRef(null);
   const isInitialLoadRef = useRef(true);
 
   // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
-    const currentFiltersKey = `${paginationData.productTypeId}-${paginationData.category
-      }-${paginationData.searchTerm}-${paginationData.sortOption
-      }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
-        paginationData.colors
-      )}`;
+    const currentFiltersKey = `${paginationData.productTypeId}-${
+      paginationData.category
+    }-${paginationData.searchTerm}-${
+      paginationData.sortOption
+    }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
+      paginationData.colors
+    )}`;
 
     if (
       filtersKeyRef.current !== null &&
@@ -449,112 +304,6 @@ const Cards = ({ category = "" }) => {
       scrollToProductId &&
       !hasScrolledRef.current &&
       accumulatedProducts.length > 0 &&
-      !isProductsLoading &&
-      !isLoadingMore
-    ) {
-      const productElement = productRefs.current.get(scrollToProductId);
-
-      if (productElement) {
-        setTimeout(() => {
-          productElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-          hasScrolledRef.current = true;
-
-          // Remove scrollTo from URL after scrolling
-          const currentParams = new URLSearchParams(searchParams);
-          currentParams.delete("scrollTo");
-          setSearchParams(currentParams, { replace: true });
-        }, 300);
-      }
-    }
-  }, [
-    scrollToProductId,
-    accumulatedProducts,
-    isProductsLoading,
-    isLoadingMore,
-    // searchParams,
-    // setSearchParams,
-  ]);
-
-  // Reset scroll ref when scrollToProductId is removed
-  useEffect(() => {
-    if (!scrollToProductId) {
-      hasScrolledRef.current = false;
-    }
-  }, [scrollToProductId]);
-
-  // Update accumulated products when getProducts.data changes
-  useEffect(() => {
-    if (
-      getProducts?.data &&
-      Array.isArray(getProducts.data) &&
-      !isProductsLoading
-    ) {
-      // Check if we're restoring from URL page parameter
-      const urlPage = parseInt(searchParams.get("page")) || 1;
-      const isRestoringFromURL = urlPage > 1;
-
-      // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
-      const effectivePage = paginationData.page ?? 1;
-      if (
-        ((isInitialLoadRef.current || effectivePage === 1) && !isRestoringFromURL)
-      ) {
-        setAccumulatedProducts(getProducts.data);
-        setCurrentPage(1);
-        isInitialLoadRef.current = false;
-
-        // Ensure page 1 is in URL only if not restoring
-        if (urlPage === 1) {
-          const currentParams = new URLSearchParams(searchParams);
-          currentParams.set("page", "1");
-          setSearchParams(currentParams, { replace: true });
-        }
-
-        // Check if there are more products to load
-        const totalPages =
-          getProducts.total_pages || getProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
-      } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
-        // If restoring from URL and no products loaded yet, start with page 1 data
-        // The loadProductsUpToPage will append more products
-        setAccumulatedProducts(getProducts.data);
-        // Don't reset currentPage here, let loadProductsUpToPage handle it
-        const totalPages =
-          getProducts.total_pages || getProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
-      }
-    } else if (
-      !isProductsLoading &&
-      (!getProducts?.data ||
-        (Array.isArray(getProducts.data) && getProducts.data.length === 0))
-    ) {
-      // No products and not loading - only clear if we don't have accumulated products or if it's the initial load
-      if (isInitialLoadRef.current || accumulatedProducts.length === 0) {
-        setAccumulatedProducts([]);
-        setHasMoreProducts(false);
-      }
-    }
-  }, [
-    getProducts?.data,
-    getProducts?.total_pages,
-    getProducts?.totalPages,
-    isProductsLoading,
-    paginationData.page,
-  ]);
-
-  /**
-   * 4. Handle scroll restoration from URL
-   *    - Scrolls to specific product after page load
-   *    - Triggered when returning from product detail page
-   */
-  useEffect(() => {
-    if (
-      scrollToProductId &&
-      !hasScrolledRef.current &&
-      accumulatedProducts.length > 0 &&
       !productsLoading &&
       !isLoadingMore
     ) {
@@ -584,18 +333,74 @@ const Cards = ({ category = "" }) => {
     // setSearchParams,
   ]);
 
-  /**
-   * 6. Reset scroll ref when scrollToProductId is removed
-   *    - Clears scroll restoration flag
-   */
+  // Reset scroll ref when scrollToProductId is removed
   useEffect(() => {
     if (!scrollToProductId) {
       hasScrolledRef.current = false;
     }
   }, [scrollToProductId]);
 
-  /**
-   * 7. Update limit when screen size changes (but don't reset products)
+  // Update accumulated products when getProducts.data changes
+  useEffect(() => {
+    if (
+      getProducts?.data &&
+      Array.isArray(getProducts.data) &&
+      !productsLoading
+    ) {
+      // Check if we're restoring from URL page parameter
+      const urlPage = parseInt(searchParams.get("page")) || 1;
+      const isRestoringFromURL = urlPage > 1;
+
+      // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
+      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
+      if (
+        (isInitialLoadRef.current || currentPage === 1) &&
+        !isRestoringFromURL
+      ) {
+        setAccumulatedProducts(getProducts.data);
+        setCurrentPage(1);
+        isInitialLoadRef.current = false;
+
+        // Ensure page 1 is in URL only if not restoring
+        if (urlPage === 1) {
+          const currentParams = new URLSearchParams(searchParams);
+          currentParams.set("page", "1");
+          setSearchParams(currentParams, { replace: true });
+        }
+
+        // Check if there are more products to load
+        const totalPages =
+          getProducts.total_pages || getProducts.totalPages || 0;
+        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
+      } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
+        // If restoring from URL and no products loaded yet, start with page 1 data
+        // The loadProductsUpToPage will append more products
+        setAccumulatedProducts(getProducts.data);
+        // Don't reset currentPage here, let loadProductsUpToPage handle it
+        const totalPages =
+          getProducts.total_pages || getProducts.totalPages || 0;
+        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
+      }
+    } else if (
+      !productsLoading &&
+      (!getProducts?.data ||
+        (Array.isArray(getProducts.data) && getProducts.data.length === 0))
+    ) {
+      // No products and not loading - only clear if we don't have accumulated products or if it's the initial load
+      if (isInitialLoadRef.current || accumulatedProducts.length === 0) {
+        setAccumulatedProducts([]);
+        setHasMoreProducts(false);
+      }
+    }
+  }, [
+    getProducts?.data,
+    getProducts?.total_pages,
+    getProducts?.totalPages,
+    productsLoading,
+    paginationData.page,
+  ]);
+
+  // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
       const newLimit = Number(searchParams.get("limit")) || 20;
@@ -611,14 +416,6 @@ const Cards = ({ category = "" }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [pageLimit, setPaginationData]);
 
-  // ============================================================================
-  // EVENT HANDLERS
-  // ============================================================================
-  
-  /**
-   * Handle sort option selection
-   * Resets pagination and updates URL with new sort parameter
-   */
   const handleSortSelection = (option) => {
     setSortOption(option);
     // Reset accumulated products and page when sort changes
@@ -644,10 +441,6 @@ const Cards = ({ category = "" }) => {
     setIsDropdownOpen(false);
   };
 
-  /**
-   * Navigate to product detail page
-   * Stores current page and scroll position for restoration
-   */
   const handleViewProduct = (productId, name) => {
     // Store current page and product ID in URL for scroll restoration
     const currentParams = new URLSearchParams(searchParams);
@@ -704,8 +497,8 @@ const Cards = ({ category = "" }) => {
                     {sortOption === "lowToHigh"
                       ? "Lowest to Highest"
                       : sortOption === "highToLow"
-                        ? "Highest to Lowest"
-                        : "Relevancy"}
+                      ? "Highest to Lowest"
+                      : "Relevancy"}
                     <span className="">
                       {isDropdownOpen ? (
                         <IoIosArrowUp className="text-gray-600" />
@@ -718,22 +511,25 @@ const Cards = ({ category = "" }) => {
                     <div className="absolute right-0 z-[100] w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-t-lg ${sortOption === "lowToHigh" ? "bg-gray-50" : ""
-                          }`}
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-t-lg ${
+                          sortOption === "lowToHigh" ? "bg-gray-50" : ""
+                        }`}
                       >
                         Lowest to Highest
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 ${sortOption === "highToLow" ? "bg-gray-50" : ""
-                          }`}
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 ${
+                          sortOption === "highToLow" ? "bg-gray-50" : ""
+                        }`}
                       >
                         Highest to Lowest
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-b-lg ${sortOption === "relevancy" ? "bg-gray-50" : ""
-                          }`}
+                        className={`w-full text-left text-sm px-4 py-1.5 hover:bg-gray-50 rounded-b-lg ${
+                          sortOption === "relevancy" ? "bg-gray-50" : ""
+                        }`}
                       >
                         Relevancy
                       </button>
@@ -747,16 +543,16 @@ const Cards = ({ category = "" }) => {
             <div className="mb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
-                  {!isProductsLoading &&
+                  {!productsLoading &&
                     (getProducts?.item_count ||
                       getProducts?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
                 <p className="text-sm text-gray-600">
-                  {isProductsLoading ? "Loading..." : `product found `}
-                  {isProductsLoading && " Please wait a while..."}
-                  {isPriceFilterActive && !isProductsLoading
+                  {productsLoading ? "Loading..." : `product found `}
+                  {productsLoading && " Please wait a while..."}
+                  {isPriceFilterActive && !productsLoading
                     ? `between $${minPrice} and $${maxPrice}`
                     : ""}
                 </p>
@@ -769,16 +565,16 @@ const Cards = ({ category = "" }) => {
               {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
-                  {!isProductsLoading &&
+                  {!productsLoading &&
                     (getProducts?.item_count ||
                       getProducts?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
                 <p className="">
-                  {isProductsLoading ? "Loading..." : `product found`}
-                  {isProductsLoading && " Please wait a while..."}
-                  {isPriceFilterActive && !isProductsLoading
+                  {productsLoading ? "Loading..." : `product found`}
+                  {productsLoading && " Please wait a while..."}
+                  {isPriceFilterActive && !productsLoading
                     ? ` between $${minPrice} and $${maxPrice}`
                     : ""}
                 </p>
@@ -789,14 +585,14 @@ const Cards = ({ category = "" }) => {
                 <p>Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 md:w-52 bg-white rounded-lg"
+                    className="flex items-center justify-between gap-2 px-4 py-3 border w-48 md:w-52 border-border2 rounded-lg"
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
                   >
                     {sortOption === "lowToHigh"
                       ? "Lowest to Highest"
                       : sortOption === "highToLow"
-                        ? "Highest to Lowest"
-                        : "Relevancy"}
+                      ? "Highest to Lowest"
+                      : "Relevancy"}
                     <span className="">
                       {isDropdownOpen ? (
                         <IoIosArrowUp className="text-black" />
@@ -809,22 +605,25 @@ const Cards = ({ category = "" }) => {
                     <div className="absolute left-0 z-50 w-full mt-2 bg-white border top-full border-border2">
                       <button
                         onClick={() => handleSortSelection("lowToHigh")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "lowToHigh" ? "bg-gray-100" : ""
-                          }`}
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "lowToHigh" ? "bg-gray-100" : ""
+                        }`}
                       >
                         Lowest to Highest
                       </button>
                       <button
                         onClick={() => handleSortSelection("highToLow")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "highToLow" ? "bg-gray-100" : ""
-                          }`}
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "highToLow" ? "bg-gray-100" : ""
+                        }`}
                       >
                         Highest to Lowest
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "revelancy" ? "bg-gray-100" : ""
-                          }`}
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
+                          sortOption === "revelancy" ? "bg-gray-100" : ""
+                        }`}
                       >
                         Relevancy
                       </button>
@@ -835,19 +634,20 @@ const Cards = ({ category = "" }) => {
             </div>
           </div>
           <div
-            className={`${isProductsLoading
-              ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
-              : ""
-              }`}
+            className={`${
+              productsLoading
+                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
+                : ""
+            }`}
           >
-            {isProductsLoading ? (
+            {productsLoading ? (
               Array.from({ length: 20 }, (_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
             ) : accumulatedProducts?.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
-                  {accumulatedProducts.map((product, index) => {
+                  {accumulatedProducts.map((product) => {
                     const productId = product.meta?.id?.toString();
                     return (
                       <div
@@ -864,7 +664,6 @@ const Cards = ({ category = "" }) => {
                           product={product}
                           favSet={favSet}
                           onViewProduct={handleViewProduct}
-                          priority={index < 4}
                         />
                       </div>
                     );
@@ -872,7 +671,7 @@ const Cards = ({ category = "" }) => {
                 </div>
 
                 {/* Load More Button */}
-                {hasMoreProducts && !isProductsLoading && (
+                {hasMoreProducts && !productsLoading && (
                   <div className="flex justify-center mt-8 mb-4">
                     <button
                       onClick={handleLoadMore}
@@ -891,7 +690,7 @@ const Cards = ({ category = "" }) => {
                 )}
 
                 {/* Product Count Display */}
-                {accumulatedProducts.length > 0 && !isProductsLoading && (
+                {accumulatedProducts.length > 0 && !productsLoading && (
                   <div className="flex justify-center mb-8 mt-2">
                     <p className="text-sm sm:text-base text-gray-600 text-center">
                       Showing{" "}
@@ -933,4 +732,4 @@ const Cards = ({ category = "" }) => {
   );
 };
 
-export default Cards;
+export default AustraliaMadeProducts;

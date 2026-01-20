@@ -15,8 +15,6 @@ export const useCoupons = () => {
 
       if (response.ok && data.length > 0) {
         setCoupons(data);
-        console.log(data);
-
         // Strategy 1: Show the coupon with highest discount
         const welcomeCoupon = data.find(
           (coupon) => coupon.coupen === "WELCOME"

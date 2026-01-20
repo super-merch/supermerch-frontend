@@ -102,8 +102,7 @@ const DashBoard = () => {
                       Completed Orders
                     </p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {userStats?.deliveredOrders
-                      }
+                      {userStats?.deliveredOrders}
                     </p>
                   </div>
                   <div className="p-3 bg-green-100 rounded-full">
@@ -161,8 +160,7 @@ const DashBoard = () => {
                       Total Amount
                     </p>
                     <p className="text-xl font-bold text-gray-900">
-                      $
-                      {userStats?.totalSpent.toFixed(2)}
+                      ${userStats?.totalSpent.toFixed(2)}
                     </p>
                   </div>
                   <div className="p-3 bg-purple-100 rounded-full">
@@ -223,19 +221,19 @@ const DashBoard = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(
-                            order.createdAt || order.orderDate
+                            order?.createdAt || order?.orderDate
                           ).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {order.products?.length || 0} items
+                          {order?.products?.length || 0} items
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              order.status === "completed" ||
-                              order.status === "delivered"
+                              order?.status === "completed" ||
+                              order?.status === "delivered"
                                 ? "bg-green-100 text-green-800"
-                                : order.status === "processing"
+                                : order?.status === "processing"
                                 ? "bg-blue-100 text-blue-800"
                                 : "bg-yellow-100 text-yellow-800"
                             }`}
