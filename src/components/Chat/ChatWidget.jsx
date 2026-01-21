@@ -120,6 +120,7 @@ const ChatWidget = () => {
           role: "assistant",
           text: data.message || "",
           items: data.items || [],
+          extras: data.extras || [],
           popularQueries: data.popular_queries || [],
           similarQueries: data.similar_queries || [],
           displayLimit,
@@ -434,6 +435,39 @@ const ChatWidget = () => {
                       </button>
                     );
                   })()}
+
+                  {!!entry.extras?.length && (
+                    <div className="mt-4">
+                      <div className="text-xs uppercase tracking-wide text-gray-500">
+                        Presentation extras
+                      </div>
+                      <div className="mt-2 grid gap-2">
+                        {entry.extras.slice(0, 4).map((item) => (
+                          <Link
+                            key={item.id}
+                            to={buildProductUrl(item)}
+                            state={{ productId: item.id }}
+                            className="flex items-center gap-3 p-2 rounded-lg border border-gray-100 hover:border-primary hover:shadow-sm transition"
+                          >
+                            <img
+                              src={item.image || "/noimage.png"}
+                              alt={item.name}
+                              className="w-12 h-12 object-contain bg-white rounded"
+                              onLoad={recalcPanelPosition}
+                            />
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium text-gray-900 truncate">
+                                {item.name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {item.price ? `$${item.price}` : "Contact for price"}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {!!(entry.similarQueries?.length || entry.popularQueries?.length) && (
                     <div className="mt-3">
