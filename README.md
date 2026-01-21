@@ -32,6 +32,9 @@ VITE_BACKEND_URL=https://api.example.com
 
 # Stripe public key (publishable)
 VITE_STRIPE_PUBLIC_KEY=pk_test_xxx
+
+# Merch chatbot service (SuperMerch Bot)
+VITE_BOT_API_URL=http://localhost:8001
 ```
 
 4. Run locally
@@ -54,12 +57,21 @@ npm run preview
 
 ### Project Structure (high level)
 
+- `src/components/Chat/` - chatbot widget UI
+
 - `src/components/checkout/` – checkout flow (Customer, Shipping, Billing, Payment)
 - `src/components/cart/` – cart UI and interactions
 - `src/components/product/` – product details, size guide
 - `src/pages/` – route pages (Cart, UploadArtwork, etc.)
 - `src/redux/` – Redux slices and store
 - `src/context/` – `AppContext` and global context
+
+### Chat Widget (SuperMerch Bot)
+
+- The widget lives in `src/components/Chat/ChatWidget.jsx`.
+- It calls the bot service at `VITE_BOT_API_URL` and renders product cards.
+- A session id is stored in `localStorage` and sent via `X-Session-Id` so follow-up queries refine the previous intent.
+- If the bot is down or misconfigured, the widget shows a “Could not reach the merch assistant” message.
 
 ### Code Style & Conventions
 
