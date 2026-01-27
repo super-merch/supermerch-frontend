@@ -513,55 +513,6 @@ const Cards = ({ category = "" }) => {
   ]);
 
   /**
-   * 4. Handle scroll restoration from URL
-   *    - Scrolls to specific product after page load
-   *    - Triggered when returning from product detail page
-   */
-  useEffect(() => {
-    if (
-      scrollToProductId &&
-      !hasScrolledRef.current &&
-      accumulatedProducts.length > 0 &&
-      !productsLoading &&
-      !isLoadingMore
-    ) {
-      const productElement = productRefs.current.get(scrollToProductId);
-
-      if (productElement) {
-        setTimeout(() => {
-          productElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-          hasScrolledRef.current = true;
-
-          // Remove scrollTo from URL after scrolling
-          const currentParams = new URLSearchParams(searchParams);
-          currentParams.delete("scrollTo");
-          setSearchParams(currentParams, { replace: true });
-        }, 300);
-      }
-    }
-  }, [
-    scrollToProductId,
-    accumulatedProducts,
-    productsLoading,
-    isLoadingMore,
-    // searchParams,
-    // setSearchParams,
-  ]);
-
-  /**
-   * 6. Reset scroll ref when scrollToProductId is removed
-   *    - Clears scroll restoration flag
-   */
-  useEffect(() => {
-    if (!scrollToProductId) {
-      hasScrolledRef.current = false;
-    }
-  }, [scrollToProductId]);
-
-  /**
    * 7. Update limit when screen size changes (but don't reset products)
   useEffect(() => {
     const handleResize = () => {
@@ -790,7 +741,7 @@ const Cards = ({ category = "" }) => {
                       </button>
                       <button
                         onClick={() => handleSortSelection("relevancy")}
-                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "revelancy" ? "bg-gray-100" : ""
+                        className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${sortOption === "relevancy" ? "bg-gray-100" : ""
                           }`}
                       >
                         Relevancy

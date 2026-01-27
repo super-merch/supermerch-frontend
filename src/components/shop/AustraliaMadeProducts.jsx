@@ -519,7 +519,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
                       <button
                         onClick={() => handleSortSelection("relevancy")}
                         className={`w-full text-left text-sm px-4 py-3 hover:bg-gray-100 ${
-                          sortOption === "revelancy" ? "bg-gray-100" : ""
+                          sortOption === "relevancy" ? "bg-gray-100" : ""
                         }`}
                       >
                         Relevancy
