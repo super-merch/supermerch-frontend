@@ -47,6 +47,7 @@ const AppContextProvider = (props) => {
   const [blogs, setBlogs] = useState([]);
   const [setupFee, setSetupFee] = useState(0);
   const items = useSelector(selectCurrentUserCartItems);
+  const normalizeSort = (sortValue) => (sortValue ? sortValue : "relevance");
   useEffect(() => {
     const setup = items.reduce(
       (total, item) => total + (item.setupFee || 0),
@@ -396,7 +397,7 @@ const AppContextProvider = (props) => {
       const limitParam = limit ?? 10;
       // Fixed: Removed duplicate ? and properly formatted query string
       const response = await fetch(
-        `${backednUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limitParam}&sort=${sort}&filter=true`
+        `${backednUrl}/api/client-products/category?category=${category}&page=${page}&limit=${limitParam}&sort=${normalizeSort(sort)}&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
@@ -463,7 +464,7 @@ const AppContextProvider = (props) => {
     try {
       if (!limit) limit = 10; // Default to 100 if limit is not provided
       const response = await fetch(
-        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+        `${backednUrl}/api/client-products?page=${page}&limit=${limit}&sort=${normalizeSort(sort)}&filter=true`
       );
 
       if (!response.ok) throw new Error("Failed to fetch products");
@@ -520,7 +521,7 @@ const AppContextProvider = (props) => {
         const response = await fetch(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/client-products/search?searchTerm=${searchTerm}&page=${page}&limit=${limit}&sort=${sortOption}&filter=true`
+          }/api/client-products/search?searchTerm=${searchTerm}&page=${page}&limit=${limit}&sort=${normalizeSort(sortOption)}&filter=true`
         );
 
         if (!response.ok) return { data: [] };
@@ -572,7 +573,7 @@ const AppContextProvider = (props) => {
       // 3) Create and store promise
       const promise = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${sort}&filter=true`
+          `${backednUrl}/api/client-products/search?searchTerm=${search}&page=${page}&limit=${limit}&sort=${normalizeSort(sort)}&filter=true`
         );
         if (!response.ok) throw new Error("Failed to fetch products");
 
@@ -632,7 +633,7 @@ const AppContextProvider = (props) => {
     try {
       while (currentPage <= endPage) {
         const response = await fetch(
-          `${backednUrl}/api/client-products-trending?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+          `${backednUrl}/api/client-products-trending?page=${currentPage}&limit=${limit}&sort=${normalizeSort(sortOption)}&filter=true`
         );
 
         if (!response.ok) break;
@@ -680,7 +681,7 @@ const AppContextProvider = (props) => {
 
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backednUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${normalizeSort(sort)}&filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -728,7 +729,7 @@ const AppContextProvider = (props) => {
 
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backednUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${normalizeSort(sort)}&filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -769,7 +770,7 @@ const AppContextProvider = (props) => {
         const response = await fetch(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/client-products-newArrival?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+          }/api/client-products-newArrival?page=${currentPage}&limit=${limit}&sort=${normalizeSort(sortOption)}&filter=true`
         );
 
         if (!response.ok) break;
@@ -809,7 +810,7 @@ const AppContextProvider = (props) => {
         const response = await fetch(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/client-products-discounted?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+          }/api/client-products-discounted?page=${currentPage}&limit=${limit}&sort=${normalizeSort(sortOption)}&filter=true`
         );
 
         if (!response.ok) break;
@@ -856,7 +857,7 @@ const AppContextProvider = (props) => {
 
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backednUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${normalizeSort(sort)}&filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -902,7 +903,7 @@ const AppContextProvider = (props) => {
         const response = await fetch(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/client-products-bestSellers?page=${currentPage}&limit=${limit}&sort=${sortOption}&filter=true`
+          }/api/client-products-bestSellers?page=${currentPage}&limit=${limit}&sort=${normalizeSort(sortOption)}&filter=true`
         );
 
         if (!response.ok) break;
@@ -946,7 +947,7 @@ const AppContextProvider = (props) => {
       // Create promise and store in pending map (dedupe)
       const p = (async () => {
         const response = await fetch(
-          `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+          `${backednUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${normalizeSort(sort)}&filter=true`
         );
 
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -1213,7 +1214,7 @@ const AppContextProvider = (props) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/australia/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
+        }/api/australia/get-products?page=${page}&limit=${limit}&sort=${normalizeSort(sortOption)}`,
         {
           method: "GET",
           headers: {
@@ -1261,7 +1262,7 @@ const AppContextProvider = (props) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/australia/get-products?all=true&sort=${sortOption}`,
+        }/api/australia/get-products?all=true&sort=${normalizeSort(sortOption)}`,
         {
           method: "GET",
           headers: {
@@ -1332,7 +1333,7 @@ const AppContextProvider = (props) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/24hour/get-products?page=${page}&limit=${limit}&sort=${sortOption}`,
+        }/api/24hour/get-products?page=${page}&limit=${limit}&sort=${normalizeSort(sortOption)}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -1378,7 +1379,7 @@ const AppContextProvider = (props) => {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/24hour/get-products?all=true&sort=${sortOption}`,
+        }/api/24hour/get-products?all=true&sort=${normalizeSort(sortOption)}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
