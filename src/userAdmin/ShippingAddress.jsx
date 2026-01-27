@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 const ShippingAddress = () => {
-  const { token, shippingAddressData, setShippingAddressData, backednUrl } = useContext(AppContext);
+  const { token, shippingAddressData, setShippingAddressData } =
+    useContext(AuthContext);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -8,7 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import noimage from "/noimage.png";
 import ProductCard from "./ProductCard";
 
@@ -21,7 +21,14 @@ const AllProducts = ({ activeTab }) => {
     marginApi,
     getGlobalDiscount,
     totalDiscount,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
+
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
 
   useEffect(() => {
     if (!Object.keys(marginApi).length) {
@@ -221,7 +228,7 @@ const AllProducts = ({ activeTab }) => {
                     );
                   })
                   .slice(0, 4)
-                  .map((product) => {
+                  .map((product, index) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
                     const basePrice =
@@ -260,7 +267,8 @@ const AllProducts = ({ activeTab }) => {
                       product.discountInfo?.isGlobal || false;
 
                     return (
-                      <ProductCard
+                      <ProductCard 
+                        priority={index < 4}
                         key={productId}
                         product={product}
                         minPrice={minPrice}

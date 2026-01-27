@@ -1,7 +1,7 @@
 
 import React, { useContext } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import { megaMenu } from "@/assets/assets";
 import { toast } from "react-toastify";
 import trophy from "../../assets/trophy.jpg";
@@ -57,7 +57,7 @@ import openerKeyring from "../../assets/openerKeyring.jpg";
 
 
 const Category = () => {
-  const { shopCategory, setSelectedParamCategoryId, setActiveFilterCategory, setCurrentPage, setSidebarActiveCategory } = useContext(AppContext);
+  const { shopCategory, setSelectedParamCategoryId, setActiveFilterCategory, setCurrentPage, setSidebarActiveCategory } = useContext(ProductsContext);
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);

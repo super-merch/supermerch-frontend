@@ -8,7 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import noimage from "/noimage.png";
 import SkeletonLoading from "./SkeletonLoading";
 import ProductCard from "./ProductCard";
@@ -22,7 +22,7 @@ const Bags = ({ activeTab }) => {
     fetchProductsCategory,
     productsCategoryLoading,
     productsCategory,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
   
   useEffect(() => {
     if (!Object.keys(marginApi).length) {
@@ -89,7 +89,7 @@ const Bags = ({ activeTab }) => {
                       priceBreaks[0]?.price !== undefined
                     );
                   })
-                  .map((product) => {
+                  .map((product, index) => {
                     const priceGroups =
                       product.product?.prices?.price_groups || [];
                     const basePrice =
@@ -129,6 +129,7 @@ const Bags = ({ activeTab }) => {
 
                     return (
                       <ProductCard
+                        priority={index < 4}
                         key={productId}
                         product={product}
                         minPrice={minPrice}

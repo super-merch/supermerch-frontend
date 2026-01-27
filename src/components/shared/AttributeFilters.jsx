@@ -1,14 +1,15 @@
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import allAttributes from "./attributes";
 
 export default function AttributeFilters({ toggleSidebar, categoryType }) {
-  const { getProducts, setPaginationData } = useContext(AppContext);
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const { getProducts, setPaginationData } = useContext(ProductsContext);
+  const [selectedAttributes, setSelectedAttributes] = useState({});
   const [expandedAttributes, setExpandedAttributes] = useState({});
   const [cachedAttributes, setCachedAttributes] = useState([]);
+  //const [selectedValues, setSelectedValues]  = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -56,76 +57,82 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     cachedAttributes.length > 0
       ? cachedAttributes
       : categoryType === "allProducts"
-      ? allAttributes
-      : incomingAttributes;
+        ? allAttributes
+        : incomingAttributes;
 
   // Reset selected filter when location changes
   useEffect(() => {
-    const urlAttrName = params.get("attrName");
-    const urlAttrValue = params.get("attrValue");
+    const urlAttrNames = params.getAll("attrName");
+    const urlAttrValues = params.getAll("attrValue");
 
-    if (urlAttrName && urlAttrValue) {
-      setSelectedFilter({ name: urlAttrName, value: urlAttrValue });
-    } else {
-      setSelectedFilter(null);
-    }
+    const nextSelected = {};
+    urlAttrNames.forEach((name, idx) => {
+      const raw = urlAttrValues[idx] || "";
+      const values = raw.split(",").map((v) => v.trim()).filter(Boolean);
+      if (values.length) nextSelected[name] = values;
+    });
+
+    setSelectedAttributes(nextSelected);
+
+    const attributesPayload = Object.entries(nextSelected).map(
+      ([name, values]) => ({ name, value: values.join(",") })
+    );
 
     setPaginationData((prev) => ({
       ...prev,
-      attributes:
-        urlAttrName && urlAttrValue
-          ? { name: urlAttrName, value: urlAttrValue }
-          : null,
+      attributes: attributesPayload.length > 0 ? attributesPayload : null,
     }));
-  }, [location.pathname, category, search,params.get("attrName"), params.get("attrValue")]);
+  }, [location.pathname, category, search, location.search]);
+
 
   const handleCheckboxChange = (attributeName, value) => {
-    const isCurrentlySelected =
-      selectedFilter?.name === attributeName && selectedFilter?.value === value;
+    const currentValues = selectedAttributes[attributeName] || [];
+
+    const nextValues = currentValues.includes(value)
+      ? currentValues.filter((v) => v !== value)
+      : [...currentValues, value];
+
+    const nextSelected = { ...selectedAttributes };
+    if (nextValues.length > 0) {
+      nextSelected[attributeName] = nextValues;
+    } else {
+      delete nextSelected[attributeName];
+    }
 
     setSearchParams((prevParams) => {
       const newParams = new URLSearchParams(prevParams);
+      newParams.delete("attrName");
+      newParams.delete("attrValue");
 
-      if (isCurrentlySelected) {
-        newParams.delete("attrName");
-        newParams.delete("attrValue");
-      } else {
-        newParams.set("attrName", attributeName);
-        newParams.set("attrValue", value);
-      }
+      Object.entries(nextSelected).forEach(([name, values]) => {
+        newParams.append("attrName", name);
+        newParams.append("attrValue", values.join(","));
+      });
 
       newParams.set("page", "1");
       return newParams;
     });
 
-    if (isCurrentlySelected) {
-      setSelectedFilter(null);
-      setPaginationData((prev) => ({
-        ...prev,
-        page: 1,
-        attributes: null,
-        sendAttributes: false,
-      }));
-    } else {
-      const newFilter = { name: attributeName, value: value };
-      setSelectedFilter(newFilter);
-      setPaginationData((prev) => ({
-        ...prev,
-        page: 1,
-        attributes: newFilter,
-        sendAttributes: false,
-      }));
+    setSelectedAttributes(nextSelected);
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
+    const attributesPayload = Object.entries(nextSelected).map(
+      ([name, values]) => ({ name, value: values.join(",") })
+    );
+
+    setPaginationData((prev) => ({
+      ...prev,
+      page: 1,
+      attributes: attributesPayload.length > 0 ? attributesPayload : null,
+      sendAttributes: false,
+    }));
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     if (toggleSidebar && window.innerWidth <= 1025) {
       toggleSidebar();
     }
   };
+
 
   const toggleAttributeExpansion = (attributeName) => {
     setExpandedAttributes((prev) => ({
@@ -142,7 +149,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     <div className="space-y-3">
       {attributes.map((attribute) => {
         const isExpanded = expandedAttributes[attribute.name];
-        const isAttributeSelected = selectedFilter?.name === attribute.name;
+        const isAttributeSelected = (selectedAttributes[attribute.name] || []).length> 0;
 
         return (
           <div
@@ -166,9 +173,8 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
                 )}
               </div>
               <svg
-                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                  isExpanded ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -187,17 +193,14 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
               <div className="px-4 pb-3 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 <div className="space-y-2">
                   {attribute.values.map((value) => {
-                    const isChecked =
-                      selectedFilter?.name === attribute.name &&
-                      selectedFilter?.value === value;
-
+                    const isChecked = (selectedAttributes[attribute.name] || []).includes(value);
                     return (
                       <label
                         key={value}
                         className="flex items-center gap-2 cursor-pointer group"
                       >
                         <input
-                          type="radio"
+                          type="checkbox"
                           checked={isChecked}
                           onChange={() =>
                             handleCheckboxChange(attribute.name, value)

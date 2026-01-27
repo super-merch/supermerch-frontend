@@ -5,7 +5,9 @@ import { useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa6";
 import axios from "axios";
 import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { toast } from "react-toastify";
 import CreditCard from "../creditcard/CreditCard";
 import {
@@ -14,7 +16,7 @@ import {
 } from "@/redux/slices/cartSlice";
 import { loadStripe } from "@stripe/stripe-js";
 import { products } from "../shop/ProductData";
-import AddressAutocomplete from "./AddessAutocomplete";
+import AddressAutocomplete from "./AddressAutocomplete";
 import { User } from "lucide-react";
 
 const Checkout = () => {
@@ -24,13 +26,15 @@ const Checkout = () => {
   const {
     token,
     addressData,
-    backednUrl,
     shippingAddressData,
-    totalDiscount,
-    openLoginModal,
-    setOpenLoginModal,
     userData,
     loadUserOrder,
+  } = useContext(AuthContext);
+  const { totalDiscount } = useContext(ProductsContext);
+  const {
+    backendUrl,
+    openLoginModal,
+    setOpenLoginModal,
     shippingCharges,
     setupFee,
     gstCharges
@@ -82,7 +86,7 @@ const Checkout = () => {
             toast.error("Failed to save shipping address.");
           }
           const resp = await axios.put(
-            `${backednUrl}/api/auth/update-address`,
+            `${backendUrl}/api/auth/update-address`,
             { defaultAddress: addressData },
             {
               headers: {
@@ -195,7 +199,7 @@ const Checkout = () => {
       // Place the order
       const headers = token ? { headers: { token } } : {};
       const response = await axios.post(
-        `${backednUrl}/api/checkout/checkout`,
+        `${backendUrl}/api/checkout/checkout`,
         checkoutData,
         headers
       );
@@ -515,7 +519,7 @@ const Checkout = () => {
       };
 
       const resp = await axios.post(
-        `${backednUrl}/create-checkout-session`,
+        `${backendUrl}/create-checkout-session`,
         body
       );
       const session = await resp.data;
@@ -553,7 +557,7 @@ const Checkout = () => {
     }
     setLoginLoading(true);
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/login`, {
+      const response = await axios.post(`${backendUrl}/api/auth/login`, {
         email: loginEmail,
         password: loginPassword,
       });

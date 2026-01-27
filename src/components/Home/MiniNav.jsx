@@ -12,7 +12,8 @@ import { googleLogout } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { IoPricetagSharp } from "react-icons/io5";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
@@ -108,17 +109,12 @@ const MiniNav = () => {
     ],
   ];
 
+  const { token, setToken } = useContext(AuthContext);
   const {
-    token,
-    setToken,
     products,
     setProducts,
-    fetchProducts,
-    handleLogout,
     categoryProducts,
-    setCategoryProducts,
-    fetchCategories,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
   const { coupons, coupenLoading } = useCoupons();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -361,8 +357,8 @@ const MiniNav = () => {
                 {coupenLoading
                   ? "Loading..."
                   : coupen
-                  ? coupen
-                  : "No Coupen available"}
+                    ? coupen
+                    : "No Coupen available"}
               </p>
               <p className="text-sm text-gray-600">
                 Add this coupon at checkout to enjoy{" "}
@@ -370,8 +366,8 @@ const MiniNav = () => {
                   {coupenLoading
                     ? "Loading..."
                     : discount
-                    ? discount + "%"
-                    : "No Discount"}
+                      ? discount + "%"
+                      : "No Discount"}
                 </strong>
                 .
                 {coupen && (
@@ -421,9 +417,8 @@ const MiniNav = () => {
             <Link to={"/cart"} className="relative">
               {totalQuantity > 0 && (
                 <span
-                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${
-                    totalQuantity > 999 ? "text-[10px]" : "text-[11px]"
-                  } rounded-full w-6 h-6 flex items-center justify-center`}
+                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${totalQuantity > 999 ? "text-[10px]" : "text-[11px]"
+                    } rounded-full w-6 h-6 flex items-center justify-center`}
                 >
                   {totalQuantity > 999 ? "+999" : totalQuantity}
                 </span>
@@ -477,10 +472,9 @@ const MiniNav = () => {
             {isOpen && (
               <div
                 className={`absolute mt-2 bg-white border border-gray-300 rounded-md shadow-lg w-48 
-                  transform transition-all duration-300 ease-in-out ${
-                    isOpen
-                      ? "opacity-100 translate-y-0 scale-100"
-                      : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
+                  transform transition-all duration-300 ease-in-out ${isOpen
+                    ? "opacity-100 translate-y-0 scale-100"
+                    : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
                   }`}
               >
                 <ul className="py-1">
@@ -525,25 +519,23 @@ const MiniNav = () => {
             </div>
 
             <div
-              className={`${
-                isnav
-                  ? "block z-10 mt-3 lg:hidden absolute bg-white shadow-lg px-8 md:px-12 py-4 right-0 w-[100%] transition-all duration-300 ease-in-out"
-                  : "hidden lg:block"
-              }`}
+              className={`${isnav
+                ? "block z-10 mt-3 lg:hidden absolute bg-white shadow-lg px-8 md:px-12 py-4 right-0 w-[100%] transition-all duration-300 ease-in-out"
+                : "hidden lg:block"
+                }`}
             >
               <ul className="space-y-3 lg:space-y-0 lg:flex lg:space-x-6">
                 {route.map((link, index) => (
                   <li
-                    className={`${
-                      link.name === "Promotional" ? "group relative" : ""
-                    }`}
+                    className={`${link.name === "Promotional" ? "group relative" : ""
+                      }`}
                     key={index}
                   >
                     <Link
                       to={link.path}
                       className="text-customBlue"
-                      // onClick={() => setIsnav(false)}
-                      // onClick={() => handleCategoryClick(link.name)}
+                    // onClick={() => setIsnav(false)}
+                    // onClick={() => handleCategoryClick(link.name)}
                     >
                       <p
                         className="capitalize flex"
@@ -570,11 +562,10 @@ const MiniNav = () => {
                               >
                                 {category.title}
                                 <RiArrowDropDownLine
-                                  className={`text-xl transition-all duration-300 ${
-                                    activeCategory === index
-                                      ? "rotate-0"
-                                      : "-rotate-90"
-                                  }`}
+                                  className={`text-xl transition-all duration-300 ${activeCategory === index
+                                    ? "rotate-0"
+                                    : "-rotate-90"
+                                    }`}
                                 />
                               </h6>
 

@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import noimage from "/noimage.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
@@ -23,7 +23,7 @@ import Tooltip from "../Common/Tooltip";
 const TrendingCarousel = () => {
   const navigate = useNavigate();
   const { fetchTrendingProducts, trendingProducts, trendingProductsLoading } =
-    useContext(AppContext);
+    useContext(ProductsContext);
 
   // Fetch trending products on component mount
   useEffect(() => {

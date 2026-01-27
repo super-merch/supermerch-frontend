@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { useNavigate } from "react-router-dom";
 import noimage from "/noimage.png";
 
@@ -17,7 +17,7 @@ const Sale = () => {
     fetchNewArrivalProducts,
     arrivalProducts,
     trendingProducts,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
   const navigate = useNavigate();
 
   useEffect(() => {

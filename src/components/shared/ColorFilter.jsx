@@ -1,4 +1,4 @@
-import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import { CheckCheck } from "lucide-react";
 import { useState, useCallback, useContext, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 const ColorFilter = ({ toggleSidebar }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllColors, setShowAllColors] = useState(false);
-  const { setPaginationData } = useContext(AppContext);
+  const { setPaginationData } = useContext(ProductsContext);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get("category");

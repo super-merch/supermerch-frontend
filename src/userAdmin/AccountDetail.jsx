@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const AccountDetail = () => {
-  const { fetchWebUser, userData, token, backednUrl } = useContext(AppContext);
+  const { fetchWebUser, userData, token} = useContext(AuthContext);
+  const { backendUrl } = useContext(AppContext);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +62,7 @@ const AccountDetail = () => {
         newPassword,
       };
       const { data } = await axios.put(
-        `${backednUrl}/api/auth/updateWeb-user`,
+        `${backendUrl}/api/auth/updateWeb-user`,
         payload,
         { headers: { token } }
       );

@@ -24,8 +24,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import banner from "../../../../public/BANNER/cuo.jpg";
+import banner from "@/assets/cuo.jpg";
 import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
+import { AuthContext } from "../../../context/AuthContext";
 import { addToCart } from "../../../redux/slices/cartSlice";
 import ProductNotFound from "../ProductNotFound";
 import QuoteFormModal from "../QuoteFormModal";
@@ -54,13 +56,11 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { token, userData } = useContext(AuthContext);
+  const { error, totalDiscount } = useContext(ProductsContext)
   const {
-    backednUrl,
-    token,
-    error,
-    totalDiscount,
+    backendUrl,
     shippingCharges: freightFee,
-    userData,
   } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +76,7 @@ const ProductDetails = () => {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `${backednUrl}/api/single-product/${id}`
+          `${backendUrl}/api/single-product/${id}`
         );
         if (data) {
           setSingle_Product(data.data, "fetchSingleProduct");
@@ -700,7 +700,7 @@ const ProductDetails = () => {
       }
 
       const { data } = await axios.post(
-        `${backednUrl}/api/checkout/quote`,
+        `${backendUrl}/api/checkout/quote`,
         formData1,
         {
           headers: { token },
@@ -961,11 +961,10 @@ const ProductDetails = () => {
                     <img
                       src={item}
                       alt={`Thumbnail ${index}`}
-                      className={`w-full border-2  ${
-                        activeImage === item
+                      className={`w-full border-2  ${activeImage === item
                           ? "border-smallHeader"
                           : "border-transparent"
-                      }`}
+                        }`}
                     />
                   </div>
                 </SwiperSlide>
@@ -978,9 +977,8 @@ const ProductDetails = () => {
             <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="w-full">
                 <h2
-                  className={`text-2xl ${
-                    product?.name ? "font-bold" : "font-medium"
-                  } cursor-pointer transition-colors`}
+                  className={`text-2xl ${product?.name ? "font-bold" : "font-medium"
+                    } cursor-pointer transition-colors`}
                   onClick={handleHeadingClick}
                   onKeyDown={(e) => {
                     if (e.shiftKey && e.key.toLowerCase() === "a") {
@@ -1027,28 +1025,25 @@ const ProductDetails = () => {
                                 className="relative inline-flex items-center justify-center"
                               >
                                 <div
-                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${
-                                    isSelected
+                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${isSelected
                                       ? "w-7 h-7 shadow-xl"
                                       : "w-6 h-6 hover:shadow-lg hover:scale-110"
-                                  }`}
+                                    }`}
                                   style={{
                                     backgroundColor:
                                       matchedColor?.hex || "#9ca3af",
                                   }}
                                   onClick={() => handleColorClick(color)}
                                   title={color}
-                                  aria-label={`Color: ${color}${
-                                    isSelected ? " (Selected)" : ""
-                                  }`}
+                                  aria-label={`Color: ${color}${isSelected ? " (Selected)" : ""
+                                    }`}
                                 >
                                   {/* White border for contrast */}
                                   <div
-                                    className={`absolute inset-0 rounded-full ${
-                                      isSelected
+                                    className={`absolute inset-0 rounded-full ${isSelected
                                         ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
                                         : "border-[2px] border-gray-400/60"
-                                    }`}
+                                      }`}
                                   ></div>
 
                                   {/* Checkmark badge for selected */}
@@ -1088,11 +1083,10 @@ const ProductDetails = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveInfoTab(tab.key)}
-                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${
-                      activeInfoTab === tab.key
+                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${activeInfoTab === tab.key
                         ? "border-primary text-primary"
                         : "border-transparent text-gray-600 hover:text-gray-900"
-                    }`}
+                      }`}
                   >
                     {tab.label}
                   </button>

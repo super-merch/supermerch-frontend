@@ -1,4 +1,5 @@
 import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 import React, { useContext, useEffect, useState } from "react";
 import {
   LuLayoutDashboard,
@@ -30,7 +31,8 @@ export default function SidebarTabs() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
-  const { activeTab, setActiveTab, handleLogout } = useContext(AppContext);
+  const { activeTab, setActiveTab} = useContext(AppContext);
+  const {handleLogout} = useContext(AuthContext);
   useEffect(() => {
     if (showLogoutPopup) {
       document.body.classList.add("overflow-hidden");
@@ -156,15 +158,12 @@ function DashboardContent() {
 
 function OrdersContent() {
   const {
-    newId,
-    setNewId,
-    activeTab,
-    setActiveTab,
     userOrder,
     loading,
     loadUserOrder,
-    userStats,
-  } = useContext(AppContext);
+    userStats
+  } = useContext(AuthContext);
+  const {newId, setNewId, activeTab, setActiveTab} = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = userStats?.pages;
   useEffect(()=>{

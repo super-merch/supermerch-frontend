@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckoutPage from "./pages/CheckoutPage";
 import AboutPage from "./pages/AboutPage";
-import { AppContext } from "./context/AppContext";
+import { AuthContext } from "./context/AuthContext";
 import Sidebar from "./userAdmin/Sidebar";
 import { ToastContainer } from "react-toastify";
 import BlogDetails from "./pages/BlogDetails";
@@ -50,7 +50,7 @@ export const ScrollToTop = () => {
 };
 
 const App = () => {
-  const { token } = useContext(AppContext);
+  const { token } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -87,7 +87,7 @@ const App = () => {
 
             <Route path="hot-deals" element={<ShopPage category="sales" />} />
             <Route path="/favourites" element={<FavouritePage />} />
-            <Route path="/Clothing" element={<ShopPage category="dress" />} />
+            <Route path="/Clothing" element={<ShopPage category="clothing" />} />
             <Route
               path="/Headwear"
               element={<ShopPage category="headwear" />}

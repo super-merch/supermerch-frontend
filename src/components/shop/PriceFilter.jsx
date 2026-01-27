@@ -4,21 +4,23 @@ import { useDispatch } from "react-redux";
 import { setMinPrice, setMaxPrice } from "../../redux/slices/filterSlice";
 import { toast } from "react-toastify";
 import { useContext } from "react";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 import { useSearchParams } from "react-router-dom";
 
 const PriceFilter = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
-  const { setPaginationData } = useContext(AppContext);
+  const { setPaginationData } = useContext(ProductsContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const [localMin, setLocalMin] = useState("");
   const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const minPriceParam = searchParams.get("minPrice") || "";
+  const maxPriceParam = searchParams.get("maxPrice") || "";
 
   useEffect(() => {
-    setLocalMin(searchParams.get("minPrice") || "");
-    setLocalMax(searchParams.get("maxPrice") || "");
-  }, [searchParams.get("minPrice")]);
+    setLocalMin(minPriceParam);
+    setLocalMax(maxPriceParam);
+  }, [minPriceParam, maxPriceParam]);
 
   const applyRangeToBackend = (minValue, maxValue) => {
     dispatch(setMinPrice(minValue));

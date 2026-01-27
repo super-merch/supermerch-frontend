@@ -12,7 +12,7 @@ import GoogleAuthModal from "../components/auth/GoogleAuthModal";
 import { useAuth } from "../hooks/useAuth";
 
 const Signup = () => {
-  const { backednUrl } = useContext(AppContext);
+  const { backendUrl } = useContext(AppContext);
 
   const {
     loading,
@@ -69,7 +69,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(`${backednUrl}/api/auth/signup`, {
+      const response = await axios.post(`${backendUrl}/api/auth/signup`, {
         name: formData.name,
         lastName: formData.lastName,
         companyName: formData.companyName,

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
-import { AppContext } from "../context/AppContext";
+import { ProductsContext } from "../context/ProductsContext";
 import noimage from "/noimage.png";
 import { getProductPrice } from "@/utils/utils";
 import { Clock, Flag } from "lucide-react";
@@ -13,12 +13,14 @@ const HotDeals = () => {
     skeletonLoading,
     marginApi,
     marginAdd,
+  } = useContext(ProductsContext);
 
-    products,
-    discountedProducts,
-    fetchDiscountedProducts,
-    fetchProducts,
-  } = useContext(AppContext);
+  useEffect(() => {
+    if(!Object.keys(marginApi).length){
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
 
   const [isLoading, setIsLoading] = useState(false);
   
@@ -30,18 +32,66 @@ const HotDeals = () => {
   }, [marginApi]);
 
   const [error, setError] = useState("");
-
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [items, setItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [source, setSource] = useState("discounted");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const PAGE_SIZE = 12;
   useEffect(() => {
-    fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
-    // Fallback: also fetch regular products in case discounted products are empty
-    fetchProducts(1, "", 8);
-  }, []);
+    let isMounted = true;
+    const fetchAllPage = async (page) => {
+      const response = await fetch(
+        `${backendUrl}/api/client-products?page=${page}&limit=${PAGE_SIZE}&filter=true`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      return {
+        items: data.data || [],
+        totalPages: data.total_pages || data.totalPages || 0,
+      };
+    };
 
-  const displayProducts =
-    discountedProducts && discountedProducts.length > 0
-      ? discountedProducts
-      : products || [];
+    const loadInitial = async () => {
+      setIsLoading(true);
+      try {
+        const discounted = await fetchMultipleDiscountedPages(
+          1,
+          PAGE_SIZE,
+          "",
+          1
+        );
+        if (!isMounted) return;
 
+        if (discounted.length > 0) {
+          setSource("discounted");
+          setItems(discounted);
+          setCurrentPage(1);
+          setHasMore(discounted.length === PAGE_SIZE);
+          return;
+        }
+
+        const { items: allItems, totalPages } = await fetchAllPage(1);
+        if (!isMounted) return;
+        setSource("all");
+        setItems(allItems);
+        setCurrentPage(1);
+        setHasMore(totalPages > 1);
+      } catch (err) {
+        if (!isMounted) return;
+        setError("Failed to load hot deals. Please try again later.");
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+    loadInitial();
+    return () => {
+      isMounted = false;
+    };
+  }, [backendUrl, fetchMultipleDiscountedPages, PAGE_SIZE]);
+
+  const displayProducts = items || [];
   const slugify = (s) =>
     String(s || "")
       .trim()
@@ -58,7 +108,43 @@ const HotDeals = () => {
   const filteredProducts = useMemo(() => {
     return (displayProducts || []).filter((p) => getProductPrice(p) > 0);
   }, [displayProducts, marginApi]);
-
+  const handleLoadMore = async () => {
+    const nextPage = currentPage + 1;
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      if (source === "discounted") {
+        const nextItems = await fetchMultipleDiscountedPages(
+          1,
+          PAGE_SIZE,
+          "",
+          nextPage
+        );
+        setItems((prev) => [...prev, ...nextItems]);
+        setCurrentPage(nextPage);
+        if (nextItems.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+      } else {
+        const response = await fetch(
+          `${backendUrl}/api/client-products?page=${nextPage}&limit=${PAGE_SIZE}&filter=true`,
+        );
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+        const nextItems = data.data || [];
+        setItems((prev) => [...prev, ...nextItems]);
+        setCurrentPage(nextPage);
+        const totalPages = data.total_pages || data.totalPages || 0;
+        if (nextPage >= totalPages || nextItems.length === 0) {
+          setHasMore(false);
+        }
+      }
+    } catch (err) {
+      setError(err?.message || "Failed to load more products. Please try again later.");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
   return (
     <div className="Mycontainer py-6">
       <h1 className="text-2xl font-bold text-brand">Hot Deals</h1>
@@ -70,11 +156,10 @@ const HotDeals = () => {
       )}
 
       <div
-        className={`$${
-          (isLoading || skeletonLoading) && filteredProducts.length === 0
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
-            : ""
-        }`}
+        className={`${(isLoading || skeletonLoading) && filteredProducts.length === 0
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
+          : ""
+          }`}
       >
         {isLoading || skeletonLoading ? (
           Array.from({ length: 9 }).map((_, index) => (
@@ -98,6 +183,7 @@ const HotDeals = () => {
               const minPrice = getProductPrice(product, product?.meta?.id);
               const discountPct = product.discountInfo?.discount || 0;
               const isGlobalDiscount = product.discountInfo?.isGlobal || false;
+              let unDiscountedPrice;
               if (discountPct > 0) {
                 unDiscountedPrice =
                   getProductPrice(product, product.meta.id) /
@@ -164,13 +250,13 @@ const HotDeals = () => {
                     {product?.product?.categorisation?.promodata_attributes?.some(
                       (item) => item === "Local Factors: Made In Australia"
                     ) && (
-                      <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
-                        <Flag className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
-                        <span className="truncate max-w-[50px] sm:max-w-none">
-                          AU Made
+                        <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full bg-white/90 text-yellow-800 text-[9px] sm:text-[10px] md:text-xs font-semibold border border-yellow-200 shadow-sm overflow-hidden">
+                          <Flag className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 flex-shrink-0" />
+                          <span className="truncate max-w-[50px] sm:max-w-none">
+                            AU Made
+                          </span>
                         </span>
-                      </span>
-                    )}
+                      )}
                   </div>
 
                   <div className="max-h-[62%] sm:max-h-[71%] h-full border-b overflow-hidden relative">
@@ -229,6 +315,18 @@ const HotDeals = () => {
                 </div>
               );
             })}
+            {hasMore && filteredProducts.length > 0 && (
+              <div className="flex justify-center mt-6">
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="px-6 py-2  rounded border border-primary text-primary hover:bg-primary hover:text-white transition disabled:opacity-50"
+                >
+                  {isLoadingMore ? "Loading..." : "Load More"}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex items-center justify-center h-48">
@@ -239,5 +337,4 @@ const HotDeals = () => {
     </div>
   );
 };
-
 export default HotDeals;

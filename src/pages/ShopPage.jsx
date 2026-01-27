@@ -3,7 +3,7 @@ import Breadcrumb from "../components/shared/Breadcrumb";
 import Cards from "../components/shop/Cards";
 import ShopOurBestSellers from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 import CategoryGrid from "../components/shop/CategoryGrid";
-import banner from "../../public/BANNER/summer.jpg";
+import banner from "@/assets/summer.jpg";
 const GeneralShopPage = () => {
   return (
     <div>

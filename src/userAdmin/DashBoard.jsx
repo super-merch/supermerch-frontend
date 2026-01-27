@@ -1,26 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 import { FaBullseye } from "react-icons/fa";
 
 const DashBoard = () => {
-  const {
-    backednUrl,
-    handleLogout,
-    setNewId,
-    activeTab,
-    setActiveTab,
-    userOrder,
-    userEmail,
-    userStats
-  } = useContext(AppContext);
+  const { handleLogout, userOrder, userEmail, userStats } =
+    useContext(AuthContext);
+  const { setNewId, setActiveTab } = useContext(AppContext);
+
   // const [loading, setLoading] = useState(FaBullseye);
   // useEffect(() => {
   //   const fetchUserEmail = async () => {
   //     try {
   //       setLoading(true);
   //       const token = localStorage.getItem("token");
-  //       const { data } = await axios.get(`${backednUrl}/api/auth/user`, {
+  //       const { data } = await axios.get(`${backendUrl}/api/auth/user`, {
   //         headers: {
   //           Authorization: `Bearer ${token}`,
   //         },
@@ -219,7 +214,7 @@ const DashBoard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {userOrder?.slice(0, 5)?.map((order) => (
+                    {userOrder?.slice(0, 5).map((order) => (
                       <tr key={order._id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           #{order?.orderId?.slice(-8)?.toUpperCase()}

@@ -9,7 +9,7 @@ import { IoCartOutline, IoClose } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useContext } from "react";
-import { AppContext } from "../../../context/AppContext";
+import { ProductsContext } from "../../../context/ProductsContext";
 import noimage from "/noimage.png";
 import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
@@ -28,7 +28,7 @@ const Headwear = ({ activeTab }) => {
     marginApi,
     marginAdd,
     totalDiscount,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
   useEffect(() => {
     if (!Object.keys(marginApi).length) {
       marginAdd();

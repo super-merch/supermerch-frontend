@@ -13,9 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // Import reusable components
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
+import { AuthContext } from "../../context/AuthContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
-import supermerch from "../../../public/logo.png";
+import supermerch from "@/assets/logo.png";
 import { useCoupons } from "@/hooks/useCoupons";
 import {
   clearCurrentUser,
@@ -29,9 +30,8 @@ import {
 } from "../../redux/slices/filterSlice";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
+  const { token, setToken } = useContext(AuthContext);
   const {
-    token,
-    setToken,
     products,
     categoryProducts,
     setActiveFilterCategory,
@@ -43,15 +43,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setSidebarActiveCategory,
     setSidebarActiveLabel,
     setPaginationData,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   useEffect(() => {
-  if (!v1categories?.length) {
-    fetchV1Categories();
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [v1categories?.length]);
-
+    if (!v1categories?.length) {
+      fetchV1Categories();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v1categories?.length]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -644,7 +643,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     handleSubCategories(
                       itemName,
                       subType?.id ||
-                        itemName.toLowerCase().replace(/\s+/g, "-"),
+                      itemName.toLowerCase().replace(/\s+/g, "-"),
                       v1Cat?.name || category.name,
                       "Promotional"
                     ),
@@ -890,7 +889,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     handleSubCategories(
                       itemName,
                       subType?.id ||
-                        itemName.toLowerCase().replace(/\s+/g, "-"),
+                      itemName.toLowerCase().replace(/\s+/g, "-"),
                       v1Cat?.name || category.name,
                       "Clothing"
                     ),
@@ -955,10 +954,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleSearch = (searchTerm) => {
-    navigate(
-      `/search?search=${searchTerm}${
-        selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""
-      }`
+    navigate(`/search?search=${searchTerm}${selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""}`
     );
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));

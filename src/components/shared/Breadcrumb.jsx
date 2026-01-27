@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useContext } from "react";
-import { AppContext } from "../../context/AppContext";
+import { ProductsContext } from "../../context/ProductsContext";
 
 const Breadcrumb = () => {
   const location = useLocation();
@@ -11,7 +11,7 @@ const Breadcrumb = () => {
     setCurrentPage,
     setSidebarActiveCategory,
     setActiveFilterCategory,
-  } = useContext(AppContext);
+  } = useContext(ProductsContext);
 
   // Get URL parameters
   const categoryName = searchParams.get("categoryName")

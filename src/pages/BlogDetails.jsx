@@ -9,15 +9,23 @@ import {
   FaEye,
   FaClock,
 } from "react-icons/fa";
-import { AppContext } from "../context/AppContext";
+import { BlogContext } from "@/context/BlogContext";
 import BlogCard from "@/components/card/BlogCard";
 
 const BlogDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { blogs, options } = useContext(AppContext);
+  const { blogs, options, fetchBlogs } = useContext(BlogContext);
   const [blogData, setBlogData] = useState(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
+ //fetch before loading
+  useEffect(() => {
+    if (!blogs?.length) {
+      fetchBlogs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogs?.length]);
+
 
   useEffect(() => {
     const foundBlog = blogs.find((blog) => blog._id === id);

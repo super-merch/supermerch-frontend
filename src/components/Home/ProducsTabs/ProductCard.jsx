@@ -21,6 +21,7 @@ const ProductCard = ({
   onMouseEnter,
   onMouseLeave,
   isHovered,
+  priority = false,
 }) => {
   const productId = product?.meta?.id;
   const [cardHover, setCardHover] = useState(null);
@@ -120,6 +121,8 @@ const ProductCard = ({
               }
               alt=""
               className="object-contain w-full h-full transition-transform duration-200 group-hover:scale-110"
+              loading={priority ? "eager" : "lazy"}
+              fetchpriority={priority ? "high" : "auto"}
             />
             {discountPct > 0 && (
               <div className="absolute bottom-2  right-1 sm:right-2 z-20">

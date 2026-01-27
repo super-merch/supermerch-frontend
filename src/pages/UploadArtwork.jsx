@@ -9,13 +9,15 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AppContext } from "@/context/AppContext";
+import { ProductsContext } from "@/context/ProductsContext";
 import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
 
 const UploadArtwork = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { totalDiscount, shippingCharges, setupFee,gstCharges } = useContext(AppContext);
+  const { totalDiscount } = useContext(ProductsContext);
+  const { shippingCharges, setupFee,gstCharges } = useContext(AppContext);
 
   // Get cart data from Redux
   const items = useSelector(selectCurrentUserCartItems);

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { FaArrowRight, FaCalendarAlt, FaEye } from "react-icons/fa";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoArrowBackOutline } from "react-icons/io5";
@@ -7,11 +7,18 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { AppContext } from "../../context/AppContext";
+import { BlogContext } from "../../context/BlogContext";
 import BlogCard from "../card/BlogCard";
 import { Heading } from "../Common";
 const Blogs = () => {
-  const { blogs, setBlogs, options } = useContext(AppContext);
+  const { blogs, fetchBlogs, options } = useContext(BlogContext);
+  useEffect(() => {
+    if (!blogs?.length) {
+      fetchBlogs();
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blogs?.length]);
+
   // Function to inject images into content
 
   return (

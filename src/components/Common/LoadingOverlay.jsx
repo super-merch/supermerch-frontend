@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../../public/supermerch-white.png";
+import logo from "@/assets/supermerch-white.png";
 
 const LoadingOverlay = ({
   title = "Loading",

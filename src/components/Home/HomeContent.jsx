@@ -1,4 +1,4 @@
-import banner from "../../../public/BANNER/summer.jpg";
+import banner from "@/assets/summer.jpg";
 import BannerSection from "./BannerSection";
 import Blogs from "./Blogs";
 import Brands from "./Brands";

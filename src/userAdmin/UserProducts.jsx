@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { ProductsContext } from "../context/ProductsContext";
+import { AuthContext } from "../context/AuthContext";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -9,15 +11,17 @@ import { loadStripe } from "@stripe/stripe-js";
 const UserProducts = () => {
   const {
     userOrder,
-    loading,
-    newId,
-    setActiveTab,
-    backednUrl,
-    fetchProductDiscount,
-    setTotalDiscount,
-    totalDiscount,
-    marginApi,
-  } = useContext(AppContext);
+    loading
+  } = useContext(AuthContext);
+  const { marginAdd, marginApi } = useContext(ProductsContext);
+  const { newId, setActiveTab, backendUrl } = useContext(AppContext);
+  useEffect(() => {
+    if (!Object.keys(marginApi).length) {
+      marginAdd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marginApi]);
+  
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState({});
   const [reOrderModal, setReOrderModal] = useState(false);
@@ -61,7 +65,7 @@ const UserProducts = () => {
       };
 
       const resp = await axios.post(
-        `${backednUrl}/create-checkout-session`,
+        `${backendUrl}/create-checkout-session`,
         body
       );
       const session = await resp.data;
