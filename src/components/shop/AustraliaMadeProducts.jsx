@@ -60,12 +60,17 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
 
 
-  // Function to fetch products for a specific page
-  const fetchProductsPage = async (page) => {
+  // Function to fetch products for a specific page and limit
+  const fetchProductsPage = async (page, customLimit = null) => {
+    const fetchLimit = customLimit !== null ? customLimit : (Number(searchParams.get("limit")) || 20);
     const params = new URLSearchParams({
       page: page.toString() || "1",
-      limit: limit.toString(),
+      limit: fetchLimit.toString(),
+      filter: "true",
     });
+    if (sortOption) {
+      params.set("sort", sortOption);
+    }
     const url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
 
     try {
@@ -79,49 +84,54 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     }
   };
 
+  // Initialize pagination data with limit from URL
   useEffect(() => {
-    if (getAustraliaProducts?.data?.length > 0 && australiaPaginationData?.page) {
-      fetchProductsPage(australiaPaginationData.page);
-    }
-  }, [getAustraliaProducts?.data, australiaPaginationData?.page]);
+    const urlLimit = Number(searchParams.get("limit")) || 20;
+    const urlPage = Number(searchParams.get("page")) || 1;
+    
+    setAustraliaPaginationData((prev) => ({
+      ...prev,
+      page: urlPage,
+      limit: urlLimit,
+    }));
+  }, []);
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
-    const newLimit = limit + 20;
     setIsLoadingMore(true);
     try {
-      const nextPage = currentPage + 1;
-      const data = await fetchProductsPage(nextPage);
-
-      if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-        // Append new products to accumulated products
-        setAccumulatedProducts((prev) => [...prev, ...data.data]);
-        setCurrentPage(nextPage);
-        setSearchParams((prev) => {
-          prev.set("page", nextPage.toString());
-          prev.set("limit", newLimit.toString());
-          return prev;
-        });
-
-        // Check if there are more products to load
-        const totalPages = data.total_pages || data.totalPages || 0;
-        if (nextPage >= totalPages) {
-          setHasMoreProducts(false);
-        }
-      } else {
-        setHasMoreProducts(false);
-      }
+      // Get current limit from URL or use default
+      const currentLimit = Number(searchParams.get("limit")) || 20;
+      
+      // Increase limit by 20 to show more products
+      const newLimit = currentLimit + 20;
+      
+      // Update URL with new limit
+      setSearchParams((prev) => {
+        prev.set("page", "1");
+        prev.set("limit", newLimit.toString());
+        return prev;
+      });
+      
+      // Update pagination data - this triggers React Query to refetch with new limit
+      setAustraliaPaginationData((prev) => ({
+        ...prev,
+        limit: newLimit,
+        page: 1,
+      }));
     } catch (error) {
       console.error("Error loading more products:", error);
       toast.error("Failed to load more products");
-    } finally {
       setIsLoadingMore(false);
     }
   };
 
   // Reset accumulated products when category/filters change
   useEffect(() => {
-    const currentKey = `${location.pathname}|${searchParams.toString()}`;
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.delete("page");
+    currentParams.delete("limit");
+    const currentKey = `${location.pathname}|${currentParams.toString()}`;
     const categoryChanged = prevCategoryKeyRef.current !== currentKey;
     prevCategoryKeyRef.current = currentKey;
 
@@ -143,10 +153,11 @@ const AustraliaMadeProducts = ({ category = "" }) => {
         dispatch(setMaxPrice(1000));
       }
 
+      const urlLimit = Number(searchParams.get("limit")) || pageLimit;
       setAustraliaPaginationData((prev) => ({
         ...prev,
         page: 1,
-        limit: pageLimit,
+        limit: urlLimit,
         sortOption: urlSort,
         filter: prev.filter,
       }));
@@ -170,7 +181,8 @@ const AustraliaMadeProducts = ({ category = "" }) => {
   useEffect(() => {
     if (!australiaPaginationData) return;
 
-    const currentFiltersKey = `${australiaPaginationData.sortOption}-${australiaPaginationData.filter}-${australiaPaginationData.page}-${australiaPaginationData.limit}`;
+    // Only track sort and filter changes, not page/limit (which are handled by handleLoadMore)
+    const currentFiltersKey = `${australiaPaginationData.sortOption}-${australiaPaginationData.filter}`;
 
     if (
       filtersKeyRef.current !== null &&
@@ -182,9 +194,10 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
-      // Reset page in URL to 1 when filters change
+      // Reset page and limit in URL to 1 and 20 when filters change
       const currentParams = new URLSearchParams(searchParams);
       currentParams.set("page", "1");
+      currentParams.set("limit", "20");
       currentParams.delete("scrollTo");
       setSearchParams(currentParams, { replace: true });
     } else if (filtersKeyRef.current === null) {
@@ -194,8 +207,8 @@ const AustraliaMadeProducts = ({ category = "" }) => {
   }, [
     australiaPaginationData?.sortOption,
     australiaPaginationData?.filter,
-    australiaPaginationData?.page,
-    australiaPaginationData?.limit,
+    setSearchParams,
+    searchParams,
   ]);
 
   // Handle scroll restoration from URL
@@ -247,58 +260,42 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       Array.isArray(getAustraliaProducts.data) &&
       !australiaProductsLoading
     ) {
-      // Check if we're restoring from URL page parameter
-      const urlPage = parseInt(searchParams.get("page")) || 1;
-      const isRestoringFromURL = urlPage > 1;
+      // Get limit from URL
+      const urlLimit = Number(searchParams.get("limit")) || 20;
+      
+      // Always update accumulated products with the fetched data (will contain up to urlLimit products)
+      setAccumulatedProducts(getAustraliaProducts.data);
+      isInitialLoadRef.current = false;
 
-      // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
-      if (
-        (isInitialLoadRef.current || currentPage === 1) &&
-        !isRestoringFromURL
-      ) {
-        setAccumulatedProducts(getAustraliaProducts.data);
-        setCurrentPage(1);
-        isInitialLoadRef.current = false;
-
-        // Ensure page 1 is in URL only if not restoring
-        if (urlPage === 1) {
-          const currentParams = new URLSearchParams(searchParams);
-          currentParams.set("page", "1");
-          setSearchParams(currentParams, { replace: true });
-        }
-
-        // Check if there are more products to load
-        const totalPages =
-          getAustraliaProducts.total_pages || getAustraliaProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getAustraliaProducts.data.length > 0);
-      } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
-        // If restoring from URL and no products loaded yet, start with page 1 data
-        // The loadProductsUpToPage will append more products
-        setAccumulatedProducts(getAustraliaProducts.data);
-        // Don't reset currentPage here, let loadProductsUpToPage handle it
-        const totalPages =
-          getAustraliaProducts.total_pages || getAustraliaProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getAustraliaProducts.data.length > 0);
-      }
+      // Check if there are more products to load based on total count
+      const totalCount = getAustraliaProducts.item_count || getAustraliaProducts.totalCount || getAustraliaProducts.total_count || 0;
+      const hasMore = getAustraliaProducts.data.length < totalCount;
+      setHasMoreProducts(hasMore);
     } else if (
       !australiaProductsLoading &&
       (!getAustraliaProducts?.data ||
         (Array.isArray(getAustraliaProducts.data) && getAustraliaProducts.data.length === 0))
     ) {
-      // No products and not loading - only clear if we don't have accumulated products or if it's the initial load
-      if (isInitialLoadRef.current || accumulatedProducts.length === 0) {
+      // No products and not loading
+      if (isInitialLoadRef.current) {
         setAccumulatedProducts([]);
         setHasMoreProducts(false);
       }
     }
   }, [
     getAustraliaProducts?.data,
-    getAustraliaProducts?.total_pages,
-    getAustraliaProducts?.totalPages,
+    getAustraliaProducts?.item_count,
+    getAustraliaProducts?.totalCount,
+    getAustraliaProducts?.total_count,
     australiaProductsLoading,
-    australiaPaginationData?.page,
   ]);
+
+  // Reset loading state when React Query finishes loading
+  useEffect(() => {
+    if (!australiaProductsLoading && isLoadingMore) {
+      setIsLoadingMore(false);
+    }
+  }, [australiaProductsLoading, isLoadingMore]);
 
   // Update limit when screen size changes (but don't reset products)
   useEffect(() => {
