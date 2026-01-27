@@ -80,10 +80,10 @@ const AustraliaMadeProducts = ({ category = "" }) => {
   };
 
   useEffect(() => {
-    if (getAustraliaProducts?.data?.length > 0) {
+    if (getAustraliaProducts?.data?.length > 0 && australiaPaginationData?.page) {
       fetchProductsPage(australiaPaginationData.page);
     }
-  }, [getAustraliaProducts?.data, australiaPaginationData.page]);
+  }, [getAustraliaProducts?.data, australiaPaginationData?.page]);
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
@@ -168,6 +168,8 @@ const AustraliaMadeProducts = ({ category = "" }) => {
 
   // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
+    if (!australiaPaginationData) return;
+
     const currentFiltersKey = `${australiaPaginationData.sortOption}-${australiaPaginationData.filter}-${australiaPaginationData.page}-${australiaPaginationData.limit}`;
 
     if (
@@ -190,10 +192,10 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       filtersKeyRef.current = currentFiltersKey;
     }
   }, [
-    australiaPaginationData.sortOption,
-    australiaPaginationData.filter,
-    australiaPaginationData.page,
-    australiaPaginationData.limit,
+    australiaPaginationData?.sortOption,
+    australiaPaginationData?.filter,
+    australiaPaginationData?.page,
+    australiaPaginationData?.limit,
   ]);
 
   // Handle scroll restoration from URL
@@ -295,7 +297,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     getAustraliaProducts?.total_pages,
     getAustraliaProducts?.totalPages,
     australiaProductsLoading,
-    australiaPaginationData.page,
+    australiaPaginationData?.page,
   ]);
 
   // Update limit when screen size changes (but don't reset products)
