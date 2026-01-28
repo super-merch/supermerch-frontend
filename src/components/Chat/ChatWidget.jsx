@@ -1,6 +1,65 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
+// Siri-like orb animation styles
+const orbStyles = `
+  @keyframes orbRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes orbPulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+  @keyframes orbGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(255, 100, 150, 0.5), 0 0 30px rgba(100, 200, 255, 0.3); }
+    33% { box-shadow: 0 0 15px rgba(100, 255, 200, 0.5), 0 0 30px rgba(255, 150, 100, 0.3); }
+    66% { box-shadow: 0 0 15px rgba(150, 100, 255, 0.5), 0 0 30px rgba(255, 200, 100, 0.3); }
+  }
+  .ai-orb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      #ff6b9d,
+      #ffa64d,
+      #ffed4a,
+      #4ade80,
+      #22d3ee,
+      #818cf8,
+      #e879f9,
+      #ff6b9d
+    );
+    animation: orbRotate 3s linear infinite, orbPulse 2s ease-in-out infinite, orbGlow 3s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  .ai-orb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(255, 100, 150, 0.6), 0 0 50px rgba(100, 200, 255, 0.4);
+  }
+  .ai-orb:disabled {
+    cursor: not-allowed;
+  }
+  .ai-orb.loading {
+    animation: orbRotate 0.8s linear infinite, orbPulse 0.5s ease-in-out infinite, orbGlow 1s ease-in-out infinite;
+  }
+  .ai-orb-inner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2) 50%, transparent 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
 const BOT_API_URL =
   import.meta.env.VITE_BOT_API_URL || "http://localhost:8001";
 
@@ -18,13 +77,25 @@ const DEFAULT_POPULAR_QUERIES = [
   "usb drive",
 ];
 
+const HISTORY_STORAGE_KEY = "supermerch.chatHistory";
+
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(HISTORY_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [error, setError] = useState("");
   const [visibleCounts, setVisibleCounts] = useState({});
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fullscreenOffset, setFullscreenOffset] = useState(0);
+  const [expandedPosition, setExpandedPosition] = useState(null);
   const [position, setPosition] = useState(() => {
     try {
       const raw = localStorage.getItem(POSITION_STORAGE_KEY);
@@ -40,13 +111,19 @@ const ChatWidget = () => {
   });
   const widgetRef = useRef(null);
   const panelRef = useRef(null);
+  const expandedCardRef = useRef(null);
   const historyRef = useRef(null);
   const scrollTopRef = useRef(0);
   const dragOffsetRef = useRef({ x: 0, y: 0 });
   const dragStartRef = useRef({ x: 0, y: 0 });
   const dragMovedRef = useRef(false);
+  const dragTargetRef = useRef("widget");
   const ignoreNextToggleRef = useRef(false);
   const sessionIdRef = useRef("");
+  const lastFloatingPositionRef = useRef(null);
+  const inputRef = useRef(null);
+  const abortControllerRef = useRef(null);
+  const fullscreenOffsetRef = useRef(0);
 
   const getSessionId = () => {
     if (sessionIdRef.current) return sessionIdRef.current;
@@ -92,6 +169,13 @@ const ChatWidget = () => {
   const sendQuery = async (nextQuery) => {
     const trimmed = nextQuery.trim();
     if (!trimmed) return;
+
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     setLoading(true);
     setError("");
     setHistory((prev) => [
@@ -99,6 +183,7 @@ const ChatWidget = () => {
       { id: makeId(), role: "user", text: trimmed },
     ]);
     setQuery("");
+
     try {
       const res = await fetch(`${BOT_API_URL}/api/chat`, {
         method: "POST",
@@ -107,6 +192,7 @@ const ChatWidget = () => {
           "X-Session-Id": getSessionId(),
         },
         body: JSON.stringify({ query: trimmed }),
+        signal: abortControllerRef.current.signal,
       });
 
       if (!res.ok) throw new Error("Chat request failed");
@@ -130,8 +216,9 @@ const ChatWidget = () => {
         ...prev,
         [assistantId]: displayLimit,
       }));
-      setQuery("");
     } catch (err) {
+      // Don't show error for aborted requests
+      if (err.name === "AbortError") return;
       setError("Could not reach the merch assistant. Please try again.");
     } finally {
       setLoading(false);
@@ -160,18 +247,38 @@ const ChatWidget = () => {
     };
   };
 
-  const startDrag = (e) => {
+  // Keep ref in sync for use in drag handlers (avoids stale closure)
+  fullscreenOffsetRef.current = fullscreenOffset;
+
+  const clampExpanded = (next) => {
+    const node = expandedCardRef.current;
+    if (!node) return next;
+    const rect = node.getBoundingClientRect();
+    const offset = fullscreenOffsetRef.current;
+    const maxX = Math.max(DEFAULT_MARGIN, window.innerWidth - rect.width - DEFAULT_MARGIN);
+    const maxY = Math.max(
+      DEFAULT_MARGIN,
+      window.innerHeight - offset - rect.height - DEFAULT_MARGIN
+    );
+    return {
+      x: Math.min(Math.max(DEFAULT_MARGIN, next.x), maxX),
+      y: Math.min(Math.max(DEFAULT_MARGIN, next.y), maxY),
+    };
+  };
+
+  const startDrag = (e, target = "widget") => {
     if (e.button !== undefined && e.button !== 0) return;
-    const node = widgetRef.current;
+    const node =
+      target === "panel" ? expandedCardRef.current : widgetRef.current;
     if (!node) return;
     const rect = node.getBoundingClientRect();
     dragMovedRef.current = false;
+    dragTargetRef.current = target;
     dragStartRef.current = { x: e.clientX, y: e.clientY };
     dragOffsetRef.current = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
-    setPosition({ x: rect.left, y: rect.top });
     setDragging(true);
   };
 
@@ -185,11 +292,18 @@ const ChatWidget = () => {
           dragMovedRef.current = true;
         }
       }
+      if (!dragMovedRef.current) {
+        return;
+      }
       const next = {
         x: e.clientX - dragOffsetRef.current.x,
         y: e.clientY - dragOffsetRef.current.y,
       };
-      setPosition(clampToViewport(next));
+      if (dragTargetRef.current === "panel") {
+        setExpandedPosition(clampExpanded(next));
+      } else {
+        setPosition(clampToViewport(next));
+      }
     };
     const handleUp = () => {
       setDragging(false);
@@ -212,6 +326,23 @@ const ChatWidget = () => {
   }, [position]);
 
   useEffect(() => {
+    try {
+      sessionStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [history]);
+
+  useEffect(() => {
+    if (open) {
+      const timer = requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
+      return () => cancelAnimationFrame(timer);
+    }
+  }, [open]);
+
+  useEffect(() => {
     const handleResize = () => {
       if (!position) return;
       setPosition((prev) => (prev ? clampToViewport(prev) : prev));
@@ -221,6 +352,7 @@ const ChatWidget = () => {
   }, [position]);
 
   const recalcPanelPosition = () => {
+    if (isFullscreen) return;
     const panel = panelRef.current;
     const widget = widgetRef.current;
     if (!panel || !widget) return;
@@ -242,20 +374,58 @@ const ChatWidget = () => {
     setPanelPosition({ left, top });
   };
 
-  useEffect(() => {
-    if (!open) return;
-    const frame = requestAnimationFrame(recalcPanelPosition);
-    return () => cancelAnimationFrame(frame);
-  }, [open, position, history.length]);
+  const calculateTopOffset = () => {
+    const banner = document.querySelector('[data-chat-offset="top-banner"]');
+    const nav = document.querySelector('[data-chat-offset="main-nav"]');
+    let offset = 0;
+    if (banner) {
+      offset += banner.getBoundingClientRect().height || 0;
+    }
+    if (nav) {
+      offset += nav.getBoundingClientRect().height || 0;
+    }
+    return Math.max(0, Math.round(offset));
+  };
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isFullscreen) return;
+    const frame = requestAnimationFrame(recalcPanelPosition);
+    return () => cancelAnimationFrame(frame);
+  }, [open, position, history.length, isFullscreen]);
+
+  useEffect(() => {
+    if (!open || isFullscreen) return;
     const handleResize = () => {
       recalcPanelPosition();
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [open, position, history.length]);
+  }, [open, position, history.length, isFullscreen]);
+
+  useEffect(() => {
+    if (!open || !isFullscreen) return;
+    const updateOffset = () => {
+      setFullscreenOffset(calculateTopOffset());
+    };
+    const frame = requestAnimationFrame(updateOffset);
+    window.addEventListener("resize", updateOffset);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", updateOffset);
+    };
+  }, [open, isFullscreen]);
+
+  useEffect(() => {
+    if (!open || !isFullscreen) return;
+    const node = expandedCardRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    const centered = {
+      x: Math.max(DEFAULT_MARGIN, (window.innerWidth - rect.width) / 2),
+      y: DEFAULT_MARGIN,
+    };
+    setExpandedPosition((prev) => prev || clampExpanded(centered));
+  }, [open, isFullscreen, fullscreenOffset]);
 
   const handleHistoryScroll = () => {
     const node = historyRef.current;
@@ -273,14 +443,12 @@ const ChatWidget = () => {
     return () => cancelAnimationFrame(frame);
   }, [open, history.length]);
 
-  const lastAssistant = [...history]
-    .reverse()
-    .find((entry) => entry.role === "assistant");
-
   return (
-    <div
-      ref={widgetRef}
-      className="fixed z-50"
+    <>
+      <style>{orbStyles}</style>
+      <div
+        ref={widgetRef}
+        className="fixed z-50"
       style={
         position
           ? { left: `${position.x}px`, top: `${position.y}px` }
@@ -290,45 +458,155 @@ const ChatWidget = () => {
       {open && (
         <div
           ref={panelRef}
-          className="fixed w-[320px] sm:w-[360px] bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden"
-          style={{
-            left: `${panelPosition.left}px`,
-            top: `${panelPosition.top}px`,
-          }}
+          className={
+            isFullscreen
+              ? "fixed inset-0 px-4 sm:px-8 py-6"
+              : "fixed w-[320px] sm:w-[360px] bg-white border border-gray-200 shadow-[0_0_30px_rgba(0,150,136,0.15)] rounded-2xl overflow-hidden"
+          }
+          style={
+            isFullscreen
+              ? {
+                  top: `${fullscreenOffset}px`,
+                }
+              : {
+                  left: `${panelPosition.left}px`,
+                  top: `${panelPosition.top}px`,
+                }
+          }
         >
           <div
-            className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50"
-            onPointerDown={startDrag}
+            className={
+              isFullscreen
+                ? "absolute h-full w-full max-w-5xl bg-white border border-gray-200 shadow-[0_0_40px_rgba(0,150,136,0.2)] rounded-3xl overflow-hidden flex flex-col"
+                : "w-full"
+            }
+            style={
+              isFullscreen
+                ? {
+                    left: `${expandedPosition?.x ?? DEFAULT_MARGIN}px`,
+                    top: `${expandedPosition?.y ?? DEFAULT_MARGIN}px`,
+                    width: "min(100%, 960px)",
+                    height: "min(calc(100% - 40px), 700px)",
+                  }
+                : undefined
+            }
+            ref={isFullscreen ? expandedCardRef : null}
           >
-            <div className="font-semibold text-gray-900 cursor-move select-none">
-              Merch Assistant
-            </div>
-            <button
-              onClick={() => {
-                ignoreNextToggleRef.current = true;
-                setOpen(false);
-                setTimeout(() => {
-                  ignoreNextToggleRef.current = false;
-                }, 0);
-              }}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              className="text-gray-500 hover:text-gray-800"
-              aria-label="Close chat"
+            <div
+              className="flex items-center justify-between px-4 py-3 border-b border-primary/20 bg-primary"
+              onPointerDown={(e) =>
+                startDrag(e, isFullscreen ? "panel" : "widget")
+              }
             >
-              X
-            </button>
-          </div>
+              <div className="font-semibold text-white cursor-move select-none">
+                Merch Assistant
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (!isFullscreen) {
+                      lastFloatingPositionRef.current = position;
+                      setExpandedPosition(null);
+                    } else {
+                      if (lastFloatingPositionRef.current) {
+                        setPosition(lastFloatingPositionRef.current);
+                      }
+                      lastFloatingPositionRef.current = null;
+                    }
+                    setIsFullscreen(!isFullscreen);
+                  }}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className="text-white/80 hover:text-white hover:bg-white/10 rounded px-2 py-1 transition-colors"
+                  aria-label={isFullscreen ? "Exit full screen" : "Expand chat"}
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {isFullscreen ? (
+                      <>
+                        <path d="M6 2H2v4" />
+                        <path d="M2 2l4 4" />
+                        <path d="M10 14h4v-4" />
+                        <path d="M14 14l-4-4" />
+                      </>
+                    ) : (
+                      <>
+                        <path d="M10 2h4v4" />
+                        <path d="M14 2l-4 4" />
+                        <path d="M2 10v4h4" />
+                        <path d="M2 14l4-4" />
+                      </>
+                    )}
+                  </svg>
+                  <span className="sr-only">
+                    {isFullscreen ? "Restore" : "Expand"}
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    ignoreNextToggleRef.current = true;
+                    setOpen(false);
+                    setTimeout(() => {
+                      ignoreNextToggleRef.current = false;
+                    }, 0);
+                  }}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className="text-white/80 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
+                  aria-label="Close chat"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 4L4 12" />
+                    <path d="M4 4l8 8" />
+                  </svg>
+                  <span className="sr-only">Close</span>
+                </button>
+              </div>
+            </div>
 
-          <div
-            ref={historyRef}
-            onScroll={handleHistoryScroll}
-            className="px-4 py-3 max-h-[360px] overflow-auto"
-          >
+            <div
+              ref={historyRef}
+              onScroll={handleHistoryScroll}
+              className={
+                isFullscreen
+                  ? "px-6 py-5 flex-1 overflow-auto bg-gray-50"
+                  : "px-4 py-3 max-h-[360px] overflow-auto"
+              }
+            >
             {history.length === 0 && (
               <div>
+                {isFullscreen && (
+                  <div className="mb-6 rounded-2xl bg-gradient-to-r from-primary via-blue-400 to-teal-400 text-white px-6 py-5 shadow-lg">
+                    <div className="text-lg sm:text-2xl font-semibold">
+                      Ask our Merch Assistant
+                    </div>
+                    <div className="mt-1 text-sm sm:text-base opacity-90">
+                      Get instant recommendations across promotional products,
+                      apparel, and gifting.
+                    </div>
+                  </div>
+                )}
                 <div className="text-xs uppercase tracking-wide text-gray-500">
                   Popular searches
                 </div>
@@ -338,7 +616,7 @@ const ChatWidget = () => {
                       key={term}
                       type="button"
                       onClick={() => handleChipClick(term)}
-                      className="px-2.5 py-1 text-xs rounded-full border border-gray-200 hover:border-primary hover:text-primary transition"
+                      className="px-3 py-1.5 text-xs rounded-full border border-gray-200 bg-white hover:border-primary hover:text-primary transition"
                     >
                       {term}
                     </button>
@@ -518,23 +796,44 @@ const ChatWidget = () => {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="p-3 border-t border-gray-100">
-            <div className="flex gap-2">
+          <form
+            onSubmit={handleSubmit}
+            className={
+              isFullscreen
+                ? "p-4 border-t border-gray-100 bg-white"
+                : "p-3 border-t border-gray-100"
+            }
+          >
+            <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
               <input
+                ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. eco pens under $5"
-                className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Ask anything..."
+                className="flex-1 bg-transparent text-sm focus:outline-none placeholder-gray-400"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="px-3 py-2 text-sm font-semibold bg-primary text-white rounded-lg disabled:opacity-60"
+                className={`ai-orb ${loading ? "loading" : ""}`}
+                aria-label="Send message"
               >
-                {loading ? "..." : "Send"}
+                <span className="ai-orb-inner">
+                  {loading ? (
+                    <svg className="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="3" fill="currentColor" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 2L11 13" />
+                      <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                    </svg>
+                  )}
+                </span>
               </button>
             </div>
           </form>
+          </div>
         </div>
       )}
 
@@ -550,12 +849,29 @@ const ChatWidget = () => {
           setOpen(!open);
         }}
         onPointerDown={startDrag}
-        className="w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition"
-        aria-label="Open chat"
+        className="w-14 h-14 rounded-full bg-primary text-white shadow-[0_0_20px_rgba(0,150,136,0.5)] hover:shadow-[0_0_30px_rgba(0,150,136,0.7)] transition-all duration-300 flex items-center justify-center"
+        aria-label={open ? "Close chat" : "Open chat"}
       >
-        {lastAssistant?.items?.length ? "Chat" : "Chat"}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          className="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        {history.length > 0 && !open && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
+            {history.filter((h) => h.role === "assistant").length}
+          </span>
+        )}
       </button>
-    </div>
+      </div>
+    </>
   );
 };
 
