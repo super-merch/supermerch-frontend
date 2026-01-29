@@ -17,7 +17,7 @@ const UploadArtwork = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { totalDiscount } = useContext(ProductsContext);
-  const { shippingCharges, setupFee,gstCharges } = useContext(AppContext);
+  const { shippingCharges, setupFee, gstCharges } = useContext(AppContext);
 
   // Get cart data from Redux
   const items = useSelector(selectCurrentUserCartItems);
@@ -62,7 +62,7 @@ const UploadArtwork = () => {
   // Apply coupon discount to the product-discounted amount
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
   // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100;
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges / 100;
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
@@ -259,7 +259,7 @@ const UploadArtwork = () => {
                     />
                     <div>
                       <div className="text-lg font-semibold text-gray-900">
-                        I don't have artwork right now
+                        I don't have artwork right now or blank product
                       </div>
                       <div className="text-sm text-gray-600">
                         Please send your artwork to{" "}
@@ -280,11 +280,10 @@ const UploadArtwork = () => {
                     Upload Artwork
                   </label>
                   <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                      isDragging
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${isDragging
                         ? "border-smallHeader bg-primary/5"
                         : "border-gray-300 hover:border-gray-400"
-                    }`}
+                      }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
