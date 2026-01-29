@@ -414,7 +414,9 @@ const NavigationMenu = ({
                       item.name === "Promotional" ||
                       item.name === "Clothing"
                     ) {
-                      setActiveItem(item.submenu[0].id);
+                      if (item.submenu?.length > 0) {
+                        setActiveItem(item.submenu[0].id);
+                      }
                     }
                   }}
                   onClick={() => {

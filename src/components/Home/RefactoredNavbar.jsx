@@ -52,15 +52,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [v1categories?.length]);
 
-
-  useEffect(() => {
-  if (!v1categories?.length) {
-    fetchV1Categories();
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [v1categories?.length]);
-
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const totalQuantity = useSelector(currentUserCartAmount);
@@ -1056,7 +1047,10 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   return (
     <>
       {/* Main Navbar */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sm:py-2 sticky top-0 z-[50] pb-4">
+      <div
+        className="bg-white border-b border-gray-200 shadow-sm sm:py-2 sticky top-0 z-[50] pb-4"
+        data-chat-offset="main-nav"
+      >
         <div className="flex items-center justify-between gap-3 !px-0 md:px-0 Mycontainer flex-wrap">
           {/* Mobile Menu Button */}
           <Sheet

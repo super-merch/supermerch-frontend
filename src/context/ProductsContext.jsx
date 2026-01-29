@@ -216,13 +216,14 @@ const ProductsContextProvider = ({ children }) => {
     const { data: getAustraliaProducts, isLoading: australiaProductsLoading, refetch: refetchAustraliaProducts } =
         useQuery({
             queryKey: [
+                "australiaProducts",
                 australiaPaginationData.sortOption,
                 australiaPaginationData.filter,
                 australiaPaginationData.page,
                 australiaPaginationData.limit,
             ],
             queryFn: () => getAustraliaProductsFromApi(),
-            enabled: false,
+            enabled: true,
             refetchOnWindowFocus: false,
         });
 
@@ -1337,6 +1338,12 @@ const ProductsContextProvider = ({ children }) => {
             marginApi,
             marginAdd,
 
+            australiaPaginationData,
+            setAustraliaPaginationData,
+            getAustraliaProducts,
+            australiaProductsLoading,
+            refetchAustraliaProducts,
+
             error,
             skeletonLoading,
         }),
@@ -1387,6 +1394,11 @@ const ProductsContextProvider = ({ children }) => {
 
             marginApi,
             marginAdd,
+
+            australiaPaginationData,
+            getAustraliaProducts,
+            australiaProductsLoading,
+            refetchAustraliaProducts,
 
             error,
             skeletonLoading,

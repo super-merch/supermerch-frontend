@@ -14,11 +14,13 @@ const PriceFilter = ({ toggleSidebar }) => {
   const [localMin, setLocalMin] = useState("");
   const [localMax, setLocalMax] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const minPriceParam = searchParams.get("minPrice") || "";
+  const maxPriceParam = searchParams.get("maxPrice") || "";
 
   useEffect(() => {
-    setLocalMin(searchParams.get("minPrice") || "");
-    setLocalMax(searchParams.get("maxPrice") || "");
-  }, [searchParams.get("minPrice")]);
+    setLocalMin(minPriceParam);
+    setLocalMax(maxPriceParam);
+  }, [minPriceParam, maxPriceParam]);
 
   const applyRangeToBackend = (minValue, maxValue) => {
     dispatch(setMinPrice(minValue));

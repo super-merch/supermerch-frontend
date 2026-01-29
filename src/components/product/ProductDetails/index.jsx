@@ -17,7 +17,7 @@ import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "swiper/css";
@@ -46,7 +46,13 @@ const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [searchParams] = useSearchParams();
   const encodedId = searchParams.get("ref");
-  const id = encodedId ? atob(encodedId) : null;
+  const location = useLocation();
+  const stateProductId = location?.state?.productId;
+  const id = encodedId
+    ? atob(encodedId)
+    : stateProductId
+    ? String(stateProductId)
+    : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -145,7 +151,6 @@ const ProductDetails = () => {
       } catch (error) {
         setLoading(false);
         setErrorFetching(true);
-        console.log(error);
       }
     };
     const email = userData?.email || "guest@gmail.com";
@@ -870,13 +875,6 @@ const ProductDetails = () => {
 
     return { sizes, result };
   };
-
-  if (error)
-    return (
-      <div className="flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
-      </div>
-    );
 
   if (errorFetching) return <ProductNotFound />;
   if (loading)
