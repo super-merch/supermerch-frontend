@@ -2,7 +2,7 @@ import { useContext } from "react";
 import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
 import RouteTransition from "./components/Common/RouteTransition";
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import ProducPage from "./pages/ProducPage";
 import Footer from "./components/Home/Footer";
 import CategoryPage from "./pages/CategoryPage";
@@ -38,6 +38,7 @@ import Terms from "./pages/Terms";
 import QuoteResponse from "./pages/QuoteResponse";
 import ChatWidget from "./components/Chat/ChatWidget";
 import AustraliaMade from "./pages/AustraliaMade";
+import NotFound from "./pages/NotFound";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -67,7 +68,7 @@ const App = () => {
   };
 
   return (
-    <div>
+    <>
       <ToastContainer position="bottom-center" autoClose={2000} />
 
       <Navbar onCouponClick={handleCouponClick} />
@@ -131,9 +132,11 @@ const App = () => {
             <Route path="/mail-offer" element={<MailOffer />} />
             <Route path="/track-order" element={<TrackOrder />} />
             <Route path="/terms" element={<Terms />} />
-
+            <Route path="/" element={<Home />} />
             {token && <Route path="/admin" element={<Sidebar />} />}
             {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}
+            {/* Catch-all route for 404 - must be last */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </RouteTransition>
       </HelmetProvider>
@@ -141,7 +144,7 @@ const App = () => {
       {/* <Sidebar /> */}
       <ChatWidget />
       <Footer />
-    </div>
+    </>
   );
 };
 

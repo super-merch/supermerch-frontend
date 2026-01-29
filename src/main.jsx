@@ -1,6 +1,6 @@
 // main.jsx
 import { createRoot } from "react-dom/client";
-import{ AuthContextProvider } from "./context/AuthContext.jsx";
+import { AuthContextProvider } from "./context/AuthContext.jsx";
 import { BrowserRouter } from "react-router-dom";
 import BlogProvider from "./context/BlogContext";
 import { Provider } from "react-redux";
@@ -39,7 +39,7 @@ createRoot(document.getElementById("root")).render(
                 <AppContextProvider>
                   <ProductsContextProvider>
                     <GoogleOAuthProvider
-                      clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                      clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}
                       onScriptLoadSuccess={() => {
                         if (window.google?.accounts) {
                           window.google.accounts.id.disableAutoSelect();
@@ -47,7 +47,7 @@ createRoot(document.getElementById("root")).render(
                       }}
                     >
                       <App />
-                  </GoogleOAuthProvider>
+                    </GoogleOAuthProvider>
                   </ProductsContextProvider>
                 </AppContextProvider>
               </AuthContextProvider>

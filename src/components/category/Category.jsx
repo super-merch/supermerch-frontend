@@ -1,5 +1,5 @@
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { ProductsContext } from "@/context/ProductsContext";
 import { megaMenu } from "@/assets/assets";
@@ -65,6 +65,12 @@ const Category = () => {
   const mainCategoryName = queryParams.get("categoryName");
   const subCategoryLabel = queryParams.get("subCategory");
 
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [])
+
+
   // Find the main category using the id from the query parameter
   const mainCategory = megaMenu.find((cat) => cat.id === mainCategoryId);
   // Find the subcategory using the selected shopCategory (e.g., "Pens")
@@ -74,8 +80,8 @@ const Category = () => {
 
   const handleSubCategories = (subCategory, categoryId, titleName, labelName) => {
     if (!categoryId) {
-        toast.error("Category ID is missing!");
-        return;
+      toast.error("Category ID is missing!");
+      return;
     }
     const encodedTitleName = encodeURIComponent(titleName); // Encode the title
     const encodedLabelName = encodeURIComponent(labelName); // Encode the title
@@ -84,14 +90,14 @@ const Category = () => {
     setActiveFilterCategory(subCategory)
     setCurrentPage(1);
     setSidebarActiveCategory(titleName)
-};
+  };
 
   return (
     <div className="Mycontainer">
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2 mt-4 text-lg text-smallHeader">
         <Link to="/">Home</Link>
-         <span>{`>`}</span>
+        <span>{`>`}</span>
         <span>{mainCategoryName}</span>
         <span>{`>`}</span>
         <span>{subCategoryLabel}</span>
@@ -103,7 +109,7 @@ const Category = () => {
 
       <div className="grid grid-cols-1 gap-6 mt-8 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2">
         {subCategory?.items ? (
-          subCategory.items.slice(0,4).map((item) => (
+          subCategory.items.slice(0, 4).map((item) => (
             <div
               key={item.id}
               className="text-center transition duration-300 transform border rounded shadow-sm cursor-pointer group hover:scale-105"
@@ -113,12 +119,12 @@ const Category = () => {
               }
             >
               <img
-              src={item.name=="Other Pens" && collection4 || item.name=="Metal Pens" && metal || item.name=="Glassware" && glass || item.name=="Fridge Magnets" && magnet || item.name=="Plastic Pens" && plastic || item.name=="Stylus Pens" && stylus || item.name=="Lead Pencils" && grayLead || item.name=="Coloured Pencils" && other || item.name=="Highlighters" && highlighter || item.name=="Markers" && marker || item.name == "Erasers" &&eraser || item.name == "Pencil Sharpeners" &&sharpner || item.name == "Pencils Cases" &&cases || item.name == "Pen Packaging" &&packing || item.name == "Reusable Grocery Bags" &&grocery || item.name ==="Tote Bags" && tote || item.name ==="Cooler Bags" &&cooler || item.name ==="Duffle/Sports Bags" &&sports || item.name ==="Travel Bum Bags" &&travel || item.name ==="Bum Bags" &&travel || item.name ==="Lunch Bags/Lunch Boxes" &&lunch || item.name ==="Laptops Bags" &&laptop || item.name ==="Satchels" &&satchel || item.name ==="Wheeled Bags" &&wheel || item.name ==="Paper Bags" &&paper || item.name ==="Toiletry Bags & Accessories" &&toiletry || item.name ==="Luggage Tags" &&tags || item.name ==="Wallets & Purses" &&wallet || item.name ==="Bottled Water" &&bottled || item.name ==="Drink Bottles" &&drinkBottle || item.name ==="Thermoses" &&thermose || item.name ==="Coffee Mugs" &&coffee || item.name ==="Beer Mugs" &&beerMugs || item.name ==="Travel Mugs" &&travelMugs || item.name ==="Reusable Coffee Cups" &&reuseCoffee || item.name ==="Cocktail Glasses" &&cockGlass || item.name ==="Beer Glasses" &&beerGlass || item.name ==="Shot Glasses" &&shotGlass || item.name ==="Wine Glasses" &&wineGlass || item.name ==="Protein Shakers" &&protienShaker || item.name ==="Sports Shakers" &&protienShaker || item.name ==="Glass Tumblers" &&glassTumbler || item.name ==="Plastic Cups And Tumblers" &&plasticCup ||
-              item.name =="Name Badges" && nameBadge || item.name == "Awards & Trophies" && trophy || item.name == "Lanyards" && lanyard || item.name == "Lapel Pins" && lapel || item.name == "Badge Reels" && badgeReel || item.name == "Badge Holders" && badgeReel  || item.name == "Event Wristbands" && eventWrist || item.name == "Wristbands" && eventWrist || item.name == "Silicon Wristbands" && siliconWrist || item.name == "Bottle Opener Keyrings" && openerKeyring || item.name == "Keyrings" && keyring
-              }
-              alt=""
-              className="w-full mb-3"
-            />
+                src={item.name == "Other Pens" && collection4 || item.name == "Metal Pens" && metal || item.name == "Glassware" && glass || item.name == "Fridge Magnets" && magnet || item.name == "Plastic Pens" && plastic || item.name == "Stylus Pens" && stylus || item.name == "Lead Pencils" && grayLead || item.name == "Coloured Pencils" && other || item.name == "Highlighters" && highlighter || item.name == "Markers" && marker || item.name == "Erasers" && eraser || item.name == "Pencil Sharpeners" && sharpner || item.name == "Pencils Cases" && cases || item.name == "Pen Packaging" && packing || item.name == "Reusable Grocery Bags" && grocery || item.name === "Tote Bags" && tote || item.name === "Cooler Bags" && cooler || item.name === "Duffle/Sports Bags" && sports || item.name === "Travel Bum Bags" && travel || item.name === "Bum Bags" && travel || item.name === "Lunch Bags/Lunch Boxes" && lunch || item.name === "Laptops Bags" && laptop || item.name === "Satchels" && satchel || item.name === "Wheeled Bags" && wheel || item.name === "Paper Bags" && paper || item.name === "Toiletry Bags & Accessories" && toiletry || item.name === "Luggage Tags" && tags || item.name === "Wallets & Purses" && wallet || item.name === "Bottled Water" && bottled || item.name === "Drink Bottles" && drinkBottle || item.name === "Thermoses" && thermose || item.name === "Coffee Mugs" && coffee || item.name === "Beer Mugs" && beerMugs || item.name === "Travel Mugs" && travelMugs || item.name === "Reusable Coffee Cups" && reuseCoffee || item.name === "Cocktail Glasses" && cockGlass || item.name === "Beer Glasses" && beerGlass || item.name === "Shot Glasses" && shotGlass || item.name === "Wine Glasses" && wineGlass || item.name === "Protein Shakers" && protienShaker || item.name === "Sports Shakers" && protienShaker || item.name === "Glass Tumblers" && glassTumbler || item.name === "Plastic Cups And Tumblers" && plasticCup ||
+                  item.name == "Name Badges" && nameBadge || item.name == "Awards & Trophies" && trophy || item.name == "Lanyards" && lanyard || item.name == "Lapel Pins" && lapel || item.name == "Badge Reels" && badgeReel || item.name == "Badge Holders" && badgeReel || item.name == "Event Wristbands" && eventWrist || item.name == "Wristbands" && eventWrist || item.name == "Silicon Wristbands" && siliconWrist || item.name == "Bottle Opener Keyrings" && openerKeyring || item.name == "Keyrings" && keyring
+                }
+                alt=""
+                className="w-full mb-3"
+              />
               <p className="text-lg font-medium">{item.name}</p>
             </div>
           ))
