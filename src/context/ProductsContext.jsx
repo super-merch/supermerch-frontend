@@ -119,8 +119,8 @@ const ProductsContextProvider = ({ children }) => {
                 params.append("attribute_value", attr.value);
             });
         } else if (paginationData.attributes?.name && paginationData.attributes?.value) {
-        params.append("attribute_name", paginationData.attributes.name);
-        params.append("attribute_value", paginationData.attributes.value);
+            params.append("attribute_name", paginationData.attributes.name);
+            params.append("attribute_value", paginationData.attributes.value);
         }
 
         if (
@@ -637,7 +637,9 @@ const ProductsContextProvider = ({ children }) => {
         }
     };
     const [discountedProducts, setDiscountedProducts] = useState([]);
+    const [discountedProductsLoading, setDiscountedProductsLoading] = useState(false);
     const fetchDiscountedProducts = async (page = 1, sort = "", limit) => {
+        setDiscountedProductsLoading(true);
         try {
             if (!limit) limit = 10;
             const key = `${page}_${sort}_${limit}`;
@@ -675,9 +677,11 @@ const ProductsContextProvider = ({ children }) => {
                 await p;
             } finally {
                 delete pendingDiscountedRef.current[key];
+                setDiscountedProductsLoading(false);
             }
         } catch (err) {
             setError(err.message);
+            setDiscountedProductsLoading(false);
         }
     };
 
@@ -1305,6 +1309,8 @@ const ProductsContextProvider = ({ children }) => {
             discountedProducts,
             fetchDiscountedProducts,
             fetchMultipleDiscountedPages,
+            discountedProductsLoading,
+            setDiscountedProductsLoading,
 
             arrivalProducts,
             fetchNewArrivalProducts,

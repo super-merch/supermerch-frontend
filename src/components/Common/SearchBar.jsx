@@ -66,12 +66,10 @@ const SearchBar = ({
     }
     try {
       setSuggestionLoading(true);
-      const limit = 7;
+      const limit = 10;
       const resp = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/search-suggestion?q=${encodeURIComponent(q)}&limit=${limit}${
-          selectedCategory.id ? `&category=${selectedCategory.id}` : ""
+        `${import.meta.env.VITE_BACKEND_URL
+        }/api/search-suggestion?q=${encodeURIComponent(q)}&limit=${limit}${selectedCategory.id ? `&category=${selectedCategory.id}` : ""
         }`
       );
       const json = await resp.json();
@@ -313,9 +311,8 @@ const SearchBar = ({
                 {selectedCategory?.name || selectedCategory}
               </span>
               <svg
-                className={`w-4 h-4 text-primary transition-transform duration-200 ${
-                  isCategoryDropdownOpen ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 text-primary transition-transform duration-200 ${isCategoryDropdownOpen ? "rotate-180" : ""
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -363,11 +360,10 @@ const SearchBar = ({
                     onSearch(s.name || s.sku || "");
                   }}
                   onMouseEnter={() => setHighlightedIndex(idx)}
-                  className={`cursor-pointer px-3 py-2 text-sm flex justify-between items-center ${
-                    highlightedIndex === idx
+                  className={`cursor-pointer px-3 py-2 text-sm flex justify-between items-center ${highlightedIndex === idx
                       ? "bg-gray-100"
                       : "hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   <div className="truncate">
                     <div className="font-medium text-gray-900 truncate">
@@ -468,15 +464,13 @@ const SearchBar = ({
 
   return (
     <div
-      className={`w-full relative z-20 flex items-center ${
-        collapsible ? "w-full" : currentSize.container
-      } ${className}`}
+      className={`w-full relative z-20 flex items-center ${collapsible ? "w-full" : currentSize.container
+        } ${className}`}
       ref={categoryDropdownRef}
     >
       <div
-        className={`flex items-center bg-white border-2 border-blue-100 rounded-lg px-1 lg:px-3 py-0 lg:py-2 hover:border-blue-200 transition-all duration-300 w-full ${
-          collapsible ? "animate-in slide-in-from-right-2 fade-in-0" : ""
-        }`}
+        className={`flex items-center bg-white border-2 border-blue-100 rounded-lg px-1 lg:px-3 py-0 lg:py-2 hover:border-blue-200 transition-all duration-300 w-full ${collapsible ? "animate-in slide-in-from-right-2 fade-in-0" : ""
+          }`}
       >
         {showCategoryDropdown && (
           <div
@@ -487,9 +481,8 @@ const SearchBar = ({
               {selectedCategory?.name || selectedCategory}
             </span>
             <svg
-              className={`w-3 h-3 text-primary transition-transform ${
-                isCategoryDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-3 h-3 text-primary transition-transform ${isCategoryDropdownOpen ? "rotate-180" : ""
+                }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -535,9 +528,8 @@ const SearchBar = ({
                   onSearch(s.name || s.sku || "");
                 }}
                 onMouseEnter={() => setHighlightedIndex(idx)}
-                className={`cursor-pointer px-3 py-2 text-sm flex justify-between items-center ${
-                  highlightedIndex === idx ? "bg-gray-100" : "hover:bg-gray-50"
-                }`}
+                className={`cursor-pointer px-3 py-2 text-sm flex justify-between items-center ${highlightedIndex === idx ? "bg-gray-100" : "hover:bg-gray-50"
+                  }`}
               >
                 <div className="truncate">
                   <div className="font-medium text-gray-900 truncate">
