@@ -177,13 +177,24 @@ const UnifiedSidebar = ({
       });
     }
 
-    const attrName = searchParams.get("attrName");
-    const attrValue = searchParams.get("attrValue");
-    if (attrName && attrValue) {
-      filters.push({
-        type: "attribute",
-        label: `${attrName}: ${attrValue}`,
-        params: ["attrName", "attrValue"],
+    const attrNames = searchParams.getAll("attrName");
+    const attrValues = searchParams.getAll("attrValue");
+    if (attrNames.length > 0 && attrValues.length > 0) {
+      attrNames.forEach((name, idx) => {
+        const rawValues = attrValues[idx] || "";
+        const values = rawValues
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+        values.forEach((value) => {
+          filters.push({
+            type: "attribute",
+            name,
+            value,
+            label: `${name}: ${value}`,
+            params: ["attrName", "attrValue"],
+          });
+        });
       });
     }
 
@@ -230,13 +241,49 @@ const UnifiedSidebar = ({
         page: 1,
       }));
     } else if (filter.type === "attribute") {
+      const attrNames = newParams.getAll("attrName");
+      const attrValues = newParams.getAll("attrValue");
+      const grouped = new Map();
+
+      attrNames.forEach((name, idx) => {
+        const rawValues = attrValues[idx] || "";
+        const values = rawValues
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+        if (values.length === 0) return;
+        const existing = grouped.get(name) || [];
+        const merged = [...existing, ...values];
+        grouped.set(name, Array.from(new Set(merged)));
+      });
+
+      if (filter.name && filter.value && grouped.has(filter.name)) {
+        const remaining = grouped
+          .get(filter.name)
+          .filter((v) => v !== filter.value);
+        if (remaining.length > 0) {
+          grouped.set(filter.name, remaining);
+        } else {
+          grouped.delete(filter.name);
+        }
+      }
+
       newParams.delete("attrName");
       newParams.delete("attrValue");
+      grouped.forEach((values, name) => {
+        newParams.append("attrName", name);
+        newParams.append("attrValue", values.join(","));
+      });
+
+      const attributesPayload = Array.from(grouped.entries()).map(
+        ([name, values]) => ({ name, value: values.join(",") })
+      );
 
       // Update state immediately
       setPaginationData((prev) => ({
         ...prev,
-        attributes: null,
+        attributes: attributesPayload.length > 0 ? attributesPayload : null,
+        sendAttributes: false,
         page: 1,
       }));
     }

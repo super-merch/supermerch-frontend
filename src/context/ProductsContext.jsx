@@ -488,7 +488,7 @@ const ProductsContextProvider = ({ children }) => {
 
             const p = (async () => {
                 const response = await fetch(
-                    `${backendUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+                    `${backendUrl}/api/client-products-trending?page=${page}&limit=${limit}&sort=${sort}&filter=true`
                 );
 
                 if (!response.ok) throw new Error("Failed to fetch products");
@@ -536,7 +536,7 @@ const ProductsContextProvider = ({ children }) => {
 
             const p = (async () => {
                 const response = await fetch(
-                    `${backendUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+                    `${backendUrl}/api/client-products-newArrival?page=${page}&limit=${limit}&sort=${sort}&filter=true`
                 );
 
                 if (!response.ok) throw new Error("Failed to fetch products");
@@ -656,7 +656,7 @@ const ProductsContextProvider = ({ children }) => {
 
             const p = (async () => {
                 const response = await fetch(
-                    `${backendUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+                    `${backendUrl}/api/client-products-discounted?page=${page}&limit=${limit}&sort=${sort}&filter=true`
                 );
 
                 if (!response.ok) throw new Error("Failed to fetch products");
@@ -739,7 +739,7 @@ const ProductsContextProvider = ({ children }) => {
             // Create promise and store in pending map (dedupe)
             const p = (async () => {
                 const response = await fetch(
-                    `${backendUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}?filter=true`
+                    `${backendUrl}/api/client-products-bestSellers?page=${page}&limit=${limit}&sort=${sort}&filter=true`
                 );
 
                 if (!response.ok) throw new Error("Failed to fetch products");
