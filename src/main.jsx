@@ -39,7 +39,10 @@ createRoot(document.getElementById("root")).render(
                 <AppContextProvider>
                   <ProductsContextProvider>
                     <GoogleOAuthProvider
-                      clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                      clientId={
+                        import.meta.env.VITE_APP_GOOGLE_CLIENT_ID ||
+                        import.meta.env.VITE_GOOGLE_CLIENT_ID
+                      }
                       onScriptLoadSuccess={() => {
                         if (window.google?.accounts) {
                           window.google.accounts.id.disableAutoSelect();

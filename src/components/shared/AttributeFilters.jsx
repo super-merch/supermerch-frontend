@@ -149,7 +149,8 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     <div className="space-y-3">
       {attributes.map((attribute) => {
         const isExpanded = expandedAttributes[attribute.name];
-        const isAttributeSelected = (selectedAttributes[attribute.name] || []).length> 0;
+        const selectedCount = (selectedAttributes[attribute.name] || []).length;
+        const isAttributeSelected = selectedCount > 0;
 
         return (
           <div
@@ -168,7 +169,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
                 </h3>
                 {isAttributeSelected && (
                   <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
-                    1
+                    {selectedCount}
                   </span>
                 )}
               </div>
