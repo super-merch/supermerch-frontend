@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // Siri-like orb animation styles
 const orbStyles = `
@@ -338,6 +338,7 @@ const DEFAULT_POPULAR_QUERIES = [
 const HISTORY_STORAGE_KEY = "supermerch.chatHistory";
 
 const ChatWidget = () => {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -368,6 +369,7 @@ const ChatWidget = () => {
   const inputRef = useRef(null);
   const abortControllerRef = useRef(null);
   const fullscreenOffsetRef = useRef(0);
+  const prevLocationKeyRef = useRef(`${location.pathname}${location.search}`);
 
   const getSessionId = () => {
     if (sessionIdRef.current) return sessionIdRef.current;
@@ -392,6 +394,16 @@ const ChatWidget = () => {
 
   const makeId = () =>
     `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+  const closeChat = () => {
+    ignoreNextToggleRef.current = true;
+    setOpen(false);
+    setIsFullscreen(false);
+    setExpandedPosition(null);
+    setTimeout(() => {
+      ignoreNextToggleRef.current = false;
+    }, 0);
+  };
 
   const buildProductUrl = (item) => {
     if (item?.url && item.url.includes("ref=")) {
@@ -607,6 +619,16 @@ const ChatWidget = () => {
     return () => cancelAnimationFrame(frame);
   }, [open, history.length]);
 
+  useEffect(() => {
+    const nextKey = `${location.pathname}${location.search}`;
+    if (prevLocationKeyRef.current !== nextKey) {
+      prevLocationKeyRef.current = nextKey;
+      if (open) {
+        closeChat();
+      }
+    }
+  }, [location.pathname, location.search, open]);
+
   return (
     <>
       <style>{orbStyles}</style>
@@ -714,13 +736,7 @@ const ChatWidget = () => {
                   </span>
                 </button>
                 <button
-                  onClick={() => {
-                    ignoreNextToggleRef.current = true;
-                    setOpen(false);
-                    setTimeout(() => {
-                      ignoreNextToggleRef.current = false;
-                    }, 0);
-                  }}
+                  onClick={closeChat}
                   onPointerDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -853,6 +869,7 @@ const ChatWidget = () => {
                                 key={item.id}
                                 to={buildProductUrl(item)}
                                 state={{ productId: item.id }}
+                                onClick={closeChat}
                                 className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
                               >
                                 <img
@@ -908,6 +925,7 @@ const ChatWidget = () => {
                                 key={item.id}
                                 to={buildProductUrl(item)}
                                 state={{ productId: item.id }}
+                                onClick={closeChat}
                                 className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
                               >
                                 <img
@@ -1075,11 +1093,17 @@ const ChatWidget = () => {
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         )}
-        {history.length > 0 && !open && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
-            {history.filter((h) => h.role === "assistant").length}
-          </span>
-        )}
+        {(() => {
+          const assistantCount = history.filter(
+            (entry) => entry.role === "assistant"
+          ).length;
+          if (open || assistantCount < 1) return null;
+          return (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
+              {assistantCount}
+            </span>
+          );
+        })()}
       </button>
       </div>
     </>
