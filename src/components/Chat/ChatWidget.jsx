@@ -58,12 +58,106 @@ const orbStyles = `
     align-items: center;
     justify-content: center;
   }
+  @keyframes aiPing {
+    0% { transform: scale(0.85); opacity: 0.7; }
+    70% { transform: scale(1.55); opacity: 0; }
+    100% { transform: scale(1.7); opacity: 0; }
+  }
+  @keyframes aiOrbit {
+    0% { transform: translate(-50%, -50%) rotate(0deg) translateX(18px); }
+    100% { transform: translate(-50%, -50%) rotate(360deg) translateX(18px); }
+  }
+  .chatbot-fab {
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+  }
+  .chatbot-fab::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 9999px;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255, 110, 160, 0.7),
+      rgba(255, 190, 120, 0.7),
+      rgba(80, 220, 255, 0.7),
+      rgba(130, 140, 255, 0.7),
+      rgba(255, 110, 160, 0.7)
+    );
+    filter: blur(8px);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: -2;
+    pointer-events: none;
+  }
+  .chatbot-fab::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    opacity: 0;
+    transform: scale(0.9);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .chatbot-fab:hover::before,
+  .chatbot-fab:focus-visible::before {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  .chatbot-fab:hover::after,
+  .chatbot-fab:focus-visible::after {
+    opacity: 0.7;
+    animation: aiPing 1.6s ease-out infinite;
+  }
+  .chatbot-fab-orbit {
+    position: absolute;
+    inset: -6px;
+    border-radius: 9999px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chatbot-fab:hover .chatbot-fab-orbit,
+  .chatbot-fab:focus-visible .chatbot-fab-orbit {
+    opacity: 1;
+  }
+  .orbit-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.2));
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+    animation: aiOrbit 2.6s linear infinite;
+  }
+  .orbit-dot-2 {
+    width: 4px;
+    height: 4px;
+    animation-delay: -0.9s;
+  }
+  .orbit-dot-3 {
+    width: 5px;
+    height: 5px;
+    animation-delay: -1.7s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chatbot-fab::before,
+    .chatbot-fab::after,
+    .orbit-dot {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 `;
 
 const BOT_API_URL =
   import.meta.env.VITE_BOT_API_URL || "http://localhost:8001";
 
-const POSITION_STORAGE_KEY = "supermerch.chatWidgetPosition";
 const SESSION_STORAGE_KEY = "supermerch.chatSessionId";
 const DEFAULT_MARGIN = 20;
 const DEFAULT_POPULAR_QUERIES = [
@@ -96,15 +190,6 @@ const ChatWidget = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenOffset, setFullscreenOffset] = useState(0);
   const [expandedPosition, setExpandedPosition] = useState(null);
-  const [position, setPosition] = useState(() => {
-    try {
-      const raw = localStorage.getItem(POSITION_STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  });
-  const [dragging, setDragging] = useState(false);
   const [panelPosition, setPanelPosition] = useState({
     left: DEFAULT_MARGIN,
     top: DEFAULT_MARGIN,
@@ -114,13 +199,8 @@ const ChatWidget = () => {
   const expandedCardRef = useRef(null);
   const historyRef = useRef(null);
   const scrollTopRef = useRef(0);
-  const dragOffsetRef = useRef({ x: 0, y: 0 });
-  const dragStartRef = useRef({ x: 0, y: 0 });
-  const dragMovedRef = useRef(false);
-  const dragTargetRef = useRef("widget");
   const ignoreNextToggleRef = useRef(false);
   const sessionIdRef = useRef("");
-  const lastFloatingPositionRef = useRef(null);
   const inputRef = useRef(null);
   const abortControllerRef = useRef(null);
   const fullscreenOffsetRef = useRef(0);
@@ -235,18 +315,6 @@ const ChatWidget = () => {
     await sendQuery(query);
   };
 
-  const clampToViewport = (next) => {
-    const node = widgetRef.current;
-    if (!node) return next;
-    const rect = node.getBoundingClientRect();
-    const maxX = Math.max(0, window.innerWidth - rect.width);
-    const maxY = Math.max(0, window.innerHeight - rect.height);
-    return {
-      x: Math.min(Math.max(0, next.x), maxX),
-      y: Math.min(Math.max(0, next.y), maxY),
-    };
-  };
-
   // Keep ref in sync for use in drag handlers (avoids stale closure)
   fullscreenOffsetRef.current = fullscreenOffset;
 
@@ -266,65 +334,6 @@ const ChatWidget = () => {
     };
   };
 
-  const startDrag = (e, target = "widget") => {
-    if (e.button !== undefined && e.button !== 0) return;
-    const node =
-      target === "panel" ? expandedCardRef.current : widgetRef.current;
-    if (!node) return;
-    const rect = node.getBoundingClientRect();
-    dragMovedRef.current = false;
-    dragTargetRef.current = target;
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
-    dragOffsetRef.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
-    setDragging(true);
-  };
-
-  useEffect(() => {
-    if (!dragging) return;
-    const handleMove = (e) => {
-      if (!dragMovedRef.current) {
-        const dx = Math.abs(e.clientX - dragStartRef.current.x);
-        const dy = Math.abs(e.clientY - dragStartRef.current.y);
-        if (dx > 3 || dy > 3) {
-          dragMovedRef.current = true;
-        }
-      }
-      if (!dragMovedRef.current) {
-        return;
-      }
-      const next = {
-        x: e.clientX - dragOffsetRef.current.x,
-        y: e.clientY - dragOffsetRef.current.y,
-      };
-      if (dragTargetRef.current === "panel") {
-        setExpandedPosition(clampExpanded(next));
-      } else {
-        setPosition(clampToViewport(next));
-      }
-    };
-    const handleUp = () => {
-      setDragging(false);
-    };
-    window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", handleUp);
-    return () => {
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerup", handleUp);
-    };
-  }, [dragging]);
-
-  useEffect(() => {
-    if (!position) return;
-    try {
-      localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify(position));
-    } catch {
-      // Ignore storage errors.
-    }
-  }, [position]);
-
   useEffect(() => {
     try {
       sessionStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
@@ -341,15 +350,6 @@ const ChatWidget = () => {
       return () => cancelAnimationFrame(timer);
     }
   }, [open]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (!position) return;
-      setPosition((prev) => (prev ? clampToViewport(prev) : prev));
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [position]);
 
   const recalcPanelPosition = () => {
     if (isFullscreen) return;
@@ -391,7 +391,7 @@ const ChatWidget = () => {
     if (!open || isFullscreen) return;
     const frame = requestAnimationFrame(recalcPanelPosition);
     return () => cancelAnimationFrame(frame);
-  }, [open, position, history.length, isFullscreen]);
+  }, [open, history.length, isFullscreen]);
 
   useEffect(() => {
     if (!open || isFullscreen) return;
@@ -400,7 +400,7 @@ const ChatWidget = () => {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [open, position, history.length, isFullscreen]);
+  }, [open, history.length, isFullscreen]);
 
   useEffect(() => {
     if (!open || !isFullscreen) return;
@@ -449,12 +449,8 @@ const ChatWidget = () => {
       <div
         ref={widgetRef}
         className="fixed z-50"
-      style={
-        position
-          ? { left: `${position.x}px`, top: `${position.y}px` }
-          : { right: DEFAULT_MARGIN, bottom: DEFAULT_MARGIN }
-      }
-    >
+        style={{ right: DEFAULT_MARGIN, bottom: DEFAULT_MARGIN }}
+      >
       {open && (
         <div
           ref={panelRef}
@@ -492,26 +488,18 @@ const ChatWidget = () => {
             }
             ref={isFullscreen ? expandedCardRef : null}
           >
-            <div
-              className="flex items-center justify-between px-4 py-3 border-b border-primary/20 bg-primary"
-              onPointerDown={(e) =>
-                startDrag(e, isFullscreen ? "panel" : "widget")
-              }
-            >
-              <div className="font-semibold text-white cursor-move select-none">
-                Merch Assistant
+            <div className="flex items-center justify-between px-4 py-3 border-b border-primary/20 bg-primary">
+              <div className="flex flex-col select-none">
+                <span className="font-semibold text-white">Super AI</span>
+                <span className="text-[11px] text-white/80">
+                  Ask our AI for the best deal.
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
                     if (!isFullscreen) {
-                      lastFloatingPositionRef.current = position;
                       setExpandedPosition(null);
-                    } else {
-                      if (lastFloatingPositionRef.current) {
-                        setPosition(lastFloatingPositionRef.current);
-                      }
-                      lastFloatingPositionRef.current = null;
                     }
                     setIsFullscreen(!isFullscreen);
                   }}
@@ -623,8 +611,17 @@ const ChatWidget = () => {
                   ))}
                 </div>
                 <div className="mt-3 text-sm text-gray-700">
-                  Tell me what you are looking for and I will recommend the best
-                  matches.
+                  <div className="font-medium text-gray-900">
+                    Hey! I'm SuperAI 👋
+                  </div>
+                  <div className="mt-1">What can I help you find today</div>
+                  <div className="mt-2 text-xs text-gray-600">
+                    • Quick gift ideas
+                    <br />
+                    • Trending merch picks
+                    <br />
+                    • Eco-friendly options
+                  </div>
                 </div>
               </div>
             )}
@@ -687,29 +684,24 @@ const ChatWidget = () => {
                     </div>
                   )}
 
-                  {entry.items && (() => {
+                  {Array.isArray(entry.items) && (() => {
                     const itemCount = entry.items.length;
                     const current =
                       visibleCounts[entry.id] ?? entry.displayLimit ?? 10;
                     const canLoadMore = itemCount > 0 && current < itemCount;
+                    if (!canLoadMore) return null;
                     return (
                       <button
                         type="button"
-                        className={`mt-3 text-sm font-semibold ${
-                          canLoadMore
-                            ? "text-primary hover:underline"
-                            : "text-gray-400 cursor-not-allowed"
-                        }`}
+                        className="mt-3 text-sm font-semibold text-primary hover:underline"
                         onClick={() => {
-                          if (!canLoadMore) return;
                           setVisibleCounts((prev) => {
                             const next = Math.min(itemCount, current + 10);
                             return { ...prev, [entry.id]: next };
                           });
                         }}
-                        aria-disabled={!canLoadMore}
                       >
-                        {canLoadMore ? "Load more" : "No more items"}
+                        Load more
                       </button>
                     );
                   })()}
@@ -804,33 +796,38 @@ const ChatWidget = () => {
                 : "p-3 border-t border-gray-100"
             }
           >
-            <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ask anything..."
-                className="flex-1 bg-transparent text-sm focus:outline-none placeholder-gray-400"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className={`ai-orb ${loading ? "loading" : ""}`}
-                aria-label="Send message"
-              >
-                <span className="ai-orb-inner">
-                  {loading ? (
-                    <svg className="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="3" fill="currentColor" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 2L11 13" />
-                      <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-                    </svg>
-                  )}
-                </span>
-              </button>
+            <div>
+              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
+                <input
+                  ref={inputRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Ask anything..."
+                  className="flex-1 bg-transparent text-sm focus:outline-none placeholder-gray-400"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`ai-orb ${loading ? "loading" : ""}`}
+                  aria-label="Send message"
+                >
+                  <span className="ai-orb-inner">
+                    {loading ? (
+                      <svg className="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="3" fill="currentColor" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 2L11 13" />
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                      </svg>
+                    )}
+                  </span>
+                </button>
+              </div>
+              <div className="mt-2 text-[11px] text-gray-500">
+                AI-powered search across our entire product range.
+              </div>
             </div>
           </form>
           </div>
@@ -839,31 +836,47 @@ const ChatWidget = () => {
 
       <button
         onClick={() => {
-          if (dragMovedRef.current) {
-            dragMovedRef.current = false;
-            return;
-          }
           if (ignoreNextToggleRef.current) {
             return;
           }
           setOpen(!open);
         }}
-        onPointerDown={startDrag}
-        className="w-14 h-14 rounded-full bg-primary text-white shadow-[0_0_20px_rgba(0,150,136,0.5)] hover:shadow-[0_0_30px_rgba(0,150,136,0.7)] transition-all duration-300 flex items-center justify-center"
+        className="chatbot-fab w-14 h-14 rounded-full bg-primary text-white shadow-[0_0_20px_rgba(0,150,136,0.5)] hover:shadow-[0_0_30px_rgba(0,150,136,0.7)] transition-all duration-300 flex items-center justify-center"
         aria-label={open ? "Close chat" : "Open chat"}
       >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          className="h-6 w-6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
+        <span className="chatbot-fab-orbit" aria-hidden="true">
+          <span className="orbit-dot orbit-dot-1" />
+          <span className="orbit-dot orbit-dot-2" />
+          <span className="orbit-dot orbit-dot-3" />
+        </span>
+        {open ? (
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6L6 18" />
+            <path d="M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+        )}
         {history.length > 0 && !open && (
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
             {history.filter((h) => h.role === "assistant").length}
