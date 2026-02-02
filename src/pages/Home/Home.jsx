@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import HomeContent from "../components/Home/HomeContent";
-import HomeModals from "../components/Home/HomeModals";
-import { useModals } from "../hooks/useModals";
-import { useCoupons } from "../hooks/useCoupons";
-import { useSessionStorageBoolean } from "../hooks/useSessionStorage";
+import HomeContent from "../../components/Home/HomeContent";
+import HomeModals from "../../components/Home/HomeModals";
+import { useModals } from "../../hooks/useModals";
+import { useSessionStorageBoolean } from "../../hooks/useSessionStorage";
 
 const Home = () => {
   const {
@@ -16,11 +15,7 @@ const Home = () => {
     closeEmailModal,
     closeCookieModal,
     openEmailModal,
-    setDiscountModal,
-    setEmailModal,
-    setCookieModal,
   } = useModals();
-  const { fetchCurrentCoupon } = useCoupons();
   const [discountModalShown, setDiscountModalShown] = useSessionStorageBoolean(
     "discountModalShown",
     false
@@ -52,7 +47,13 @@ const Home = () => {
 
   useEffect(() => {
     if (!discountModalShown) {
-      openDiscountModal();
+      // Delay opening the discount modal by 30 seconds
+      const timer = setTimeout(() => {
+        openDiscountModal();
+      }, 30000); // 30 seconds
+
+      // Cleanup timer on unmount
+      return () => clearTimeout(timer);
     }
   }, [discountModalShown, openDiscountModal]);
 

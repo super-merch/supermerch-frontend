@@ -119,20 +119,6 @@ const Heading = ({
   );
 };
 
-Heading.propTypes = {
-  title: PropTypes.string,
-  subtitle: PropTypes.string,
-  description: PropTypes.string,
-  titleClassName: PropTypes.string,
-  subtitleClassName: PropTypes.string,
-  descriptionClassName: PropTypes.string,
-  containerClassName: PropTypes.string,
-  align: PropTypes.oneOf(["left", "center", "right"]),
-  spacing: PropTypes.oneOf(["tight", "normal", "loose"]),
-  size: PropTypes.oneOf(["small", "default", "large", "xl"]),
-  showUnderline: PropTypes.bool,
-  underlineClassName: PropTypes.string,
-  children: PropTypes.node,
-};
+
 
 export default Heading;

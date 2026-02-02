@@ -12,7 +12,7 @@ const HotDeals = () => {
     fetchDiscountedProducts,
     discountedProducts,
     products,
-    skeletonLoading,
+    discountedProductsLoading,
   } = useContext(ProductsContext);
 
 
@@ -27,11 +27,11 @@ const HotDeals = () => {
   const displayProducts =
     discountedProducts && discountedProducts.length > 0
       ? discountedProducts?.filter((product) => {
-          const price = getProductPrice(product);
-          return price > 0; // Only show products with valid prices
-        })
+        const price = getProductPrice(product);
+        return price > 0; // Only show products with valid prices
+      })
       : products || [];
-  
+
   return (
     <div className="border border-primary rounded-lg p-4 h-full flex flex-col shadow-lg shadow-primary/20 min-h-96 bg-white">
       {/* Header */}
@@ -42,110 +42,108 @@ const HotDeals = () => {
 
       {/* Hot Deals List */}
       <div className="flex-1 flex flex-col justify-start overflow-y-auto ">
-        {skeletonLoading
+        {discountedProductsLoading
           ? // Loading skeleton
-            [...Array(4)].map((_, index) => {
-              const isLastItem = index === 3;
-              return (
-                <div
-                  key={index}
-                  className={`bg-blue-50 rounded-lg p-3 animate-pulse ${
-                    isLastItem ? "mb-0" : "mb-2"
+          [...Array(4)].map((_, index) => {
+            const isLastItem = index === 3;
+            return (
+              <div
+                key={index}
+                className={`bg-blue-50 rounded-lg p-3 animate-pulse ${isLastItem ? "mb-0" : "mb-2"
                   }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
-                    <div className="flex-1">
-                      <div className="h-6 bg-gray-300 rounded w-16"></div>
-                    </div>
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="h-6 bg-gray-300 rounded w-16"></div>
                   </div>
                 </div>
-              );
-            })
+              </div>
+            );
+          })
           : // Real products
-            (() => {
-              if (displayProducts.length === 0) {
-                return (
-                  <div className="flex items-center justify-center h-32">
-                    <p className="text-gray-500">No products available</p>
-                  </div>
-                );
+          (() => {
+            if (displayProducts.length === 0) {
+              return (
+                <div className="flex items-center justify-center h-32">
+                  <p className="text-gray-500">No products available</p>
+                </div>
+              );
+            }
+
+            return displayProducts.slice(0, 4).map((product, index) => {
+              const price = getProductPrice(product);
+              const isLastItem = index === 3;
+              const encodedId = btoa(product.meta?.id); // base64 encode
+              const slug = slugify(product.overview?.name);
+              const discountPct = product.discountInfo?.discount || 0;
+              let unDiscountedPrice;
+              if (discountPct > 0) {
+                unDiscountedPrice =
+                  getProductPrice(product, product.meta.id) /
+                  (1 - discountPct / 100);
               }
 
-              return displayProducts.slice(0, 4).map((product, index) => {
-                const price = getProductPrice(product);
-                const isLastItem = index === 3;
-                const encodedId = btoa(product.meta?.id); // base64 encode
-                const slug = slugify(product.overview?.name);
-                const discountPct = product.discountInfo?.discount || 0;
-                let unDiscountedPrice;
-                if (discountPct > 0) {
-                  unDiscountedPrice =
-                    getProductPrice(product, product.meta.id) /
-                    (1 - discountPct / 100);
-                }
-
-                return (
-                  <Link
-                    to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
-                    key={`${product.meta?.id || "product"}-${index}`}
-                    className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${
-                      isLastItem ? "mb-0" : "mb-2"
+              return (
+                <Link
+                  to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
+                  key={`${product.meta?.id || "product"}-${index}`}
+                  className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${isLastItem ? "mb-0" : "mb-2"
                     }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Product Image */}
-                      <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0">
-                        <img
-                          src={product.overview?.hero_image || noimage}
-                          alt={product.overview?.name || "Product"}
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                      </div>
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Product Image */}
+                    <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0">
+                      <img
+                        src={product.overview?.hero_image || noimage}
+                        alt={product.overview?.name || "Product"}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    </div>
 
-                      {/* Product Info */}
-                      <div className="flex flex-col flex-1 min-w-0">
-                        {/* Product Name */}
+                    {/* Product Info */}
+                    <div className="flex flex-col flex-1 min-w-0">
+                      {/* Product Name */}
 
-                        <Tooltip
-                          content={product.overview?.name || "No Name"}
-                          placement="top"
+                      <Tooltip
+                        content={product.overview?.name || "No Name"}
+                        placement="top"
+                      >
+                        <h4
+                          className="text-sm font-semibold text-gray-800 truncate mb-1"
+                          style={{ whiteSpace: "nowrap" }}
                         >
-                          <h4
-                            className="text-sm font-semibold text-gray-800 truncate mb-1"
-                            style={{ whiteSpace: "nowrap" }}
-                          >
-                            {product.overview?.name || "No Name"}
-                          </h4>
-                        </Tooltip>
-                        {/* Price */}
-                        {discountPct > 0 ? (
-                          <div className="flex items-center gap-0">
-                            <span className="text-base text-red-500 line-through mr-2">
-                              ${unDiscountedPrice.toFixed(2)}
-                            </span>
-                            <span className="text-base sm:text-base font-bold text-primary">
-                              $
-                              {getProductPrice(
-                                product,
-                                product.meta.id
-                              ).toFixed(2)}
-                            </span>
-                          </div>
-                        ) : (
+                          {product.overview?.name || "No Name"}
+                        </h4>
+                      </Tooltip>
+                      {/* Price */}
+                      {discountPct > 0 ? (
+                        <div className="flex items-center gap-0">
+                          <span className="text-base text-red-500 line-through mr-2">
+                            ${unDiscountedPrice.toFixed(2)}
+                          </span>
                           <span className="text-base sm:text-base font-bold text-primary">
                             $
-                            {getProductPrice(product, product.meta.id).toFixed(
-                              2
-                            )}
+                            {getProductPrice(
+                              product,
+                              product.meta.id
+                            ).toFixed(2)}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      ) : (
+                        <span className="text-base sm:text-base font-bold text-primary">
+                          $
+                          {getProductPrice(product, product.meta.id).toFixed(
+                            2
+                          )}
+                        </span>
+                      )}
                     </div>
-                  </Link>
-                );
-              });
-            })()}
+                  </div>
+                </Link>
+              );
+            });
+          })()}
       </div>
 
       {/* View All Link */}

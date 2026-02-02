@@ -7,7 +7,7 @@ const BannerSection = () => {
       id: 1,
       image: "/BANNER/b4.jpeg",
       alt: "Banner 1",
-      link: "/banner1",
+      link: "/promotional?categoryName=Drinkware&category=PE-02&subCategory=Drink+Bottles&type=Promotional&page=1",
     },
     {
       id: 2,
@@ -27,7 +27,7 @@ const BannerSection = () => {
             //   to={banner.link}
             //   className="group block overflow-hidden shadow-lg transition-all duration-300"
             // >
-            <div className="relative w-full h-48 md:h-56 lg:h-96 overflow-hidden">
+            <div className="relative w-full h-48 md:h-56 lg:h-96 overflow-hidden" key={banner.id}>
               <img
                 src={banner.image}
                 alt={banner.alt}

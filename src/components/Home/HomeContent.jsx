@@ -8,6 +8,7 @@ import HowItWorks from "./HowItWorks";
 import LetsConnect from "./LetsConnect";
 import TabsCategory from "./TabsCategory";
 import TrendingCarousel from "./TrendingCarousel";
+import { Link } from "react-router-dom";
 
 const HomeContent = () => {
   return (
@@ -29,7 +30,7 @@ const HomeContent = () => {
       {/* Top selling categories */}
       <TabsCategory />
 
-      <img src={banner} alt="Home" className="w-full h-2/3" />
+      <Link to="/promotional?categoryName=Headwear&category=PK-03&subCategory=Brim+%26+Bucket+Hats&type=Headwear&page=1"> <img src={banner} alt="Home" className="w-full h-2/3" /> </Link>
       {/* SHOP OUR BEST SELLERS - moved above Shop by Category */}
       {/* <div className="my-4">
         <ShopOurBestSellers />
