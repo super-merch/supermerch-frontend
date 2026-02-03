@@ -20,10 +20,6 @@ export const useAuth = () => {
   const [error, setError] = useState("");
 
   // Google auth states
-  const [googleData, setGoogleData] = useState(null);
-  const [showGooglePasswordPrompt, setShowGooglePasswordPrompt] = useState(false);
-  const [googlePassword, setGooglePassword] = useState("");
-  const [showGooglePassword, setShowGooglePassword] = useState(false);
   const [googleError, setGoogleError] = useState("");
   const [loadingGoogle, setLoadingGoogle] = useState(false);
 
@@ -44,95 +40,44 @@ export const useAuth = () => {
     setTimeout(() => setError(""), 2000);
   };
 
-  // Google login configuration
+  // Google login configuration (true SSO - no local password prompt)
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      setLoadingGoogle(true);
+      setGoogleError("");
       try {
-        const userInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokenResponse.access_token}`, {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
+        const response = await axios.post(`${backendUrl}/api/auth/google`, {
+          accessToken: tokenResponse.access_token,
         });
 
-        const userInfo = await userInfoResponse.json();
-        setGoogleData({
-          email: userInfo.email,
-          name: userInfo.given_name || userInfo.name,
-        });
-        setShowGooglePasswordPrompt(true);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-        toast.error("Failed to get user information from Google");
-      }
-    },
-    onError: () => {
-      toast.error("Google authentication failed");
-    },
-  });
-
-  // Handle Google authentication
-  const handleGoogleAuth = async (e, isSignup = false) => {
-    e.preventDefault();
-    if (!googlePassword.trim()) {
-      setGoogleError("Password is required");
-      setTimeout(() => setGoogleError(""), 2000);
-      return;
-    }
-
-    setLoadingGoogle(true);
-
-    try {
-      const endpoint = isSignup ? "/api/auth/signup" : "/api/auth/login";
-      const response = await axios.post(`${backendUrl}${endpoint}`, {
-        name: googleData.name,
-        email: googleData.email,
-        password: googlePassword,
-      });
-
-      if (response.data.success) {
-        const { user } = response.data;
-
-        if (!isSignup && user.email !== googleData.email) {
-          setGoogleError("Email not found.");
-          setTimeout(() => setGoogleError(""), 2000);
-          return;
-        }
-
-        setGoogleError("");
-        const { token } = response.data;
-        setToken(token);
-
-        toast.success(`Google ${isSignup ? "SignUp" : "Login"} successful!`);
-        localStorage.setItem("token", token);
-
-        if (!isSignup) {
-          dispatch(initializeCartFromStorage({ email: user.email }));
+        if (response.data.success) {
+          const { user, token } = response.data;
+          setToken(token);
+          toast.success("Google login successful!");
+          localStorage.setItem("token", token);
+          if (user?.email) {
+            dispatch(initializeCartFromStorage({ email: user.email }));
+          }
           dispatch(loadFavouritesFromDB(backendUrl));
           navigate("/");
         } else {
-          navigate("/login");
+          setGoogleError(response.data.message || "Google authentication failed");
+          setTimeout(() => setGoogleError(""), 2000);
         }
-
-        // Reset Google states
-        setGoogleData(null);
-        setShowGooglePasswordPrompt(false);
-        setGooglePassword("");
+      } catch (err) {
+        setGoogleError(
+          err?.response?.data?.message || "Google authentication failed"
+        );
+        setTimeout(() => setGoogleError(""), 2000);
+      } finally {
+        setLoadingGoogle(false);
       }
-    } catch (err) {
-      setGoogleError(err?.response?.data?.message || "Authentication failed");
-      setTimeout(() => setGoogleError(""), 2000);
-    } finally {
-      setLoadingGoogle(false);
-    }
-  };
-
-  // Cancel Google authentication
-  const handleGoogleCancel = () => {
-    setGoogleData(null);
-    setShowGooglePasswordPrompt(false);
-    setGooglePassword("");
-    setError("");
-  };
+    },
+    onError: () => {
+      setGoogleError("Google authentication failed");
+      toast.error("Google authentication failed");
+    },
+  });
 
   // Reset password handlers
   const handleResetStep1 = async (e) => {
@@ -259,12 +204,6 @@ export const useAuth = () => {
     // States
     loading,
     error,
-    googleData,
-    showGooglePasswordPrompt,
-    googlePassword,
-    setGooglePassword,
-    showGooglePassword,
-    setShowGooglePassword,
     googleError,
     loadingGoogle,
     showResetPrompt,
@@ -290,8 +229,6 @@ export const useAuth = () => {
     setError,
     clearError,
     googleLogin,
-    handleGoogleAuth,
-    handleGoogleCancel,
     setShowResetPrompt,
     handleResetStep1,
     handleResetStep2,

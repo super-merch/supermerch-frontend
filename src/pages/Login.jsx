@@ -8,7 +8,6 @@ import { AppContext } from "../context/AppContext";
 // Reusable components
 import AuthLayout from "../components/auth/AuthLayout";
 import PasswordInput from "../components/auth/PasswordInput";
-import GoogleAuthModal from "../components/auth/GoogleAuthModal";
 import ResetPasswordModal from "../components/auth/ResetPasswordModal";
 import { useAuth } from "../hooks/useAuth";
 
@@ -19,12 +18,6 @@ const Login = () => {
   const {
     loading,
     error,
-    googleData,
-    showGooglePasswordPrompt,
-    googlePassword,
-    setGooglePassword,
-    showGooglePassword,
-    setShowGooglePassword,
     googleError,
     loadingGoogle,
     showResetPrompt,
@@ -48,8 +41,6 @@ const Login = () => {
     setError,
     clearError,
     googleLogin,
-    handleGoogleAuth,
-    handleGoogleCancel,
     setShowResetPrompt,
     handleResetStep1,
     handleResetStep2,
@@ -205,27 +196,19 @@ const Login = () => {
         <div className="mt-6">
           <button
             onClick={() => googleLogin()}
+            disabled={loadingGoogle}
             className="w-full flex items-center justify-center px-4 py-3 border border-smallHeader rounded-lg shadow-sm bg-white text-smallHeader hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-smallHeader focus:ring-offset-2 transition-colors"
           >
             <FcGoogle className="h-5 w-5 mr-3" />
-            Login with Google
+            {loadingGoogle ? "Connecting to Google..." : "Login with Google"}
           </button>
         </div>
 
-        {/* Modals */}
-        <GoogleAuthModal
-          isOpen={showGooglePasswordPrompt}
-          onClose={handleGoogleCancel}
-          onSubmit={(e) => handleGoogleAuth(e, false)}
-          googleData={googleData}
-          googlePassword={googlePassword}
-          setGooglePassword={setGooglePassword}
-          showGooglePassword={showGooglePassword}
-          setShowGooglePassword={setShowGooglePassword}
-          googleError={googleError}
-          loadingGoogle={loadingGoogle}
-          isSignup={false}
-        />
+        {googleError && (
+          <div className="mt-3 text-sm text-center text-red-500">
+            {googleError}
+          </div>
+        )}
 
         <ResetPasswordModal
           isOpen={showResetPrompt}
