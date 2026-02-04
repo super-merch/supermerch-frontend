@@ -334,38 +334,16 @@ const cartSlice = createSlice({
 });
 
 // Selector to get current user's cart items
-export const selectCurrentUserCartItems = (state) => {
-  const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
-  
-  // Always include guest items along with user-specific items
-  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
-
-    if (currentUserEmail === "guest@gmail.com") {
-      return guestItems;
-    }
-
-    const userItems = state?.cart?.items.filter(
-      (item) => item.userEmail === currentUserEmail
-    );
+export const selectCurrentUserCartItems = createSelector(
+  [(state) => state.cart.items, (state) => state.cart.currentUserEmail],
+  (items, currentUserEmail) => {
+    const email = currentUserEmail || "guest@gmail.com";
+    const guestItems = items.filter(item => item.userEmail === "guest@gmail.com"); 
+    if (email === "guest@gmail.com") return guestItems;
+    const userItems = items.filter(item => item.userEmail === email);
     return [...guestItems, ...userItems];
   }
-export const currentUserCartAmount = (state) => {
-  const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
-  
-  // Always include guest items along with user-specific items
-  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
-
-    if (currentUserEmail === "guest@gmail.com") {
-      return guestItems.length;
-    }
-
-    const userItems = state?.cart?.items.filter(
-      (item) => item.userEmail === currentUserEmail
-    );
-    return guestItems.length+userItems.length;
-  }
-
-
+);
 
 export const {
   setCurrentUser,
