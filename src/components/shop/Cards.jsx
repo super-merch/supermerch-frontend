@@ -202,9 +202,10 @@ const Cards = ({ category = "" }) => {
             setAccumulatedProducts((prev) => [...prev, ...fresh]);
             setCurrentPage(nextPage);
             setSearchParams((prev) => {
-              prev.set("page", nextPage.toString());
-              prev.set("limit", currentLimit.toString());
-              return prev;
+              const nextParams = new URLSearchParams(prev);
+              nextParams.set("page", nextPage.toString());
+              nextParams.set("limit", currentLimit.toString());
+              return nextParams;
             });
             const totalPages = pageData.total_pages || pageData.totalPages || 0;
             if (totalPages && nextPage >= totalPages) {
@@ -224,9 +225,10 @@ const Cards = ({ category = "" }) => {
         setAccumulatedProducts(data.data);
         setCurrentPage(1);
         setSearchParams((prev) => {
-          prev.set("page", "1");
-          prev.set("limit", newLimit.toString());
-          return prev;
+          const nextParams = new URLSearchParams(prev);
+          nextParams.set("page", "1");
+          nextParams.set("limit", newLimit.toString());
+          return nextParams;
         });
 
         const totalCount =

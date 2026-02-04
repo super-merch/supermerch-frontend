@@ -108,9 +108,10 @@ const AustraliaMadeProducts = ({ category = "" }) => {
       
       // Update URL with new limit
       setSearchParams((prev) => {
-        prev.set("page", "1");
-        prev.set("limit", newLimit.toString());
-        return prev;
+        const nextParams = new URLSearchParams(prev);
+        nextParams.set("page", "1");
+        nextParams.set("limit", newLimit.toString());
+        return nextParams;
       });
       
       // Update pagination data - this triggers React Query to refetch with new limit

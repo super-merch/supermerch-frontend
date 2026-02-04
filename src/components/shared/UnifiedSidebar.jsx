@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   FaCaretDown,
   FaGamepad,
@@ -25,7 +25,7 @@ import {
 import { HiMiniBuildingOffice } from "react-icons/hi2";
 import { IoGolfSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ProductsContext } from "../../context/ProductsContext";
 // import {
 //   getSidebarConfig,
@@ -97,6 +97,7 @@ const UnifiedSidebar = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { selectedCategory } = useSelector((state) => state.filters);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -151,7 +152,6 @@ const UnifiedSidebar = ({
   const config = { title: "Categories" };
   const urlSubCategory = searchParams.get("subCategory");
   const urlCategoryName = searchParams.get("categoryName");
-  const [appliedFilters, setAppliedFilters] = useState([]);
   const getAppliedFilters = (searchParams) => {
     const filters = [];
 
@@ -201,14 +201,13 @@ const UnifiedSidebar = ({
     return filters;
   };
 
-  // Add this useEffect to update appliedFilters when URL changes
-  useEffect(() => {
-    const filters = getAppliedFilters(searchParams);
-    setAppliedFilters(filters);
-  }, [searchParams]);
+  const appliedFilters = useMemo(
+    () => getAppliedFilters(new URLSearchParams(location.search)),
+    [location.search]
+  );
 
   const handleRemoveFilter = (filter) => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(location.search);
 
     if (filter.type === "color") {
       const currentColors = newParams.get("colors")?.split(",") || [];
