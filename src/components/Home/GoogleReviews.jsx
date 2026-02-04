@@ -132,10 +132,10 @@ const GoogleReviewsComponent = () => {
                                       className="w-full h-full object-cover"
                                       onError={(e) => {
                                         e.target.style.display = "none";
-                                        e.target.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-600 font-medium text-sm">${
-                                          reviewer?.displayName?.charAt(0) ||
-                                          "U"
-                                        }</div>`;
+                                        const fallback = document.createElement("div");
+                                        fallback.className = "w-full h-full flex items-center justify-center text-gray-600 font-medium text-sm";
+                                        fallback.textContent = reviewer?.displayName?.charAt(0) || "U";
+                                        e.target.parentElement.appendChild(fallback);
                                       }}
                                     />
                                   ) : (

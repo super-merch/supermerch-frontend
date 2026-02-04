@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
@@ -165,7 +166,7 @@ const BlogDetails = () => {
             <div
               className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-blockquote:border-l-blue-600 prose-blockquote:bg-blue-50 prose-blockquote:p-4 prose-blockquote:rounded-r-lg prose-img:rounded-lg prose-img:shadow-md"
               dangerouslySetInnerHTML={{
-                __html: getContentWithImages(blogData),
+                __html: DOMPurify.sanitize(getContentWithImages(blogData)),
               }}
             />
           </div>
