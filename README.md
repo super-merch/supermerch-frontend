@@ -180,7 +180,7 @@ Examples:
 
 - Blank page: check console for Vite/React errors; verify env vars
 - Stripe errors: ensure `VITE_STRIPE_PUBLIC_KEY` is set and backend session endpoint responds
-- API 4xx/5xx: verify `VITE_BACKEND_URL` and CORS settings
+- API 4xx/5xx: verify `VITE_BACKEND_URL` and backend `CORS_ORIGINS` settings
 
 ### Contact
 
