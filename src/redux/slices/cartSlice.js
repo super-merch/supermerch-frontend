@@ -344,6 +344,16 @@ export const selectCurrentUserCartItems = createSelector(
     return [...guestItems, ...userItems];
   }
 );
+export const currentUserCartAmount = createSelector(
+  [(state) => state.cart.items, (state) => state.cart.currentUserEmail],
+  (items, currentUserEmail) => {
+    const email = currentUserEmail || "guest@gmail.com";
+    const guestItems = items.filter(item => item.userEmail === "guest@gmail.com");
+    if (email === "guest@gmail.com") return guestItems.length;
+    const userItems = items.filter(item => item.userEmail === email);
+    return guestItems.length + userItems.length;
+  }
+);
 
 export const {
   setCurrentUser,
