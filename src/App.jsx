@@ -136,6 +136,9 @@ const App = () => {
             {token && <Route path="/admin" element={<Sidebar />} />}
             {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}
             {/* Catch-all route for 404 - must be last */}
+            <Route path="/trendings" element={<ShopPage category="trendings"/>} />
+            <Route path="/new-arrivals" element={<ShopPage category="new" />} />
+            <Route path="/bestSellers" element={<ShopPage category="bestSellers" />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </RouteTransition>
