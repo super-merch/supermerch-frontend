@@ -13,16 +13,15 @@ const SearchBar = ({
   categoryData = [],
   selectedCategory = "All",
   onCategoryChange,
-  size = "default", // "small", "default", "large"
-  collapsible = false, // New prop for collapsible functionality
-  isOpen = false, // New prop to control open state
-  onToggle, // New prop for toggle function
+  size = "default",
+  collapsible = false,
+  isOpen = false,
+  onToggle,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const categoryDropdownRef = useRef(null);
   const searchInputRef = useRef(null);
-  // add near other useState declarations
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
@@ -34,16 +33,15 @@ const SearchBar = ({
   const location = useLocation();
   const prevLocationRef = useRef(location.pathname);
   const inputValueRef = useRef("");
-  // Close category dropdown & suggestions when clicking outside
   useEffect(() => {
+    if (!isCategoryDropdownOpen && !isSuggestionsOpen) return;
+
     const handleClickOutside = (event) => {
       if (
         categoryDropdownRef.current &&
         !categoryDropdownRef.current.contains(event.target)
       ) {
         setIsCategoryDropdownOpen(false);
-
-        // <-- NEW: also close suggestions when clicking outside
         if (isSuggestionsOpen) {
           setIsSuggestionsOpen(false);
           setSuggestions([]);
@@ -56,7 +54,7 @@ const SearchBar = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isSuggestionsOpen]);
+  }, [isCategoryDropdownOpen, isSuggestionsOpen]);
 
   const fetchSuggestions = async (q) => {
     if (!q || q.trim().length === 0) {
@@ -123,8 +121,9 @@ const SearchBar = ({
 
   const currentSize = sizeClasses[size] || sizeClasses.default;
 
-  // Close category dropdown when clicking outside
   useEffect(() => {
+    if (!isCategoryDropdownOpen) return;
+
     const handleClickOutside = (event) => {
       if (
         categoryDropdownRef.current &&
@@ -138,26 +137,21 @@ const SearchBar = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isCategoryDropdownOpen]);
 
-  // Focus input when search bar opens
   useEffect(() => {
     if (collapsible && isOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [collapsible, isOpen]);
 
-  // Sync inputValue with ref
   useEffect(() => {
     inputValueRef.current = inputValue;
   }, [inputValue]);
 
-  // Clear input when navigating away from search page
   useEffect(() => {
     const currentPath = location.pathname;
-    const prevPath = prevLocationRef.current;
 
-    // Clear input if we're not on the search page and we have input value
     if (currentPath !== "/search" && inputValueRef.current.trim()) {
       setInputValue("");
       setSuggestions([]);
@@ -165,24 +159,20 @@ const SearchBar = ({
       setHighlightedIndex(-1);
     }
 
-    // Update previous location
     prevLocationRef.current = currentPath;
   }, [location.pathname]);
 
-  // Add debounce timer ref
   const debounceTimerRef = useRef(null);
 
   const handleChange = (e) => {
     const value = e.target.value.toLowerCase();
     setInputValue(value);
 
-    // Clear existing timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
     if (suggestionTimerRef.current) clearTimeout(suggestionTimerRef.current);
 
-    // Set new timer for debounced search
     if (value.trim()) {
       debounceTimerRef.current = setTimeout(() => {
         handleSearch(value.trim());
@@ -201,9 +191,6 @@ const SearchBar = ({
   };
 
   const handleSearch = (searchValue = inputValue) => {
-    // Close suggestions when searching
-    // setIsSuggestionsOpen(false);
-    // setSuggestions([]);
     setHighlightedIndex(-1);
 
     if (!searchValue.trim()) {
@@ -212,9 +199,6 @@ const SearchBar = ({
       return;
     }
     onSearch(searchValue.trim());
-    // Clear input after search is performed (navigation happens in parent)
-    // The input will be cleared when navigating away from search page
-    // Close search bar if collapsible
     if (collapsible && onToggle) {
       onToggle(false);
     }
@@ -223,7 +207,6 @@ const SearchBar = ({
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      // If suggestions open and one highlighted -> select it
       if (
         isSuggestionsOpen &&
         highlightedIndex >= 0 &&
@@ -239,7 +222,6 @@ const SearchBar = ({
       }
       setIsSuggestionsOpen(false);
 
-      // Clear debounce timer and search immediately (this will close suggestions)
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       handleSearch();
     } else if (e.key === "Escape") {
@@ -261,7 +243,6 @@ const SearchBar = ({
     }
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
@@ -274,16 +255,12 @@ const SearchBar = ({
     onCategoryChange?.(category);
     setIsCategoryDropdownOpen(false);
   };
-  // If collapsible and not open, show only search icon
   if (collapsible && !isOpen) {
     return (
       <div className={`flex items-center search-container ${className}`}>
         <button
           onClick={() => {
-            // Clear debounce timer and search immediately
-            if (debounceTimerRef.current) {
-              clearTimeout(debounceTimerRef.current);
-            }
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             handleSearch();
           }}
           className="text-primary hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded-lg transition-all duration-200 flex-shrink-0"
@@ -294,7 +271,6 @@ const SearchBar = ({
     );
   }
 
-  // If collapsible and open, show search bar with always-visible search icon
   if (collapsible && isOpen) {
     return (
       <div
@@ -332,12 +308,10 @@ const SearchBar = ({
             value={inputValue}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            // disabled={!inputValue}
             type="text"
             placeholder={placeholder}
             className={`flex-1 text-gray-700 bg-transparent outline-none placeholder-gray-400 ${currentSize.input}`}
           />
-          {/* Suggestions dropdown */}
           {isSuggestionsOpen && suggestions.length > 0 && (
             <ul
               className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto"
@@ -352,7 +326,6 @@ const SearchBar = ({
                   role="option"
                   aria-selected={highlightedIndex === idx}
                   onMouseDown={(ev) => {
-                    // use onMouseDown to avoid input blur before click handler
                     ev.preventDefault();
                     setInputValue(s.name || s.sku || "");
                     setIsSuggestionsOpen(false);
@@ -395,7 +368,6 @@ const SearchBar = ({
           </div>
         </div>
 
-        {/* Category Dropdown */}
         {isCategoryDropdownOpen && showCategoryDropdown && (
           <div className="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
             <div className="p-2">
@@ -440,7 +412,6 @@ const SearchBar = ({
                     </div>
                   ))}
 
-                  {/* View all / View less button */}
                   {category.subTypes && category.subTypes.length > 3 && (
                     <div className="ml-4 px-3 py-1">
                       <button
@@ -549,10 +520,7 @@ const SearchBar = ({
         <div className="flex items-center gap-2 ml-2 flex-shrink-0">
           <button
             onClick={() => {
-              // Clear debounce timer and search immediately
-              if (debounceTimerRef.current) {
-                clearTimeout(debounceTimerRef.current);
-              }
+              if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
               handleSearch();
               setIsSuggestionsOpen(false);
             }}
