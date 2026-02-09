@@ -15,6 +15,41 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
   const params = new URLSearchParams(location.search);
   const category = params.get("category");
   const search = params.get("search");
+  const normalize = (value) =>
+    String(value ?? "")
+      .normalize("NFKC")
+      .replace(/\u00A0/g, " ")
+      .trim();
+  const normalizeKey = (value) => normalize(value).toLowerCase();
+  const normalizeValue = (value) =>
+    normalize(value)
+      .toLowerCase()
+      .replace(/[\u2010-\u2015\u2212]/g, "-")
+      .replace(/\s+/g, " ");
+  const buildSelectedFromParams = (paramsInput) => {
+    const urlAttrNames = paramsInput.getAll("attrName");
+    const urlAttrValues = paramsInput.getAll("attrValue");
+    const nextSelected = {};
+    urlAttrNames.forEach((name, idx) => {
+      const raw = urlAttrValues[idx] || "";
+      const values = raw.split(",").map(normalize).filter(Boolean);
+      const nameKey = normalizeKey(name);
+      const displayName = normalize(name);
+      if (!values.length || !nameKey) return;
+      const existing = nextSelected[nameKey];
+      const merged = existing ? [...existing.values] : [];
+      const seen = new Set(merged.map((v) => normalizeValue(v)));
+      values.forEach((val) => {
+        const key = normalizeValue(val);
+        if (!seen.has(key)) {
+          seen.add(key);
+          merged.push(val);
+        }
+      });
+      nextSelected[nameKey] = { name: existing?.name || displayName, values: merged };
+    });
+    return nextSelected;
+  };
 
   // Track previous category/search to detect changes
   const prevCategoryRef = useRef(null);
@@ -62,20 +97,12 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
 
   // Reset selected filter when location changes
   useEffect(() => {
-    const urlAttrNames = params.getAll("attrName");
-    const urlAttrValues = params.getAll("attrValue");
-
-    const nextSelected = {};
-    urlAttrNames.forEach((name, idx) => {
-      const raw = urlAttrValues[idx] || "";
-      const values = raw.split(",").map((v) => v.trim()).filter(Boolean);
-      if (values.length) nextSelected[name] = values;
-    });
+    const nextSelected = buildSelectedFromParams(params);
 
     setSelectedAttributes(nextSelected);
 
-    const attributesPayload = Object.entries(nextSelected).map(
-      ([name, values]) => ({ name, value: values.join(",") })
+    const attributesPayload = Object.values(nextSelected).map(
+      ({ name, values }) => ({ name, value: values.join(",") })
     );
 
     setPaginationData((prev) => ({
@@ -86,17 +113,23 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
 
 
   const handleCheckboxChange = (attributeName, value) => {
-    const currentValues = selectedAttributes[attributeName] || [];
+    const nameKey = normalizeKey(attributeName);
+    const valueDisplay = normalize(value);
+    const valueKey = normalizeValue(value);
+    const nextSelected = buildSelectedFromParams(new URLSearchParams(searchParams));
+    const currentEntry = nextSelected[nameKey];
+    const currentValues = currentEntry?.values || [];
+    const nextValues = currentValues.some((v) => normalizeValue(v) === valueKey)
+      ? currentValues.filter((v) => normalizeValue(v) !== valueKey)
+      : [...currentValues, valueDisplay];
 
-    const nextValues = currentValues.includes(value)
-      ? currentValues.filter((v) => v !== value)
-      : [...currentValues, value];
-
-    const nextSelected = { ...selectedAttributes };
     if (nextValues.length > 0) {
-      nextSelected[attributeName] = nextValues;
+      nextSelected[nameKey] = {
+        name: currentEntry?.name || normalize(attributeName),
+        values: nextValues,
+      };
     } else {
-      delete nextSelected[attributeName];
+      delete nextSelected[nameKey];
     }
 
     setSearchParams((prevParams) => {
@@ -104,7 +137,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
       newParams.delete("attrName");
       newParams.delete("attrValue");
 
-      Object.entries(nextSelected).forEach(([name, values]) => {
+      Object.values(nextSelected).forEach(({ name, values }) => {
         newParams.append("attrName", name);
         newParams.append("attrValue", values.join(","));
       });
@@ -115,8 +148,8 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
 
     setSelectedAttributes(nextSelected);
 
-    const attributesPayload = Object.entries(nextSelected).map(
-      ([name, values]) => ({ name, value: values.join(",") })
+    const attributesPayload = Object.values(nextSelected).map(
+      ({ name, values }) => ({ name, value: values.join(",") })
     );
 
     setPaginationData((prev) => ({
@@ -135,9 +168,10 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
 
 
   const toggleAttributeExpansion = (attributeName) => {
+    const nameKey = normalizeKey(attributeName);
     setExpandedAttributes((prev) => ({
       ...prev,
-      [attributeName]: !prev[attributeName],
+      [nameKey]: !prev[nameKey],
     }));
   };
 
@@ -148,8 +182,9 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
   return (
     <div className="space-y-3">
       {attributes.map((attribute) => {
-        const isExpanded = expandedAttributes[attribute.name];
-        const selectedCount = (selectedAttributes[attribute.name] || []).length;
+        const nameKey = normalizeKey(attribute.name);
+        const isExpanded = expandedAttributes[nameKey];
+        const selectedCount = (selectedAttributes[nameKey]?.values || []).length;
         const isAttributeSelected = selectedCount > 0;
 
         return (
@@ -194,7 +229,9 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
               <div className="px-4 pb-3 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 <div className="space-y-2">
                   {attribute.values.map((value) => {
-                    const isChecked = (selectedAttributes[attribute.name] || []).includes(value);
+                    const isChecked = (selectedAttributes[nameKey]?.values || []).some(
+                      (v) => normalizeValue(v) === normalizeValue(value)
+                    );
                     return (
                       <label
                         key={value}
