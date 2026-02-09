@@ -2,33 +2,16 @@
 import { useEffect, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { initializeCartFromStorage } from '../redux/slices/cartSlice';
-import { AppContext } from '../context/AppContext';
-import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 const CartInitializer = ({ children }) => {
   const dispatch = useDispatch();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL; // Adjust based on your environment variable setup
+  const { userEmail } = useContext(AuthContext);
 
   useEffect(() => {
-    const initializeCart = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const { data } = await axios.get(`${backendUrl}/api/auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-          // Initialize cart from storage for this user
-          dispatch(initializeCartFromStorage({ email: data.email ||"guest@gmail.com" }));
-      } catch (error) {
-        console.error("Error initializing cart:", error);
-      }
-    };
-
-    initializeCart();
-  }, [dispatch, backendUrl]);
+    if (!userEmail) return;
+    dispatch(initializeCartFromStorage({ email: userEmail || "guest@gmail.com" }));
+  }, [dispatch, userEmail]);
 
   return children;
 };

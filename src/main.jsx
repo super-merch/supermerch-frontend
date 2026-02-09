@@ -33,9 +33,9 @@ createRoot(document.getElementById("root")).render(
       {/* delay rendering until persisted state is restored */}
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
-          <CartInitializer>
-            <BlogProvider>
-              <AuthContextProvider>
+          <BlogProvider>
+            <AuthContextProvider>
+              <CartInitializer>
                 <AppContextProvider>
                   <ProductsContextProvider>
                     <GoogleOAuthProvider
@@ -50,9 +50,9 @@ createRoot(document.getElementById("root")).render(
                     </GoogleOAuthProvider>
                   </ProductsContextProvider>
                 </AppContextProvider>
-              </AuthContextProvider>
-            </BlogProvider>
-          </CartInitializer>
+              </CartInitializer>
+            </AuthContextProvider>
+          </BlogProvider>
         </QueryClientProvider>
       </PersistGate>
     </Provider>
