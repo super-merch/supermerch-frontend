@@ -20,7 +20,7 @@ const TopBanner = ({ onCouponClick }) => {
       <div className="Mycontainer flex flex-wrap md:flex-nowrap md:items-center justify-between gap-2 md:gap-0  md:px-0">
         {/* Left side - Super Merch Logo */}
         <div className="flex items-center order-1 min-w-0 md:min-w-fit">
-          <Logo size="medium" logoClassName="brightness-0 invert" />
+          <Logo size="default" logoClassName="brightness-0 invert" />
         </div>
 
         {/* Center - Promotion text */}
