@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { FaFire } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { ProductsContext } from "../../context/ProductsContext";
@@ -8,6 +8,7 @@ import Tooltip from "../Common/Tooltip";
 
 const HotDeals = () => {
   const navigate = useNavigate();
+  const hasRequestedRef = useRef(false);
   const {
     fetchDiscountedProducts,
     discountedProducts,
@@ -15,13 +16,14 @@ const HotDeals = () => {
     discountedProductsLoading,
   } = useContext(ProductsContext);
 
-
   useEffect(() => {
+    if (hasRequestedRef.current) return;
     if (discountedProducts.length === 0 && products.length === 0) {
-      fetchDiscountedProducts(1, "", 6); // Fetch 6 discounted products to ensure we have at least 4
-      // Fallback: also fetch regular products in case discounted products are empty
+      hasRequestedRef.current = true;
+      fetchDiscountedProducts(1, "", 6);
     }
   }, [discountedProducts.length, products.length, fetchDiscountedProducts]);
+
 
   // Use discounted products if available, otherwise fall back to regular products
   const displayProducts =
