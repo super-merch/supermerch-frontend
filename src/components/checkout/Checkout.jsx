@@ -349,7 +349,6 @@ const Checkout = () => {
     if (
       !data.shipping.firstName ||
       !data.shipping.lastName ||
-      !data.shipping.address ||
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
@@ -363,7 +362,6 @@ const Checkout = () => {
     if (
       !data.billing.firstName ||
       !data.billing.lastName ||
-      !data.billing.address ||
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
@@ -517,7 +515,7 @@ const Checkout = () => {
       };
 
       const resp = await axios.post(
-        `${backendUrl}/create-checkout-session`,
+        `${backendUrl}/api/create-checkout-session`,
         body,
       );
       const session = await resp.data;
