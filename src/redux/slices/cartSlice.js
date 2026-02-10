@@ -365,8 +365,6 @@ export const currentUserCartAmount = (state) => {
     return guestItems.length+userItems.length;
   }
 
-
-
 export const {
   setCurrentUser,
   addToCart,
