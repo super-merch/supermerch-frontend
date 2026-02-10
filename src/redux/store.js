@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["cart"],
+  whitelist: ["cart", "favouriteProducts"],
   // Blacklist the currentUserEmail field from being persisted
   transforms: [
     {
