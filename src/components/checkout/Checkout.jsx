@@ -23,13 +23,8 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
-  const {
-    token,
-    addressData,
-    shippingAddressData,
-    userData,
-    loadUserOrder,
-  } = useContext(AuthContext);
+  const { token, addressData, shippingAddressData, userData, loadUserOrder } =
+    useContext(AuthContext);
   const { totalDiscount } = useContext(ProductsContext);
   const {
     backendUrl,
@@ -37,7 +32,7 @@ const Checkout = () => {
     setOpenLoginModal,
     shippingCharges,
     setupFee,
-    gstCharges
+    gstCharges,
   } = useContext(AppContext);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
@@ -77,7 +72,7 @@ const Checkout = () => {
               headers: {
                 token,
               },
-            }
+            },
           );
 
           if (response.data.success) {
@@ -92,7 +87,7 @@ const Checkout = () => {
               headers: {
                 token,
               },
-            }
+            },
           );
 
           if (resp.data.success) {
@@ -149,7 +144,7 @@ const Checkout = () => {
         .catch((err) => {
           console.error(
             "handlePaymentSuccess failed, clearing processing flag",
-            err
+            err,
           );
           sessionStorage.removeItem(processedKey);
         });
@@ -201,7 +196,7 @@ const Checkout = () => {
       const response = await axios.post(
         `${backendUrl}/api/checkout/checkout`,
         checkoutData,
-        headers
+        headers,
       );
 
       // Clear the stored data only after success
@@ -257,16 +252,18 @@ const Checkout = () => {
     },
   });
   const paymentMethod = watch("paymentMethod");
+  const shippingEmail = watch("shipping.email");
+  const shippingPhone = watch("shipping.phone");
 
   const totalDiscountPercent = items.reduce(
     (sum, item) => sum + (totalDiscount[item.id] || 0),
-    0
+    0,
   );
 
   // Base total calculation
   const totalAmount = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   // Apply product discounts first
@@ -307,7 +304,7 @@ const Checkout = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ logo: logoPayload }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -334,7 +331,8 @@ const Checkout = () => {
     }
   };
   // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100; // 10%
+  const gstAmount =
+    ((finalDiscountedAmount + shippingCharges) * gstCharges) / 100; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
@@ -351,7 +349,6 @@ const Checkout = () => {
     if (
       !data.shipping.firstName ||
       !data.shipping.lastName ||
-      !data.shipping.address ||
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
@@ -365,7 +362,6 @@ const Checkout = () => {
     if (
       !data.billing.firstName ||
       !data.billing.lastName ||
-      !data.billing.address ||
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
@@ -383,7 +379,7 @@ const Checkout = () => {
 
     if (!token) {
       toast.info(
-        "Proceeding as guest. Create an account later to view order history."
+        "Proceeding as guest. Create an account later to view order history.",
       );
     }
     let logoId;
@@ -496,11 +492,11 @@ const Checkout = () => {
           postalCode: data.billing.zip || addressData.postalCode,
           addressLine: data.billing.address || addressData.addressLine,
           companyName: data.billing.companyName || addressData.companyName,
-        }
+        },
       );
 
       const stripe = await loadStripe(
-        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
       );
       const body = {
         products: items,
@@ -515,12 +511,12 @@ const Checkout = () => {
               discountAmount: couponDiscountAmount, // This should be the calculated discount amount
             }
           : null,
-        gstPercent:gstCharges
+        gstPercent: gstCharges,
       };
 
       const resp = await axios.post(
-        `${backendUrl}/create-checkout-session`,
-        body
+        `${backendUrl}/api/create-checkout-session`,
+        body,
       );
       const session = await resp.data;
 
@@ -529,7 +525,7 @@ const Checkout = () => {
         // Clear stored data on error
         localStorage.removeItem("pendingCheckoutData");
         return toast.error(
-          "Failed to create payment session. Please try again."
+          "Failed to create payment session. Please try again.",
         );
       }
       setLoading(false);
@@ -786,8 +782,8 @@ const Checkout = () => {
                           setOpenCustomer(false);
                           setOpenShipping(true);
                         }}
+                        disabled={!shippingEmail || !shippingPhone}
                         className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!userData?.email && !userData?.phone}
                       >
                         Continue to Shipping
                       </button>
@@ -964,7 +960,7 @@ const Checkout = () => {
                           onSelect={(place) => {
                             setValue(
                               "shipping.address",
-                              place.display_name || ""
+                              place.display_name || "",
                             );
                             const addr = place.address || {};
                             setValue(
@@ -973,13 +969,13 @@ const Checkout = () => {
                                 addr.town ||
                                 addr.village ||
                                 addr.hamlet ||
-                                ""
+                                "",
                             );
                             setValue("shipping.region", addr.state || "");
                             setValue("shipping.zip", addr.postcode || "");
                             setValue(
                               "shipping.country",
-                              addr.country || "Australia"
+                              addr.country || "Australia",
                             );
                           }}
                           className="rounded-lg"
@@ -1241,7 +1237,7 @@ const Checkout = () => {
                               if (shippingVals[field] !== undefined) {
                                 setValue(
                                   `billing.${field}`,
-                                  shippingVals[field] || ""
+                                  shippingVals[field] || "",
                                 );
                               }
                             });
@@ -1368,7 +1364,7 @@ const Checkout = () => {
                           onSelect={(place) => {
                             setValue(
                               "billing.address",
-                              place.display_name || ""
+                              place.display_name || "",
                             );
                             const addr = place.address || {};
                             setValue(
@@ -1377,13 +1373,13 @@ const Checkout = () => {
                                 addr.town ||
                                 addr.village ||
                                 addr.hamlet ||
-                                ""
+                                "",
                             );
                             setValue("billing.region", addr.state || "");
                             setValue("billing.zip", addr.postcode || "");
                             setValue(
                               "billing.country",
-                              addr.country || "Australia"
+                              addr.country || "Australia",
                             );
                           }}
                         />
