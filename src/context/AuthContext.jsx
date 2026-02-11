@@ -76,12 +76,14 @@ const AuthContextProvider = ({ children }) => {
                     setShippingAddressData(data.user.defaultShippingAddress);
                 }
                 setUserData(data.user);
+                return data.user;
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
             toast.error("User Logged Out");
             handleLogout();
         }
+        return null;
     };
 
     const loadUserOrder = async (page, limit = 10) => {
@@ -110,10 +112,14 @@ const AuthContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        if (token) {
-            fetchWebUser(); 
-            dispatch(loadFavouritesFromDB());
-        }
+        if (!token) return;
+        const loadUser = async () => {
+            const user = await fetchWebUser();
+            if (user?.email) {
+                dispatch(loadFavouritesFromDB(user.email));
+            }
+        };
+        loadUser();
     }, [token, dispatch]);
 
     useEffect(() => {

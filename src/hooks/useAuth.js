@@ -58,7 +58,7 @@ export const useAuth = () => {
           if (user?.email) {
             dispatch(initializeCartFromStorage({ email: user.email }));
           }
-          dispatch(loadFavouritesFromDB(backendUrl));
+          dispatch(loadFavouritesFromDB(user.email));
           navigate("/");
         } else {
           setGoogleError(response.data.message || "Google authentication failed");

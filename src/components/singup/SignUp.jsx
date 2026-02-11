@@ -108,15 +108,12 @@ const SignUp = () => {
 
             localStorage.setItem("token", token);
             dispatch(initializeCartFromStorage({ email: user.email }));
-
-            // Load user's favourites from database
-            dispatch(loadFavouritesFromDB(backendUrl));
+            dispatch(loadFavouritesFromDB(user.email));
 
             navigate("/");
           }
         }
       } else {
-        // For signup
         setError("");
         setFormData({ name: "", email: "", password: "", confirmPassword: "" });
         setIsSignUp(false);
@@ -214,7 +211,7 @@ const SignUp = () => {
             setGooglePassword("");
 
             // Load user's favourites from database
-            dispatch(loadFavouritesFromDB(backendUrl));
+            dispatch(loadFavouritesFromDB(user.email));
 
             navigate("/");
           }
