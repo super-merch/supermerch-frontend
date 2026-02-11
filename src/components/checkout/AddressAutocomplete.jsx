@@ -16,6 +16,7 @@ export default function AddressAutocomplete({
   countryCode = "", // use ISO 2-letter code, e.g. "au"
   email = "",
   onSelect = () => {},
+  onChange = () => {},
 }) {
   const [input, setInput] = useState(defaultValue || "");
   const [items, setItems] = useState([]);
@@ -126,7 +127,10 @@ export default function AddressAutocomplete({
         type="text"
         value={input}
         placeholder={placeholder}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(e) => {
+          setInput(e.target.value);
+          onChange(e.target.value);
+        }}
         onKeyDown={handleKeyDown}
         onFocus={() => {
           if (items.length > 0) setIsOpen(true);
