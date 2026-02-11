@@ -13,9 +13,6 @@ import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
 const Cards = ({ category = "" }) => {
-  // ============================================================================
-  // HOOKS - Router & Context
-  // ============================================================================
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,14 +55,9 @@ const Cards = ({ category = "" }) => {
   const isProductsLoading = productsLoading || productsFetching;
   const { backendUrl } = useContext(AppContext);
 
-  // ============================================================================
-  // STATE DECLARATIONS
-  // ============================================================================
-  // UI State
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  // Product State
+
   const [accumulatedProducts, setAccumulatedProducts] = useState(
     getProducts?.data ?? []
   );
@@ -74,31 +66,16 @@ const Cards = ({ category = "" }) => {
   const [currentPage, setCurrentPage] = useState(
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
-  
 
-  // ============================================================================
-  // REFS
-  // ============================================================================
   const dropdownRef = useRef(null);
   const prevCategoryKeyRef = useRef(null);
   const filtersKeyRef = useRef(null);
-  const paginationModeRef = useRef("unknown"); // "page" | "limit"
+  const paginationModeRef = useRef("unknown");
   const productRefs = useRef(new Map());
   const hasScrolledRef = useRef(false);
   const isInitialLoadRef = useRef(true);
 
-  // ============================================================================
-  // CONSTANTS
-  // ============================================================================
   const favSet = new Set();
-
-  // ============================================================================
-  // UTILITY FUNCTIONS
-  // ============================================================================
-  
-  /**
-   * Builds API URL based on pagination data and category
-   */
   const buildApiUrl = (page, limit) => {
     const params = new URLSearchParams({
       ...(paginationData.productTypeId && {
@@ -159,7 +136,6 @@ const Cards = ({ category = "" }) => {
     return url;
   };
 
-  // Function to fetch products for a specific page/limit
   const fetchProductsPage = async (page, limitOverride) => {
     const effectiveLimit = limitOverride ?? 20;
     const url = buildApiUrl(page, effectiveLimit);
@@ -175,9 +151,6 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-  /**
-   * Load more products (infinite scroll)
-   */
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMoreProducts) return;
     const currentLimit =
@@ -221,7 +194,6 @@ const Cards = ({ category = "" }) => {
       const data = await fetchProductsPage(1, newLimit);
 
       if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-        // Replace with a larger page-size result set
         setAccumulatedProducts(data.data);
         setCurrentPage(1);
         setSearchParams((prev) => {
@@ -249,36 +221,30 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-  // ============================================================================
-  // USEEFFECTS
-  // ============================================================================
-  
-  /**
-   * 1. Reset accumulated products when category/filters change (URL-based)
-   *    - Monitors URL parameters to detect navigation to new categories
-   *    - Resets pagination and product list
-   *    - Updates paginationData context
-   */
   useEffect(() => {
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.delete("page");
-    currentParams.delete("limit");
-    currentParams.delete("scrollTo");
-    const currentCategoryKey = `${location.pathname}|${category}|${currentParams.toString()}`;
+    const paramsFromLocation = new URLSearchParams(location.search);
+    paramsFromLocation.delete("page");
+    paramsFromLocation.delete("limit");
+    paramsFromLocation.delete("scrollTo");
+    const currentCategoryKey = `${location.pathname}|${category}|${paramsFromLocation.toString()}`;
     const categoryChanged = prevCategoryKeyRef.current !== currentCategoryKey;
     prevCategoryKeyRef.current = currentCategoryKey;
 
     if (categoryChanged) {
       paginationModeRef.current = "unknown";
-      // Reset accumulated products and page when category/filters change
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
-      // Reset page in URL to 1
-      const currentParams = new URLSearchParams(searchParams);
-      currentParams.set("page", "1");
-      currentParams.delete("scrollTo");
-      setSearchParams(currentParams, { replace: true });
+      setSearchParams((prev) => {
+        const nextParams = new URLSearchParams(prev);
+        const before = nextParams.toString();
+        nextParams.set("page", "1");
+        nextParams.delete("scrollTo");
+        if (nextParams.toString() === before) {
+          return prev;
+        }
+        return nextParams;
+      }, { replace: true });
 
       setSortOption(urlSort || "");
       if (urlMinPrice && urlMaxPrice) {
@@ -376,7 +342,6 @@ const Cards = ({ category = "" }) => {
     urlMaxPrice,
   ]);
 
-  // Reset accumulated products when filters change (before data is fetched)
   useEffect(() => {
     const currentFiltersKey = `${paginationData.productTypeId}-${paginationData.category
       }-${paginationData.searchTerm}-${paginationData.sortOption
@@ -388,31 +353,30 @@ const Cards = ({ category = "" }) => {
       filtersKeyRef.current !== null &&
       filtersKeyRef.current !== currentFiltersKey
     ) {
-      // Filters changed - reset accumulated products
       filtersKeyRef.current = currentFiltersKey;
       isInitialLoadRef.current = true;
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
-      // Reset page in URL to 1 when filters change
-      const currentParams = new URLSearchParams(searchParams);
-      currentParams.set("page", "1");
-      currentParams.delete("scrollTo");
-      setSearchParams(currentParams, { replace: true });
+      setSearchParams((prev) => {
+        const nextParams = new URLSearchParams(prev);
+        const before = nextParams.toString();
+        nextParams.set("page", "1");
+        nextParams.delete("scrollTo");
+        if (nextParams.toString() === before) {
+          return prev;
+        }
+        return nextParams;
+      }, { replace: true });
     } else if (filtersKeyRef.current === null) {
-      // Initial load - set the key
       filtersKeyRef.current = currentFiltersKey;
     }
   }, [
     paginationData.productTypeId,
     paginationData.category,
     paginationData.searchTerm,
-    // paginationData.sortOption,
-    // paginationData.pricerange,
-    // paginationData.colors,
   ]);
 
-  // Handle scroll restoration from URL
   useEffect(() => {
     if (
       scrollToProductId &&
@@ -431,7 +395,6 @@ const Cards = ({ category = "" }) => {
           });
           hasScrolledRef.current = true;
 
-          // Remove scrollTo from URL after scrolling
           const currentParams = new URLSearchParams(searchParams);
           currentParams.delete("scrollTo");
           setSearchParams(currentParams, { replace: true });
@@ -443,30 +406,23 @@ const Cards = ({ category = "" }) => {
     accumulatedProducts,
     isProductsLoading,
     isLoadingMore,
-    // searchParams,
-    // setSearchParams,
   ]);
 
-  // Reset scroll ref when scrollToProductId is removed
   useEffect(() => {
     if (!scrollToProductId) {
       hasScrolledRef.current = false;
     }
   }, [scrollToProductId]);
 
-  // Update accumulated products when getProducts.data changes
   useEffect(() => {
     if (
       getProducts?.data &&
       Array.isArray(getProducts.data) &&
       !isProductsLoading
     ) {
-      // Check if we're restoring from URL page parameter
       const urlPage = parseInt(searchParams.get("page")) || 1;
       const isRestoringFromURL = urlPage > 1;
 
-      // Only update on initial load or when page is 1 (React Query always fetches page 1 first)
-      // Don't reset if we're restoring from URL page parameter (page > 1 in URL)
       const effectivePage = paginationData.page ?? 1;
       if (
         ((isInitialLoadRef.current || effectivePage === 1) && !isRestoringFromURL)
@@ -475,22 +431,12 @@ const Cards = ({ category = "" }) => {
         setCurrentPage(1);
         isInitialLoadRef.current = false;
 
-        // Ensure page 1 is in URL only if not restoring
-        if (urlPage === 1) {
-          const currentParams = new URLSearchParams(searchParams);
-          currentParams.set("page", "1");
-          setSearchParams(currentParams, { replace: true });
-        }
 
-        // Check if there are more products to load
         const totalPages =
           getProducts.total_pages || getProducts.totalPages || 0;
         setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
       } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
-        // If restoring from URL and no products loaded yet, start with page 1 data
-        // The loadProductsUpToPage will append more products
         setAccumulatedProducts(getProducts.data);
-        // Don't reset currentPage here, let loadProductsUpToPage handle it
         const totalPages =
           getProducts.total_pages || getProducts.totalPages || 0;
         setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
@@ -500,7 +446,6 @@ const Cards = ({ category = "" }) => {
       (!getProducts?.data ||
         (Array.isArray(getProducts.data) && getProducts.data.length === 0))
     ) {
-      // No products and not loading - only clear if we don't have accumulated products or if it's the initial load
       if (isInitialLoadRef.current || accumulatedProducts.length === 0) {
         setAccumulatedProducts([]);
         setHasMoreProducts(false);
@@ -514,34 +459,8 @@ const Cards = ({ category = "" }) => {
     paginationData.page,
   ]);
 
-  /**
-   * 7. Update limit when screen size changes (but don't reset products)
-  useEffect(() => {
-    const handleResize = () => {
-      const newLimit = Number(searchParams.get("limit")) || 20;
-      setPaginationData((prev) => {
-        if (prev.limit !== newLimit) {
-          return { ...prev, limit: newLimit };
-        }
-        return prev;
-      });
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [pageLimit, setPaginationData]);
-
-  // ============================================================================
-  // EVENT HANDLERS
-  // ============================================================================
-  
-  /**
-   * Handle sort option selection
-   * Resets pagination and updates URL with new sort parameter
-   */
   const handleSortSelection = (option) => {
     setSortOption(option);
-    // Reset accumulated products and page when sort changes
     setAccumulatedProducts([]);
     setCurrentPage(1);
     setHasMoreProducts(true);
@@ -564,17 +483,12 @@ const Cards = ({ category = "" }) => {
     setIsDropdownOpen(false);
   };
 
-  /**
-   * Navigate to product detail page
-   * Stores current page and scroll position for restoration
-   */
   const handleViewProduct = (productId, name) => {
-    // Store current page and product ID in URL for scroll restoration
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set("page", currentPage.toString());
     currentParams.set("scrollTo", productId.toString());
 
-    const encodedId = btoa(productId); // base64 encode
+    const encodedId = btoa(productId);
     const slug = slugify(name);
     const returnUrl = `${location.pathname}?${currentParams.toString()}`;
 
@@ -596,11 +510,8 @@ const Cards = ({ category = "" }) => {
         </div>
 
         <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-0">
-          {/* Mobile Layout */}
           <div className="lg:hidden">
-            {/* Hamburger Menu and Sort By - Properly aligned */}
             <div className="flex items-center justify-between w-full mb-4">
-              {/* Hamburger Menu Button */}
               <button
                 onClick={() => {
                   const sidebarToggle = document.querySelector(
@@ -613,7 +524,6 @@ const Cards = ({ category = "" }) => {
                 Filters
               </button>
 
-              {/* Sort By - Positioned to the right */}
               <div className="flex items-center gap-3">
                 <p className="text-sm font-medium text-gray-700">Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
@@ -663,7 +573,6 @@ const Cards = ({ category = "" }) => {
               </div>
             </div>
 
-            {/* Results Count - Below Sort By */}
             <div className="mb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
@@ -683,10 +592,8 @@ const Cards = ({ category = "" }) => {
               </div>
             </div>
           </div>
-          {/* Desktop Layout */}
           <div className="hidden lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* Product Count - Left Side */}
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
                   {!isProductsLoading &&
@@ -704,7 +611,6 @@ const Cards = ({ category = "" }) => {
                 </p>
               </div>
 
-              {/* Sort Dropdown - Right Side */}
               <div className="flex items-center gap-3">
                 <p>Sort by:</p>
                 <div className="relative" ref={dropdownRef}>
@@ -791,7 +697,6 @@ const Cards = ({ category = "" }) => {
                   })}
                 </div>
 
-                {/* Load More Button */}
                 {hasMoreProducts && !isProductsLoading && (
                   <div className="flex justify-center mt-8 mb-4">
                     <button
@@ -810,7 +715,6 @@ const Cards = ({ category = "" }) => {
                   </div>
                 )}
 
-                {/* Product Count Display */}
                 {accumulatedProducts.length > 0 && !isProductsLoading && (
                   <div className="flex justify-center mb-8 mt-2">
                     <p className="text-sm sm:text-base text-gray-600 text-center">
