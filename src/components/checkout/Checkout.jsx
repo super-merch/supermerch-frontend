@@ -863,8 +863,7 @@ const Checkout = () => {
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                               />
                             </svg>
-                            Company Name{" "}
-                            <span className="text-red-500 ml-1">*</span>
+                            Company Name
                           </label>
                           <input
                             type="text"
@@ -978,13 +977,18 @@ const Checkout = () => {
                               addr.country || "Australia",
                             );
                           }}
+                          onChange={(val) =>
+                            setValue("shipping.address", val, {
+                              shouldValidate: true,
+                            })
+                          }
                           className="rounded-lg"
                         />
 
                         <input
                           type="hidden"
                           {...register("shipping.address", { required: true })}
-                          value={getValues("billing.address")}
+                          value={getValues("shipping.address")}
                         />
                       </div>
 
@@ -1266,8 +1270,7 @@ const Checkout = () => {
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                               />
                             </svg>
-                            Company Name{" "}
-                            <span className="text-red-500 ml-1">*</span>
+                            Company Name
                           </label>
                           <input
                             type="text"
@@ -1382,6 +1385,11 @@ const Checkout = () => {
                               addr.country || "Australia",
                             );
                           }}
+                          onChange={(val) =>
+                            setValue("billing.address", val, {
+                              shouldValidate: true,
+                            })
+                          }
                         />
 
                         <input
