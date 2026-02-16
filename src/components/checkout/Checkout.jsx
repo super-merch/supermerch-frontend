@@ -1253,7 +1253,8 @@ const Checkout = () => {
                       />
                       Same as shipping
                     </label>
-                    <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
+                    {!billingSameAsShipping &&(
+                      <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
                       <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <label className="flex items-center text-sm font-medium text-gray-700">
@@ -1543,6 +1544,7 @@ const Checkout = () => {
                         </div>
                       </div>
                     </div>
+                    )}
                     <div className="flex justify-end mt-6">
                       <button
                         type="button"
