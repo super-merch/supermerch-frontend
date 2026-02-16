@@ -13,10 +13,7 @@ import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
 const Cards = ({ category = "" }) => {
-<<<<<<< HEAD
-=======
 
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,10 +58,6 @@ const Cards = ({ category = "" }) => {
 
   const [sortOption, setSortOption] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-<<<<<<< HEAD
-
-=======
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
   const [accumulatedProducts, setAccumulatedProducts] = useState(
     getProducts?.data ?? []
   );
@@ -83,10 +76,7 @@ const Cards = ({ category = "" }) => {
   const isInitialLoadRef = useRef(true);
 
   const favSet = new Set();
-<<<<<<< HEAD
-=======
 
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
   const buildApiUrl = (page, limit) => {
     const params = new URLSearchParams({
       ...(paginationData.productTypeId && {
@@ -232,37 +222,19 @@ const Cards = ({ category = "" }) => {
     }
   };
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
   useEffect(() => {
-    const paramsFromLocation = new URLSearchParams(location.search);
-    paramsFromLocation.delete("page");
-    paramsFromLocation.delete("limit");
-    paramsFromLocation.delete("scrollTo");
-    const currentCategoryKey = `${location.pathname}|${category}|${paramsFromLocation.toString()}`;
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.delete("page");
+    currentParams.delete("limit");
+    currentParams.delete("scrollTo");
+    const currentCategoryKey = `${location.pathname}|${category}|${currentParams.toString()}`;
     const categoryChanged = prevCategoryKeyRef.current !== currentCategoryKey;
     prevCategoryKeyRef.current = currentCategoryKey;
 
     if (categoryChanged) {
       const shouldPreservePagination = pageFromURL > 1 || pageLimit > 20;
       paginationModeRef.current = "unknown";
-<<<<<<< HEAD
-      setAccumulatedProducts([]);
-      setCurrentPage(1);
-      setHasMoreProducts(true);
-      setSearchParams((prev) => {
-        const nextParams = new URLSearchParams(prev);
-        const before = nextParams.toString();
-        nextParams.set("page", "1");
-        nextParams.delete("scrollTo");
-        if (nextParams.toString() === before) {
-          return prev;
-        }
-        return nextParams;
-      }, { replace: true });
-=======
 
       const effectiveLimit = shouldPreservePagination
         ? (pageFromURL > 1 ? pageFromURL * pageLimit : pageLimit)
@@ -284,7 +256,6 @@ const Cards = ({ category = "" }) => {
         currentParams.delete("scrollTo");
         setSearchParams(currentParams, { replace: true });
       }
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
 
       setSortOption(urlSort || "");
       if (urlMinPrice && urlMaxPrice) {
@@ -398,23 +369,10 @@ const Cards = ({ category = "" }) => {
       setAccumulatedProducts([]);
       setCurrentPage(1);
       setHasMoreProducts(true);
-<<<<<<< HEAD
-      setSearchParams((prev) => {
-        const nextParams = new URLSearchParams(prev);
-        const before = nextParams.toString();
-        nextParams.set("page", "1");
-        nextParams.delete("scrollTo");
-        if (nextParams.toString() === before) {
-          return prev;
-        }
-        return nextParams;
-      }, { replace: true });
-=======
       const currentParams = new URLSearchParams(searchParams);
       currentParams.set("page", "1");
       currentParams.delete("scrollTo");
       setSearchParams(currentParams, { replace: true });
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
     } else if (filtersKeyRef.current === null) {
       filtersKeyRef.current = currentFiltersKey;
     }
@@ -441,10 +399,6 @@ const Cards = ({ category = "" }) => {
             block: "center",
           });
           hasScrolledRef.current = true;
-<<<<<<< HEAD
-
-=======
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
           const currentParams = new URLSearchParams(searchParams);
           currentParams.delete("scrollTo");
           setSearchParams(currentParams, { replace: true });
@@ -456,10 +410,7 @@ const Cards = ({ category = "" }) => {
     accumulatedProducts,
     isProductsLoading,
     isLoadingMore,
-<<<<<<< HEAD
-=======
 
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
   ]);
 
   useEffect(() => {
@@ -474,25 +425,6 @@ const Cards = ({ category = "" }) => {
       Array.isArray(getProducts.data) &&
       !isProductsLoading
     ) {
-<<<<<<< HEAD
-      const urlPage = parseInt(searchParams.get("page")) || 1;
-      const isRestoringFromURL = urlPage > 1;
-
-      const effectivePage = paginationData.page ?? 1;
-      if (
-        ((isInitialLoadRef.current || effectivePage === 1) && !isRestoringFromURL)
-      ) {
-        setAccumulatedProducts(getProducts.data);
-        setCurrentPage(1);
-        isInitialLoadRef.current = false;
-
-
-        const totalPages =
-          getProducts.total_pages || getProducts.totalPages || 0;
-        setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
-      } else if (isRestoringFromURL && accumulatedProducts.length === 0) {
-        setAccumulatedProducts(getProducts.data);
-=======
       setAccumulatedProducts(getProducts.data);
       isInitialLoadRef.current = false;
 
@@ -504,7 +436,6 @@ const Cards = ({ category = "" }) => {
       if (totalCount > 0) {
         setHasMoreProducts(getProducts.data.length < totalCount);
       } else {
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
         const totalPages =
           getProducts.total_pages || getProducts.totalPages || 0;
         setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
@@ -527,8 +458,6 @@ const Cards = ({ category = "" }) => {
     isProductsLoading,
   ]);
 
-<<<<<<< HEAD
-=======
   useEffect(() => {
     const handleResize = () => {
       const newLimit = Number(searchParams.get("limit")) || 20;
@@ -544,7 +473,6 @@ const Cards = ({ category = "" }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [pageLimit, setPaginationData]);
 
->>>>>>> 4517ac6 (products page retention and scroll retention fixed)
   const handleSortSelection = (option) => {
     setSortOption(option);
     setAccumulatedProducts([]);
