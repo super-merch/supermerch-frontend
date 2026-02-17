@@ -1364,6 +1364,7 @@ const Checkout = () => {
                         <AddressAutocomplete
                           placeholder="Start typing your address..."
                           defaultValue={getValues("billing.address")}
+                          value={watch("billing.address")}
                           countryCode="au"
                           onSelect={(place) => {
                             setValue(

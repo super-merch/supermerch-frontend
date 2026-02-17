@@ -17,6 +17,7 @@ export default function AddressAutocomplete({
   email = "",
   onSelect = () => {},
   onChange = () => {},
+  value,
 }) {
   const [input, setInput] = useState(defaultValue || "");
   const [items, setItems] = useState([]);
@@ -37,6 +38,12 @@ export default function AddressAutocomplete({
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
   }, []);
+
+  useEffect(() => {
+    if (value !== undefined && value !== input) {
+      setInput(value);
+    }
+  }, [value, input]);
 
   useEffect(() => {
     if (!input || input.length < 2) {
