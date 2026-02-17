@@ -332,7 +332,7 @@ const Checkout = () => {
   };
   // Calculate GST and final total (same as cart)
   const gstAmount =
-    ((finalDiscountedAmount + shippingCharges) * gstCharges) / 100; // 10%
+    ((finalDiscountedAmount + shippingCharges + setupFee) * gstCharges) / 100; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
