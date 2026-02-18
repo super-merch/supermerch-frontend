@@ -18,7 +18,6 @@ export default function AddressAutocomplete({
   email = "",
   onSelect = () => {},
   onChange = () => {},
-  value,
 }) {
   const [input, setInput] = useState(defaultValue || "");
   const [items, setItems] = useState([]);
