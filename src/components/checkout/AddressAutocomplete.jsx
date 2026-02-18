@@ -13,11 +13,11 @@ import React, { useEffect, useRef, useState } from "react";
 export default function AddressAutocomplete({
   placeholder = "Start typing address...",
   defaultValue = "",
+  value,
   countryCode = "", // use ISO 2-letter code, e.g. "au"
   email = "",
   onSelect = () => {},
   onChange = () => {},
-  value,
 }) {
   const [input, setInput] = useState(defaultValue || "");
   const [items, setItems] = useState([]);
@@ -27,6 +27,16 @@ export default function AddressAutocomplete({
   const wrapperRef = useRef(null);
   const cacheRef = useRef(new Map());
   const debounceRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof value !== "string") return;
+    setInput((prev) => (prev === value ? prev : value));
+  }, [value]);
+
+  useEffect(() => {
+    if (typeof value === "string") return;
+    setInput((prev) => (prev === (defaultValue || "") ? prev : defaultValue || ""));
+  }, [defaultValue, value]);
 
   useEffect(() => {
     function onDocClick(e) {
