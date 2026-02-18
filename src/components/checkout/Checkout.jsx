@@ -34,6 +34,7 @@ const Checkout = () => {
     setupFee,
     gstCharges,
   } = useContext(AppContext);
+  console.log(gstCharges);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
   const [openShipping, setOpenShipping] = useState(false);
@@ -64,8 +65,7 @@ const Checkout = () => {
       if (!userData?.defaultShippingAddress) {
         try {
           const response = await axios.put(
-            `${
-              import.meta.env.VITE_BACKEND_URL
+            `${import.meta.env.VITE_BACKEND_URL
             }/api/auth/update-shipping-address`,
             { defaultShippingAddress: shippingAddressData },
             {
@@ -453,10 +453,10 @@ const Checkout = () => {
       // Add coupon information to order data
       coupon: appliedCoupon
         ? {
-            code: appliedCoupon.coupen,
-            discount: couponDiscount,
-            discountAmount: couponDiscountAmount,
-          }
+          code: appliedCoupon.coupen,
+          discount: couponDiscount,
+          discountAmount: couponDiscountAmount,
+        }
         : null,
       gst: gstAmount,
       gstPercent: gstCharges,
@@ -506,10 +506,10 @@ const Checkout = () => {
         // Add coupon information to the request body
         coupon: appliedCoupon
           ? {
-              code: appliedCoupon.coupen,
-              discount: couponDiscount, // This should be the discount percentage
-              discountAmount: couponDiscountAmount, // This should be the calculated discount amount
-            }
+            code: appliedCoupon.coupen,
+            discount: couponDiscount, // This should be the discount percentage
+            discountAmount: couponDiscountAmount, // This should be the calculated discount amount
+          }
           : null,
         gstPercent: gstCharges,
       };
@@ -729,9 +729,8 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle customer"
-                    className={`transition-transform ${
-                      openCustomer ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${openCustomer ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -757,7 +756,7 @@ const Checkout = () => {
                           type="email"
                           placeholder="Enter email address"
                           {...register("shipping.email")}
-                          value={userData?.email}
+                          value={shippingEmail}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                           required
                         />
@@ -770,7 +769,7 @@ const Checkout = () => {
                           type="tel"
                           placeholder="Enter phone number"
                           {...register("shipping.phone")}
-                          value={userData?.phone}
+                          value={shippingPhone}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
@@ -826,9 +825,8 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle shipping"
-                    className={`transition-transform ${
-                      openShipping ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${openShipping ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -965,10 +963,10 @@ const Checkout = () => {
                             setValue(
                               "shipping.city",
                               addr.city ||
-                                addr.town ||
-                                addr.village ||
-                                addr.hamlet ||
-                                "",
+                              addr.town ||
+                              addr.village ||
+                              addr.hamlet ||
+                              "",
                             );
                             setValue("shipping.region", addr.state || "");
                             setValue("shipping.zip", addr.postcode || "");
@@ -1188,9 +1186,8 @@ const Checkout = () => {
                     <button
                       type="button"
                       aria-label="Toggle billing"
-                      className={`transition-transform ${
-                        openBilling ? "rotate-180" : "rotate-0"
-                      }`}
+                      className={`transition-transform ${openBilling ? "rotate-180" : "rotate-0"
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setOpenBilling(!openBilling);
@@ -1373,10 +1370,10 @@ const Checkout = () => {
                             setValue(
                               "billing.city",
                               addr.city ||
-                                addr.town ||
-                                addr.village ||
-                                addr.hamlet ||
-                                "",
+                              addr.town ||
+                              addr.village ||
+                              addr.hamlet ||
+                              "",
                             );
                             setValue("billing.region", addr.state || "");
                             setValue("billing.zip", addr.postcode || "");
@@ -1593,9 +1590,8 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle payment"
-                    className={`transition-transform ${
-                      openPayment ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${openPayment ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -1646,11 +1642,10 @@ const Checkout = () => {
                     <button
                       type="submit"
                       disabled={loading || items.length === 0}
-                      className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
-                        loading || items.length === 0
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
-                      }`}
+                      className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${loading || items.length === 0
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
+                        }`}
                     >
                       {loading ? (
                         <>
@@ -1737,11 +1732,10 @@ const Checkout = () => {
                   <button
                     type="submit"
                     disabled={loading || items?.length === 0}
-                    className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
-                      loading || items?.length === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
-                    }`}
+                    className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${loading || items?.length === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
+                      }`}
                   >
                     {loading ? (
                       <>

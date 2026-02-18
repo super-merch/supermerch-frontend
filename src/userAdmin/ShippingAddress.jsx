@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -38,156 +38,182 @@ const ShippingAddress = () => {
     }
   };
 
+  const inputClass =
+    "w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+
   return (
-    <>
-      <div className="w-full  pt-2 pb-10 text-xl  lg:pt-6 md:pt-6">
-        <h1 className="pt-4 pb-6 text-2xl font-semibold">Shipping Address</h1>
-        <div className="space-y-6">
-          {/* 1st line - First and Last Name */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <p className="pb-1 text-lg">First Name</p>
-              <input
-                type="text"
-                name="firstName"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your First Name"
-                value={shippingAddressData.firstName}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <p className="pb-1 text-lg">Last Name</p>
-              <input
-                type="text"
-                name="lastName"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Last Name"
-                value={shippingAddressData.lastName}
-                onChange={handleInputChange}
-              />
-            </div>
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-100">
+        <h2 className="text-lg font-semibold text-gray-900">Shipping Address</h2>
+        <p className="text-xs text-gray-500 mt-0.5">
+          Where your orders will be delivered.
+        </p>
+      </div>
+      <div className="p-5 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="shipping-firstName" className={labelClass}>
+              First Name
+            </label>
+            <input
+              id="shipping-firstName"
+              type="text"
+              name="firstName"
+              className={inputClass}
+              placeholder="Enter first name"
+              value={shippingAddressData.firstName}
+              onChange={handleInputChange}
+            />
           </div>
-
-          {/* 2nd line - Company Name (optional) */}
-          <div className="grid grid-cols-1">
-            <div>
-              <p className="pb-1 text-lg">Company Name</p>
-              <input
-                type="text"
-                name="companyName"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Company Name"
-                value={shippingAddressData.companyName}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          {/* 3rd line - Address */}
-          <div className="grid grid-cols-1">
-            <div>
-              <p className="pb-1 text-lg">Address</p>
-              <input
-                type="text"
-                name="addressLine"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Address"
-                value={shippingAddressData.addressLine}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          {/* 4th line - Suburb and Postcode */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <p className="pb-1 text-lg">Suburb</p>
-              <input
-                type="text"
-                name="city"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Suburb"
-                value={shippingAddressData.city}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <p className="pb-1 text-lg">Postal Code</p>
-              <input
-                type="text"
-                name="postalCode"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Postal Code"
-                value={shippingAddressData.postalCode}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          {/* 5th line - State and Country */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <p className="pb-1 text-lg">Region/State</p>
-              <input
-                type="text"
-                name="state"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your State"
-                value={shippingAddressData.state}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <p className="pb-1 text-lg">Country</p>
-              <input
-                type="text"
-                name="country"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Country"
-                value={shippingAddressData.country}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          {/* 6th line - Email and Phone Number */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <p className="pb-1 text-lg">Email</p>
-              <input
-                type="email"
-                name="email"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Email"
-                value={shippingAddressData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <p className="pb-1 text-lg">Phone Number</p>
-              <input
-                type="tel"
-                name="phone"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Phone Number"
-                value={shippingAddressData.phone}
-                onChange={handleInputChange}
-              />
-            </div>
+          <div>
+            <label htmlFor="shipping-lastName" className={labelClass}>
+              Last Name
+            </label>
+            <input
+              id="shipping-lastName"
+              type="text"
+              name="lastName"
+              className={inputClass}
+              placeholder="Enter last name"
+              value={shippingAddressData.lastName}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            className="px-5 py-2 mt-5 text-white bg-red-500 rounded"
-            onClick={handleSave}
-          >
-            Save
-          </button>
+        <div>
+          <label htmlFor="shipping-companyName" className={labelClass}>
+            Company Name <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <input
+            id="shipping-companyName"
+            type="text"
+            name="companyName"
+            className={inputClass}
+            placeholder="Enter company name"
+            value={shippingAddressData.companyName}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="shipping-addressLine" className={labelClass}>
+            Street Address
+          </label>
+          <input
+            id="shipping-addressLine"
+            type="text"
+            name="addressLine"
+            className={inputClass}
+            placeholder="Enter street address"
+            value={shippingAddressData.addressLine}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="shipping-city" className={labelClass}>
+              Suburb
+            </label>
+            <input
+              id="shipping-city"
+              type="text"
+              name="city"
+              className={inputClass}
+              placeholder="Enter suburb"
+              value={shippingAddressData.city}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="shipping-postalCode" className={labelClass}>
+              Postal Code
+            </label>
+            <input
+              id="shipping-postalCode"
+              type="text"
+              name="postalCode"
+              className={inputClass}
+              placeholder="Enter postal code"
+              value={shippingAddressData.postalCode}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="shipping-state" className={labelClass}>
+              Region / State
+            </label>
+            <input
+              id="shipping-state"
+              type="text"
+              name="state"
+              className={inputClass}
+              placeholder="Enter state or region"
+              value={shippingAddressData.state}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="shipping-country" className={labelClass}>
+              Country
+            </label>
+            <input
+              id="shipping-country"
+              type="text"
+              name="country"
+              className={inputClass}
+              placeholder="Enter country"
+              value={shippingAddressData.country}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="shipping-email" className={labelClass}>
+              Email
+            </label>
+            <input
+              id="shipping-email"
+              type="email"
+              name="email"
+              className={inputClass}
+              placeholder="Enter email"
+              value={shippingAddressData.email}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="shipping-phone" className={labelClass}>
+              Phone Number
+            </label>
+            <input
+              id="shipping-phone"
+              type="tel"
+              name="phone"
+              className={inputClass}
+              placeholder="Enter phone number"
+              value={shippingAddressData.phone}
+              onChange={handleInputChange}
+            />
+          </div>
         </div>
       </div>
-    </>
+      <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+        <button
+          onClick={handleSave}
+          className="px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Save Shipping Address
+        </button>
+      </div>
+    </div>
   );
 };
 

@@ -75,7 +75,8 @@ const CartComponent = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
-  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges/100;
+  const gstAmount = (finalDiscountedAmount + shippingCharges) * gstCharges / 100;
+
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
@@ -574,7 +575,18 @@ const CartComponent = () => {
                       {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
                     </span>
                   </div>
-
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm font-medium text-gray-600">
+                      Shipping
+                    </span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {items.length > 0
+                        ? shippingCharges > 0
+                          ? `$${shippingCharges.toFixed(2)}`
+                          : "-"
+                        : "$0.00"}
+                    </span>
+                  </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">
                       Tax (GST {gstCharges}%)
@@ -606,18 +618,7 @@ const CartComponent = () => {
                     </>
                   )}
 
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-gray-600">
-                      Shipping
-                    </span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {items.length > 0
-                        ? shippingCharges > 0
-                          ? `$${shippingCharges.toFixed(2)}`
-                          : "-"
-                        : "$0.00"}
-                    </span>
-                  </div>
+
 
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between items-center">
@@ -628,9 +629,9 @@ const CartComponent = () => {
                         $
                         {items.length > 0
                           ? (total || 0).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : "0.00"}
                       </span>
                     </div>
@@ -646,11 +647,10 @@ const CartComponent = () => {
                     {appliedCoupon && (
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-sm font-medium ${
-                            couponDiscountExceedsLimit
-                              ? "text-blue-600"
-                              : "text-green-600"
-                          }`}
+                          className={`text-sm font-medium ${couponDiscountExceedsLimit
+                            ? "text-blue-600"
+                            : "text-green-600"
+                            }`}
                         >
                           {appliedCoupon.coupen}{" "}
                           {couponDiscountExceedsLimit

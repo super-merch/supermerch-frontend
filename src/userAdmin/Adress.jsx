@@ -40,126 +40,156 @@ const Adress = () => {
     }
   };
 
+  const inputClass =
+    "w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+
   return (
-    <>
-      <div className="w-full px-4 pt-2 pb-10 text-xl lg:px-8 md:px-8 lg:pt-6 md:pt-6">
-        <h1 className="pt-4 pb-6 text-2xl font-semibold">Billing Address</h1>
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div className="w-full px-3 lg:px-8 md:px-6 py-4 space-y-6">
+      {/* Billing Address Card */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">Billing Address</h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Used for invoices and payment details.
+          </p>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="pb-1 text-lg">First Name</p>
+              <label htmlFor="firstName" className={labelClass}>
+                First Name
+              </label>
               <input
+                id="firstName"
                 type="text"
                 name="firstName"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your First Name"
+                className={inputClass}
+                placeholder="Enter first name"
                 value={addressData.firstName}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <p className="pb-1 text-lg">Last Name</p>
+              <label htmlFor="lastName" className={labelClass}>
+                Last Name
+              </label>
               <input
+                id="lastName"
                 type="text"
                 name="lastName"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Last Name"
+                className={inputClass}
+                placeholder="Enter last name"
                 value={addressData.lastName}
                 onChange={handleInputChange}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1">
-            <div>
-              <p className="pb-1 text-lg">Company Name</p>
-              <input
-                type="text"
-                name="companyName"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Company Name"
-                value={addressData.companyName}
-                onChange={handleInputChange}
-              />
-            </div>
+          <div>
+            <label htmlFor="companyName" className={labelClass}>
+              Company Name <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input
+              id="companyName"
+              type="text"
+              name="companyName"
+              className={inputClass}
+              placeholder="Enter company name"
+              value={addressData.companyName}
+              onChange={handleInputChange}
+            />
           </div>
 
-          <div className="grid grid-cols-1">
-            <div>
-              <p className="pb-1 text-lg">Address</p>
-              <input
-                type="text"
-                name="addressLine"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Address"
-                value={addressData.addressLine}
-                onChange={handleInputChange}
-              />
-            </div>
+          <div>
+            <label htmlFor="addressLine" className={labelClass}>
+              Street Address
+            </label>
+            <input
+              id="addressLine"
+              type="text"
+              name="addressLine"
+              className={inputClass}
+              placeholder="Enter street address"
+              value={addressData.addressLine}
+              onChange={handleInputChange}
+            />
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="pb-1 text-lg">Suburb</p>
+              <label htmlFor="city" className={labelClass}>
+                Suburb
+              </label>
               <input
+                id="city"
                 type="text"
                 name="city"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Suburb"
+                className={inputClass}
+                placeholder="Enter suburb"
                 value={addressData.city}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <p className="pb-1 text-lg">Postal Code</p>
+              <label htmlFor="postalCode" className={labelClass}>
+                Postal Code
+              </label>
               <input
+                id="postalCode"
                 type="text"
                 name="postalCode"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Postal Code"
+                className={inputClass}
+                placeholder="Enter postal code"
                 value={addressData.postalCode}
                 onChange={handleInputChange}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="pb-1 text-lg">Region/State</p>
+              <label htmlFor="state" className={labelClass}>
+                Region / State
+              </label>
               <input
+                id="state"
                 type="text"
                 name="state"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your State"
+                className={inputClass}
+                placeholder="Enter state or region"
                 value={addressData.state}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <p className="pb-1 text-lg">Country</p>
+              <label htmlFor="country" className={labelClass}>
+                Country
+              </label>
               <input
+                id="country"
                 type="text"
                 name="country"
-                className="w-full p-2 text-lg border rounded"
-                placeholder="Enter Your Country"
+                className={inputClass}
+                placeholder="Enter country"
                 value={addressData.country}
                 onChange={handleInputChange}
               />
             </div>
           </div>
         </div>
-
-        <div className="flex justify-end">
+        <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
           <button
-            className="px-5 py-2 mt-5 text-white bg-red-500 rounded"
             onClick={handleSave}
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
           >
-            Save
+            Save Billing Address
           </button>
         </div>
-        <ShippingAddress />
       </div>
-    </>
+
+      <ShippingAddress />
+    </div>
   );
 };
 

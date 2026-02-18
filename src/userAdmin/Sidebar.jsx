@@ -8,8 +8,9 @@ import {
   LuCreditCard,
   LuMenu,
   LuX,
+  LuAlertCircle,
 } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import DashBoard from "../userAdmin/DashBoard";
 import UserProducts from "./UserProducts";
 import Adress from "./Adress";
@@ -17,6 +18,7 @@ import { IoIosLogOut } from "react-icons/io";
 import { googleLogout } from "@react-oauth/google";
 import AccountDetail from "./AccountDetail";
 import { motion } from "framer-motion";
+import OrdersContent from "./OrderContents";
 
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: LuLayoutDashboard },
@@ -30,9 +32,25 @@ export default function SidebarTabs() {
   // const [activeTab, setActiveTab] = useState('dashboard')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const location = useLocation();
 
-  const { activeTab, setActiveTab} = useContext(AppContext);
-  const {handleLogout} = useContext(AuthContext);
+  const { activeTab, setActiveTab } = useContext(AppContext);
+  const { handleLogout } = useContext(AuthContext);
+
+  // Sync activeTab with URL hash on mount and when hash changes
+  useEffect(() => {
+    const hash = window.location.hash.slice(1); // Remove the # symbol
+    const validTabs = ['dashboard', 'orders', 'address', 'account', 'ordersDetails'];
+
+    if (hash && validTabs.includes(hash)) {
+      setActiveTab(hash);
+    } else if (!hash) {
+      // Default to dashboard if no hash
+      setActiveTab('dashboard');
+      window.location.hash = '#dashboard';
+    }
+  }, [location.hash, setActiveTab]);
+
   useEffect(() => {
     if (showLogoutPopup) {
       document.body.classList.add("overflow-hidden");
@@ -42,252 +60,204 @@ export default function SidebarTabs() {
   }, [showLogoutPopup]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const activeTabMeta =
+    tabs.find((t) => t.id === activeTab) || tabs.find((t) => t.id === "dashboard");
+  const activeTitle = activeTabMeta?.label || "Dashboard";
+  const showBackToOrders = activeTab === "ordersDetails";
 
   return (
-    <div className="w-full p-3 lg:p-5 md:p-5">
-      <div className="flex flex-row justify-between bg-white border border-gray-300 shadow-xl ">
-        {/* Sidebar */}
-        <div
-          className={`fixed  inset-y-0 left-0 z-[20]  w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-xl font-semibold">Menu</h2>
-            <button onClick={toggleSidebar} className="lg:hidden">
-              <LuX className="w-6 h-6" />
-            </button>
-          </div>
-          <nav className="mt-4">
-            {tabs.map((tab) => (
-              <div key={tab.id}>
-                {tab.id === "ordersDetails" ? null : (
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/50 lg:hidden"
+        />
+      )}
+
+      <div className="w-full ">
+        <div className="flex min-h-[calc(100vh-24px)] lg:min-h-[calc(100vh-48px)] bg-white shadow-sm overflow-hidden">
+          {/* Sidebar */}
+          <aside
+            className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
+            aria-label="Dashboard navigation"
+          >
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500">My Account</span>
+                <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2>
+              </div>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Close menu"
+              >
+                <LuX className="w-5 h-5" />
+              </button>
+            </div>
+
+            <nav className="p-2">
+              {tabs
+                .filter((t) => t.id !== "ordersDetails")
+                .map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        window.location.hash = `#${tab.id}`;
+                        setIsSidebarOpen(false);
+                      }}
+                      className={`flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${isActive
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-gray-800 hover:bg-gray-100"
+                        }`}
+                    >
+                      <tab.icon className="w-5 h-5" />
+                      <span className="text-sm">{tab.label}</span>
+                    </button>
+                  );
+                })}
+
+              <div className="my-3 border-t border-gray-200" />
+
+              <button
+                onClick={() => setShowLogoutPopup(true)}
+                className="flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-left text-gray-800 hover:bg-gray-100 transition-colors"
+              >
+                <IoIosLogOut className="w-5 h-5" />
+                <span className="text-sm font-semibold">Log out</span>
+              </button>
+            </nav>
+          </aside>
+
+          {/* Main content */}
+          <div className="flex-1 min-w-0">
+            {/* Top bar */}
+            <div className="sticky top-0 bg-white/90 backdrop-blur border-b border-gray-200">
+              <div className="flex items-center justify-between gap-3 px-4 py-4 lg:px-6">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={toggleSidebar}
+                    className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label="Open menu"
+                  >
+                    <LuMenu className="w-6 h-6" />
+                  </button>
+
+                  <div>
+                    <p className="text-xs text-gray-500">Account</p>
+                    <h1 className="text-lg font-bold text-gray-900">
+                      {activeTitle}
+                    </h1>
+                  </div>
+                </div>
+
+                {showBackToOrders && (
                   <button
                     onClick={() => {
-                      setActiveTab(tab.id);
-                      setIsSidebarOpen(false);
+                      setActiveTab("orders");
+                      window.location.hash = "#orders";
                     }}
-                    className={`flex items-center w-full px-4 py-3 text-left ${
-                      activeTab === tab.id
-                        ? "bg-gray-200"
-                        : "text-black font-semibold hover:bg-gray-100"
-                    }`}
+                    className="px-3 py-2 text-sm font-semibold rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
-                    <tab.icon className="w-5 h-5 mr-2" />
-                    {tab.label}
+                    Back to Orders
                   </button>
                 )}
               </div>
-            ))}
-            <button
-              onClick={() => setShowLogoutPopup(true)}
-              className="flex items-center gap-1 px-4 py-3 font-semibold text-black transition duration-300 hover:bg-gray-100 lg:w-full text-start"
-            >
-              <IoIosLogOut className="w-6 h-6 " />
-              Log Out
-            </button>
-          </nav>
+            </div>
 
-          {/* Main content */}
-        </div>
-        <div className="flex-1 overflow-auto">
-          <div className="">
-            <button
-              onClick={toggleSidebar}
-              className="px-4 pt-4 lg:px-10 md:px-10 lg:hidden"
-            >
-              <LuMenu className="w-6 h-6" />
-            </button>
-            {activeTab === "dashboard" && <DashboardContent />}
-            {activeTab === "orders" && <OrdersContent />}
-            {activeTab === "address" && <AddressContent />}
-            {activeTab === "account" && <PaymentsContent />}
-            {activeTab === "ordersDetails" && <OrdersContentDetails />}
-          </div>
-        </div>
-
-        {/* Logout Confirmation Popup */}
-        {showLogoutPopup && (
-          <motion.div className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-60 flex justify-center items-center p-2">
-            <motion.div
-              initial={{ opacity: 0.2, z: 50 }}
-              transition={{ duration: 0.3 }}
-              whileInView={{ opacity: 1, z: 0 }}
-              viewport={{ once: true }}
-              className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
-            >
-              <p className="text-sm font-semibold">
-                Are you sure you want to logout?
-              </p>
-              <p className="text-sm text-gray-500">
-                You can login back at any time. All the changes you've been made
-                will not be lost.
-              </p>
-              <div className="flex gap-2 justify-end">
-                <button
-                  className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
-                  onClick={() => setShowLogoutPopup(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setShowLogoutPopup(false);
-                  }}
-                  className="px-3 py-1 bg-red-600 text-white hover:bg-red-500 rounded transition-all"
-                >
-                  Logout
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function DashboardContent() {
-  return (
-    <div>
-      <DashBoard />
-    </div>
-  );
-}
-
-function OrdersContent() {
-  const {
-    userOrder,
-    loading,
-    loadUserOrder,
-    userStats
-  } = useContext(AuthContext);
-  const {newId, setNewId, activeTab, setActiveTab} = useContext(AppContext);
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = userStats?.pages;
-  useEffect(()=>{
-    loadUserOrder(currentPage,10)
-  },[currentPage])
-
-  const handleSetView = (id) => {
-    setNewId(id);
-    setActiveTab("ordersDetails");
-  };
-
-  return (
-    <>
-      <div className="w-full px-4 pt-0 pb-10 text-xl lg:px-8 md:px-8 lg:pt-6 md:pt-6">
-        <h1 className="mt-4 mb-4 text-2xl font-bold text-center">Orders</h1>
-
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <div className="w-12 h-12 border-t-2 border-blue-500 rounded-full animate-spin"></div>
-            <p className="ml-4 text-lg font-semibold">Loading orders...</p>
-          </div>
-        ) : userOrder.length >0 ? (
-          <div className="overflow-x-auto ">
-            <p className="pb-2 text-sm text-gray-600" >Showing {userOrder.length} orders out of {userStats.totalOrders}</p>
-            <table className="w-full border border-collapse border-gray-200 table-auto">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="px-4 py-2 border border-gray-300">Order ID</th>
-                  <th className="px-4 py-2 border border-gray-300">
-                    Order Date
-                  </th>
-                  <th className="px-4 py-2 border border-gray-300">Status</th>
-                  <th className="px-4 py-2 border border-gray-300">
-                    Total Payment
-                  </th>
-                  <th className="px-4 py-2 border border-gray-300">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userOrder.map((order) => (
-                  <tr key={order._id}>
-                    <td className="px-4 py-2 text-center border border-gray-300">
-                      {order.orderId}
-                    </td>
-                    <td className="px-4 py-2 text-center border border-gray-300">
-                      {new Date(order.orderDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 text-center border border-gray-300">
-                      {order.status}
-                    </td>
-                    <td className="px-4 py-2 text-center border border-gray-300">
-                      ${order.total.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-2 text-center border border-gray-300">
-                      <button
-                        className="px-4 py-2 font-medium text-black bg-white rounded shadow-2xl hover:bg-gray-200"
-                        onClick={() => {
-                          handleSetView(order._id);
-                        }}
-                      >
-                        view
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ):(
-          <div className="flex items-center h-48 justify-center">
-            <p className="text-lg font-semibold text-gray-600 ">No orders found</p>
-          </div>
-        )}
-        {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Page {currentPage} of {totalPages}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+            <div className="p-2 py-1">
+              {activeTab === "dashboard" && <DashBoard />}
+              {activeTab === "orders" && <OrdersContent />}
+              {activeTab === "address" && <Adress />}
+              {activeTab === "account" && <AccountDetail />}
+              {activeTab === "ordersDetails" && <UserProducts />}
             </div>
           </div>
-        )}
+
+          {/* Logout Confirmation Modal */}
+          {showLogoutPopup && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={() => setShowLogoutPopup(false)}
+                aria-hidden="true"
+              />
+
+              {/* Modal */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="relative bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="logout-modal-title"
+              >
+                {/* Header */}
+                <div className="px-6 pt-6 pb-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                      <LuAlertCircle className="w-5 h-5 text-red-600" />
+                    </div>
+                    <h3
+                      id="logout-modal-title"
+                      className="text-xl font-bold text-gray-900"
+                    >
+                      Confirm Logout
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setShowLogoutPopup(false)}
+                    className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label="Close modal"
+                  >
+                    <LuX className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="px-6 pb-6">
+                  <p className="text-gray-600 leading-relaxed">
+                    Are you sure you want to log out? You can log back in at any
+                    time. All your changes have been saved.
+                  </p>
+                </div>
+
+                {/* Footer */}
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 justify-end">
+                  <button
+                    onClick={() => setShowLogoutPopup(false)}
+                    className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setShowLogoutPopup(false);
+                    }}
+                    className="px-4 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </div>
       </div>
-      {activeTab === "ordersDetails" && (
-        <UserProducts handleSetView={handleSetView} newId={newId} />
-      )}
-    </>
-  );
-}
-
-function OrdersContentDetails() {
-  return (
-    <div>
-      <UserProducts />
     </div>
   );
 }
 
-function AddressContent() {
-  return (
-    <div>
-      <Adress />
-    </div>
-  );
-}
 
-function PaymentsContent() {
-  return (
-    <div>
-      <AccountDetail />
-    </div>
-  );
-}
+
+
