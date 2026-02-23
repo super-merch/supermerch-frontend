@@ -459,7 +459,7 @@ const UnifiedSidebar = ({
         />
       )}
 
-      <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)] bg-gray-100">
+      <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)] lg:flex lg:flex-col md:flex md:flex-col lg:overflow-hidden md:overflow-hidden bg-gray-100">
         {/* Hidden toggle button for external control */}
         <button
           data-sidebar-toggle
@@ -478,7 +478,7 @@ const UnifiedSidebar = ({
                   isSidebarOpen ? "translate-x-0" : "translate-x-full"
                 }`
               : isSidebarOpen
-              ? "lg:w-[100%] bg-gray-100"
+              ? "lg:w-[100%] lg:flex-1 lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-col bg-gray-100"
               : "hidden"
           }`}
         >
@@ -502,7 +502,7 @@ const UnifiedSidebar = ({
             className={`overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent ${
               isMobile
                 ? "h-[calc(100vh-60px)] px-4 py-4 bg-gray-50"
-                : "h-full pr-2 bg-gray-100"
+                : "flex-1 min-h-0 pr-2 px-2 py-2 bg-gray-100"
             }`}
           >
             {appliedFilters.length > 0 && (

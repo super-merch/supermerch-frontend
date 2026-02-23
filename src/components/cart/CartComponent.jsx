@@ -44,13 +44,13 @@ const CartComponent = () => {
 
   const totalDiscountPercent = items.reduce(
     (sum, item) => sum + (totalDiscount[item.id] || 0),
-    0
+    0,
   );
 
   // Base total calculation
   const totalAmount = items.reduce(
     (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
-    0
+    0,
   );
 
   // Apply product discounts first
@@ -75,7 +75,8 @@ const CartComponent = () => {
   const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
 
   // Calculate GST and final total
-  const gstAmount = (finalDiscountedAmount + shippingCharges + setupFee) * gstCharges/100;
+  const gstAmount =
+    ((finalDiscountedAmount + shippingCharges + setupFee) * gstCharges) / 100;
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 
@@ -92,7 +93,7 @@ const CartComponent = () => {
 
     if (appliedCoupon) {
       toast.error(
-        "A coupon is already applied. Remove it first to apply a new one."
+        "A coupon is already applied. Remove it first to apply a new one.",
       );
       return;
     }
@@ -122,8 +123,8 @@ const CartComponent = () => {
         ) {
           toast.success(
             `Coupon applied! Discount capped at maximum limit of $${result.coupon.maxLimitAmount.toFixed(
-              2
-            )}`
+              2,
+            )}`,
           );
         } else {
           toast.success(`Coupon applied! You saved ${result.discount}%`);
@@ -167,7 +168,7 @@ const CartComponent = () => {
         updateCartItemQuantity({
           id: Number(id),
           quantity: Math.max(quantity, 1),
-        })
+        }),
       );
     });
   };
@@ -224,7 +225,6 @@ const CartComponent = () => {
           </button>
         </div>
       </div>
-
       {items.length > 0 ? (
         <div className="flex flex-col gap-6">
           {/* Cart Table - Main Content */}
@@ -256,6 +256,7 @@ const CartComponent = () => {
                         </th>
                       </tr>
                     </thead>
+                    {console.log(items)}
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
                         const subTotal =
@@ -333,7 +334,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          decrementQuantity({ id: item.id })
+                                          decrementQuantity({ id: item.id }),
                                         )
                                       }
                                       disabled={item.sample}
@@ -354,7 +355,7 @@ const CartComponent = () => {
                                             id: item.id,
                                             quantity:
                                               parseInt(e.target.value, 10) || 1,
-                                          })
+                                          }),
                                         )
                                       }
                                       className={`w-32 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl ${item.sample && "cursor-not-allowed"}`}
@@ -363,7 +364,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          incrementQuantity({ id: item.id })
+                                          incrementQuantity({ id: item.id }),
                                         )
                                       }
                                       disabled={item.sample}
@@ -476,7 +477,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          decrementQuantity({ id: item.id })
+                                          decrementQuantity({ id: item.id }),
                                         )
                                       }
                                       className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
@@ -495,7 +496,7 @@ const CartComponent = () => {
                                             id: item.id,
                                             quantity:
                                               parseInt(e.target.value, 10) || 1,
-                                          })
+                                          }),
                                         )
                                       }
                                       className="w-12 py-1 text-center outline-none border-0 bg-transparent font-bold text-xs"
@@ -504,7 +505,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          incrementQuantity({ id: item.id })
+                                          incrementQuantity({ id: item.id }),
                                         )
                                       }
                                       className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
@@ -574,7 +575,18 @@ const CartComponent = () => {
                       {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
                     </span>
                   </div>
-
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm font-medium text-gray-600">
+                      Shipping
+                    </span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {items.length > 0
+                        ? shippingCharges > 0
+                          ? `$${shippingCharges.toFixed(2)}`
+                          : "-"
+                        : "$0.00"}
+                    </span>
+                  </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">
                       Tax (GST {gstCharges}%)
@@ -605,19 +617,6 @@ const CartComponent = () => {
                       )}
                     </>
                   )}
-
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-gray-600">
-                      Shipping
-                    </span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {items.length > 0
-                        ? shippingCharges > 0
-                          ? `$${shippingCharges.toFixed(2)}`
-                          : "-"
-                        : "$0.00"}
-                    </span>
-                  </div>
 
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between items-center">
