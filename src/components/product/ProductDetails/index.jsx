@@ -51,17 +51,14 @@ const ProductDetails = () => {
   const id = encodedId
     ? atob(encodedId)
     : stateProductId
-    ? String(stateProductId)
-    : null;
+      ? String(stateProductId)
+      : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { token, userData } = useContext(AuthContext);
-  const { error, totalDiscount } = useContext(ProductsContext)
-  const {
-    backendUrl,
-    shippingCharges: freightFee,
-  } = useContext(AppContext);
+  const { error, totalDiscount } = useContext(ProductsContext);
+  const { backendUrl, shippingCharges: freightFee } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorFetching, setErrorFetching] = useState(false);
@@ -76,7 +73,7 @@ const ProductDetails = () => {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `${backendUrl}/api/single-product/${id}`
+          `${backendUrl}/api/single-product/${id}`,
         );
         if (data) {
           setSingle_Product(data.data, "fetchSingleProduct");
@@ -188,7 +185,7 @@ const ProductDetails = () => {
     // file: selectedFile2,
   });
   const [activeImage, setActiveImage] = useState(
-    product?.images?.[0] || noimage
+    product?.images?.[0] || noimage,
   );
   const [logoColor, setLogoColor] = useState("1 Colour Print");
 
@@ -223,13 +220,13 @@ const ProductDetails = () => {
   };
 
   const [currentQuantity, setCurrentQuantity] = useState(
-    sortedPriceBreaks[0]?.qty || 50
+    sortedPriceBreaks[0]?.qty || 50,
   );
   const [unitPrice, setUnitPrice] = useState(sortedPriceBreaks[0]?.price || 0);
   const [currentPrice, setCurrentPrice] = useState(
     sortedPriceBreaks[0]
       ? sortedPriceBreaks[0].price * sortedPriceBreaks[0].qty
-      : 0
+      : 0,
   );
 
   const perUnitWithMargin = unitPrice;
@@ -304,14 +301,14 @@ const ProductDetails = () => {
             ...add,
             type: "addition",
             description: add.description,
-          }))
+          })),
         );
 
         allGroups = [baseGroup, ...additionGroups];
       }
       setAvailablePriceGroups(allGroups);
       setSelectedPrintMethod(
-        allGroups?.length > 1 ? allGroups[1] : allGroups[0]
+        allGroups?.length > 1 ? allGroups[1] : allGroups[0],
       );
       // Initialize quantity and price based on first price break
       const initialMethod = allGroups[0];
@@ -323,7 +320,7 @@ const ProductDetails = () => {
           ? getClothingPricing(initialMethod.description).setupFee
           : allGroups[1]?.setup * 1.5 || 0;
         setCurrentPrice(
-          firstBreak.price * firstBreak.qty + setupFee + freightFee
+          firstBreak.price * firstBreak.qty + setupFee + freightFee,
         );
       }
     }
@@ -337,7 +334,7 @@ const ProductDetails = () => {
         const firstColor = product.colours.list[0].colours[0];
         setSelectedColor(firstColor);
         setActiveImage(
-          colorImages[firstColor] || product.images?.[0] || noimage
+          colorImages[firstColor] || product.images?.[0] || noimage,
         );
       } else {
         // Product has no colors - use first product image
@@ -358,7 +355,7 @@ const ProductDetails = () => {
 
       // Update meta description
       const metaDescription = document.querySelector(
-        'meta[name="description"]'
+        'meta[name="description"]',
       );
       if (metaDescription) {
         metaDescription.setAttribute("content", productDescription);
@@ -464,7 +461,7 @@ const ProductDetails = () => {
     if (!selectedPrintMethod?.price_breaks?.length) return;
 
     const sortedBreaks = [...selectedPrintMethod.price_breaks].sort(
-      (a, b) => a.qty - b.qty
+      (a, b) => a.qty - b.qty,
     );
     const minQuantity = sortedBreaks[0].qty;
 
@@ -501,7 +498,7 @@ const ProductDetails = () => {
     const isClothing = isProductCategory(single_product, "Clothing");
     if (isClothing) {
       const clothingAdditionalCost = getClothingAdditionalCost(
-        selectedPrintMethod.description
+        selectedPrintMethod.description,
       );
       finalUnitPrice += clothingAdditionalCost;
     }
@@ -603,7 +600,7 @@ const ProductDetails = () => {
         setPreviewImage2(URL.createObjectURL(file));
       } else {
         toast.error(
-          "Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG"
+          "Please upload a valid file type: AI, EPS, SVG, PDF, JPG, JPEG, PNG",
         );
       }
     }
@@ -704,7 +701,7 @@ const ProductDetails = () => {
         formData1,
         {
           headers: { token },
-        }
+        },
       );
       if (data.success) {
         toast.success("Quote sent successfully");
@@ -751,7 +748,7 @@ const ProductDetails = () => {
     const isClothing = isProductCategory(single_product, "Clothing");
     if (isClothing && selectedPrintMethod?.description) {
       const clothingPricing = getClothingPricing(
-        selectedPrintMethod.description
+        selectedPrintMethod.description,
       );
       return clothingPricing?.setupFee;
     }
@@ -771,19 +768,20 @@ const ProductDetails = () => {
       self.findIndex(
         (t) =>
           t.promodata_decoration &&
-          t.promodata_decoration === group.promodata_decoration
-      )
+          t.promodata_decoration === group.promodata_decoration,
+      ),
   );
 
   const handleAddToCart = (e) => {
     if (productPrice == 0) {
       toast.error(
-        "Product price not available contact us to get the price and place order."
+        "Product price not available contact us to get the price and place order.",
       );
       setShowQuoteForm({ state: true, from: "quoteButton" });
       return;
     }
     e.preventDefault();
+    console.log(selectedSize);
     dispatch(
       addToCart({
         id: productId,
@@ -794,7 +792,7 @@ const ProductDetails = () => {
         price: (() => {
           const baseProductPrice = getPriceForQuantity(currentQuantity);
           const sortedBreaks = [...selectedPrintMethod?.price_breaks].sort(
-            (a, b) => a.qty - b.qty
+            (a, b) => a.qty - b.qty,
           );
           let selectedBreak = sortedBreaks[0];
 
@@ -819,7 +817,7 @@ const ProductDetails = () => {
           const isClothing = isProductCategory(single_product, "Clothing");
           if (isClothing) {
             const clothingAdditionalCost = getClothingAdditionalCost(
-              selectedPrintMethod.description
+              selectedPrintMethod.description,
             );
             finalUnitPrice += clothingAdditionalCost;
           }
@@ -844,7 +842,7 @@ const ProductDetails = () => {
         userEmail: userEmail || "guest@gmail.com",
         supplierName: single_product.overview.supplier,
         sample: false,
-      })
+      }),
     );
     navigate("/cart");
   };
@@ -853,7 +851,7 @@ const ProductDetails = () => {
   const parseSizing = () => {
     const detailString = single_product?.product?.details?.find(
       (d) =>
-        d.name === "Sizing" || d.name === "Sizes" || d.name === "product sizes"
+        d.name === "Sizing" || d.name === "Sizes" || d.name === "product sizes",
     )?.detail;
     if (!detailString) return [];
     const lines = detailString.trim().split("\n");
@@ -908,9 +906,8 @@ const ProductDetails = () => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
-                e.currentTarget.querySelector(
-                  "img"
-                ).style.transformOrigin = `${x}% ${y}%`;
+                e.currentTarget.querySelector("img").style.transformOrigin =
+                  `${x}% ${y}%`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.querySelector("img").style.transformOrigin =
@@ -961,10 +958,11 @@ const ProductDetails = () => {
                     <img
                       src={item}
                       alt={`Thumbnail ${index}`}
-                      className={`w-full border-2  ${activeImage === item
+                      className={`w-full border-2  ${
+                        activeImage === item
                           ? "border-smallHeader"
                           : "border-transparent"
-                        }`}
+                      }`}
                     />
                   </div>
                 </SwiperSlide>
@@ -977,8 +975,9 @@ const ProductDetails = () => {
             <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="w-full">
                 <h2
-                  className={`text-2xl ${product?.name ? "font-bold" : "font-medium"
-                    } cursor-pointer transition-colors`}
+                  className={`text-2xl ${
+                    product?.name ? "font-bold" : "font-medium"
+                  } cursor-pointer transition-colors`}
                   onClick={handleHeadingClick}
                   onKeyDown={(e) => {
                     if (e.shiftKey && e.key.toLowerCase() === "a") {
@@ -1011,7 +1010,7 @@ const ProductDetails = () => {
                           .flatMap((colorObj) => colorObj.colours)
                           .filter(
                             (color, index, array) =>
-                              array.indexOf(color) === index
+                              array.indexOf(color) === index,
                           );
 
                         return allColors.length > 0 ? (
@@ -1025,25 +1024,28 @@ const ProductDetails = () => {
                                 className="relative inline-flex items-center justify-center"
                               >
                                 <div
-                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${isSelected
+                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${
+                                    isSelected
                                       ? "w-7 h-7 shadow-xl"
                                       : "w-6 h-6 hover:shadow-lg hover:scale-110"
-                                    }`}
+                                  }`}
                                   style={{
                                     backgroundColor:
                                       matchedColor?.hex || "#9ca3af",
                                   }}
                                   onClick={() => handleColorClick(color)}
                                   title={color}
-                                  aria-label={`Color: ${color}${isSelected ? " (Selected)" : ""
-                                    }`}
+                                  aria-label={`Color: ${color}${
+                                    isSelected ? " (Selected)" : ""
+                                  }`}
                                 >
                                   {/* White border for contrast */}
                                   <div
-                                    className={`absolute inset-0 rounded-full ${isSelected
+                                    className={`absolute inset-0 rounded-full ${
+                                      isSelected
                                         ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
                                         : "border-[2px] border-gray-400/60"
-                                      }`}
+                                    }`}
                                   ></div>
 
                                   {/* Checkmark badge for selected */}
@@ -1083,10 +1085,11 @@ const ProductDetails = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveInfoTab(tab.key)}
-                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${activeInfoTab === tab.key
+                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${
+                      activeInfoTab === tab.key
                         ? "border-primary text-primary"
                         : "border-transparent text-gray-600 hover:text-gray-900"
-                      }`}
+                    }`}
                   >
                     {tab.label}
                   </button>

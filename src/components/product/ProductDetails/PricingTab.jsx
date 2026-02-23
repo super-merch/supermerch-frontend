@@ -34,6 +34,7 @@ const PricingTab = ({
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
   };
+  console.log(selectedSize);
 
   // Find all additions with the same promodata_decoration as the selected print method
   // Deduplicate by lead_time, keeping the first occurrence for each unique lead_time
@@ -49,7 +50,7 @@ const PricingTab = ({
       (group) =>
         group.type === "addition" &&
         group.promodata_decoration === decoration &&
-        group.lead_time
+        group.lead_time,
     );
 
     // Deduplicate by lead_time, keeping the first occurrence
@@ -82,7 +83,7 @@ const PricingTab = ({
         !leadTimeOptions.some(
           (opt) =>
             opt.key === selectedLeadTimeAddition.key &&
-            opt.lead_time === selectedLeadTimeAddition.lead_time
+            opt.lead_time === selectedLeadTimeAddition.lead_time,
         )
       ) {
         const firstOption = leadTimeOptions[0];
@@ -123,6 +124,8 @@ const PricingTab = ({
 
   const isClothing = isProductCategory(single_product, "Clothing");
 
+  console.log(parseSizing(), selectedSize);
+
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
@@ -141,7 +144,7 @@ const PricingTab = ({
               value={selectedPrintMethod?.key}
               onChange={(e) => {
                 const selected = priceGroups.find(
-                  (method) => method.key === e.target.value
+                  (method) => method.key === e.target.value,
                 );
                 setSelectedPrintMethod(selected);
                 // Reset lead time selection when print method changes
@@ -176,7 +179,10 @@ const PricingTab = ({
               <select
                 id="print-method"
                 value={selectedSize}
-                onChange={(e) => setSelectedSize(e.target.value)}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setSelectedSize(e.target.value);
+                }}
                 className="w-fll px-2 py-2 border rounded-md outline-none"
               >
                 {parseSizing().sizes?.map((size, index) => (
@@ -306,7 +312,7 @@ const PricingTab = ({
                 // Add clothing-specific additional cost per unit if applicable
                 if (isClothing) {
                   const clothingAdditionalCost = getClothingAdditionalCost(
-                    effectivePrintMethod.description
+                    effectivePrintMethod.description,
                   );
                   methodUnit += clothingAdditionalCost;
                 }
@@ -347,16 +353,18 @@ const PricingTab = ({
                       {item.qty}+
                     </td>
                     <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
-                      ${unitDiscounted.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                      $
+                      {unitDiscounted.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </td>
                     <td className="py-2 align-middle text-base sm:text-lg text-black">
-                      ${total.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                      $
+                      {total.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </td>
                   </tr>
                 );

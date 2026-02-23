@@ -10,7 +10,7 @@ import {
   LuX,
   LuAlertCircle,
 } from "react-icons/lu";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import DashBoard from "../userAdmin/DashBoard";
 import UserProducts from "./UserProducts";
 import Adress from "./Adress";
@@ -34,22 +34,27 @@ export default function SidebarTabs() {
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const location = useLocation();
 
-  const { activeTab, setActiveTab } = useContext(AppContext);
+  const { activeTab, setActiveTab, setNewId } = useContext(AppContext);
   const { handleLogout } = useContext(AuthContext);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Sync activeTab with URL hash on mount and when hash changes
   useEffect(() => {
-    const hash = window.location.hash.slice(1); // Remove the # symbol
-    const validTabs = ['dashboard', 'orders', 'address', 'account', 'ordersDetails'];
+    const hash = window.location.hash.slice(1).split("?")[0]; // Remove # and any query
+    const validTabs = ["dashboard", "orders", "address", "account", "ordersDetails"];
 
     if (hash && validTabs.includes(hash)) {
       setActiveTab(hash);
+      if (hash === "ordersDetails") {
+        const orderId = searchParams.get("orderId");
+        if (orderId) setNewId(orderId);
+      }
     } else if (!hash) {
-      // Default to dashboard if no hash
-      setActiveTab('dashboard');
-      window.location.hash = '#dashboard';
+      setActiveTab("dashboard");
+      window.location.hash = "#dashboard";
     }
-  }, [location.hash, setActiveTab]);
+  }, [location.hash, setActiveTab, searchParams, setNewId]);
 
   useEffect(() => {
     if (showLogoutPopup) {
@@ -161,7 +166,9 @@ export default function SidebarTabs() {
                   <button
                     onClick={() => {
                       setActiveTab("orders");
-                      window.location.hash = "#orders";
+                      const params = new URLSearchParams(location.search);
+                      params.delete("orderId");
+                      navigate({ pathname: location.pathname, search: params.toString(), hash: "#orders" }, { replace: true });
                     }}
                     className="px-3 py-2 text-sm font-semibold rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
                   >

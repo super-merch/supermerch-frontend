@@ -1,11 +1,13 @@
-import React, { useContext,  } from "react";
+import React, { useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { AuthContext } from "../context/AuthContext";
 
 const DashBoard = () => {
-  const {  userOrder, userEmail, userStats } =
-    useContext(AuthContext);
+  const { userOrder, userEmail, userStats } = useContext(AuthContext);
   const { setNewId, setActiveTab } = useContext(AppContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // const [loading, setLoading] = useState(FaBullseye);
   // useEffect(() => {
@@ -37,6 +39,9 @@ const DashBoard = () => {
   const handleSetView = (id) => {
     setNewId(id);
     setActiveTab("ordersDetails");
+    const params = new URLSearchParams(location.search);
+    params.set("orderId", id);
+    navigate({ pathname: location.pathname, search: params.toString(), hash: "#ordersDetails" }, { replace: true });
   };
 
   return (
