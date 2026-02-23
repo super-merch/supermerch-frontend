@@ -332,7 +332,7 @@ const Checkout = () => {
   };
   // Calculate GST and final total (same as cart)
   const gstAmount =
-    ((finalDiscountedAmount + shippingCharges) * gstCharges) / 100; // 10%
+    ((finalDiscountedAmount + shippingCharges + setupFee) * gstCharges) / 100; // 10%
   const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
@@ -1250,7 +1250,8 @@ const Checkout = () => {
                       />
                       Same as shipping
                     </label>
-                    <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
+                    {!billingSameAsShipping &&(
+                      <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
                       <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <label className="flex items-center text-sm font-medium text-gray-700">
@@ -1360,6 +1361,7 @@ const Checkout = () => {
                         <AddressAutocomplete
                           placeholder="Start typing your address..."
                           defaultValue={getValues("billing.address")}
+                          value={watch("billing.address")}
                           countryCode="au"
                           onSelect={(place) => {
                             setValue(
@@ -1540,6 +1542,7 @@ const Checkout = () => {
                         </div>
                       </div>
                     </div>
+                    )}
                     <div className="flex justify-end mt-6">
                       <button
                         type="button"

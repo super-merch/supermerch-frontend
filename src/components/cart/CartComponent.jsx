@@ -76,8 +76,7 @@ const CartComponent = () => {
 
   // Calculate GST and final total
   const gstAmount =
-    ((finalDiscountedAmount + shippingCharges) * gstCharges) / 100;
-
+    ((finalDiscountedAmount + shippingCharges + setupFee) * gstCharges) / 100;
   const total =
     finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
 

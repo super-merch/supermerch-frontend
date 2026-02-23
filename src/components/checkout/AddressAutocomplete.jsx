@@ -13,6 +13,7 @@ import React, { useEffect, useRef, useState } from "react";
 export default function AddressAutocomplete({
   placeholder = "Start typing address...",
   defaultValue = "",
+  value,
   countryCode = "", // use ISO 2-letter code, e.g. "au"
   email = "",
   onSelect = () => {},
@@ -28,6 +29,16 @@ export default function AddressAutocomplete({
   const debounceRef = useRef(null);
 
   useEffect(() => {
+    if (typeof value !== "string") return;
+    setInput((prev) => (prev === value ? prev : value));
+  }, [value]);
+
+  useEffect(() => {
+    if (typeof value === "string") return;
+    setInput((prev) => (prev === (defaultValue || "") ? prev : defaultValue || ""));
+  }, [defaultValue, value]);
+
+  useEffect(() => {
     function onDocClick(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setIsOpen(false);
@@ -37,6 +48,12 @@ export default function AddressAutocomplete({
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
   }, []);
+
+  useEffect(() => {
+    if (value !== undefined && value !== input) {
+      setInput(value);
+    }
+  }, [value, input]);
 
   useEffect(() => {
     if (!input || input.length < 2) {
