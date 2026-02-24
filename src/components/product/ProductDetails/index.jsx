@@ -67,6 +67,54 @@ const ProductDetails = () => {
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
 
+  const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
+  const pickDefaultSize = (list = []) => {
+    const cleaned = list.map((s) => String(s).trim()).filter(Boolean);
+    const nonFree = cleaned.filter(
+      (s) => !["FRE", "FREE", "ONE SIZE"].includes(s.toUpperCase()),
+    );
+    return nonFree[0] || cleaned[0] || "";
+  };
+
+  const extractSizesFromProduct = (productData) => {
+    const details = productData?.product?.details || [];
+    const detailString =
+      details.find((d) =>
+        ["sizing", "sizes", "size", "product sizes"].includes(
+          String(d?.name || "").toLowerCase(),
+        ),
+      )?.detail || "";
+
+    const headerSizes = String(detailString)
+      .split("\n")[0]
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    if (headerSizes.length > 0) {
+      return headerSizes;
+    }
+
+    const description = productData?.product?.description || "";
+    const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
+    if (!sizesMatch) return [];
+
+    const sizesString = sizesMatch[1].trim();
+    if (sizesString.includes(" - ")) {
+      const [start, end] = sizesString.split(" - ").map((s) => s.trim());
+      const startIndex = SIZE_ORDER.indexOf(start);
+      const endIndex = SIZE_ORDER.indexOf(end);
+      if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
+        return SIZE_ORDER.slice(startIndex, endIndex + 1);
+      }
+      return [sizesString];
+    }
+
+    return sizesString
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  };
   useEffect(() => {
     if (!id) return;
     const fetchSingleProduct = async () => {
@@ -83,64 +131,11 @@ const ProductDetails = () => {
           setErrorFetching(false);
         }
 
-        // First, try to find sizes in details array
-        const details = data.data?.product?.details?.filter((item) => {
-          return (
-            item.name.toLowerCase() === "sizing" ||
-            item.name.toLowerCase() === "sizes" ||
-            item.name.toLowerCase() === "size"
-          );
-        });
-
-        let extractedSizes = [];
-
-        if (details && details?.length > 0) {
-          // If sizes found in details array, use them
-          extractedSizes = details[0]?.detail
-            .split(",")
-            .map((size) => size.trim());
-        } else {
-          // If no sizes in details, check description for sizes
-          const description = data.data?.product?.description || "";
-          const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
-
-          if (sizesMatch) {
-            const sizesString = sizesMatch[1].trim();
-            // Handle different formats like "XS - 2XL" or "72, 77, 82, ..."
-            if (sizesString.includes(" - ")) {
-              // Handle range format like "XS - 2XL"
-              const [start, end] = sizesString.split(" - ");
-              const sizeOrder = [
-                "XS",
-                "S",
-                "M",
-                "L",
-                "XL",
-                "2XL",
-                "3XL",
-                "4XL",
-                "5XL",
-              ];
-              const startIndex = sizeOrder.indexOf(start.trim());
-              const endIndex = sizeOrder.indexOf(end.trim());
-
-              if (startIndex !== -1 && endIndex !== -1) {
-                extractedSizes = sizeOrder.slice(startIndex, endIndex + 1);
-              } else {
-                // If not standard size format, just use as is
-                extractedSizes = [sizesString];
-              }
-            } else {
-              // Handle comma-separated format
-              extractedSizes = sizesString
-                .split(",")
-                .map((size) => size.trim());
-            }
-          }
-        }
-
-        setSizes(extractedSizes);
-        setSelectedSize(extractedSizes[0] || extractedSizes[1]);
+        const parsedSizes = extractSizesFromProduct(data.data);
+        setSizes(parsedSizes);
+        setSelectedSize((prev) =>
+          parsedSizes.includes(prev) ? prev : pickDefaultSize(parsedSizes),
+        );
 
         setTimeout(() => {
           setLoading(false);
@@ -522,8 +517,6 @@ const ProductDetails = () => {
     single_product,
   ]);
 
-  // Function to find the nearest color match
-
   const handleColorClick = (color) => {
     setSelectedColor(color);
     setActiveImage(colorImages[color] || noimage);
@@ -531,9 +524,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (product) {
-      // Check if product has colors
       const hasColors = product?.colours?.list?.length > 0;
-
       if (hasColors) {
         const firstColor = product.colours.list[0].colours[0];
         setActiveImage(product.images?.[0] || noimage); // show 0 index image when component mounts
@@ -851,27 +842,29 @@ const ProductDetails = () => {
   const parseSizing = () => {
     const detailString = single_product?.product?.details?.find(
       (d) =>
-        d.name === "Sizing" || d.name === "Sizes" || d.name === "product sizes",
+        d.name === "Sizing" ||
+        d.name === "Sizes" ||
+        d.name === "product sizes" ||
+        d.name === "Size",
     )?.detail;
-    if (!detailString) return [];
+
+    const activeSizes = sizes.map((s) => String(s).trim()).filter(Boolean);
+    if (!detailString) {
+      return { sizes: activeSizes, result: [] };
+    }
+
     const lines = detailString.trim().split("\n");
-    if (!lines.length) return [];
-    // Parse header (sizes)
-    let sizes = lines[0]?.split(",").filter((size) => size !== ""); // Skip empty first value
-    // Parse measurements
-    const chestValues = lines[1]?.split(",").slice(1);
-    const lengthValues = lines[2]?.split(",").slice(1);
+    const chestValues = lines[1]?.split(",").slice(1) || [];
+    const lengthValues = lines[2]?.split(",").slice(1) || [];
 
-    sizes = sizes.length > 1 ? sizes : ["XS", "S", "M", "L", "XL", "2XL"];
-    const result =
-      chestValues &&
-      sizes?.map((size, index) => {
-        const chest = chestValues?.[index] || "";
-        const length = lengthValues?.[index] || "";
-        return `${size} (Half Chest ${chest} cm, Length ${length} cm)`;
-      });
+    const result = activeSizes.map((size, index) => {
+      const chest = chestValues[index] || "";
+      const length = lengthValues[index] || "";
+      if (!chest && !length) return size;
+      return `${size} (Half Chest ${chest} cm, Length ${length} cm)`;
+    });
 
-    return { sizes, result };
+    return { sizes: activeSizes, result };
   };
 
   if (errorFetching) return <ProductNotFound />;
