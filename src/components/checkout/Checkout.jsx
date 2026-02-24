@@ -179,7 +179,6 @@ const Checkout = () => {
   const handlePaymentSuccess = async (sessionId) => {
     try {
       setProcessLoading(true);
-      // Get checkout data from localStorage
       const storedCheckoutData = localStorage.getItem("pendingCheckoutData");
       if (!storedCheckoutData) {
         toast.error("Order data not found. Please try again.");
@@ -187,11 +186,7 @@ const Checkout = () => {
       }
 
       const checkoutData = JSON.parse(storedCheckoutData);
-
-      // Add sessionId to checkoutData so backend can store it (optional but recommended)
       checkoutData.stripeSessionId = sessionId;
-
-      // Place the order
       const headers = token ? { headers: { token } } : {};
       const response = await axios.post(
         `${backendUrl}/api/checkout/checkout`,
@@ -199,13 +194,9 @@ const Checkout = () => {
         headers,
       );
 
-      // Clear the stored data only after success
       localStorage.removeItem("pendingCheckoutData");
-
-      // Success actions
       dispatch(clearCart());
       toast.success("Order placed successfully!");
-      // Optionally redirect somewhere safe
       navigate("/", { replace: true });
       await loadUserOrder();
 
@@ -213,8 +204,6 @@ const Checkout = () => {
     } catch (error) {
       console.error("Order Failed:", error.response?.data || error.message);
       toast.error("Failed to place the order. Please try again.");
-      // Clear the stored data on error? only if you want to avoid stuck data.
-      // localStorage.removeItem("pendingCheckoutData");
       throw error;
     } finally {
       setProcessLoading(false);
@@ -232,8 +221,6 @@ const Checkout = () => {
         region: addressData?.state || "",
         city: addressData?.city || "",
         zip: addressData?.postalCode || "",
-        // email: addressData?.email || "",
-        // phone: addressData?.phone || "",
       },
       shipping: {
         // Update these to use shippingAddressData
@@ -260,32 +247,30 @@ const Checkout = () => {
     0,
   );
 
-  // Base total calculation
   const totalAmount = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
 
-  // Apply product discounts first
-  const productDiscountedAmount =
-    totalAmount - (totalAmount * totalDiscountPercent) / 100;
+  const normalizedSetupFee = Number(setupFee) || 0;
+  const normalizedShipping = Number(shippingCharges) || 0;
+  const normalizedGstRate = Number(gstCharges) || 0;
+  const normalizedCouponPercent = Number(couponDiscount) || 0;
 
-  // Calculate coupon discount amount
+  const couponBaseAmount = Math.max(totalAmount + normalizedSetupFee, 0);
   const calculatedCouponDiscount =
-    (productDiscountedAmount * couponDiscount) / 100;
+    (couponBaseAmount * normalizedCouponPercent) / 100;
 
-  // Check if discount exceeds max limit
   const couponDiscountExceedsLimit =
     appliedCoupon?.maxLimitAmount &&
-    calculatedCouponDiscount > appliedCoupon.maxLimitAmount;
+    calculatedCouponDiscount > Number(appliedCoupon.maxLimitAmount);
 
-  // Cap the discount at maxLimitAmount if it exceeds the limit
   const couponDiscountAmount = appliedCoupon?.maxLimitAmount
-    ? Math.min(calculatedCouponDiscount, appliedCoupon.maxLimitAmount)
+    ? Math.min(calculatedCouponDiscount, Number(appliedCoupon.maxLimitAmount))
     : calculatedCouponDiscount;
 
-  // Apply coupon discount to the product-discounted amount
-  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
+  const amountAfterDiscount = Math.max(couponBaseAmount - couponDiscountAmount, 0);
+  const preTaxAmount = amountAfterDiscount + normalizedShipping;
 
   const uploadLogo = async () => {
     try {
@@ -330,10 +315,8 @@ const Checkout = () => {
       return null;
     }
   };
-  // Calculate GST and final total (same as cart)
-  const gstAmount =
-    ((finalDiscountedAmount + shippingCharges + setupFee) * gstCharges) / 100; // 10%
-  const total = finalDiscountedAmount + gstAmount + shippingCharges + setupFee;
+  const gstAmount = (preTaxAmount * normalizedGstRate) / 100;
+  const total = preTaxAmount + gstAmount;
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
     if (setupFee === undefined) {

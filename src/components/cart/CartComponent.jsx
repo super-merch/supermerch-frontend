@@ -47,38 +47,33 @@ const CartComponent = () => {
     0,
   );
 
-  // Base total calculation
   const totalAmount = items.reduce(
     (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
     0,
   );
 
-  // Apply product discounts first
-  const productDiscountedAmount =
-    totalAmount - (totalAmount * totalDiscountPercent) / 100;
+  const normalizedSetupFee = Number(setupFee) || 0;
+  const normalizedShipping = Number(shippingCharges) || 0;
+  const normalizedGstRate = Number(gstCharges) || 0;
+  const normalizedCouponPercent = Number(couponDiscount) || 0;
 
-  // Calculate coupon discount amount
+  const couponBaseAmount = Math.max(totalAmount + normalizedSetupFee, 0);
   const calculatedCouponDiscount =
-    (productDiscountedAmount * couponDiscount) / 100;
+    (couponBaseAmount * normalizedCouponPercent) / 100;
 
-  // Check if discount exceeds max limit
   const couponDiscountExceedsLimit =
     appliedCoupon?.maxLimitAmount &&
-    calculatedCouponDiscount > appliedCoupon.maxLimitAmount;
+    calculatedCouponDiscount > Number(appliedCoupon.maxLimitAmount);
 
-  // Cap the discount at maxLimitAmount if it exceeds the limit
   const couponDiscountAmount = appliedCoupon?.maxLimitAmount
-    ? Math.min(calculatedCouponDiscount, appliedCoupon.maxLimitAmount)
+    ? Math.min(calculatedCouponDiscount, Number(appliedCoupon.maxLimitAmount))
     : calculatedCouponDiscount;
 
-  // Apply coupon discount to the product-discounted amount
-  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
+  const amountAfterDiscount = Math.max(couponBaseAmount - couponDiscountAmount, 0);
+  const preTaxAmount = amountAfterDiscount + normalizedShipping;
 
-  // Calculate GST and final total
-  const gstAmount =
-    ((finalDiscountedAmount + shippingCharges + setupFee) * gstCharges) / 100;
-  const total =
-    finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
+  const gstAmount = (preTaxAmount * normalizedGstRate) / 100;
+  const total = preTaxAmount + gstAmount;
 
   const handleChange = (e) => {
     setValue(e.target.value.toUpperCase());

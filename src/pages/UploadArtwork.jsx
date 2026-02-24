@@ -41,30 +41,26 @@ const UploadArtwork = () => {
     0
   );
 
-  // Apply product discounts first
-  const productDiscountedAmount =
-    totalAmount - (totalAmount * totalDiscountPercent) / 100;
+  const normalizedSetupFee = Number(setupFee) || 0;
+  const normalizedShipping = Number(shippingCharges) || 0;
+  const normalizedGstRate = Number(gstCharges) || 0;
+  const normalizedCouponPercent = Number(couponDiscount) || 0;
 
-  // Calculate coupon discount amount
-  const calculatedCouponDiscount =
-    (productDiscountedAmount * couponDiscount) / 100;
+  const couponBaseAmount = Math.max(totalAmount + normalizedSetupFee, 0);
+  const calculatedCouponDiscount = (couponBaseAmount * normalizedCouponPercent) / 100;
 
-  // Check if discount exceeds max limit
   const couponDiscountExceedsLimit =
     appliedCoupon?.maxLimitAmount &&
-    calculatedCouponDiscount > appliedCoupon.maxLimitAmount;
+    calculatedCouponDiscount > Number(appliedCoupon.maxLimitAmount);
 
-  // Cap the discount at maxLimitAmount if it exceeds the limit
   const couponDiscountAmount = appliedCoupon?.maxLimitAmount
-    ? Math.min(calculatedCouponDiscount, appliedCoupon.maxLimitAmount)
+    ? Math.min(calculatedCouponDiscount, Number(appliedCoupon.maxLimitAmount))
     : calculatedCouponDiscount;
 
-  // Apply coupon discount to the product-discounted amount
-  const finalDiscountedAmount = productDiscountedAmount - couponDiscountAmount;
-  // Calculate GST and final total (same as cart)
-  const gstAmount = (finalDiscountedAmount + shippingCharges + (setupFee || 0)) * gstCharges / 100;
-  const total =
-    finalDiscountedAmount + gstAmount + shippingCharges + (setupFee || 0);
+  const amountAfterDiscount = Math.max(couponBaseAmount - couponDiscountAmount, 0);
+  const preTaxAmount = amountAfterDiscount + normalizedShipping;
+  const gstAmount = (preTaxAmount * normalizedGstRate) / 100;
+  const total = preTaxAmount + gstAmount;
 
   const handleFileUpload = (file) => {
     // file size less then 5 mb
@@ -468,14 +464,6 @@ const UploadArtwork = () => {
                   </span>
                 </div>
                 <div className="flex justify-between text-lg">
-                  <span>Shipping:</span>
-                  <span>
-                    {shippingCharges > 0
-                      ? `$${shippingCharges.toFixed(2)}`
-                      : "-"}
-                  </span>
-                </div>
-                <div className="flex justify-between text-lg">
                   <span>Total Setup Charges:</span>
                   <span>{setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}</span>
                 </div>
@@ -503,6 +491,15 @@ const UploadArtwork = () => {
                     </div>
                   </div>
                 )}
+
+                <div className="flex justify-between text-lg">
+                  <span>Shipping:</span>
+                  <span>
+                    {shippingCharges > 0
+                      ? `$${shippingCharges.toFixed(2)}`
+                      : "-"}
+                  </span>
+                </div>
 
                 <div className="flex justify-between text-lg">
                   <span>GST({gstCharges}%):</span>
