@@ -423,7 +423,7 @@ const Checkout = () => {
         price: item.price,
         subTotal: item.price * item.quantity,
         color: item.color,
-        print: item.print,
+        print: item.print || item.printMethodKey,
         logoColor: item.logoColor,
         logo: item.dragdrop,
         id: item.id,
