@@ -30,6 +30,7 @@ import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import { useCoupons } from "@/hooks/useCoupons";
+import LogoutModal from "../Common/LogoutModal";
 
 const MiniNav = () => {
   const megaMenu = [
@@ -110,11 +111,8 @@ const MiniNav = () => {
   ];
 
   const { token, setToken } = useContext(AuthContext);
-  const {
-    products,
-    setProducts,
-    categoryProducts,
-  } = useContext(ProductsContext);
+  const { products, setProducts, categoryProducts } =
+    useContext(ProductsContext);
   const { coupons, coupenLoading } = useCoupons();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -287,7 +285,7 @@ const MiniNav = () => {
 
   // console.table([...new Set(products.map(p => p.product.categorisation.supplier_category))]);
   let checkcatPro = useSelector(
-    (state) => state.categoryProduct.categoryProduct
+    (state) => state.categoryProduct.categoryProduct,
   );
 
   // const filteredProducts = useSelector(
@@ -417,8 +415,9 @@ const MiniNav = () => {
             <Link to={"/cart"} className="relative">
               {totalQuantity > 0 && (
                 <span
-                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${totalQuantity > 999 ? "text-[10px]" : "text-[11px]"
-                    } rounded-full w-6 h-6 flex items-center justify-center`}
+                  className={`absolute -top-1.5 right-[75%] bg-white border border-red-500 text-red-500 ${
+                    totalQuantity > 999 ? "text-[10px]" : "text-[11px]"
+                  } rounded-full w-6 h-6 flex items-center justify-center`}
                 >
                   {totalQuantity > 999 ? "+999" : totalQuantity}
                 </span>
@@ -472,9 +471,10 @@ const MiniNav = () => {
             {isOpen && (
               <div
                 className={`absolute mt-2 bg-white border border-gray-300 rounded-md shadow-lg w-48 
-                  transform transition-all duration-300 ease-in-out ${isOpen
-                    ? "opacity-100 translate-y-0 scale-100"
-                    : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
+                  transform transition-all duration-300 ease-in-out ${
+                    isOpen
+                      ? "opacity-100 translate-y-0 scale-100"
+                      : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
                   }`}
               >
                 <ul className="py-1">
@@ -519,23 +519,25 @@ const MiniNav = () => {
             </div>
 
             <div
-              className={`${isnav
-                ? "block z-10 mt-3 lg:hidden absolute bg-white shadow-lg px-8 md:px-12 py-4 right-0 w-[100%] transition-all duration-300 ease-in-out"
-                : "hidden lg:block"
-                }`}
+              className={`${
+                isnav
+                  ? "block z-10 mt-3 lg:hidden absolute bg-white shadow-lg px-8 md:px-12 py-4 right-0 w-[100%] transition-all duration-300 ease-in-out"
+                  : "hidden lg:block"
+              }`}
             >
               <ul className="space-y-3 lg:space-y-0 lg:flex lg:space-x-6">
                 {route.map((link, index) => (
                   <li
-                    className={`${link.name === "Promotional" ? "group relative" : ""
-                      }`}
+                    className={`${
+                      link.name === "Promotional" ? "group relative" : ""
+                    }`}
                     key={index}
                   >
                     <Link
                       to={link.path}
                       className="text-customBlue"
-                    // onClick={() => setIsnav(false)}
-                    // onClick={() => handleCategoryClick(link.name)}
+                      // onClick={() => setIsnav(false)}
+                      // onClick={() => handleCategoryClick(link.name)}
                     >
                       <p
                         className="capitalize flex"
@@ -562,10 +564,11 @@ const MiniNav = () => {
                               >
                                 {category.title}
                                 <RiArrowDropDownLine
-                                  className={`text-xl transition-all duration-300 ${activeCategory === index
-                                    ? "rotate-0"
-                                    : "-rotate-90"
-                                    }`}
+                                  className={`text-xl transition-all duration-300 ${
+                                    activeCategory === index
+                                      ? "rotate-0"
+                                      : "-rotate-90"
+                                  }`}
                                 />
                               </h6>
 
@@ -663,40 +666,11 @@ const MiniNav = () => {
         </div>
       </div>
       {navbarLogout && (
-        <motion.div className="fixed top-0 bottom-0 right-0 left-0 inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-2">
-          <motion.div
-            initial={{ opacity: 0.2, z: 50 }}
-            transition={{ duration: 0.3 }}
-            whileInView={{ opacity: 1, z: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
-          >
-            <p className="text-sm font-semibold">
-              Are you sure you want to logout?
-            </p>
-            <p className="text-sm text-gray-500">
-              You can login back at any time. All the changes you've been made
-              will not be lost.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <button
-                className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
-                onClick={() => setNavbarLogout(false)}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  logout();
-                  setNavbarLogout(false);
-                }}
-                className="px-3 py-1 bg-red-600 text-white hover:bg-red-500 rounded transition-all"
-              >
-                Logout
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
+        <LogoutModal
+          showLogoutPopup={showLogoutPopup}
+          setShowLogoutPopup={setShowLogoutPopup}
+          handleLogout={logout}
+        />
       )}
     </>
   );

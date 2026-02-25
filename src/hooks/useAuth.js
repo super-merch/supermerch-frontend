@@ -5,7 +5,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
-import { AppContext } from "../context/AppContext"; 
+import { AppContext } from "../context/AppContext";
 import { loadFavouritesFromDB } from "../redux/slices/favouriteSlice";
 import { initializeCartFromStorage } from "../redux/slices/cartSlice";
 
@@ -52,21 +52,24 @@ export const useAuth = () => {
 
         if (response.data.success) {
           const { user, token } = response.data;
-          setToken(token);
-          toast.success("Google login successful!");
           localStorage.setItem("token", token);
+          toast.success("Google login successful!");
           if (user?.email) {
             dispatch(initializeCartFromStorage({ email: user.email }));
           }
           dispatch(loadFavouritesFromDB(user.email));
-          navigate("/");
+          setLoadingGoogle(false);
+          // Full reload avoids 404: setToken removes Login route while on /login
+          window.location.replace("/");
         } else {
-          setGoogleError(response.data.message || "Google authentication failed");
+          setGoogleError(
+            response.data.message || "Google authentication failed",
+          );
           setTimeout(() => setGoogleError(""), 2000);
         }
       } catch (err) {
         setGoogleError(
-          err?.response?.data?.message || "Google authentication failed"
+          err?.response?.data?.message || "Google authentication failed",
         );
         setTimeout(() => setGoogleError(""), 2000);
       } finally {
@@ -104,7 +107,9 @@ export const useAuth = () => {
         setTimeout(() => setResetError(""), 3000);
       }
     } catch (err) {
-      setResetError(err?.response?.data?.message || "Failed to send reset email");
+      setResetError(
+        err?.response?.data?.message || "Failed to send reset email",
+      );
       setTimeout(() => setResetError(""), 3000);
     } finally {
       setResetLoading(false);
@@ -122,10 +127,13 @@ export const useAuth = () => {
     setResetLoading(true);
 
     try {
-      const response = await axios.post(`${backendUrl}/api/auth/verify-reset-code`, {
-        email: resetEmail,
-        code: resetCode,
-      });
+      const response = await axios.post(
+        `${backendUrl}/api/auth/verify-reset-code`,
+        {
+          email: resetEmail,
+          code: resetCode,
+        },
+      );
 
       if (response.data.success) {
         toast.success("Code verified successfully!");
@@ -167,11 +175,14 @@ export const useAuth = () => {
     setResetLoading(true);
 
     try {
-      const response = await axios.post(`${backendUrl}/api/auth/reset-password`, {
-        email: resetEmail,
-        code: resetCode,
-        newPassword: newPassword,
-      });
+      const response = await axios.post(
+        `${backendUrl}/api/auth/reset-password`,
+        {
+          email: resetEmail,
+          code: resetCode,
+          newPassword: newPassword,
+        },
+      );
 
       if (response.data.success) {
         toast.success("Password reset successfully!");

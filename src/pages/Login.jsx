@@ -1,20 +1,19 @@
-import { useState, useContext } from "react";
-import { Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContext";
 import { AppContext } from "../context/AppContext";
+import { AuthContext } from "../context/AuthContext";
 // Reusable components
-import AuthLayout from "../components/auth/AuthLayout";
 import PasswordInput from "../components/auth/PasswordInput";
 import ResetPasswordModal from "../components/auth/ResetPasswordModal";
 import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
-  const { setToken } = useContext(AuthContext);
+  const { setToken, token } = useContext(AuthContext);
   const { backendUrl } = useContext(AppContext);
-
+  const navigate = useNavigate();
   const {
     loading,
     error,
