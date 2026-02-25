@@ -5,6 +5,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { LucideAlertCircle } from "lucide-react";
 import { googleLogout } from "@react-oauth/google";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
@@ -28,6 +29,8 @@ import {
   setMaxPrice,
   setMinPrice,
 } from "../../redux/slices/filterSlice";
+import { LuX, LuXCircle } from "react-icons/lu";
+import LogoutModal from "../Common/LogoutModal";
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const { token, setToken } = useContext(AuthContext);
@@ -624,14 +627,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               handleNameCategories(
                 v1Cat?.name || category.name,
                 category.id,
-                "Promotional"
+                "Promotional",
               ),
             columns: category.columns,
             subItems: category.columns.flatMap((col) =>
               col.items.map((itemName) => {
                 // Find matching subtype from v1categories
                 const subType = v1Cat?.subTypes?.find(
-                  (st) => st.name.toLowerCase() === itemName.toLowerCase()
+                  (st) => st.name.toLowerCase() === itemName.toLowerCase(),
                 );
 
                 return {
@@ -643,12 +646,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     handleSubCategories(
                       itemName,
                       subType?.id ||
-                      itemName.toLowerCase().replace(/\s+/g, "-"),
+                        itemName.toLowerCase().replace(/\s+/g, "-"),
                       v1Cat?.name || category.name,
-                      "Promotional"
+                      "Promotional",
                     ),
                 };
-              })
+              }),
             ),
           };
         });
@@ -870,14 +873,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               handleNameCategories(
                 v1Cat?.name || category.name,
                 category.id,
-                "Clothing"
+                "Clothing",
               ),
             columns: category.columns,
             subItems: category.columns.flatMap((col) =>
               col.items.map((itemName) => {
                 // Find matching subtype from v1categories
                 const subType = v1Cat?.subTypes?.find(
-                  (st) => st.name.toLowerCase() === itemName.toLowerCase()
+                  (st) => st.name.toLowerCase() === itemName.toLowerCase(),
                 );
 
                 return {
@@ -889,12 +892,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                     handleSubCategories(
                       itemName,
                       subType?.id ||
-                      itemName.toLowerCase().replace(/\s+/g, "-"),
+                        itemName.toLowerCase().replace(/\s+/g, "-"),
                       v1Cat?.name || category.name,
-                      "Clothing"
+                      "Clothing",
                     ),
                 };
-              })
+              }),
             ),
           };
         });
@@ -910,7 +913,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
       if (item.name === "Headwear") {
         const headwearCategory = v1categories?.find(
-          (cat) => cat.name === "Headwear"
+          (cat) => cat.name === "Headwear",
         );
         return {
           ...item,
@@ -924,7 +927,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
                   subType.name,
                   subType.id,
                   headwearCategory.name,
-                  "Headwear"
+                  "Headwear",
                 ),
             })) || [],
           onClick: () => handleMenuClick(item),
@@ -954,7 +957,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleSearch = (searchTerm) => {
-    navigate(`/search?search=${searchTerm}${selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""}`
+    navigate(
+      `/search?search=${searchTerm}${selectedCategory.id ? `&categoryId=${selectedCategory.id}` : ""}`,
     );
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
@@ -981,7 +985,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     dispatch(applyFilters());
     //also add weather it is promotional, clothing or headwear in url in type
     navigate(
-      `/promotional?categoryName=${encodedTitleName}&category=${NameId}&type=${encodedType}`
+      `/promotional?categoryName=${encodedTitleName}&category=${NameId}&type=${encodedType}`,
     );
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
@@ -993,7 +997,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     subCategory,
     categoryId,
     titleName,
-    parentType
+    parentType,
   ) => {
     const encodedTitleName = encodeURIComponent(titleName);
     const encodedSubCategory = encodeURIComponent(subCategory);
@@ -1015,7 +1019,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     // For all other categories, use /Spromotional
 
     navigate(
-      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}&type=${encodedType}`
+      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}&type=${encodedType}`,
     );
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
@@ -1023,7 +1027,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     setSidebarActiveCategory(titleName);
   };
 
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.removeItem("token");
     setToken("");
     googleLogout();
@@ -1137,40 +1141,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
       {/* Logout Confirmation Modal */}
       {navbarLogout && (
-        <motion.div className="fixed inset-0 top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center p-2 bg-black bg-opacity-50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0.2, z: 50 }}
-            transition={{ duration: 0.3 }}
-            whileInView={{ opacity: 1, z: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md"
-          >
-            <p className="text-sm font-semibold">
-              Are you sure you want to logout?
-            </p>
-            <p className="text-sm text-gray-500">
-              You can login back at any time. All the changes you've been made
-              will not be lost.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-3 py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100"
-                onClick={() => setNavbarLogout(false)}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setNavbarLogout(false);
-                }}
-                className="px-3 py-1 text-white transition-all bg-red-600 rounded hover:bg-red-500"
-              >
-                Logout
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
+        <LogoutModal
+          showLogoutPopup={navbarLogout}
+          setShowLogoutPopup={setNavbarLogout}
+          handleLogout={logout}
+        />
       )}
       {/* Coupon Modal */}
       {coupenModel && (

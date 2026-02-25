@@ -8,17 +8,15 @@ import {
   LuCreditCard,
   LuMenu,
   LuX,
-  LuAlertCircle,
 } from "react-icons/lu";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import DashBoard from "../userAdmin/DashBoard";
 import UserProducts from "./UserProducts";
 import Adress from "./Adress";
 import { IoIosLogOut } from "react-icons/io";
-import { googleLogout } from "@react-oauth/google";
 import AccountDetail from "./AccountDetail";
-import { motion } from "framer-motion";
 import OrdersContent from "./OrderContents";
+import LogoutModal from "@/components/Common/LogoutModal";
 
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: LuLayoutDashboard },
@@ -42,7 +40,13 @@ export default function SidebarTabs() {
   // Sync activeTab with URL hash on mount and when hash changes
   useEffect(() => {
     const hash = window.location.hash.slice(1).split("?")[0]; // Remove # and any query
-    const validTabs = ["dashboard", "orders", "address", "account", "ordersDetails"];
+    const validTabs = [
+      "dashboard",
+      "orders",
+      "address",
+      "account",
+      "ordersDetails",
+    ];
 
     if (hash && validTabs.includes(hash)) {
       setActiveTab(hash);
@@ -66,7 +70,8 @@ export default function SidebarTabs() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const activeTabMeta =
-    tabs.find((t) => t.id === activeTab) || tabs.find((t) => t.id === "dashboard");
+    tabs.find((t) => t.id === activeTab) ||
+    tabs.find((t) => t.id === "dashboard");
   const activeTitle = activeTabMeta?.label || "Dashboard";
   const showBackToOrders = activeTab === "ordersDetails";
 
@@ -86,14 +91,17 @@ export default function SidebarTabs() {
         <div className="flex min-h-[calc(100vh-24px)] lg:min-h-[calc(100vh-48px)] bg-white shadow-sm overflow-hidden">
           {/* Sidebar */}
           <aside
-            className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-              }`}
+            className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+              isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
             aria-label="Dashboard navigation"
           >
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
               <div className="flex flex-col">
                 <span className="text-xs text-gray-500">My Account</span>
-                <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Dashboard
+                </h2>
               </div>
               <button
                 onClick={() => setIsSidebarOpen(false)}
@@ -117,10 +125,11 @@ export default function SidebarTabs() {
                         window.location.hash = `#${tab.id}`;
                         setIsSidebarOpen(false);
                       }}
-                      className={`flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${isActive
-                        ? "bg-primary/10 text-primary font-semibold"
-                        : "text-gray-800 hover:bg-gray-100"
-                        }`}
+                      className={`flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                        isActive
+                          ? "bg-primary/10 text-primary font-semibold"
+                          : "text-gray-800 hover:bg-gray-100"
+                      }`}
                     >
                       <tab.icon className="w-5 h-5" />
                       <span className="text-sm">{tab.label}</span>
@@ -168,7 +177,14 @@ export default function SidebarTabs() {
                       setActiveTab("orders");
                       const params = new URLSearchParams(location.search);
                       params.delete("orderId");
-                      navigate({ pathname: location.pathname, search: params.toString(), hash: "#orders" }, { replace: true });
+                      navigate(
+                        {
+                          pathname: location.pathname,
+                          search: params.toString(),
+                          hash: "#orders",
+                        },
+                        { replace: true },
+                      );
                     }}
                     className="px-3 py-2 text-sm font-semibold rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
@@ -189,82 +205,14 @@ export default function SidebarTabs() {
 
           {/* Logout Confirmation Modal */}
           {showLogoutPopup && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-              {/* Backdrop */}
-              <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                onClick={() => setShowLogoutPopup(false)}
-                aria-hidden="true"
-              />
-
-              {/* Modal */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="relative bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="logout-modal-title"
-              >
-                {/* Header */}
-                <div className="px-6 pt-6 pb-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                      <LuAlertCircle className="w-5 h-5 text-red-600" />
-                    </div>
-                    <h3
-                      id="logout-modal-title"
-                      className="text-xl font-bold text-gray-900"
-                    >
-                      Confirm Logout
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => setShowLogoutPopup(false)}
-                    className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                    aria-label="Close modal"
-                  >
-                    <LuX className="w-5 h-5 text-gray-500" />
-                  </button>
-                </div>
-
-                {/* Content */}
-                <div className="px-6 pb-6">
-                  <p className="text-gray-600 leading-relaxed">
-                    Are you sure you want to log out? You can log back in at any
-                    time. All your changes have been saved.
-                  </p>
-                </div>
-
-                {/* Footer */}
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 justify-end">
-                  <button
-                    onClick={() => setShowLogoutPopup(false)}
-                    className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setShowLogoutPopup(false);
-                    }}
-                    className="px-4 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
-                  >
-                    Log Out
-                  </button>
-                </div>
-              </motion.div>
-            </div>
+            <LogoutModal
+              showLogoutPopup={showLogoutPopup}
+              setShowLogoutPopup={setShowLogoutPopup}
+              handleLogout={handleLogout}
+            />
           )}
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
