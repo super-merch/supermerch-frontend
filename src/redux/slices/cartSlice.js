@@ -73,9 +73,14 @@ const cartSlice = createSlice({
         state.currentUserEmail = effectiveUserEmail;
       }
 
-      // Find existing item for the specific user email
+      // Find existing item for the specific user email, size, and color
+      const color = rest.color || "";
       const existing = state.items.find(
-        (item) => item.id === id && item.userEmail === effectiveUserEmail
+        (item) =>
+          item.id === id &&
+          item.userEmail === effectiveUserEmail &&
+          item.size === size &&
+          (item.color || "") === color
       );
 
       if (existing) {
@@ -96,6 +101,7 @@ const cartSlice = createSlice({
         // const finalPrice = priceWithMargin * (1 - discountPct / 100);
 
         state.items.push({
+          cartItemId: `${Date.now()}-${Math.random()}`,
           id,
           price,
           basePrices, // Store the price breaks for future calculations
@@ -106,7 +112,7 @@ const cartSlice = createSlice({
           freightFee,
           quantity,
           userEmail: effectiveUserEmail,
-          size, // Use the effective email
+          size,
           dragdrop,
           print,
           ...rest,
@@ -139,10 +145,8 @@ const cartSlice = createSlice({
     },
 
     incrementQuantity: (state, action) => {
-      const { id } = action.payload;
-      const item = state.items.find(
-        (item) => item.id === id && item.userEmail === state.currentUserEmail
-      );
+      const { cartItemId } = action.payload;
+      const item = state.items.find((item) => item.cartItemId === cartItemId);
 
       if (item) {
         item.quantity += 1;
@@ -168,10 +172,8 @@ const cartSlice = createSlice({
     },
 
     multipleQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
-      const item = state.items.find(
-        (item) => item.id === id && item.userEmail === state.currentUserEmail
-      );
+      const { cartItemId, quantity } = action.payload;
+      const item = state.items.find((item) => item.cartItemId === cartItemId);
 
       if (item) {
         item.quantity = Math.max(quantity, 1);
@@ -197,10 +199,8 @@ const cartSlice = createSlice({
     },
 
     decrementQuantity: (state, action) => {
-      const { id } = action.payload;
-      const item = state.items.find(
-        (item) => item.id === id && item.userEmail === state.currentUserEmail
-      );
+      const { cartItemId } = action.payload;
+      const item = state.items.find((item) => item.cartItemId === cartItemId);
 
       if (item && item.quantity > 1) {
         item.quantity -= 1;
@@ -228,23 +228,9 @@ const cartSlice = createSlice({
     removeFromCart: (state, action) => {
       // Get the current email (could be actual user email or "guest")
       const currentEmail = state.currentUserEmail || "guest@gmail.com";
+      const { cartItemId } = action.payload;
 
-      state.items = state.items.filter((item) => {
-        // Don't remove this item if it matches the ID and belongs to current context
-        if (item.id === action.payload) {
-          // If user is logged in, remove items that are either theirs or guest items
-          if (state.currentUserEmail) {
-            return !(
-              item.userEmail === state.currentUserEmail ||
-              item.userEmail === "guest@gmail.com"
-            );
-          } else {
-            // If no user logged in, only remove guest items
-            return !(item.userEmail === "guest@gmail.com");
-          }
-        }
-        return true; // Keep all other items
-      });
+      state.items = state.items.filter((item) => item.cartItemId !== cartItemId);
 
       // Recalculate totals for current user OR guest items
       const userItems = state.items.filter(
@@ -263,18 +249,14 @@ const cartSlice = createSlice({
     },
 
     updateCartItemImage: (state, action) => {
-      const { id, dragdrop } = action.payload;
-      const item = state.items.find(
-        (item) => item.id === id && item.userEmail === state.currentUserEmail
-      );
+      const { cartItemId, dragdrop } = action.payload;
+      const item = state.items.find((item) => item.cartItemId === cartItemId);
       if (item) item.dragdrop = dragdrop;
     },
 
     updateCartItemQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
-      const item = state.items.find(
-        (item) => item.id === id && item.userEmail === state.currentUserEmail
-      );
+      const { cartItemId, quantity } = action.payload;
+      const item = state.items.find((item) => item.cartItemId === cartItemId);
 
       if (item) {
         item.quantity = Math.max(quantity, 1);

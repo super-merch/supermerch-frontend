@@ -822,7 +822,7 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: currentQuantity, // Use the actual quantity
-        print: selectedPrintMethod.promodata_decoration,
+        print: selectedPrintMethod.promodata_decoration || selectedPrintMethod.description,
         logoColor: logoColor,
         freightFee: freightFee,
         setupFee: setupFee,
