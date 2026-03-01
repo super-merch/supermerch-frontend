@@ -37,7 +37,7 @@ const CartComponent = () => {
   useEffect(() => {
     const quantities = {};
     items.forEach((item) => {
-      quantities[item.id] = item.quantity;
+      quantities[item.cartItemId] = item.quantity;
     });
     setCustomQuantities(quantities);
   }, [items]);
@@ -149,19 +149,19 @@ const CartComponent = () => {
   };
 
   // Handle direct input changes
-  const handleQuantityChange = (e, id) => {
+  const handleQuantityChange = (e, cartItemId) => {
     const value = e.target.value;
     setCustomQuantities({
       ...customQuantities,
-      [id]: value === "" ? "" : parseInt(value, 10),
+      [cartItemId]: value === "" ? "" : parseInt(value, 10),
     });
   };
 
   const handleUpdateCart = () => {
-    Object.entries(customQuantities).forEach(([id, quantity]) => {
+    Object.entries(customQuantities).forEach(([cartItemId, quantity]) => {
       dispatch(
         updateCartItemQuantity({
-          id: Number(id),
+          cartItemId,
           quantity: Math.max(quantity, 1),
         }),
       );
@@ -170,9 +170,9 @@ const CartComponent = () => {
 
   const [openModel, setOpenModel] = useState(false);
   const [id, setId] = useState(null);
-  const handleRemovefromCart = (id) => {
+  const handleRemovefromCart = (item) => {
     setOpenModel(true);
-    setId(id);
+    setId({ cartItemId: item.cartItemId });
   };
   const navigate = useNavigate();
 
@@ -304,6 +304,17 @@ const CartComponent = () => {
                                         </span>
                                       </div>
                                     )}
+                                    {item.size && item.size !== "None" && (
+                                      <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        <span>
+                                          Size:{" "}
+                                          <span className="font-medium text-gray-900">
+                                            {item.size}
+                                          </span>
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -329,7 +340,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          decrementQuantity({ id: item.id }),
+                                          decrementQuantity({ cartItemId: item.cartItemId }),
                                         )
                                       }
                                       disabled={item.sample}
@@ -340,14 +351,14 @@ const CartComponent = () => {
                                     <input
                                       type="number"
                                       value={
-                                        customQuantities[item.id] ||
+                                        customQuantities[item.cartItemId] ||
                                         item.quantity
                                       }
                                       disabled={item.sample}
                                       onChange={(e) =>
                                         dispatch(
                                           multipleQuantity({
-                                            id: item.id,
+                                            cartItemId: item.cartItemId,
                                             quantity:
                                               parseInt(e.target.value, 10) || 1,
                                           }),
@@ -359,7 +370,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          incrementQuantity({ id: item.id }),
+                                          incrementQuantity({ cartItemId: item.cartItemId }),
                                         )
                                       }
                                       disabled={item.sample}
@@ -386,7 +397,7 @@ const CartComponent = () => {
                             {/* Delete Action */}
                             <td className="px-6 py-4 text-center">
                               <button
-                                onClick={() => handleRemovefromCart(item.id)}
+                                onClick={() => handleRemovefromCart(item)}
                                 className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
                                 title="Remove from cart"
                               >
@@ -434,24 +445,39 @@ const CartComponent = () => {
 
                             {/* Product Attributes */}
                             <div className="space-y-1 text-xs text-gray-600 mb-3">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                                <span>
-                                  Color:{" "}
-                                  <span className="font-medium text-gray-900">
-                                    {item.color}
+                              {item.color && (
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                  <span>
+                                    Color:{" "}
+                                    <span className="font-medium text-gray-900">
+                                      {item.color}
+                                    </span>
                                   </span>
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>
-                                  Print:{" "}
-                                  <span className="font-medium text-gray-900">
-                                    {item.print}
+                                </div>
+                              )}
+                              {item.print && (
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                  <span>
+                                    Print:{" "}
+                                    <span className="font-medium text-gray-900">
+                                      {item.print}
+                                    </span>
                                   </span>
-                                </span>
-                              </div>
+                                </div>
+                              )}
+                              {item.size && item.size !== "None" && (
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                  <span>
+                                    Size:{" "}
+                                    <span className="font-medium text-gray-900">
+                                      {item.size}
+                                    </span>
+                                  </span>
+                                </div>
+                              )}
                             </div>
 
                             {/* Price and Quantity Row */}
@@ -472,7 +498,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          decrementQuantity({ id: item.id }),
+                                          decrementQuantity({ cartItemId: item.cartItemId }),
                                         )
                                       }
                                       className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
@@ -482,13 +508,13 @@ const CartComponent = () => {
                                     <input
                                       type="number"
                                       value={
-                                        customQuantities[item.id] ||
+                                        customQuantities[item.cartItemId] ||
                                         item.quantity
                                       }
                                       onChange={(e) =>
                                         dispatch(
                                           multipleQuantity({
-                                            id: item.id,
+                                            cartItemId: item.cartItemId,
                                             quantity:
                                               parseInt(e.target.value, 10) || 1,
                                           }),
@@ -500,7 +526,7 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          incrementQuantity({ id: item.id }),
+                                          incrementQuantity({ cartItemId: item.cartItemId }),
                                         )
                                       }
                                       className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
@@ -512,7 +538,7 @@ const CartComponent = () => {
 
                                 {/* Delete Button */}
                                 <button
-                                  onClick={() => handleRemovefromCart(item.id)}
+                                  onClick={() => handleRemovefromCart(item)}
                                   className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
                                   title="Remove from cart"
                                 >
