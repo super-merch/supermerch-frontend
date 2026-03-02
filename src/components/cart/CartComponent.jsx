@@ -69,7 +69,10 @@ const CartComponent = () => {
     ? Math.min(calculatedCouponDiscount, Number(appliedCoupon.maxLimitAmount))
     : calculatedCouponDiscount;
 
-  const amountAfterDiscount = Math.max(couponBaseAmount - couponDiscountAmount, 0);
+  const amountAfterDiscount = Math.max(
+    couponBaseAmount - couponDiscountAmount,
+    0,
+  );
   const preTaxAmount = amountAfterDiscount + normalizedShipping;
 
   const gstAmount = (preTaxAmount * normalizedGstRate) / 100;
@@ -251,14 +254,13 @@ const CartComponent = () => {
                         </th>
                       </tr>
                     </thead>
-                    {console.log(items)}
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
                         const subTotal =
                           item.totalPrice || item.price * item.quantity;
                         return (
                           <tr
-                            key={item.id}
+                            key={item.cartItemId}
                             className="hover:bg-gray-50 transition-colors"
                           >
                             {/* Product Info */}
@@ -274,13 +276,18 @@ const CartComponent = () => {
                                 />
                                 <div className="flex-1 min-w-0">
                                   <h3
-                                    className="text-xl font-semibold text-gray-900 mb-2 cursor-pointer hover:text-smallHeader transition-colors"
+                                    className="text-xl font-semibold text-gray-900 mb-1 cursor-pointer hover:text-smallHeader transition-colors capitalize"
                                     onClick={() =>
                                       handleViewProduct(item.id, item.name)
                                     }
                                   >
                                     {item.name} {item.sample ? "(Sample)" : ""}
                                   </h3>
+                                  {item.sku_number && (
+                                    <p className="text-sm text-gray-600">
+                                      SKU: {item.sku_number}
+                                    </p>
+                                  )}
                                   <div className="space-y-1 text-sm text-gray-600">
                                     {item.color && (
                                       <div className="flex items-center space-x-2">
@@ -340,7 +347,9 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          decrementQuantity({ cartItemId: item.cartItemId }),
+                                          decrementQuantity({
+                                            cartItemId: item.cartItemId,
+                                          }),
                                         )
                                       }
                                       disabled={item.sample}
@@ -370,7 +379,9 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          incrementQuantity({ cartItemId: item.cartItemId }),
+                                          incrementQuantity({
+                                            cartItemId: item.cartItemId,
+                                          }),
                                         )
                                       }
                                       disabled={item.sample}
@@ -418,7 +429,7 @@ const CartComponent = () => {
                       item.totalPrice || item.price * item.quantity;
                     return (
                       <div
-                        key={item.id}
+                        key={item.cartItemId}
                         className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
                       >
                         <div className="flex space-x-3">
@@ -442,6 +453,11 @@ const CartComponent = () => {
                             >
                               {item.name}
                             </h3>
+                            {item.sku_number && (
+                              <p className="text-xs text-gray-500 mb-1">
+                                SKU: {item.sku_number}
+                              </p>
+                            )}
 
                             {/* Product Attributes */}
                             <div className="space-y-1 text-xs text-gray-600 mb-3">
@@ -498,7 +514,9 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          decrementQuantity({ cartItemId: item.cartItemId }),
+                                          decrementQuantity({
+                                            cartItemId: item.cartItemId,
+                                          }),
                                         )
                                       }
                                       className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
@@ -526,7 +544,9 @@ const CartComponent = () => {
                                     <button
                                       onClick={() =>
                                         dispatch(
-                                          incrementQuantity({ cartItemId: item.cartItemId }),
+                                          incrementQuantity({
+                                            cartItemId: item.cartItemId,
+                                          }),
                                         )
                                       }
                                       className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"

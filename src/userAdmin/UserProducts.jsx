@@ -26,10 +26,12 @@ const UserProducts = () => {
   const [selectedOrder, setSelectedOrder] = useState({});
   const [reOrderModal, setReOrderModal] = useState(false);
   const [reOrderLoading, setReOrderLoading] = useState(false);
+
   useEffect(() => {
     const order = userOrder.filter((order) => order._id === orderId);
     setSelectedOrder(order[0]);
-  }, [userOrder]);
+  }, [orderId]);
+
   const handleReOrder = async () => {
     setReOrderLoading(true);
     const token = localStorage.getItem("token");
@@ -102,6 +104,8 @@ const UserProducts = () => {
       </div>
     );
   }
+
+  console.log(selectedOrder);
 
   if (!selectedOrder) {
     return <div>No checkout data available for this order.</div>;
@@ -238,7 +242,7 @@ const UserProducts = () => {
                           </p>
                           {product?.logoColor && (
                             <p className="text-xs text-gray-500">
-                              Print Method: {product.logoColor}
+                              Artwork: {product.logoColor}
                             </p>
                           )}
                         </td>
@@ -299,7 +303,7 @@ const UserProducts = () => {
                 <tr>
                   <td className="py-1.5">Discount</td>
                   <td className="py-1.5 text-right font-medium">
-                    -$
+                    $
                     {selectedOrder?.discount?.toFixed?.(2) ??
                       selectedOrder?.discount}
                   </td>
