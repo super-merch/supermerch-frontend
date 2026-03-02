@@ -34,7 +34,6 @@ const Checkout = () => {
     setupFee,
     gstCharges,
   } = useContext(AppContext);
-  console.log(gstCharges);
   // Collapsible step states
   const [openCustomer, setOpenCustomer] = useState(true);
   const [openShipping, setOpenShipping] = useState(false);
@@ -65,7 +64,8 @@ const Checkout = () => {
       if (!userData?.defaultShippingAddress) {
         try {
           const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL
+            `${
+              import.meta.env.VITE_BACKEND_URL
             }/api/auth/update-shipping-address`,
             { defaultShippingAddress: shippingAddressData },
             {
@@ -269,7 +269,10 @@ const Checkout = () => {
     ? Math.min(calculatedCouponDiscount, Number(appliedCoupon.maxLimitAmount))
     : calculatedCouponDiscount;
 
-  const amountAfterDiscount = Math.max(couponBaseAmount - couponDiscountAmount, 0);
+  const amountAfterDiscount = Math.max(
+    couponBaseAmount - couponDiscountAmount,
+    0,
+  );
   const preTaxAmount = amountAfterDiscount + normalizedShipping;
 
   const uploadLogo = async () => {
@@ -436,10 +439,10 @@ const Checkout = () => {
       // Add coupon information to order data
       coupon: appliedCoupon
         ? {
-          code: appliedCoupon.coupen,
-          discount: couponDiscount,
-          discountAmount: couponDiscountAmount,
-        }
+            code: appliedCoupon.coupen,
+            discount: couponDiscount,
+            discountAmount: couponDiscountAmount,
+          }
         : null,
       gst: gstAmount,
       gstPercent: gstCharges,
@@ -489,10 +492,10 @@ const Checkout = () => {
         // Add coupon information to the request body
         coupon: appliedCoupon
           ? {
-            code: appliedCoupon.coupen,
-            discount: couponDiscount, // This should be the discount percentage
-            discountAmount: couponDiscountAmount, // This should be the calculated discount amount
-          }
+              code: appliedCoupon.coupen,
+              discount: couponDiscount, // This should be the discount percentage
+              discountAmount: couponDiscountAmount, // This should be the calculated discount amount
+            }
           : null,
         gstPercent: gstCharges,
       };
@@ -712,8 +715,9 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle customer"
-                    className={`transition-transform ${openCustomer ? "rotate-180" : "rotate-0"
-                      }`}
+                    className={`transition-transform ${
+                      openCustomer ? "rotate-180" : "rotate-0"
+                    }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -808,8 +812,9 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle shipping"
-                    className={`transition-transform ${openShipping ? "rotate-180" : "rotate-0"
-                      }`}
+                    className={`transition-transform ${
+                      openShipping ? "rotate-180" : "rotate-0"
+                    }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -932,44 +937,12 @@ const Checkout = () => {
                           Address <span className="text-red-500 ml-1">*</span>
                         </label>
 
-                        {/* Autocomplete component (Nominatim) */}
-                        <AddressAutocomplete
-                          placeholder="Start typing your address..."
-                          defaultValue={getValues("shipping.address")}
-                          countryCode="au"
-                          onSelect={(place) => {
-                            setValue(
-                              "shipping.address",
-                              place.display_name || "",
-                            );
-                            const addr = place.address || {};
-                            setValue(
-                              "shipping.city",
-                              addr.city ||
-                              addr.town ||
-                              addr.village ||
-                              addr.hamlet ||
-                              "",
-                            );
-                            setValue("shipping.region", addr.state || "");
-                            setValue("shipping.zip", addr.postcode || "");
-                            setValue(
-                              "shipping.country",
-                              addr.country || "Australia",
-                            );
-                          }}
-                          onChange={(val) =>
-                            setValue("shipping.address", val, {
-                              shouldValidate: true,
-                            })
-                          }
-                          className="rounded-lg"
-                        />
-
+                        {/* Manual address entry – autocomplete commented out */}
                         <input
-                          type="hidden"
-                          {...register("shipping.address", { required: true })}
-                          value={getValues("shipping.address")}
+                          type="text"
+                          placeholder="Enter street address and unit number (e.g. 123 Main St, Unit 4)"
+                          {...register("shipping.address")}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
                       </div>
 
@@ -1135,7 +1108,7 @@ const Checkout = () => {
                 )}
               </div>
               {/* Step 3: Billing Information */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div
                   className="px-4 py-3 cursor-pointer flex items-center justify-between border-b border-gray-200 bg-white"
                   onClick={() => setOpenBilling(!openBilling)}
@@ -1169,8 +1142,9 @@ const Checkout = () => {
                     <button
                       type="button"
                       aria-label="Toggle billing"
-                      className={`transition-transform ${openBilling ? "rotate-180" : "rotate-0"
-                        }`}
+                      className={`transition-transform ${
+                        openBilling ? "rotate-180" : "rotate-0"
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setOpenBilling(!openBilling);
@@ -1233,187 +1207,91 @@ const Checkout = () => {
                       />
                       Same as shipping
                     </label>
-                    {!billingSameAsShipping &&(
+                    {!billingSameAsShipping && (
                       <div className="bg-white rounded-xl  border-gray-200 shadow-sm overflow-hidden">
-                      <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
-                            <svg
-                              className="w-8 h-8 mr-2 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                              />
-                            </svg>
-                            Company Name
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Enter company name"
-                            {...register("billing.companyName")}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          />
-                        </div>
-                        <div className="space-y-2"></div>
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
-                            <svg
-                              className="w-8 h-8 mr-2 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                              />
-                            </svg>
-                            First Name{" "}
-                            <span className="text-red-500 ml-1">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            defaultValue={addressData?.firstName || ""}
-                            placeholder="Enter first name"
-                            {...register("billing.firstName", {
-                              required: true,
-                            })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
-                            <svg
-                              className="w-8 h-8 mr-2 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                              />
-                            </svg>
-                            Last Name{" "}
-                            <span className="text-red-500 ml-1">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Enter last name"
-                            {...register("billing.lastName")}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-6">
-                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                          <svg
-                            className="w-8 h-8 mr-2 text-gray-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                />
+                              </svg>
+                              Company Name
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter company name"
+                              {...register("billing.companyName")}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                             />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          </div>
+                          <div className="space-y-2"></div>
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
+                              </svg>
+                              First Name{" "}
+                              <span className="text-red-500 ml-1">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              defaultValue={addressData?.firstName || ""}
+                              placeholder="Enter first name"
+                              {...register("billing.firstName", {
+                                required: true,
+                              })}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                             />
-                          </svg>
-                          Address <span className="text-red-500 ml-1">*</span>
-                        </label>
+                          </div>
 
-                        {/* Autocomplete component (Nominatim) */}
-                        <AddressAutocomplete
-                          placeholder="Start typing your address..."
-                          defaultValue={getValues("billing.address")}
-                          value={watch("billing.address")}
-                          countryCode="au"
-                          onSelect={(place) => {
-                            setValue(
-                              "billing.address",
-                              place.display_name || "",
-                            );
-                            const addr = place.address || {};
-                            setValue(
-                              "billing.city",
-                              addr.city ||
-                              addr.town ||
-                              addr.village ||
-                              addr.hamlet ||
-                              "",
-                            );
-                            setValue("billing.region", addr.state || "");
-                            setValue("billing.zip", addr.postcode || "");
-                            setValue(
-                              "billing.country",
-                              addr.country || "Australia",
-                            );
-                          }}
-                          onChange={(val) =>
-                            setValue("billing.address", val, {
-                              shouldValidate: true,
-                            })
-                          }
-                        />
-
-                        <input
-                          type="hidden"
-                          {...register("billing.address", { required: true })}
-                          value={getValues("billing.address")}
-                        />
-                      </div>
-
-                      <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
-                            <svg
-                              className="w-8 h-8 mr-2 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            Country <span className="text-red-500 ml-1">*</span>
-                          </label>
-                          <select
-                            {...register("billing.country", { required: true })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          >
-                            {addressData?.country && (
-                              <option value={addressData?.country}>
-                                {addressData?.country}
-                              </option>
-                            )}
-                            <option value="Australia">Australia</option>
-                          </select>
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
+                              </svg>
+                              Last Name{" "}
+                              <span className="text-red-500 ml-1">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter last name"
+                              {...register("billing.lastName")}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            />
+                          </div>
                         </div>
-
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
+                        <div className="mt-6">
+                          <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                             <svg
                               className="w-8 h-8 mr-2 text-gray-500"
                               fill="none"
@@ -1424,107 +1302,215 @@ const Checkout = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
                               />
-                            </svg>
-                            State <span className="text-red-500 ml-1">*</span>
-                          </label>
-                          <select
-                            {...register("billing.region", { required: true })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          >
-                            {addressData?.state && (
-                              <option value={addressData?.state}>
-                                {addressData?.state}
-                              </option>
-                            )}
-                            <option value="New South Wales">
-                              New South Wales
-                            </option>
-                            <option value="Victoria">Victoria</option>
-                            <option value="Queensland">Queensland</option>
-                            <option value="Western Australia">
-                              Western Australia
-                            </option>
-                            <option value="South Australia">
-                              South Australia
-                            </option>
-                            <option value="Tasmania">Tasmania</option>
-                            <option value="Northern Territory">
-                              Northern Territory
-                            </option>
-                            <option value="Australian Capital Territory">
-                              Australian Capital Territory
-                            </option>
-                          </select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
-                            <svg
-                              className="w-8 h-8 mr-2 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                               />
                             </svg>
-                            City <span className="text-red-500 ml-1">*</span>
+                            Address <span className="text-red-500 ml-1">*</span>
                           </label>
-                          <select
-                            {...register("billing.city", { required: true })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          >
-                            {addressData?.city && (
-                              <option value={addressData.city}>
-                                {addressData?.city}
-                              </option>
-                            )}
-                            <option value="Sydney">Sydney</option>
-                            <option value="Melbourne">Melbourne</option>
-                            <option value="Brisbane">Brisbane</option>
-                            <option value="Perth">Perth</option>
-                            <option value="Adelaide">Adelaide</option>
-                            <option value="Gold Coast">Gold Coast</option>
-                            <option value="Canberra">Canberra</option>
-                            <option value="Newcastle">Newcastle</option>
-                            <option value="Wollongong">Wollongong</option>
-                            <option value="Hobart">Hobart</option>
-                          </select>
-                        </div>
 
-                        <div className="space-y-2">
-                          <label className="flex items-center text-sm font-medium text-gray-700">
-                            <svg
-                              className="w-8 h-8 mr-2 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M7 4a2 2 0 012-2h6a2 2 0 012 2"
-                              />
-                            </svg>
-                            Postal Code{" "}
-                            <span className="text-red-500 ml-1">*</span>
-                          </label>
+                          {/* Autocomplete component (Nominatim) */}
+                          {/* <AddressAutocomplete
+                            placeholder="Start typing your address..."
+                            defaultValue={getValues("billing.address")}
+                            value={watch("billing.address")}
+                            countryCode="au"
+                            onSelect={(place) => {
+                              setValue(
+                                "billing.address",
+                                place.display_name || "",
+                              );
+                              const addr = place.address || {};
+                              setValue(
+                                "billing.city",
+                                addr.city ||
+                                  addr.town ||
+                                  addr.village ||
+                                  addr.hamlet ||
+                                  "",
+                              );
+                              setValue("billing.region", addr.state || "");
+                              setValue("billing.zip", addr.postcode || "");
+                              setValue(
+                                "billing.country",
+                                addr.country || "Australia",
+                              );
+                            }}
+                            onChange={(val) =>
+                              setValue("billing.address", val, {
+                                shouldValidate: true,
+                              })
+                            }
+                          /> */}
+
                           <input
                             type="text"
-                            placeholder="Enter postal code"
-                            {...register("billing.zip", { required: true })}
+                            placeholder="Enter street address and unit number (e.g. 123 Main St, Unit 4)"
+                            {...register("billing.address")}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                           />
+
+                          {/* <input
+                            type="hidden"
+                            {...register("billing.address", { required: true })}
+                            value={getValues("billing.address")}
+                          /> */}
+                        </div>
+
+                        <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              Country{" "}
+                              <span className="text-red-500 ml-1">*</span>
+                            </label>
+                            <select
+                              {...register("billing.country", {
+                                required: true,
+                              })}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            >
+                              {addressData?.country && (
+                                <option value={addressData?.country}>
+                                  {addressData?.country}
+                                </option>
+                              )}
+                              <option value="Australia">Australia</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                />
+                              </svg>
+                              State <span className="text-red-500 ml-1">*</span>
+                            </label>
+                            <select
+                              {...register("billing.region", {
+                                required: true,
+                              })}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            >
+                              {addressData?.state && (
+                                <option value={addressData?.state}>
+                                  {addressData?.state}
+                                </option>
+                              )}
+                              <option value="New South Wales">
+                                New South Wales
+                              </option>
+                              <option value="Victoria">Victoria</option>
+                              <option value="Queensland">Queensland</option>
+                              <option value="Western Australia">
+                                Western Australia
+                              </option>
+                              <option value="South Australia">
+                                South Australia
+                              </option>
+                              <option value="Tasmania">Tasmania</option>
+                              <option value="Northern Territory">
+                                Northern Territory
+                              </option>
+                              <option value="Australian Capital Territory">
+                                Australian Capital Territory
+                              </option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                />
+                              </svg>
+                              City <span className="text-red-500 ml-1">*</span>
+                            </label>
+                            <select
+                              {...register("billing.city", { required: true })}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            >
+                              {addressData?.city && (
+                                <option value={addressData.city}>
+                                  {addressData?.city}
+                                </option>
+                              )}
+                              <option value="Sydney">Sydney</option>
+                              <option value="Melbourne">Melbourne</option>
+                              <option value="Brisbane">Brisbane</option>
+                              <option value="Perth">Perth</option>
+                              <option value="Adelaide">Adelaide</option>
+                              <option value="Gold Coast">Gold Coast</option>
+                              <option value="Canberra">Canberra</option>
+                              <option value="Newcastle">Newcastle</option>
+                              <option value="Wollongong">Wollongong</option>
+                              <option value="Hobart">Hobart</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                              <svg
+                                className="w-8 h-8 mr-2 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2M7 4a2 2 0 012-2h6a2 2 0 012 2"
+                                />
+                              </svg>
+                              Postal Code{" "}
+                              <span className="text-red-500 ml-1">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter postal code"
+                              {...register("billing.zip", { required: true })}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
                     )}
                     <div className="flex justify-end mt-6">
                       <button
@@ -1576,8 +1562,9 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle payment"
-                    className={`transition-transform ${openPayment ? "rotate-180" : "rotate-0"
-                      }`}
+                    className={`transition-transform ${
+                      openPayment ? "rotate-180" : "rotate-0"
+                    }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -1628,10 +1615,11 @@ const Checkout = () => {
                     <button
                       type="submit"
                       disabled={loading || items.length === 0}
-                      className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${loading || items.length === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
-                        }`}
+                      className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
+                        loading || items.length === 0
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
+                      }`}
                     >
                       {loading ? (
                         <>
@@ -1718,10 +1706,11 @@ const Checkout = () => {
                   <button
                     type="submit"
                     disabled={loading || items?.length === 0}
-                    className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${loading || items?.length === 0
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
-                      }`}
+                    className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
+                      loading || items?.length === 0
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
+                    }`}
                   >
                     {loading ? (
                       <>
