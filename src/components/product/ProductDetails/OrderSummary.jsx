@@ -55,7 +55,7 @@ const OrderSummary = ({
         freightFee: freightFee,
         userEmail: userEmail || "guest@gmail.com",
         sample: true,
-      })
+      }),
     );
 
     navigate("/cart");
@@ -152,7 +152,7 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                <span className="font-bold">Print Method:</span>{" "}
+                <span className="font-bold">Artwork:</span>{" "}
                 {selectedPrintMethod?.promodata_decoration ||
                   selectedPrintMethod?.description ||
                   "Not selected"}

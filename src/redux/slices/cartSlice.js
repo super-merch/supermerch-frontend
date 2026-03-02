@@ -1,5 +1,4 @@
-
-import { createSlice,createSelector } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [], // This will store all items with userEmail
@@ -39,11 +38,11 @@ const cartSlice = createSlice({
       const userItems = state.items.filter((item) => item.userEmail === email);
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = userItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
@@ -62,6 +61,7 @@ const cartSlice = createSlice({
         userEmail,
         dragdrop = null,
         print = "",
+        sku_number,
         ...rest
       } = action.payload;
 
@@ -80,21 +80,25 @@ const cartSlice = createSlice({
           item.id === id &&
           item.userEmail === effectiveUserEmail &&
           item.size === size &&
-          (item.color || "") === color
+          (item.color || "") === color,
       );
 
       if (existing) {
         existing.quantity += quantity;
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(existing.quantity, existing.basePrices);
-        const priceWithMargin = newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
+        const newUnitPrice = getPriceForQuantity(
+          existing.quantity,
+          existing.basePrices,
+        );
+        const priceWithMargin =
+          newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
         existing.price = priceWithMargin * (1 - existing.discountPct / 100);
         existing.totalPrice = existing.price * existing.quantity;
-        existing.print = print
-        existing.setupFee = setupFee
+        existing.print = print;
+        existing.setupFee = setupFee;
         if (dragdrop) {
-      existing.dragdrop = dragdrop;
-    }
+          existing.dragdrop = dragdrop;
+        }
       } else {
         // const unitPrice = getPriceForQuantity(quantity, basePrices);
         // const priceWithMargin = unitPrice + (marginFlat * unitPrice) / 100;
@@ -115,6 +119,7 @@ const cartSlice = createSlice({
           size,
           dragdrop,
           print,
+          sku_number,
           ...rest,
         });
       }
@@ -125,22 +130,22 @@ const cartSlice = createSlice({
           ? state.items.filter((item) => item.userEmail === "guest@gmail.com")
           : [
               ...state.items.filter(
-                (item) => item.userEmail === "guest@gmail.com"
+                (item) => item.userEmail === "guest@gmail.com",
               ),
               ...state.items.filter(
                 (item) =>
                   item.userEmail === state.currentUserEmail &&
-                  item.userEmail !== "guest@gmail.com"
+                  item.userEmail !== "guest@gmail.com",
               ),
             ];
 
       state.totalQuantity = currentUserItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = currentUserItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
@@ -151,23 +156,27 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity += 1;
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
+        const newUnitPrice = getPriceForQuantity(
+          item.quantity,
+          item.basePrices,
+        );
+        const priceWithMargin =
+          newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
 
       // Recalculate totals for current user
       const userItems = state.items.filter(
-        (item) => item.userEmail === state.currentUserEmail
+        (item) => item.userEmail === state.currentUserEmail,
       );
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = userItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
@@ -178,23 +187,27 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity = Math.max(quantity, 1);
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) /100;
+        const newUnitPrice = getPriceForQuantity(
+          item.quantity,
+          item.basePrices,
+        );
+        const priceWithMargin =
+          newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
 
       // Recalculate totals for current user
       const userItems = state.items.filter(
-        (item) => item.userEmail === state.currentUserEmail
+        (item) => item.userEmail === state.currentUserEmail,
       );
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = userItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
@@ -205,23 +218,27 @@ const cartSlice = createSlice({
       if (item && item.quantity > 1) {
         item.quantity -= 1;
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
+        const newUnitPrice = getPriceForQuantity(
+          item.quantity,
+          item.basePrices,
+        );
+        const priceWithMargin =
+          newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice = item.price * item.quantity;
       }
 
       // Recalculate totals for current user
       const userItems = state.items.filter(
-        (item) => item.userEmail === state.currentUserEmail
+        (item) => item.userEmail === state.currentUserEmail,
       );
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = userItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
@@ -230,21 +247,23 @@ const cartSlice = createSlice({
       const currentEmail = state.currentUserEmail || "guest@gmail.com";
       const { cartItemId } = action.payload;
 
-      state.items = state.items.filter((item) => item.cartItemId !== cartItemId);
+      state.items = state.items.filter(
+        (item) => item.cartItemId !== cartItemId,
+      );
 
       // Recalculate totals for current user OR guest items
       const userItems = state.items.filter(
         (item) =>
           item.userEmail === currentEmail ||
-          (state.currentUserEmail && item.userEmail === "guest@gmail.com")
+          (state.currentUserEmail && item.userEmail === "guest@gmail.com"),
       );
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = userItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
@@ -261,8 +280,12 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity = Math.max(quantity, 1);
         // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
+        const newUnitPrice = getPriceForQuantity(
+          item.quantity,
+          item.basePrices,
+        );
+        const priceWithMargin =
+          newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
         item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
         item.totalPrice =
           item.price * item.quantity +
@@ -272,22 +295,22 @@ const cartSlice = createSlice({
 
       // Recalculate totals for current user
       const userItems = state.items.filter(
-        (item) => item.userEmail === state.currentUserEmail
+        (item) => item.userEmail === state.currentUserEmail,
       );
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       );
       state.totalAmount = userItems.reduce(
         (sum, item) => sum + item.totalPrice,
-        0
+        0,
       );
     },
 
     clearUserCart: (state) => {
       // Only clear current user's items
       state.items = state.items.filter(
-        (item) => item.userEmail !== state.currentUserEmail
+        (item) => item.userEmail !== state.currentUserEmail,
       );
       state.totalQuantity = 0;
       state.totalAmount = 0;
@@ -306,9 +329,15 @@ const cartSlice = createSlice({
       state.currentUserEmail = email || "guest@gmail.com";
 
       // Recalculate totals for current user
-      const userItems = state.items.filter(item => item.userEmail === email);
-      state.totalQuantity = userItems.reduce((sum, item) => sum + item.quantity, 0);
-      state.totalAmount = userItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      const userItems = state.items.filter((item) => item.userEmail === email);
+      state.totalQuantity = userItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
+      state.totalAmount = userItems.reduce(
+        (sum, item) => sum + item.totalPrice,
+        0,
+      );
     },
 
     clearCart: () => initialState, // Keep this for complete reset if needed
@@ -318,34 +347,38 @@ const cartSlice = createSlice({
 // Selector to get current user's cart items
 export const selectCurrentUserCartItems = (state) => {
   const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
-  
+
   // Always include guest items along with user-specific items
-  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
+  const guestItems = state.cart?.items?.filter(
+    (item) => item.userEmail === "guest@gmail.com",
+  );
 
-    if (currentUserEmail === "guest@gmail.com") {
-      return guestItems;
-    }
-
-    const userItems = state?.cart?.items.filter(
-      (item) => item.userEmail === currentUserEmail
-    );
-    return [...guestItems, ...userItems];
+  if (currentUserEmail === "guest@gmail.com") {
+    return guestItems;
   }
+
+  const userItems = state?.cart?.items.filter(
+    (item) => item.userEmail === currentUserEmail,
+  );
+  return [...guestItems, ...userItems];
+};
 export const currentUserCartAmount = (state) => {
   const currentUserEmail = state.cart.currentUserEmail || "guest@gmail.com";
-  
+
   // Always include guest items along with user-specific items
-  const guestItems = state.cart?.items?.filter(item => item.userEmail === "guest@gmail.com");
+  const guestItems = state.cart?.items?.filter(
+    (item) => item.userEmail === "guest@gmail.com",
+  );
 
-    if (currentUserEmail === "guest@gmail.com") {
-      return guestItems.length;
-    }
-
-    const userItems = state?.cart?.items.filter(
-      (item) => item.userEmail === currentUserEmail
-    );
-    return guestItems.length+userItems.length;
+  if (currentUserEmail === "guest@gmail.com") {
+    return guestItems.length;
   }
+
+  const userItems = state?.cart?.items.filter(
+    (item) => item.userEmail === currentUserEmail,
+  );
+  return guestItems.length + userItems.length;
+};
 
 export const {
   setCurrentUser,

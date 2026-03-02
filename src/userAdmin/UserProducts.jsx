@@ -238,7 +238,7 @@ const UserProducts = () => {
                           </p>
                           {product?.logoColor && (
                             <p className="text-xs text-gray-500">
-                              Print Method: {product.logoColor}
+                              Artwork: {product.logoColor}
                             </p>
                           )}
                         </td>

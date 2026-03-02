@@ -763,6 +763,9 @@ const ProductDetails = () => {
       ),
   );
 
+  const [showAddToCartNotification, setShowAddToCartNotification] =
+    useState(false);
+
   const handleAddToCart = (e) => {
     if (productPrice == 0) {
       toast.error(
@@ -772,7 +775,6 @@ const ProductDetails = () => {
       return;
     }
     e.preventDefault();
-    console.log(selectedSize);
     dispatch(
       addToCart({
         id: productId,
@@ -822,7 +824,9 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: currentQuantity, // Use the actual quantity
-        print: selectedPrintMethod.promodata_decoration || selectedPrintMethod.description,
+        print:
+          selectedPrintMethod.promodata_decoration ||
+          selectedPrintMethod.description,
         logoColor: logoColor,
         freightFee: freightFee,
         setupFee: setupFee,
@@ -833,10 +837,18 @@ const ProductDetails = () => {
         userEmail: userEmail || "guest@gmail.com",
         supplierName: single_product.overview.supplier,
         sample: false,
+        sku_number: single_product?.overview?.sku_number,
       }),
     );
-    navigate("/cart");
+    setShowAddToCartNotification(true);
   };
+
+  // useEffect(() => {
+  //   if (!showAddToCartNotification) return;
+  //   const timer = setTimeout(() => setShowAddToCartNotification(false), 5000);
+  //   return () => clearTimeout(timer);
+  // }, [showAddToCartNotification]);
+
   const [notRobot, setNotRobot] = useState(false);
 
   const parseSizing = () => {
@@ -880,6 +892,165 @@ const ProductDetails = () => {
 
   return (
     <>
+      {/* Add to cart notification bar */}
+      <AnimatePresence>
+        {showAddToCartNotification && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowAddToCartNotification(false)}
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4 overflow-y-auto"
+              onClick={(e) =>
+                e.target === e.currentTarget &&
+                setShowAddToCartNotification(false)
+              }
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="w-full max-w-lg my-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="rounded-2xl bg-white shadow-2xl overflow-hidden border border-gray-100">
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <CheckCheck className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <p className="text-base font-semibold text-gray-900">
+                        Added to cart
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowAddToCartNotification(false)}
+                      className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                      aria-label="Close"
+                    >
+                      <IoClose className="w-5 h-5" />
+                    </button>
+                  </div>
+                  {/* Product summary */}
+                  <div className="p-6">
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                        <img
+                          src={activeImage || product?.images?.[0] || noimage}
+                          alt={product?.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 line-clamp-2 capitalize">
+                          {product?.name}
+                        </p>
+                        {single_product?.overview?.sku_number && (
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            SKU: {single_product?.overview?.sku_number}
+                          </p>
+                        )}
+                        <p className="text-sm font-semibold text-gray-900 mt-2">
+                          ${currentPrice?.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Selected options */}
+                    <dl className="mt-4 space-y-2 text-sm">
+                      <div className="flex justify-between py-1.5 border-b border-gray-50">
+                        <dt className="text-gray-500">Quantity</dt>
+                        <dd className="font-medium text-gray-900">
+                          {currentQuantity}
+                        </dd>
+                      </div>
+                      {selectedSize && (
+                        <div className="flex justify-between py-1.5 border-b border-gray-50">
+                          <dt className="text-gray-500">Size</dt>
+                          <dd className="font-medium text-gray-900">
+                            {selectedSize}
+                          </dd>
+                        </div>
+                      )}
+                      {selectedColor && (
+                        <div className="flex justify-between py-1.5 border-b border-gray-50">
+                          <dt className="text-gray-500">Colour</dt>
+                          <dd className="font-medium text-gray-900">
+                            {selectedColor}
+                          </dd>
+                        </div>
+                      )}
+                      {(selectedPrintMethod?.description ||
+                        selectedPrintMethod?.promodata_decoration) && (
+                        <div className="flex justify-between py-1.5 border-b border-gray-50">
+                          <dt className="text-gray-500">Print / Decoration</dt>
+                          <dd
+                            className="font-medium text-gray-900 text-right max-w-[180px] truncate"
+                            title={
+                              selectedPrintMethod?.promodata_decoration ||
+                              selectedPrintMethod?.description
+                            }
+                          >
+                            {selectedPrintMethod?.promodata_decoration ||
+                              selectedPrintMethod?.description}
+                          </dd>
+                        </div>
+                      )}
+                      {deliveryDate && (
+                        <div className="flex justify-between py-1.5 border-b border-gray-50">
+                          <dt className="text-gray-500">Est. delivery</dt>
+                          <dd className="font-medium text-gray-900">
+                            {deliveryDate}
+                          </dd>
+                        </div>
+                      )}
+                      {discountPct > 0 && (
+                        <div className="flex justify-between py-1.5 border-b border-gray-50">
+                          <dt className="text-gray-500">Discount</dt>
+                          <dd className="font-medium text-emerald-600">
+                            {discountPct}% off
+                          </dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
+
+                  <div className="flex gap-3 px-6 pb-6">
+                    <button
+                      onClick={() => setShowAddToCartNotification(false)}
+                      className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Continue shopping
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowAddToCartNotification(false);
+                        navigate("/cart");
+                      }}
+                      className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors"
+                    >
+                      View cart
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       <div className="Mycontainer relative ">
         {/* Image Gallery Modal */}
         <ImageGalleryModal
@@ -970,7 +1141,7 @@ const ProductDetails = () => {
                 <h2
                   className={`text-2xl ${
                     product?.name ? "font-bold" : "font-medium"
-                  } cursor-pointer transition-colors`}
+                  } cursor-pointer transition-colors capitalize`}
                   onClick={handleHeadingClick}
                   onKeyDown={(e) => {
                     if (e.shiftKey && e.key.toLowerCase() === "a") {

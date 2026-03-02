@@ -1,13 +1,7 @@
-import {
-  getProductCategory,
-  isProductCategory,
-  getClothingAdditionalCost,
-  getClothingPricing,
-} from "@/utils/utils";
-import React, { useEffect } from "react";
+import { getClothingAdditionalCost, isProductCategory } from "@/utils/utils";
+import { useEffect } from "react";
 import { IoCartOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import { FaInfoCircle } from "react-icons/fa";
 
 const PricingTab = ({
   productId,
@@ -34,7 +28,6 @@ const PricingTab = ({
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
   };
-  console.log(selectedSize);
 
   // Find all additions with the same promodata_decoration as the selected print method
   // Deduplicate by lead_time, keeping the first occurrence for each unique lead_time
@@ -124,8 +117,6 @@ const PricingTab = ({
 
   const isClothing = isProductCategory(single_product, "Clothing");
 
-  console.log(parseSizing(), selectedSize);
-
   const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
@@ -136,7 +127,7 @@ const PricingTab = ({
               htmlFor="print-method"
               className=" my-2  font-medium text-black text-sm sm:text-base"
             >
-              Print Method:
+              Artwork:
             </label>
 
             <select
@@ -180,7 +171,6 @@ const PricingTab = ({
                 id="print-method"
                 value={selectedSize}
                 onChange={(e) => {
-                  console.log(e.target.value);
                   setSelectedSize(e.target.value);
                 }}
                 className="w-fll px-2 py-2 border rounded-md outline-none"
