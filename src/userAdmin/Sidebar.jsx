@@ -92,8 +92,8 @@ export default function SidebarTabs() {
           {/* Sidebar */}
           <aside
             className={`fixed inset-y-0 left-0 w-[280px] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
-              isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+              isSidebarOpen ? "translate-x-0" : "-translate-x-full z-[100]"
+            } z-[100]`}
             aria-label="Dashboard navigation"
           >
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">

@@ -20,8 +20,10 @@ import {
 
 const getSetupChargeKey = (item) => {
   const productId = String(item?.id || "").trim();
-  if(!productId) return "";
-  const printKey = String(item?.printMethodKey || item?.print || "").trim().toLowerCase();
+  if (!productId) return "";
+  const printKey = String(item?.printMethodKey || item?.print || "")
+    .trim()
+    .toLowerCase();
   return `${productId}::${printKey}`;
 };
 
@@ -61,15 +63,15 @@ const CartComponent = () => {
   const setupFeeByCartItemId = useMemo(() => {
     const seen = new Set();
     const feeMap = {};
-    
+
     for (const item of items) {
       const fee = Number(item?.setupFee) || 0;
-      if(fee <= 0) {
+      if (fee <= 0) {
         feeMap[item.cartItemId] = 0;
         continue;
       }
       const key = getSetupChargeKey(item);
-      if(!key || seen.has(key)) {
+      if (!key || seen.has(key)) {
         feeMap[item.cartItemId] = 0;
         continue;
       }
@@ -140,8 +142,7 @@ const CartComponent = () => {
         setCouponDiscount(result.discount);
 
         // Check if the discount will exceed the limit
-        const calculatedDiscount =
-          (couponBaseAmount * result.discount) / 100;
+        const calculatedDiscount = (couponBaseAmount * result.discount) / 100;
         if (
           result.coupon.maxLimitAmount &&
           calculatedDiscount > result.coupon.maxLimitAmount
@@ -221,6 +222,17 @@ const CartComponent = () => {
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
+  const checkIfLowerThanMoQ = (item) => {
+    const lowerMoQ =
+      item?.basePrices?.length > 0 ? item?.basePrices?.[0]?.qty : null;
+    if (lowerMoQ) {
+      return { lowerThanMoQ: item.quantity < lowerMoQ, lowerMoQ: lowerMoQ };
+    }
+    return { lowerThanMoQ: false, lowerMoQ: null };
+  };
+
+  console.log(items);
+
   return (
     <div className="Mycontainer !mb-10 mt-5">
       {/* Header */}
@@ -228,10 +240,10 @@ const CartComponent = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">
           Shopping Cart ({items?.length})
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 justify-between md:justify-end w-full md:w-auto">
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 px-4 py-2 text-smallHeader border border-smallHeader rounded-lg hover:bg-primary hover:text-white transition-colors font-medium"
+            className="inline-flex items-center gap-2 px-3 py-2 text-smallHeader border border-smallHeader rounded-lg hover:bg-primary hover:text-white transition-colors font-medium"
           >
             <IoArrowBack className="w-4 h-4" />
             Continue Shopping
@@ -283,8 +295,13 @@ const CartComponent = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
-                        const subTotal = item.totalPrice || item.price * item.quantity;
-                        const lineSetupFee = setupFeeByCartItemId[item.cartItemId] || 0;
+                        const subTotal =
+                          item.totalPrice || item.price * item.quantity;
+                        const lineSetupFee =
+                          setupFeeByCartItemId[item.cartItemId] || 0;
+                        const isLowerThanMoQ = checkIfLowerThanMoQ(item);
+                        const lowerMoQ = isLowerThanMoQ.lowerMoQ;
+                        const lowerThanMoQ = isLowerThanMoQ.lowerThanMoQ;
                         return (
                           <tr
                             key={item.cartItemId}
@@ -368,7 +385,7 @@ const CartComponent = () => {
 
                             {/* Quantity */}
                             <td className="px-6 py-4 text-center">
-                              <div className="flex items-center justify-center">
+                              <div className="flex flex-col items-center justify-center max-w-[200px]">
                                 <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                                   <div className="flex items-center">
                                     <button
@@ -418,6 +435,13 @@ const CartComponent = () => {
                                     </button>
                                   </div>
                                 </div>
+                                {lowerThanMoQ && (
+                                  <div className="text-xs text-red-500 mt-2">
+                                    This product has a minimum order quantity of{" "}
+                                    {lowerMoQ}. For lower MOQ, please place an
+                                    order and we will get back to you.
+                                  </div>
+                                )}
                               </div>
                             </td>
 

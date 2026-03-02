@@ -195,7 +195,7 @@ const TrendingCarousel = () => {
                             )}?ref=${encodedId}`}
                             key={product.meta.id}
                           > */}
-                        <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2">
+                        <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 group overflow-hidden sm:mr-2">
                           {" "}
                           {/* Product Image */}
                           <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">

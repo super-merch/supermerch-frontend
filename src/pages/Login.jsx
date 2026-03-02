@@ -13,7 +13,6 @@ import { useAuth } from "../hooks/useAuth";
 const Login = () => {
   const { setToken, token } = useContext(AuthContext);
   const { backendUrl } = useContext(AppContext);
-  const navigate = useNavigate();
   const {
     loading,
     error,
@@ -53,7 +52,7 @@ const Login = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
+  const navigate = useNavigate();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -79,11 +78,12 @@ const Login = () => {
           setError("");
           const { token } = response.data;
           setToken(token);
-
           toast.success("Login successful!");
+          setLoading(true);
+
           localStorage.setItem("token", token);
           // Additional logic for cart and favorites would go here
-          window.location.href = "/";
+          navigate("/");
         }
       }
     } catch (err) {
