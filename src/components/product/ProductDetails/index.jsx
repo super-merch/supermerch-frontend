@@ -95,7 +95,7 @@ const ProductDetails = () => {
 
     const headerSizes = String(detailString)
       .split("\n")[0]
-      .split(",")
+      .split(/[|, ;:]/)
       .map((s) => s.trim())
       .filter(Boolean);
 
@@ -119,7 +119,7 @@ const ProductDetails = () => {
     }
 
     return sizesString
-      .split(",")
+      .split(/[|, ;:]/)
       .map((s) => s.trim())
       .filter(Boolean);
   };
