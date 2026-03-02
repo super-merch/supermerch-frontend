@@ -2,30 +2,36 @@
 import { createSlice,createSelector } from '@reduxjs/toolkit';
 
 const initialState = {
-  items: [], // This will store all items with userEmail
+  items: [], 
   totalQuantity: 0,
   totalAmount: 0,
   cachedBasePrices: {},
-  currentUserEmail: null, // Track current user
+  currentUserEmail: null, 
 };
 
-// Helper function to calculate price based on quantity and price breaks
 const getPriceForQuantity = (quantity, priceBreaks) => {
   if (!priceBreaks || priceBreaks.length === 0) return 0;
-
-  // Sort price breaks by quantity
   const sortedBreaks = [...priceBreaks].sort((a, b) => a.qty - b.qty);
-
-  // Find the appropriate price break for the given quantity
   for (let i = sortedBreaks.length - 1; i >= 0; i--) {
     if (quantity >= sortedBreaks[i].qty) {
       return sortedBreaks[i].price;
     }
   }
-
-  // If quantity is less than the smallest break, use the smallest break price
   return sortedBreaks[0]?.price || 0;
 };
+
+const norm = (v) => String(v ?? "").trim().toLowerCase();
+const getCartLineKey = (item) => 
+[
+  norm(item.id),
+  norm(item.userEmail),
+  norm(item.size),
+  norm(item.color),
+  norm(item.printMethodKey || item.print),
+  norm(item.logoColor),
+  item.sample ? "sample" : "regular",
+].join("::");
+
 
 const cartSlice = createSlice({
   name: "cart",
@@ -34,8 +40,6 @@ const cartSlice = createSlice({
     setCurrentUser: (state, action) => {
       const { email } = action.payload;
       state.currentUserEmail = email;
-
-      // Recalculate totals for current user
       const userItems = state.items.filter((item) => item.userEmail === email);
       state.totalQuantity = userItems.reduce(
         (sum, item) => sum + item.quantity,
@@ -51,7 +55,7 @@ const cartSlice = createSlice({
       const {
         id,
         price,
-        basePrices = [], // This should come from ProductDetails
+        basePrices = [], 
         totalPrice,
         size = "",
         setupFee = 0,
@@ -65,33 +69,33 @@ const cartSlice = createSlice({
         ...rest
       } = action.payload;
 
-      // Use guest email if no user email provided
       const effectiveUserEmail = userEmail || "guest@gmail.com";
-
       if (!state.currentUserEmail) {
-        // If no current user set, set it to the provided email or guest
         state.currentUserEmail = effectiveUserEmail;
       }
-
-      // Find existing item for the specific user email, size, and color
       const color = rest.color || "";
+      const incomingLine = {
+        id,
+        userEmail: effectiveUserEmail,
+        size,
+        color,
+        printMethodKey: rest.printMethodKey,
+        print,
+        logoColor: rest.logoColor,
+        sample: rest.sample,
+      };
+   
+      const incomingKey = getCartLineKey(incomingLine);
       const existing = state.items.find(
-        (item) =>
-          item.id === id &&
-          item.userEmail === effectiveUserEmail &&
-          item.size === size &&
-          (item.color || "") === color
+        (item) => getCartLineKey(item) === incomingKey
       );
-
+      
       if (existing) {
         existing.quantity += quantity;
-        // Recalculate price based on new quantity
         const newUnitPrice = getPriceForQuantity(existing.quantity, existing.basePrices);
         const priceWithMargin = newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
         existing.price = priceWithMargin * (1 - existing.discountPct / 100);
         existing.totalPrice = existing.price * existing.quantity;
-        existing.print = print
-        existing.setupFee = setupFee
         if (dragdrop) {
       existing.dragdrop = dragdrop;
     }
