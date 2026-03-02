@@ -16,7 +16,7 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,6 +29,12 @@ import { AppContext } from "../../../context/AppContext";
 import { ProductsContext } from "../../../context/ProductsContext";
 import { AuthContext } from "../../../context/AuthContext";
 import { addToCart } from "../../../redux/slices/cartSlice";
+import {
+  addToFavourite,
+  removeFromFavourite,
+} from "../../../redux/slices/favouriteSlice";
+import { CiHeart } from "react-icons/ci";
+import { IoIosHeart } from "react-icons/io";
 import ProductNotFound from "../ProductNotFound";
 import QuoteFormModal from "../QuoteFormModal";
 import Services from "../Services";
@@ -41,6 +47,7 @@ import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
 import LeadTimeTab from "./LeadTime";
+import { Tooltip } from "@mui/material";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -55,6 +62,7 @@ const ProductDetails = () => {
       : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   const { token, userData } = useContext(AuthContext);
   const { error, totalDiscount } = useContext(ProductsContext);
@@ -449,6 +457,22 @@ const ProductDetails = () => {
         clearTimeout(aKeyTimeoutRef.current);
         aKeyTimeoutRef.current = null;
       }
+    }
+  };
+
+  const isFavourited = favouriteItems?.some(
+    (item) => item.meta?.id === single_product?.meta?.id,
+  );
+
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (!single_product) return;
+    if (isFavourited) {
+      dispatch(removeFromFavourite(single_product, userData?.email));
+      toast.success("Removed from favourites");
+    } else {
+      dispatch(addToFavourite(single_product, userData?.email));
+      toast.success("Added to favourites");
     }
   };
 
@@ -1138,22 +1162,49 @@ const ProductDetails = () => {
           <div>
             <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="w-full">
-                <h2
-                  className={`text-2xl ${
-                    product?.name ? "font-bold" : "font-medium"
-                  } cursor-pointer transition-colors capitalize`}
-                  onClick={handleHeadingClick}
-                  onKeyDown={(e) => {
-                    if (e.shiftKey && e.key.toLowerCase() === "a") {
-                      handleHeadingClick(e);
+                <div className="flex items-start justify-between gap-3">
+                  <h2
+                    className={`text-2xl flex-1 min-w-0 ${
+                      product?.name ? "font-bold" : "font-medium"
+                    } cursor-pointer transition-colors capitalize`}
+                    onClick={handleHeadingClick}
+                    onKeyDown={(e) => {
+                      if (e.shiftKey && e.key.toLowerCase() === "a") {
+                        handleHeadingClick(e);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Product name - Press Shift+A to view supplier information"
+                  >
+                    {product?.name}
+                  </h2>
+                  <Tooltip
+                    title={
+                      isFavourited
+                        ? "Remove from favourites"
+                        : "Add to favourites"
                     }
-                  }}
-                  tabIndex={0}
-                  role="button"
-                  aria-label="Product name - Press Shift+A to view supplier information"
-                >
-                  {product?.name}
-                </h2>{" "}
+                    placement="top"
+                  >
+                    <button
+                      type="button"
+                      onClick={handleFavoriteClick}
+                      className="flex-shrink-0 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                      aria-label={
+                        isFavourited
+                          ? "Remove from favourites"
+                          : "Add to favourites"
+                      }
+                    >
+                      {isFavourited ? (
+                        <IoIosHeart className="w-6 h-6 text-primary" />
+                      ) : (
+                        <CiHeart className="w-6 h-6 text-gray-500 hover:text-primary transition-colors" />
+                      )}
+                    </button>
+                  </Tooltip>
+                </div>
                 <div className="flex flex-wrap items-center gap-2 py-1">
                   {!loading && (
                     <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200">

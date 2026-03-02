@@ -2,15 +2,12 @@ import { slugify } from "@/utils/utils";
 import { useContext, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { FaFire } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import Slider from "react-slick";
-import "swiper/css";
-import "swiper/css/navigation";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import { ProductsContext } from "../../context/ProductsContext";
-import noimage from "/noimage.png";
-import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
 import {
   A11y,
   Autoplay,
@@ -18,10 +15,13 @@ import {
   Pagination,
   Scrollbar,
 } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { ProductsContext } from "../../context/ProductsContext";
 import Tooltip from "../Common/Tooltip";
+import noimage from "/noimage.png";
 
 const TrendingCarousel = () => {
-  const navigate = useNavigate();
+  const { favouriteItems } = useSelector((state) => state.favouriteProducts);
   const { fetchTrendingProducts, trendingProducts, trendingProductsLoading } =
     useContext(ProductsContext);
 
@@ -83,12 +83,6 @@ const TrendingCarousel = () => {
         },
       },
     ],
-  };
-
-  const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
   if (trendingProductsLoading) {
@@ -189,57 +183,68 @@ const TrendingCarousel = () => {
                     const encodedId = btoa(product.meta?.id); // base64 encode
                     const slug = slugify(product.overview?.name);
 
+                    const isFavourited = favouriteItems?.some(
+                      (item) => item.meta?.id === product?.meta?.id,
+                    );
+
                     return (
                       <SwiperSlide key={slideIndex} className="w-full">
-                        <Link
-                          to={`/product/${encodeURIComponent(
-                            slug
-                          )}?ref=${encodedId}`}
-                          key={product.meta.id}
-                        >
-                          <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2">
-                            {" "}
-                            {/* Product Image */}
-                            <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">
-                              <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                                Hot
-                              </span>
-                              <img
-                                src={
-                                  product.overview.hero_image
-                                    ? product.overview.hero_image
-                                    : noimage
-                                }
-                                alt={product.overview.name || "Product"}
-                                className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-110"
-                              />
-                            </div>
-                            {/* Product Info */}
-                            <div className="p-3 rounded-b-xl text-center">
-                              <Tooltip
-                                content={product.overview.name || "No Name"}
-                                placement="top"
+                        {/* <Link
+                            to={`/product/${encodeURIComponent(
+                              slug,
+                            )}?ref=${encodedId}`}
+                            key={product.meta.id}
+                          > */}
+                        <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2">
+                          {" "}
+                          {/* Product Image */}
+                          <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">
+                            <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                              Hot
+                            </span>
+
+                            <img
+                              src={
+                                product.overview.hero_image
+                                  ? product.overview.hero_image
+                                  : noimage
+                              }
+                              alt={product.overview.name || "Product"}
+                              className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+                          {/* Product Info */}
+                          <div className="p-3 rounded-b-xl text-center">
+                            <Tooltip
+                              content={product.overview.name || "No Name"}
+                              placement="top"
+                            >
+                              <Link
+                                to={`/product/${encodeURIComponent(
+                                  slug,
+                                )}?ref=${encodedId}`}
+                                key={product.meta.id}
                               >
                                 <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
                                   {product.overview.name || "No Name"}
                                 </h3>
-                              </Tooltip>
-                              <p className="text-xs text-secondary/60">
-                                Min Qty:{" "}
-                                {product.product?.prices?.price_groups[0]
-                                  ?.base_price?.price_breaks[0]?.qty || 1}
-                              </p>
-                              <div className="mt-1">
-                                <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
-                                  From $
-                                  {minPrice === maxPrice
-                                    ? minPrice.toFixed(2)
-                                    : minPrice.toFixed(2)}
-                                </h4>
-                              </div>
+                              </Link>
+                            </Tooltip>
+                            <p className="text-xs text-secondary/60">
+                              Min Qty:{" "}
+                              {product.product?.prices?.price_groups[0]
+                                ?.base_price?.price_breaks[0]?.qty || 1}
+                            </p>
+                            <div className="mt-1">
+                              <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
+                                From $
+                                {minPrice === maxPrice
+                                  ? minPrice.toFixed(2)
+                                  : minPrice.toFixed(2)}
+                              </h4>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       </SwiperSlide>
                     );
                   })}
