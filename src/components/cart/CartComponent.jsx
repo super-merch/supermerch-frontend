@@ -1,5 +1,5 @@
 import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { IoArrowBack } from "react-icons/io5";
@@ -17,6 +17,13 @@ import {
   removeFromCart,
   updateCartItemQuantity,
 } from "../../redux/slices/cartSlice";
+
+const getSetupChargeKey = (item) => {
+  const productId = String(item?.id || "").trim();
+  if(!productId) return "";
+  const printKey = String(item?.printMethodKey || item?.print || "").trim().toLowerCase();
+  return `${productId}::${printKey}`;
+};
 
 const CartComponent = () => {
   const { totalDiscount } = useContext(ProductsContext);
@@ -51,6 +58,26 @@ const CartComponent = () => {
     (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
     0,
   );
+  const setupFeeByCartItemId = useMemo(() => {
+    const seen = new Set();
+    const feeMap = {};
+    
+    for (const item of items) {
+      const fee = Number(item?.setupFee) || 0;
+      if(fee <= 0) {
+        feeMap[item.cartItemId] = 0;
+        continue;
+      }
+      const key = getSetupChargeKey(item);
+      if(!key || seen.has(key)) {
+        feeMap[item.cartItemId] = 0;
+        continue;
+      }
+      seen.add(key);
+      feeMap[item.cartItemId] = fee;
+    }
+    return feeMap;
+  }, [items]);
 
   const normalizedSetupFee = Number(setupFee) || 0;
   const normalizedShipping = Number(shippingCharges) || 0;
@@ -111,7 +138,7 @@ const CartComponent = () => {
 
         // Check if the discount will exceed the limit
         const calculatedDiscount =
-          (productDiscountedAmount * result.discount) / 100;
+          (couponBaseAmount * result.discount) / 100;
         if (
           result.coupon.maxLimitAmount &&
           calculatedDiscount > result.coupon.maxLimitAmount
@@ -254,11 +281,11 @@ const CartComponent = () => {
                     {console.log(items)}
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
-                        const subTotal =
-                          item.totalPrice || item.price * item.quantity;
+                        const subTotal = item.totalPrice || item.price * item.quantity;
+                        const lineSetupFee = setupFeeByCartItemId[item.cartItemId] || 0;
                         return (
                           <tr
-                            key={item.id}
+                            key={item.cartItemId}
                             className="hover:bg-gray-50 transition-colors"
                           >
                             {/* Product Info */}
@@ -323,7 +350,7 @@ const CartComponent = () => {
                             {/* Price */}
                             <td className="px-6 py-4 text-center">
                               <div className="text-2xl font-bold text-smallHeader">
-                                ${item.setupFee.toFixed(2)}
+                                ${lineSetupFee.toFixed(2)}
                               </div>
                             </td>
                             <td className="px-6 py-4 text-center">
@@ -418,7 +445,7 @@ const CartComponent = () => {
                       item.totalPrice || item.price * item.quantity;
                     return (
                       <div
-                        key={item.id}
+                        key={item.cartItemId}
                         className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
                       >
                         <div className="flex space-x-3">
