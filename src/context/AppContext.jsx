@@ -2,6 +2,27 @@ import { createContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
 
+const getSetupChargeKey = (item) => {
+  const productId = String(item?.id || "").trim();
+  if(!productId) return "";
+  const printKey = String(item?.printMethodKey || item?.print || "").trim()
+    .toLowerCase();
+    return `${productId}::${printKey}`;
+};
+
+const calculateUniqueSetupFee = (items = []) =>{
+  const seen = new Set();
+  return items.reduce((total, item) => {
+    const fee = Number(item?.setupFee) || 0;
+    if (fee<=0) return total;
+
+    const key = getSetupChargeKey(item);
+    if (!key || seen.has(key)) return total;
+    seen.add(key);
+    return total + fee;
+}, 0);
+}
+
 export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
@@ -16,11 +37,7 @@ const AppContextProvider = ({ children }) => {
   const items = useSelector(selectCurrentUserCartItems);
 
   useEffect(() => {
-    const setup = items.reduce(
-      (total, item) => total + (item.setupFee || 0),
-      0
-    );
-    setSetupFee(setup);
+    setSetupFee(calculateUniqueSetupFee(items));
   }, [items]);
 
   useEffect(() => {
