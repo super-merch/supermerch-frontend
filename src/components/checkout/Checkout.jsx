@@ -338,7 +338,8 @@ const Checkout = () => {
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
-      !data.shipping.zip
+      !data.shipping.zip ||
+      !data.shipping.address
       // !data.shipping.email ||
       // !data.shipping.phone
     ) {
@@ -351,7 +352,8 @@ const Checkout = () => {
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
-      !data.billing.zip
+      !data.billing.zip ||
+      !data.billing.address
       // !data.billing.email ||
       // !data.billing.phone
     ) {
