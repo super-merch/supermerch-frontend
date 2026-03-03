@@ -351,7 +351,7 @@ const Checkout = () => {
       !data.shipping.region ||
       !data.shipping.city ||
       !data.shipping.zip ||
-      !data.shipping.phone.replace(/\D/g, "").length >= 10 ||
+      (data.shipping.phone.replace(/\D/g, "").length || 0) < 10 ||
       !data.shipping.address
       // !data.shipping.email ||
       // !data.shipping.phone
