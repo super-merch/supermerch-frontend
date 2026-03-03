@@ -351,6 +351,7 @@ const Checkout = () => {
       !data.shipping.region ||
       !data.shipping.city ||
       !data.shipping.zip ||
+      !data.shipping.phone.replace(/\D/g, "").length >= 10 ||
       !data.shipping.address
       // !data.shipping.email ||
       // !data.shipping.phone
@@ -400,7 +401,7 @@ const Checkout = () => {
       userData?.phone ||
       data?.shipping?.phone ||
       addressData?.phone ||
-      "1234567890";
+      "";
     const checkoutData = {
       user: {
         firstName:
@@ -763,12 +764,14 @@ const Checkout = () => {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">
-                          Phone
+                          Phone <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="tel"
                           placeholder="Enter phone number"
-                          {...register("shipping.phone")}
+                          {...register("shipping.phone", {required: true,
+                            validate: value => value?.replace(/\D/g, "").length >= 10 || "Phone number must be at least 10 digits"
+                          })}
                           value={shippingPhone}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
@@ -781,7 +784,7 @@ const Checkout = () => {
                           setOpenCustomer(false);
                           setOpenShipping(true);
                         }}
-                        disabled={!shippingEmail}
+                        disabled={!shippingEmail || shippingPhone?.replace(/\D/g, "").length < 10}
                         /*disabled={!shippingEmail || !shippingPhone}*/
                         className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                       >
