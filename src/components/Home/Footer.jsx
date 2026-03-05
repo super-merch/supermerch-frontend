@@ -215,9 +215,8 @@ const Footer = () => {
                   href="mailto:Info@supermerch.com.au"
                   className="text-white hover:text-white/80 transition-colors"
                 >
-                  Info@supermerch
+                  Info@supermerch.com.au
                   <br className="block sm:hidden" />
-                  .com.au
                 </a>
               </div>
               <div>
