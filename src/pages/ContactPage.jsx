@@ -7,10 +7,10 @@ import PopularTags from "../components/contactus/PopularTags";
 const ContactPage = () => {
   return (
     <div className="min-h-screen">
-      <ContactUs />
-      <PopularTags />
       <CallUs />
       <FAQS />
+      {/* <ContactUs /> */}
+      {/* <PopularTags /> */}
     </div>
   );
 };
