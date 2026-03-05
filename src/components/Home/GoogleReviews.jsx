@@ -128,7 +128,7 @@ const GoogleReviewsComponent = () => {
                                   {reviewer?.profilePhotoUrl ? (
                                     <img
                                       src={reviewer.profilePhotoUrl}
-                                      alt={reviewer?.displayName}
+                                      alt=""
                                       className="w-full h-full object-cover"
                                       onError={(e) => {
                                         e.target.style.display = "none";

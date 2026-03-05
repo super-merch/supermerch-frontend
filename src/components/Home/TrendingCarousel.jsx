@@ -2,8 +2,12 @@ import { slugify } from "@/utils/utils";
 import { useContext, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { FaFire } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { IoIosHeart } from "react-icons/io";
+import { CiHeart } from "react-icons/ci";
+import { addToFavourite, removeFromFavourite } from "@/redux/slices/favouriteSlice";
+import { toast } from "react-toastify";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import "swiper/css";
@@ -30,7 +34,28 @@ const TrendingCarousel = () => {
     if (trendingProducts.length === 0) {
       fetchTrendingProducts(1, "", 16);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
+ const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleCardNavigate = (slug, encodedId) => {
+    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  };
+
+  const handleToggleFavourite = (e, product, isFavourited) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isFavourited) {
+      dispatch(removeFromFavourite(product));
+      toast.success("Product removed from favourites");
+    } else {
+      dispatch(addToFavourite(product));
+      toast.success("Product added to favourites");
+    }
+  };
+  
+  // eslint-disable-line react-hooks/exhaustive-deps
   // fetchTrendingProducts is intentionally excluded to prevent infinite re-renders
 
   // React Slick carousel settings - memoized to prevent re-creation
@@ -137,7 +162,7 @@ const TrendingCarousel = () => {
                 <Swiper
                   breakpoints={{
                     0: {
-                      slidesPerView: 2,
+                      slidesPerView: 1,
                       spaceBetween: 12,
                     },
                     640: {
@@ -188,20 +213,28 @@ const TrendingCarousel = () => {
                     );
 
                     return (
-                      <SwiperSlide key={slideIndex} className="w-full">
-                        {/* <Link
-                            to={`/product/${encodeURIComponent(
-                              slug,
-                            )}?ref=${encodedId}`}
-                            key={product.meta.id}
-                          > */}
-                        <div className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2">
+                      <SwiperSlide key={product.meta?.id || slideIndex} className="w-full">
+                        <div
+                          className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2"
+                          onClick={() => handleCardNavigate(slug, encodedId)}
+                        >
                           {" "}
                           {/* Product Image */}
                           <div className="h-48 md:h-60 border-b overflow-hidden relative rounded-t-xl">
                             <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                               Hot
                             </span>
+                            <button
+                              type="button"
+                              onClick={(e) => handleToggleFavourite(e, product, isFavourited)}
+                              className="absolute top-2 right-2 z-20 p-2 bg-white/90 rounded-full shadow"
+                            >
+                              {isFavourited ? (
+                                <IoIosHeart className="text-primary text-lg" />
+                              ) : (
+                                <CiHeart className="text-gray-700 text-lg" />
+                              )}
+                            </button>
 
                             <img
                               src={
@@ -219,16 +252,9 @@ const TrendingCarousel = () => {
                               content={product.overview.name || "No Name"}
                               placement="top"
                             >
-                              <Link
-                                to={`/product/${encodeURIComponent(
-                                  slug,
-                                )}?ref=${encodedId}`}
-                                key={product.meta.id}
-                              >
-                                <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
-                                  {product.overview.name || "No Name"}
-                                </h3>
-                              </Link>
+                            <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
+                              {product.overview.name || "No Name"}
+                            </h3>
                             </Tooltip>
                             <p className="text-xs text-secondary/60">
                               Min Qty:{" "}
