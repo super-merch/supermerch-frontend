@@ -340,6 +340,7 @@ const HISTORY_STORAGE_KEY = "supermerch.chatHistory";
 const ChatWidget = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState(() => {
@@ -468,6 +469,7 @@ const ChatWidget = () => {
           displayLimit,
         },
       ]);
+      setUnreadCount((c) => c + 1);
       setVisibleCounts((prev) => ({
         ...prev,
         [assistantId]: displayLimit,
@@ -520,6 +522,7 @@ const ChatWidget = () => {
 
   useEffect(() => {
     if (open) {
+      setUnreadCount(0);
       const timer = requestAnimationFrame(() => {
         inputRef.current?.focus();
       });
@@ -637,474 +640,468 @@ const ChatWidget = () => {
         className="fixed z-50"
         style={{ right: DEFAULT_MARGIN, bottom: DEFAULT_MARGIN }}
       >
-      {open && (
-        <div
-          ref={panelRef}
-          className={
-            isFullscreen
-              ? "fixed inset-0 px-4 sm:px-10 py-8 bg-black/25 backdrop-blur-sm"
-              : "fixed w-[320px] sm:w-[360px] bg-white border border-gray-200 shadow-[0_0_30px_rgba(0,150,136,0.15)] rounded-2xl overflow-hidden"
-          }
-          style={
-            isFullscreen
-              ? {
-                  top: `${fullscreenOffset}px`,
-                }
-              : {
-                  left: `${panelPosition.left}px`,
-                  top: `${panelPosition.top}px`,
-                }
-          }
-        >
+        {open && (
           <div
+            ref={panelRef}
             className={
               isFullscreen
-                ? "absolute h-full w-full max-w-5xl bg-white border border-gray-200 shadow-[0_0_40px_rgba(0,150,136,0.2)] rounded-3xl overflow-hidden flex flex-col"
-                : "w-full"
+                ? "fixed inset-0 px-4 sm:px-10 py-8 bg-black/25 backdrop-blur-sm"
+                : "fixed w-[320px] sm:w-[360px] bg-white border border-gray-200 shadow-[0_0_30px_rgba(0,150,136,0.15)] rounded-2xl overflow-hidden"
             }
             style={
               isFullscreen
                 ? {
+                  top: `${fullscreenOffset}px`,
+                }
+                : {
+                  left: `${panelPosition.left}px`,
+                  top: `${panelPosition.top}px`,
+                }
+            }
+          >
+            <div
+              className={
+                isFullscreen
+                  ? "absolute h-full w-full max-w-5xl bg-white border border-gray-200 shadow-[0_0_40px_rgba(0,150,136,0.2)] rounded-3xl overflow-hidden flex flex-col"
+                  : "w-full"
+              }
+              style={
+                isFullscreen
+                  ? {
                     left: `${expandedPosition?.x ?? DEFAULT_MARGIN}px`,
                     top: `${expandedPosition?.y ?? DEFAULT_MARGIN}px`,
                     width: "min(100%, 1120px)",
                     height: "min(calc(100% - 24px), 820px)",
                   }
-                : undefined
-            }
-            ref={isFullscreen ? expandedCardRef : null}
-          >
-            <div className="chat-header flex items-center justify-between px-4 py-3 border-b border-white/20">
-              <div className="flex items-center gap-3 select-none">
-                <div className="ai-avatar" aria-hidden="true">
-                  <div className="ai-avatar-inner" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-white">Super AI</span>
-                  <span className="text-[11px] text-white/80">
-                    Ask our AI for the best deal.
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1 text-[11px] text-white/80">
-                  <span className="online-dot" aria-hidden="true" />
-                  <span>Online</span>
-                </div>
-                <button
-                  onClick={() => {
-                    if (!isFullscreen) {
-                      setExpandedPosition(null);
-                    }
-                    setIsFullscreen(!isFullscreen);
-                  }}
-                  onPointerDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  className="text-white/80 hover:text-white hover:bg-white/10 rounded px-2 py-1 transition-colors"
-                  aria-label={isFullscreen ? "Exit full screen" : "Expand chat"}
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 16 16"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    {isFullscreen ? (
-                      <>
-                        <path d="M6 2H2v4" />
-                        <path d="M2 2l4 4" />
-                        <path d="M10 14h4v-4" />
-                        <path d="M14 14l-4-4" />
-                      </>
-                    ) : (
-                      <>
-                        <path d="M10 2h4v4" />
-                        <path d="M14 2l-4 4" />
-                        <path d="M2 10v4h4" />
-                        <path d="M2 14l4-4" />
-                      </>
-                    )}
-                  </svg>
-                  <span className="sr-only">
-                    {isFullscreen ? "Restore" : "Expand"}
-                  </span>
-                </button>
-                <button
-                  onClick={closeChat}
-                  onPointerDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  className="text-white/80 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
-                  aria-label="Close chat"
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 16 16"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 4L4 12" />
-                    <path d="M4 4l8 8" />
-                  </svg>
-                  <span className="sr-only">Close</span>
-                </button>
-              </div>
-            </div>
-
-            <div
-              ref={historyRef}
-              onScroll={handleHistoryScroll}
-              className={
-                isFullscreen
-                  ? "px-6 py-5 flex-1 overflow-auto chat-history"
-                  : "px-4 py-3 max-h-[360px] overflow-auto chat-history"
+                  : undefined
               }
+              ref={isFullscreen ? expandedCardRef : null}
             >
-            {history.length === 0 && (
-              <div>
-                {isFullscreen && (
-                  <div className="mb-6 rounded-2xl bg-gradient-to-r from-primary via-blue-400 to-teal-400 text-white px-6 py-5 shadow-lg">
-                    <div className="text-lg sm:text-2xl font-semibold">
-                      Ask our Merch Assistant
+              <div className="chat-header flex items-center justify-between px-4 py-3 border-b border-white/20">
+                <div className="flex items-center gap-3 select-none">
+                  <div className="ai-avatar" aria-hidden="true">
+                    <div className="ai-avatar-inner" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-white">Super AI</span>
+                    <span className="text-[11px] text-white/80">
+                      Ask our AI for the best deal.
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="hidden sm:flex items-center gap-1 text-[11px] text-white/80">
+                    <span className="online-dot" aria-hidden="true" />
+                    <span>Online</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!isFullscreen) {
+                        setExpandedPosition(null);
+                      }
+                      setIsFullscreen(!isFullscreen);
+                    }}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="text-white/80 hover:text-white hover:bg-white/10 rounded px-2 py-1 transition-colors"
+                    aria-label={isFullscreen ? "Exit full screen" : "Expand chat"}
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 16 16"
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      {isFullscreen ? (
+                        <>
+                          <path d="M6 2H2v4" />
+                          <path d="M2 2l4 4" />
+                          <path d="M10 14h4v-4" />
+                          <path d="M14 14l-4-4" />
+                        </>
+                      ) : (
+                        <>
+                          <path d="M10 2h4v4" />
+                          <path d="M14 2l-4 4" />
+                          <path d="M2 10v4h4" />
+                          <path d="M2 14l4-4" />
+                        </>
+                      )}
+                    </svg>
+                    <span className="sr-only">
+                      {isFullscreen ? "Restore" : "Expand"}
+                    </span>
+                  </button>
+                  <button
+                    onClick={closeChat}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="text-white/80 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
+                    aria-label="Close chat"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 16 16"
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 4L4 12" />
+                      <path d="M4 4l8 8" />
+                    </svg>
+                    <span className="sr-only">Close</span>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                ref={historyRef}
+                onScroll={handleHistoryScroll}
+                className={
+                  isFullscreen
+                    ? "px-6 py-5 flex-1 overflow-auto chat-history"
+                    : "px-4 py-3 max-h-[360px] overflow-auto chat-history"
+                }
+              >
+                {history.length === 0 && (
+                  <div>
+                    {isFullscreen && (
+                      <div className="mb-6 rounded-2xl bg-gradient-to-r from-primary via-blue-400 to-teal-400 text-white px-6 py-5 shadow-lg">
+                        <div className="text-lg sm:text-2xl font-semibold">
+                          Ask our Merch Assistant
+                        </div>
+                        <div className="mt-1 text-sm sm:text-base opacity-90">
+                          Get instant recommendations across promotional products,
+                          apparel, and gifting.
+                        </div>
+                      </div>
+                    )}
+                    <div className="text-xs uppercase tracking-wide text-gray-500">
+                      Popular searches
                     </div>
-                    <div className="mt-1 text-sm sm:text-base opacity-90">
-                      Get instant recommendations across promotional products,
-                      apparel, and gifting.
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {DEFAULT_POPULAR_QUERIES.map((term) => (
+                        <button
+                          key={term}
+                          type="button"
+                          onClick={() => handleChipClick(term)}
+                          className="chat-chip px-3 py-1.5 text-xs"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            className="h-3 w-3 text-primary"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" />
+                          </svg>
+                          {term}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-sm text-gray-700">
+                      <div className="font-medium text-gray-900">
+                        Hey! I'm SuperAI 👋
+                      </div>
+                      <div className="mt-1">What can I help you find today</div>
+                      <div className="mt-2 text-xs text-gray-600">
+                        • Quick gift ideas
+                        <br />
+                        • Trending merch picks
+                        <br />
+                        • Eco-friendly options
+                      </div>
                     </div>
                   </div>
                 )}
-                <div className="text-xs uppercase tracking-wide text-gray-500">
-                  Popular searches
-                </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {DEFAULT_POPULAR_QUERIES.map((term) => (
-                    <button
-                      key={term}
-                      type="button"
-                      onClick={() => handleChipClick(term)}
-                      className="chat-chip px-3 py-1.5 text-xs"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-3 w-3 text-primary"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" />
-                      </svg>
-                      {term}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-3 text-sm text-gray-700">
-                  <div className="font-medium text-gray-900">
-                    Hey! I'm SuperAI 👋
-                  </div>
-                  <div className="mt-1">What can I help you find today</div>
-                  <div className="mt-2 text-xs text-gray-600">
-                    • Quick gift ideas
-                    <br />
-                    • Trending merch picks
-                    <br />
-                    • Eco-friendly options
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
+                {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
 
-            {history.map((entry) => {
-              if (entry.role === "user") {
-                return (
-                  <div key={entry.id} className="mt-3 flex justify-end chat-message">
-                    <div className="chat-bubble chat-bubble-user max-w-[85%]">
-                      {entry.text}
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
-                <div key={entry.id} className="mt-3 chat-message">
-                  <div className="flex items-start gap-2">
-                    <div className="ai-avatar ai-avatar-sm" aria-hidden="true">
-                      <div className="ai-avatar-inner" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      {entry.text && (
-                        <div className="chat-bubble chat-bubble-assistant">
+                {history.map((entry) => {
+                  if (entry.role === "user") {
+                    return (
+                      <div key={entry.id} className="mt-3 flex justify-end chat-message">
+                        <div className="chat-bubble chat-bubble-user max-w-[85%]">
                           {entry.text}
                         </div>
-                      )}
+                      </div>
+                    );
+                  }
 
-                      {!!entry.items?.length && (
-                        <div className="mt-3 grid gap-2">
-                          {(() => {
-                            const currentCount =
-                              visibleCounts[entry.id] ??
-                              entry.displayLimit ??
-                              10;
-                            const visibleCount = Math.min(
-                              currentCount,
-                              entry.items.length
-                            );
-                            return entry.items.slice(0, visibleCount).map((item) => (
-                              <Link
-                                key={item.id}
-                                to={buildProductUrl(item)}
-                                state={{ productId: item.id }}
-                                onClick={closeChat}
-                                className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
-                              >
-                                <img
-                                  src={item.image || "/noimage.png"}
-                                  alt={item.name}
-                                  className="w-12 h-12 object-contain bg-white rounded"
-                                  onLoad={recalcPanelPosition}
-                                />
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium text-gray-900 truncate">
-                                    {item.name}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {item.price ? `$${item.price}` : "Contact for price"}
-                                  </div>
-                                </div>
-                              </Link>
-                            ));
-                          })()}
+                  return (
+                    <div key={entry.id} className="mt-3 chat-message">
+                      <div className="flex items-start gap-2">
+                        <div className="ai-avatar ai-avatar-sm" aria-hidden="true">
+                          <div className="ai-avatar-inner" />
                         </div>
-                      )}
+                        <div className="min-w-0 flex-1">
+                          {entry.text && (
+                            <div className="chat-bubble chat-bubble-assistant">
+                              {entry.text}
+                            </div>
+                          )}
 
-                      {Array.isArray(entry.items) && (() => {
-                        const itemCount = entry.items.length;
-                        const current =
-                          visibleCounts[entry.id] ?? entry.displayLimit ?? 10;
-                        const canLoadMore = itemCount > 0 && current < itemCount;
-                        if (!canLoadMore) return null;
-                        return (
-                          <button
-                            type="button"
-                            className="mt-3 text-sm font-semibold text-primary hover:underline"
-                            onClick={() => {
-                              setVisibleCounts((prev) => {
-                                const next = Math.min(itemCount, current + 10);
-                                return { ...prev, [entry.id]: next };
-                              });
-                            }}
-                          >
-                            Load more
-                          </button>
-                        );
-                      })()}
+                          {!!entry.items?.length && (
+                            <div className="mt-3 grid gap-2">
+                              {(() => {
+                                const currentCount =
+                                  visibleCounts[entry.id] ??
+                                  entry.displayLimit ??
+                                  10;
+                                const visibleCount = Math.min(
+                                  currentCount,
+                                  entry.items.length
+                                );
+                                return entry.items.slice(0, visibleCount).map((item) => (
+                                  <Link
+                                    key={item.id}
+                                    to={buildProductUrl(item)}
+                                    state={{ productId: item.id }}
+                                    onClick={closeChat}
+                                    className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
+                                  >
+                                    <img
+                                      src={item.image || "/noimage.png"}
+                                      alt={item.name}
+                                      className="w-12 h-12 object-contain bg-white rounded"
+                                      onLoad={recalcPanelPosition}
+                                    />
+                                    <div className="min-w-0">
+                                      <div className="text-sm font-medium text-gray-900 truncate">
+                                        {item.name}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        {item.price ? `$${item.price}` : "Contact for price"}
+                                      </div>
+                                    </div>
+                                  </Link>
+                                ));
+                              })()}
+                            </div>
+                          )}
 
-                      {!!entry.extras?.length && (
-                        <div className="mt-4">
-                          <div className="text-xs uppercase tracking-wide text-gray-500">
-                            Presentation extras
-                          </div>
-                          <div className="mt-2 grid gap-2">
-                            {entry.extras.slice(0, 4).map((item) => (
-                              <Link
-                                key={item.id}
-                                to={buildProductUrl(item)}
-                                state={{ productId: item.id }}
-                                onClick={closeChat}
-                                className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
-                              >
-                                <img
-                                  src={item.image || "/noimage.png"}
-                                  alt={item.name}
-                                  className="w-12 h-12 object-contain bg-white rounded"
-                                  onLoad={recalcPanelPosition}
-                                />
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium text-gray-900 truncate">
-                                    {item.name}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {item.price ? `$${item.price}` : "Contact for price"}
-                                  </div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {!!(entry.similarQueries?.length || entry.popularQueries?.length) && (
-                        <div className="mt-3">
-                          <div className="text-xs uppercase tracking-wide text-gray-500">
-                            {entry.items?.length && entry.similarQueries?.length
-                              ? "Similar searches"
-                              : "Popular searches"}
-                          </div>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {(entry.similarQueries?.length
-                              ? entry.similarQueries
-                              : entry.popularQueries
-                            ).map((term) => (
+                          {Array.isArray(entry.items) && (() => {
+                            const itemCount = entry.items.length;
+                            const current =
+                              visibleCounts[entry.id] ?? entry.displayLimit ?? 10;
+                            const canLoadMore = itemCount > 0 && current < itemCount;
+                            if (!canLoadMore) return null;
+                            return (
                               <button
-                                key={term}
                                 type="button"
-                                onClick={() => handleChipClick(term)}
-                                className="chat-chip px-2.5 py-1 text-xs"
+                                className="mt-3 text-sm font-semibold text-primary hover:underline"
+                                onClick={() => {
+                                  setVisibleCounts((prev) => {
+                                    const next = Math.min(itemCount, current + 10);
+                                    return { ...prev, [entry.id]: next };
+                                  });
+                                }}
                               >
-                                <svg
-                                  aria-hidden="true"
-                                  viewBox="0 0 24 24"
-                                  className="h-3 w-3 text-primary"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" />
-                                </svg>
-                                {term}
+                                Load more
                               </button>
-                            ))}
-                          </div>
+                            );
+                          })()}
+
+                          {!!entry.extras?.length && (
+                            <div className="mt-4">
+                              <div className="text-xs uppercase tracking-wide text-gray-500">
+                                Presentation extras
+                              </div>
+                              <div className="mt-2 grid gap-2">
+                                {entry.extras.slice(0, 4).map((item) => (
+                                  <Link
+                                    key={item.id}
+                                    to={buildProductUrl(item)}
+                                    state={{ productId: item.id }}
+                                    onClick={closeChat}
+                                    className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
+                                  >
+                                    <img
+                                      src={item.image || "/noimage.png"}
+                                      alt={item.name}
+                                      className="w-12 h-12 object-contain bg-white rounded"
+                                      onLoad={recalcPanelPosition}
+                                    />
+                                    <div className="min-w-0">
+                                      <div className="text-sm font-medium text-gray-900 truncate">
+                                        {item.name}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        {item.price ? `$${item.price}` : "Contact for price"}
+                                      </div>
+                                    </div>
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {!!(entry.similarQueries?.length || entry.popularQueries?.length) && (
+                            <div className="mt-3">
+                              <div className="text-xs uppercase tracking-wide text-gray-500">
+                                {entry.items?.length && entry.similarQueries?.length
+                                  ? "Similar searches"
+                                  : "Popular searches"}
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {(entry.similarQueries?.length
+                                  ? entry.similarQueries
+                                  : entry.popularQueries
+                                ).map((term) => (
+                                  <button
+                                    key={term}
+                                    type="button"
+                                    onClick={() => handleChipClick(term)}
+                                    className="chat-chip px-2.5 py-1 text-xs"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      viewBox="0 0 24 24"
+                                      className="h-3 w-3 text-primary"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" />
+                                    </svg>
+                                    {term}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {loading && (
+                  <div className="mt-3 inline-flex items-center gap-3 text-sm text-gray-600 bg-white/90 rounded-lg px-3 py-2 border border-gray-100 shadow-sm">
+                    <span>Assistant is typing</span>
+                    <span className="ai-wave" aria-hidden="true">
+                      <span className="ai-wave-bar" />
+                      <span className="ai-wave-bar" />
+                      <span className="ai-wave-bar" />
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <form
+                onSubmit={handleSubmit}
+                className={
+                  isFullscreen
+                    ? "p-4 border-t border-gray-100 bg-white"
+                    : "p-3 border-t border-gray-100"
+                }
+              >
+                <div>
+                  <div className="chat-input-shell">
+                    <div className="chat-input-body flex items-center gap-2 px-4 py-2">
+                      <input
+                        ref={inputRef}
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Ask anything..."
+                        className="flex-1 bg-transparent text-sm focus:outline-none placeholder-gray-400"
+                      />
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className={`ai-orb ${loading ? "loading" : ""}`}
+                        aria-label="Send message"
+                      >
+                        <span className="ai-orb-inner">
+                          {loading ? (
+                            <svg className="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="12" r="3" fill="currentColor" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 2L11 13" />
+                              <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                            </svg>
+                          )}
+                        </span>
+                      </button>
                     </div>
                   </div>
+                  <div className="mt-2 text-[11px] text-gray-500">
+                    AI-powered search across our entire product range.
+                  </div>
                 </div>
-              );
-            })}
-
-            {loading && (
-              <div className="mt-3 inline-flex items-center gap-3 text-sm text-gray-600 bg-white/90 rounded-lg px-3 py-2 border border-gray-100 shadow-sm">
-                <span>Assistant is typing</span>
-                <span className="ai-wave" aria-hidden="true">
-                  <span className="ai-wave-bar" />
-                  <span className="ai-wave-bar" />
-                  <span className="ai-wave-bar" />
-                </span>
-              </div>
-            )}
-          </div>
-
-          <form
-            onSubmit={handleSubmit}
-            className={
-              isFullscreen
-                ? "p-4 border-t border-gray-100 bg-white"
-                : "p-3 border-t border-gray-100"
-            }
-          >
-            <div>
-              <div className="chat-input-shell">
-                <div className="chat-input-body flex items-center gap-2 px-4 py-2">
-                <input
-                  ref={inputRef}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Ask anything..."
-                  className="flex-1 bg-transparent text-sm focus:outline-none placeholder-gray-400"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`ai-orb ${loading ? "loading" : ""}`}
-                  aria-label="Send message"
-                >
-                  <span className="ai-orb-inner">
-                    {loading ? (
-                      <svg className="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="3" fill="currentColor" />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 2L11 13" />
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-                      </svg>
-                    )}
-                  </span>
-                </button>
-                </div>
-              </div>
-              <div className="mt-2 text-[11px] text-gray-500">
-                AI-powered search across our entire product range.
-              </div>
+              </form>
             </div>
-          </form>
           </div>
-        </div>
-      )}
-
-      <button
-        onClick={() => {
-          if (ignoreNextToggleRef.current) {
-            return;
-          }
-          setOpen(!open);
-        }}
-        className="chatbot-fab w-14 h-14 rounded-full bg-primary text-white shadow-[0_0_20px_rgba(0,150,136,0.5)] hover:shadow-[0_0_30px_rgba(0,150,136,0.7)] transition-all duration-300 flex items-center justify-center"
-        aria-label={open ? "Close chat" : "Open chat"}
-      >
-        <span className="chatbot-fab-orbit" aria-hidden="true">
-          <span className="orbit-dot orbit-dot-1" />
-          <span className="orbit-dot orbit-dot-2" />
-          <span className="orbit-dot orbit-dot-3" />
-        </span>
-        {open ? (
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6L6 18" />
-            <path d="M6 6l12 12" />
-          </svg>
-        ) : (
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
         )}
-        {(() => {
-          const assistantCount = history.filter(
-            (entry) => entry.role === "assistant"
-          ).length;
-          if (open || assistantCount < 1) return null;
-          return (
+
+        <button
+          onClick={() => {
+            if (ignoreNextToggleRef.current) {
+              return;
+            }
+            setOpen(!open);
+          }}
+          className="chatbot-fab w-14 h-14 rounded-full bg-primary text-white shadow-[0_0_20px_rgba(0,150,136,0.5)] hover:shadow-[0_0_30px_rgba(0,150,136,0.7)] transition-all duration-300 flex items-center justify-center"
+          aria-label={open ? "Close chat" : "Open chat"}
+        >
+          <span className="chatbot-fab-orbit" aria-hidden="true">
+            <span className="orbit-dot orbit-dot-1" />
+            <span className="orbit-dot orbit-dot-2" />
+            <span className="orbit-dot orbit-dot-3" />
+          </span>
+          {open ? (
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6L6 18" />
+              <path d="M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          )}
+          {unreadCount > 0 && !open && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
-              {assistantCount}
+              {unreadCount}
             </span>
-          );
-        })()}
-      </button>
+          )}
+        </button>
       </div>
     </>
   );
