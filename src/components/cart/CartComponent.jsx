@@ -435,7 +435,7 @@ const CartComponent = () => {
                                     </button>
                                   </div>
                                 </div>
-                                {lowerThanMoQ && (
+                                {!item?.sample && lowerThanMoQ && (
                                   <div className="text-xs text-red-500 mt-2">
                                     This product has a minimum order quantity of{" "}
                                     {lowerMoQ}. For lower MOQ, please place an

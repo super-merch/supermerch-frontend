@@ -743,11 +743,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           },
           {
             id: "PU", // Shirts
-            name: "Shirts",
+            name: "Shirts & Tee",
             columns: [
               {
                 title: "Formal Shirts",
-                items: ["Button-Up Shirts", "Polo Shirts"],
+                items: ["Business Shirts", "Polo Shirts"],
               },
               {
                 title: "Casual Shirts",
