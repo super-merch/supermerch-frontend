@@ -64,8 +64,7 @@ const Checkout = () => {
       if (!userData?.defaultShippingAddress) {
         try {
           const response = await axios.put(
-            `${
-              import.meta.env.VITE_BACKEND_URL
+            `${import.meta.env.VITE_BACKEND_URL
             }/api/auth/update-shipping-address`,
             { defaultShippingAddress: shippingAddressData },
             {
@@ -210,7 +209,8 @@ const Checkout = () => {
     }
   };
 
-  const { register, handleSubmit, watch, getValues, setValue } = useForm({
+  const { register, handleSubmit, watch, getValues, setValue, setError, formState: { errors } } = useForm({
+    mode: "onChange",
     defaultValues: {
       billing: {
         firstName: addressData?.firstName || "",
@@ -238,6 +238,18 @@ const Checkout = () => {
       paymentMethod: "card",
     },
   });
+
+  const validateSection = (fields) => {
+    let hasError = false;
+    fields.forEach(({ path, message }) => {
+      if (!getValues(path)) {
+        setError(path, { type: "manual", message });
+        hasError = true;
+      }
+    });
+    return hasError;
+  };
+
   const paymentMethod = watch("paymentMethod");
   const shippingEmail = watch("shipping.email");
   const shippingPhone = watch("shipping.phone");
@@ -338,7 +350,9 @@ const Checkout = () => {
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
-      !data.shipping.zip
+      !data.shipping.zip ||
+      (data.shipping.phone.replace(/\D/g, "").length || 0) < 10 ||
+      !data.shipping.address
       // !data.shipping.email ||
       // !data.shipping.phone
     ) {
@@ -351,7 +365,8 @@ const Checkout = () => {
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
-      !data.billing.zip
+      !data.billing.zip ||
+      !data.billing.address
       // !data.billing.email ||
       // !data.billing.phone
     ) {
@@ -386,7 +401,7 @@ const Checkout = () => {
       userData?.phone ||
       data?.shipping?.phone ||
       addressData?.phone ||
-      "1234567890";
+      "";
     const checkoutData = {
       user: {
         firstName:
@@ -439,10 +454,10 @@ const Checkout = () => {
       // Add coupon information to order data
       coupon: appliedCoupon
         ? {
-            code: appliedCoupon.coupen,
-            discount: couponDiscount,
-            discountAmount: couponDiscountAmount,
-          }
+          code: appliedCoupon.coupen,
+          discount: couponDiscount,
+          discountAmount: couponDiscountAmount,
+        }
         : null,
       gst: gstAmount,
       gstPercent: gstCharges,
@@ -492,10 +507,10 @@ const Checkout = () => {
         // Add coupon information to the request body
         coupon: appliedCoupon
           ? {
-              code: appliedCoupon.coupen,
-              discount: couponDiscount, // This should be the discount percentage
-              discountAmount: couponDiscountAmount, // This should be the calculated discount amount
-            }
+            code: appliedCoupon.coupen,
+            discount: couponDiscount, // This should be the discount percentage
+            discountAmount: couponDiscountAmount, // This should be the calculated discount amount
+          }
           : null,
         gstPercent: gstCharges,
       };
@@ -715,9 +730,8 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle customer"
-                    className={`transition-transform ${
-                      openCustomer ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${openCustomer ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -750,12 +764,14 @@ const Checkout = () => {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">
-                          Phone
+                          Phone <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="tel"
                           placeholder="Enter phone number"
-                          {...register("shipping.phone")}
+                          {...register("shipping.phone", {required: true,
+                            validate: value => value?.replace(/\D/g, "").length >= 10 || "Phone number must be at least 10 digits"
+                          })}
                           value={shippingPhone}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
                         />
@@ -768,7 +784,8 @@ const Checkout = () => {
                           setOpenCustomer(false);
                           setOpenShipping(true);
                         }}
-                        disabled={!shippingEmail || !shippingPhone}
+                        disabled={!shippingEmail || shippingPhone?.replace(/\D/g, "").length < 10}
+                        /*disabled={!shippingEmail || !shippingPhone}*/
                         className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Continue to Shipping
@@ -812,9 +829,8 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle shipping"
-                    className={`transition-transform ${
-                      openShipping ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${openShipping ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -884,8 +900,11 @@ const Checkout = () => {
                             {...register("shipping.firstName", {
                               required: true,
                             })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.firstName ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                           />
+                          {errors.shipping?.firstName && (
+                            <p className="text-red-500 text-sm mt-1">Please enter your first name</p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <label className="flex items-center text-sm font-medium text-gray-700">
@@ -908,9 +927,12 @@ const Checkout = () => {
                           <input
                             type="text"
                             placeholder="Enter last name"
-                            {...register("shipping.lastName")}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            {...register("shipping.lastName", { required: true })}
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.lastName ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                           />
+                          {errors.shipping?.lastName && (
+                            <p className="text-red-500 text-sm mt-1">Please enter your last name</p>
+                          )}
                         </div>
                       </div>
                       <div className="mt-6">
@@ -942,10 +964,12 @@ const Checkout = () => {
                           type="text"
                           placeholder="Enter street address and unit number (e.g. 123 Main St, Unit 4)"
                           {...register("shipping.address")}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.address ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                         />
+                        {errors.shipping?.address && (
+                          <p className="text-red-500 text-sm mt-1">Please enter your street address</p>
+                        )}
                       </div>
-
                       <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
                         <div className="space-y-2">
                           <label className="flex items-center text-sm font-medium text-gray-700">
@@ -968,8 +992,9 @@ const Checkout = () => {
                             {...register("shipping.country", {
                               required: true,
                             })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.country ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                           >
+                            <option value="" disabled>Select your country</option>
                             {addressData?.country && (
                               <option value={addressData?.country}>
                                 {addressData?.country}
@@ -977,6 +1002,9 @@ const Checkout = () => {
                             )}
                             <option value="Australia">Australia</option>
                           </select>
+                          {errors.shipping?.country && (
+                            <p className="text-red-500 text-sm mt-1">Please select your country</p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -998,8 +1026,9 @@ const Checkout = () => {
                           </label>
                           <select
                             {...register("shipping.region", { required: true })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.region ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                           >
+                            <option value="" disabled>Select your state</option>
                             {addressData?.state && (
                               <option value={addressData?.state}>
                                 {addressData?.state}
@@ -1024,6 +1053,9 @@ const Checkout = () => {
                               Australian Capital Territory
                             </option>
                           </select>
+                          {errors.shipping?.region && (
+                            <p className="text-red-500 text-sm mt-1">Please select your state</p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -1045,8 +1077,9 @@ const Checkout = () => {
                           </label>
                           <select
                             {...register("shipping.city", { required: true })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.city ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                           >
+                            <option value="" disabled>Select your city</option>
                             {addressData?.city && (
                               <option value={addressData.city}>
                                 {addressData?.city}
@@ -1063,6 +1096,9 @@ const Checkout = () => {
                             <option value="Wollongong">Wollongong</option>
                             <option value="Hobart">Hobart</option>
                           </select>
+                          {errors.shipping?.city && (
+                            <p className="text-red-500 text-sm mt-1">Please select your city</p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -1087,8 +1123,11 @@ const Checkout = () => {
                             type="text"
                             placeholder="Enter postal code"
                             {...register("shipping.zip", { required: true })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.shipping?.zip ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                           />
+                          {errors.shipping?.zip && (
+                            <p className="text-red-500 text-sm mt-1">Please enter your postal code</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1096,6 +1135,16 @@ const Checkout = () => {
                       <button
                         type="button"
                         onClick={() => {
+                          const hasError = validateSection([
+                            { path: "shipping.firstName", message: "First name is required" },
+                            { path: "shipping.lastName",  message: "Last name is required" },
+                            { path: "shipping.address",   message: "Address is required" },
+                            { path: "shipping.country",   message: "Country is required" },
+                            { path: "shipping.region",    message: "State is required" },
+                            { path: "shipping.city",      message: "City is required" },
+                            { path: "shipping.zip",       message: "Postal code is required" },
+                          ]);
+                          if (hasError) return;
                           setOpenShipping(false);
                           setOpenBilling(true);
                         }}
@@ -1142,9 +1191,8 @@ const Checkout = () => {
                     <button
                       type="button"
                       aria-label="Toggle billing"
-                      className={`transition-transform ${
-                        openBilling ? "rotate-180" : "rotate-0"
-                      }`}
+                      className={`transition-transform ${openBilling ? "rotate-180" : "rotate-0"
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setOpenBilling(!openBilling);
@@ -1260,8 +1308,11 @@ const Checkout = () => {
                               {...register("billing.firstName", {
                                 required: true,
                               })}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.firstName ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                             />
+                            {errors.billing?.firstName && (
+                              <p className="text-red-500 text-sm mt-1">Please enter your first name</p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
@@ -1285,9 +1336,12 @@ const Checkout = () => {
                             <input
                               type="text"
                               placeholder="Enter last name"
-                              {...register("billing.lastName")}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                              {...register("billing.lastName", { required: true })}
+                              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.lastName ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                             />
+                            {errors.billing?.lastName && (
+                              <p className="text-red-500 text-sm mt-1">Please enter your last name</p>
+                            )}
                           </div>
                         </div>
                         <div className="mt-6">
@@ -1351,15 +1405,12 @@ const Checkout = () => {
                           <input
                             type="text"
                             placeholder="Enter street address and unit number (e.g. 123 Main St, Unit 4)"
-                            {...register("billing.address")}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
-                          />
-
-                          {/* <input
-                            type="hidden"
                             {...register("billing.address", { required: true })}
-                            value={getValues("billing.address")}
-                          /> */}
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.address ? "border-red-500 bg-red-50" : "border-gray-300"}`}
+                          />
+                          {errors.billing?.address && (
+                            <p className="text-red-500 text-sm mt-1">Please enter your street address</p>
+                          )}
                         </div>
 
                         <div className="grid gap-6 mt-6 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2">
@@ -1385,8 +1436,9 @@ const Checkout = () => {
                               {...register("billing.country", {
                                 required: true,
                               })}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.country ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                             >
+                              <option value="" disabled>Select your country</option>
                               {addressData?.country && (
                                 <option value={addressData?.country}>
                                   {addressData?.country}
@@ -1394,6 +1446,9 @@ const Checkout = () => {
                               )}
                               <option value="Australia">Australia</option>
                             </select>
+                            {errors.billing?.country && (
+                              <p className="text-red-500 text-sm mt-1">Please select your country</p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
@@ -1417,8 +1472,9 @@ const Checkout = () => {
                               {...register("billing.region", {
                                 required: true,
                               })}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.region ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                             >
+                              <option value="" disabled>Select your state</option>
                               {addressData?.state && (
                                 <option value={addressData?.state}>
                                   {addressData?.state}
@@ -1443,6 +1499,9 @@ const Checkout = () => {
                                 Australian Capital Territory
                               </option>
                             </select>
+                            {errors.billing?.region && (
+                              <p className="text-red-500 text-sm mt-1">Please select your state</p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
@@ -1464,8 +1523,9 @@ const Checkout = () => {
                             </label>
                             <select
                               {...register("billing.city", { required: true })}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.city ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                             >
+                              <option value="" disabled>Select your city</option>
                               {addressData?.city && (
                                 <option value={addressData.city}>
                                   {addressData?.city}
@@ -1482,6 +1542,9 @@ const Checkout = () => {
                               <option value="Wollongong">Wollongong</option>
                               <option value="Hobart">Hobart</option>
                             </select>
+                            {errors.billing?.city && (
+                              <p className="text-red-500 text-sm mt-1">Please select your city</p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
@@ -1506,8 +1569,11 @@ const Checkout = () => {
                               type="text"
                               placeholder="Enter postal code"
                               {...register("billing.zip", { required: true })}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${errors.billing?.zip ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                             />
+                            {errors.billing?.zip && (
+                              <p className="text-red-500 text-sm mt-1">Please enter your postal code</p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1516,6 +1582,18 @@ const Checkout = () => {
                       <button
                         type="button"
                         onClick={() => {
+                          if (!billingSameAsShipping) {
+                            const hasError = validateSection([
+                              { path: "billing.firstName", message: "First name is required" },
+                              { path: "billing.lastName",  message: "Last name is required" },
+                              { path: "billing.address",   message: "Address is required" },
+                              { path: "billing.country",   message: "Country is required" },
+                              { path: "billing.region",    message: "State is required" },
+                              { path: "billing.city",      message: "City is required" },
+                              { path: "billing.zip",       message: "Postal code is required" },
+                            ]);
+                            if (hasError) return;
+                          }
                           setOpenBilling(false);
                           setOpenPayment(true);
                         }}
@@ -1562,9 +1640,8 @@ const Checkout = () => {
                   <button
                     type="button"
                     aria-label="Toggle payment"
-                    className={`transition-transform ${
-                      openPayment ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${openPayment ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <svg
                       className="w-8 h-8 text-gray-600"
@@ -1615,11 +1692,10 @@ const Checkout = () => {
                     <button
                       type="submit"
                       disabled={loading || items.length === 0}
-                      className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
-                        loading || items.length === 0
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
-                      }`}
+                      className={`w-full py-4 px-6 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${loading || items.length === 0
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
+                        }`}
                     >
                       {loading ? (
                         <>
@@ -1706,11 +1782,10 @@ const Checkout = () => {
                   <button
                     type="submit"
                     disabled={loading || items?.length === 0}
-                    className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
-                      loading || items?.length === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
-                    }`}
+                    className={`w-max py-3 px-4 rounded-lg font-bold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${loading || items?.length === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-primary hover:opacity-90 shadow-lg hover:shadow-xl"
+                      }`}
                   >
                     {loading ? (
                       <>
