@@ -22,8 +22,14 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useSelector(selectCurrentUserCartItems);
-  const { token, setToken, addressData, shippingAddressData, userData, loadUserOrder } =
-    useContext(AuthContext);
+  const {
+    token,
+    setToken,
+    addressData,
+    shippingAddressData,
+    userData,
+    loadUserOrder,
+  } = useContext(AuthContext);
   const { totalDiscount } = useContext(ProductsContext);
   const {
     backendUrl,
@@ -209,7 +215,16 @@ const Checkout = () => {
     }
   };
 
-  const { register, handleSubmit, watch, getValues, setValue } = useForm({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    setValue,
+    setError,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
     defaultValues: {
       billing: {
         firstName: addressData?.firstName || "",
@@ -237,6 +252,18 @@ const Checkout = () => {
       paymentMethod: "card",
     },
   });
+
+  const validateSection = (fields) => {
+    let hasError = false;
+    fields.forEach(({ path, message }) => {
+      if (!getValues(path)) {
+        setError(path, { type: "manual", message });
+        hasError = true;
+      }
+    });
+    return hasError;
+  };
+
   const paymentMethod = watch("paymentMethod");
   const shippingEmail = watch("shipping.email");
   const shippingPhone = watch("shipping.phone");
@@ -337,7 +364,9 @@ const Checkout = () => {
       !data.shipping.country ||
       !data.shipping.region ||
       !data.shipping.city ||
-      !data.shipping.zip
+      !data.shipping.zip ||
+      (data.shipping.phone.replace(/\D/g, "").length || 0) < 10 ||
+      !data.shipping.address
       // !data.shipping.email ||
       // !data.shipping.phone
     ) {
@@ -350,7 +379,8 @@ const Checkout = () => {
       !data.billing.country ||
       !data.billing.region ||
       !data.billing.city ||
-      !data.billing.zip
+      !data.billing.zip ||
+      !data.billing.address
       // !data.billing.email ||
       // !data.billing.phone
     ) {
@@ -382,10 +412,7 @@ const Checkout = () => {
       "guest@gmail.com";
 
     const resolvedPhone =
-      userData?.phone ||
-      data?.shipping?.phone ||
-      addressData?.phone ||
-      "1234567890";
+      userData?.phone || data?.shipping?.phone || addressData?.phone || "";
     const checkoutData = {
       user: {
         firstName:
@@ -633,7 +660,6 @@ const Checkout = () => {
                   setOpenPayment(true);
                 }}
               />
-
 
               <PaymentStep
                 open={openPayment}

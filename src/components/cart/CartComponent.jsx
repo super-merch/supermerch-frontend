@@ -57,7 +57,7 @@ const CartComponent = () => {
   );
 
   const totalAmount = items.reduce(
-    (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
+    (sum, item) => sum + item.price * item.quantity,
     0,
   );
   const setupFeeByCartItemId = useMemo(() => {
@@ -295,8 +295,7 @@ const CartComponent = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
-                        const subTotal =
-                          item.totalPrice || item.price * item.quantity;
+                        const subTotal = item.price * item.quantity;
                         const lineSetupFee =
                           setupFeeByCartItemId[item.cartItemId] || 0;
                         const isLowerThanMoQ = checkIfLowerThanMoQ(item);
@@ -449,10 +448,13 @@ const CartComponent = () => {
                             <td className="px-6 py-4 text-center">
                               <div className="text-2xl font-bold text-smallHeader">
                                 $
-                                {(subTotal || 0).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })}
+                                {(subTotal + lineSetupFee || 0).toLocaleString(
+                                  "en-US",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  },
+                                )}
                               </div>
                             </td>
 
@@ -476,8 +478,9 @@ const CartComponent = () => {
                 {/* Mobile Card View */}
                 <div className="md:hidden space-y-4">
                   {items.map((item) => {
-                    const subTotal =
-                      item.totalPrice || item.price * item.quantity;
+                    const subTotal = item.price * item.quantity;
+                    const lineSetupFee =
+                      setupFeeByCartItemId[item.cartItemId] || 0;
                     return (
                       <div
                         key={item.cartItemId}
@@ -626,7 +629,9 @@ const CartComponent = () => {
                                 </span>
                                 <span className="text-lg font-bold text-smallHeader">
                                   $
-                                  {(subTotal || 0).toLocaleString("en-US", {
+                                  {(
+                                    subTotal + lineSetupFee || 0
+                                  ).toLocaleString("en-US", {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,
                                   })}
@@ -652,21 +657,16 @@ const CartComponent = () => {
                     </span>
                     <span className="text-lg font-bold text-gray-900">
                       $
-                      {(totalAmount || 0).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {(totalAmount + normalizedSetupFee || 0).toLocaleString(
+                        "en-US",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        },
+                      )}
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-gray-600">
-                      Total Setup Charges
-                    </span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
-                    </span>
-                  </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium text-gray-600">
                       Shipping
