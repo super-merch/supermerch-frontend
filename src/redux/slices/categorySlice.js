@@ -7,7 +7,7 @@ export const fetchcategoryProduct = createAsyncThunk(
     async () => {
         try {
             // console.log("API Request started...");
-            const response = await axios.get("http://localhost:5000/api/client-products");
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/client-products`);
             // console.log(response, "this is response"); // Log here
             return response.data;
         } catch (error) {

@@ -320,7 +320,7 @@ const orbStyles = `
 `;
 
 const BOT_API_URL =
-  import.meta.env.VITE_BOT_API_URL || "http://localhost:8001";
+  import.meta.env.VITE_BOT_API_URL || "";
 
 const SESSION_STORAGE_KEY = "supermerch.chatSessionId";
 const DEFAULT_MARGIN = 10;
