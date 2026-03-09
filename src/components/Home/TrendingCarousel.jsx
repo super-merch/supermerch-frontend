@@ -8,8 +8,6 @@ import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { addToFavourite, removeFromFavourite } from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
-import "slick-carousel/slick/slick-theme.css";
-import "slick-carousel/slick/slick.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import {
@@ -57,58 +55,6 @@ const TrendingCarousel = () => {
   
   // eslint-disable-line react-hooks/exhaustive-deps
   // fetchTrendingProducts is intentionally excluded to prevent infinite re-renders
-
-  // React Slick carousel settings - memoized to prevent re-creation
-  var settings = {
-    dots: false,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    speed: 1000,
-    autoplaySpeed: 3000,
-    arrows: true,
-    infinite: true,
-    nextArrow: <BiChevronRight />,
-    prevArrow: <BiChevronLeft />,
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          dots: true,
-          arrows: true,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          dots: true,
-          arrows: false,
-        },
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          dots: true,
-          arrows: false,
-        },
-      },
-    ],
-  };
 
   if (trendingProductsLoading) {
     return (
@@ -203,8 +149,8 @@ const TrendingCarousel = () => {
                     const prices = priceBreaks
                       .map((breakItem) => breakItem.price)
                       .filter((price) => price !== undefined);
-                    const minPrice = Math.min(...prices);
-                    const maxPrice = Math.max(...prices);
+                    const minPrice = prices.length ? Math.min(...prices) : 0;
+                    const maxPrice = prices.length ? Math.max(...prices) : 0;
                     const encodedId = btoa(product.meta?.id); // base64 encode
                     const slug = slugify(product.overview?.name);
 
