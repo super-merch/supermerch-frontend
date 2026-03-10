@@ -41,7 +41,7 @@ const categorytSlice = createSlice({
 
                 // Check if this typeId exists in any of the categoryProducts subTypes
                 return categoryProducts.some(category =>
-                    category.subTypes.some(sub => sub.id === typeId)
+                    category.subTypes?.some(sub => sub.id === typeId)
                 );
             });
             state.filteredProducts = matchedProducts || [];
