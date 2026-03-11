@@ -1245,11 +1245,18 @@ const ProductsContextProvider = ({ children }) => {
 
     const marginAdd = async () => {
         try {
+            const aToken = localStorage.getItem("aToken");
+            if (!aToken) {
+                setMarginApi({});
+                return;
+            }
+
             const { data } = await axios.get(
-                `${backendUrl}/api/product-margin/list-margin`
+                `${backendUrl}/api/product-margin/list-margin`,
+                { headers: { atoken: aToken } }
             );
 
-            if (data.success) {
+            if (data.success && Array.isArray(data.margins)) {
                 const marginMap = {};
                 data.margins.forEach((item) => {
                     marginMap[item.productId] = {
@@ -1260,10 +1267,16 @@ const ProductsContextProvider = ({ children }) => {
 
                 setMarginApi(marginMap);
             } else {
-                toast.error(data.message);
+                setMarginApi({});
             }
         } catch (error) {
-            console.error(error);
+            const status = error?.response?.status;
+            if (status === 400 || status === 401 || status === 403) {
+                setMarginApi({});
+                return;
+            }
+            console.error("Failed to fetch product margins:", error);
+            setMarginApi({});
         }
     };
 
