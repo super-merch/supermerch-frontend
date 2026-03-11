@@ -79,7 +79,7 @@ const Footer = () => {
                 onClick={() =>
                   window.open(
                     "https://mail.google.com/mail/?view=cm&to=Info@supermerch.com.au",
-                    "_blank"
+                    "_blank",
                   )
                 }
               >
@@ -249,7 +249,8 @@ const Footer = () => {
             <div>
               <div className="max-w-2xl mx-auto text-center md:text-left">
                 <p className="text-white/80 mb-2">
-                  Subscribe to our newsletter for <br className="hidden xs:block" /> exclusive offers and new
+                  Subscribe to our newsletter for{" "}
+                  <br className="hidden xs:block" /> exclusive offers and new
                   product updates
                 </p>
                 <div className="flex max-w-md">
@@ -277,7 +278,14 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-white/80 text-sm text-center md:text-left">
               © {new Date().getFullYear()} Super Merch. All rights reserved. |
-              Developed by DEVSRANK
+              Developed by{" "}
+              <a
+                href="https://www.kothartechsolutions.com/"
+                target="_blank"
+                className="text-primary hover:text-white transition-colors"
+              >
+                Kothar Tech Solutions Pvt. Ltd.
+              </a>
             </p>
             <div className="flex items-center gap-6 text-sm">
               <Link

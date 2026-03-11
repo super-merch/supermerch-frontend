@@ -6,7 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
-import { addToFavourite, removeFromFavourite } from "@/redux/slices/favouriteSlice";
+import {
+  addToFavourite,
+  removeFromFavourite,
+} from "@/redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -33,7 +36,7 @@ const TrendingCarousel = () => {
       fetchTrendingProducts(1, "", 16);
     }
   }, []);
- const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleCardNavigate = (slug, encodedId) => {
@@ -52,7 +55,7 @@ const TrendingCarousel = () => {
       toast.success("Product added to favourites");
     }
   };
-  
+
   // eslint-disable-line react-hooks/exhaustive-deps
   // fetchTrendingProducts is intentionally excluded to prevent infinite re-renders
 
@@ -159,7 +162,10 @@ const TrendingCarousel = () => {
                     );
 
                     return (
-                      <SwiperSlide key={product.meta?.id || slideIndex} className="w-full">
+                      <SwiperSlide
+                        key={product.meta?.id || slideIndex}
+                        className="w-full"
+                      >
                         <div
                           className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2"
                           onClick={() => handleCardNavigate(slug, encodedId)}
@@ -172,7 +178,9 @@ const TrendingCarousel = () => {
                             </span>
                             <button
                               type="button"
-                              onClick={(e) => handleToggleFavourite(e, product, isFavourited)}
+                              onClick={(e) =>
+                                handleToggleFavourite(e, product, isFavourited)
+                              }
                               className="absolute top-2 right-2 z-20 p-2 bg-white/90 rounded-full shadow"
                             >
                               {isFavourited ? (
@@ -198,9 +206,9 @@ const TrendingCarousel = () => {
                               content={product.overview.name || "No Name"}
                               placement="top"
                             >
-                            <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
-                              {product.overview.name || "No Name"}
-                            </h3>
+                              <h3 className="text-base font-semibold text-secondary group-hover:text-primary transition-colors duration-300 line-clamp-2 truncate">
+                                {product.overview.name || "No Name"}
+                              </h3>
                             </Tooltip>
                             <p className="text-xs text-secondary/60">
                               Min Qty:{" "}

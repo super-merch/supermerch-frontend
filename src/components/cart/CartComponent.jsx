@@ -21,7 +21,9 @@ import {
 const getSetupChargeKey = (item) => {
   const productId = String(item?.id || "").trim();
   if (!productId) return "";
-  const printKey = String(item?.printMethodKey || item?.print || "").trim().toLowerCase();
+  const printKey = String(item?.printMethodKey || item?.print || "")
+    .trim()
+    .toLowerCase();
   return `${productId}::${printKey}`;
 };
 
@@ -140,8 +142,7 @@ const CartComponent = () => {
         setCouponDiscount(result.discount);
 
         // Check if the discount will exceed the limit
-        const calculatedDiscount =
-          (couponBaseAmount * result.discount) / 100;
+        const calculatedDiscount = (couponBaseAmount * result.discount) / 100;
         if (
           result.coupon.maxLimitAmount &&
           calculatedDiscount > result.coupon.maxLimitAmount
@@ -221,6 +222,17 @@ const CartComponent = () => {
     navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
   };
 
+  const checkIfLowerThanMoQ = (item) => {
+    const lowerMoQ =
+      item?.basePrices?.length > 0 ? item?.basePrices?.[0]?.qty : null;
+    if (lowerMoQ) {
+      return { lowerThanMoQ: item.quantity < lowerMoQ, lowerMoQ: lowerMoQ };
+    }
+    return { lowerThanMoQ: false, lowerMoQ: null };
+  };
+
+  console.log(items);
+
   return (
     <div className="Mycontainer !mb-10 mt-5">
       {/* Header */}
@@ -228,10 +240,10 @@ const CartComponent = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">
           Shopping Cart ({items?.length})
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 justify-between md:justify-end w-full md:w-auto">
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 px-4 py-2 text-smallHeader border border-smallHeader rounded-lg hover:bg-primary hover:text-white transition-colors font-medium"
+            className="inline-flex items-center gap-2 px-3 py-2 text-smallHeader border border-smallHeader rounded-lg hover:bg-primary hover:text-white transition-colors font-medium"
           >
             <IoArrowBack className="w-4 h-4" />
             Continue Shopping
@@ -284,7 +296,11 @@ const CartComponent = () => {
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
                         const subTotal = item.price * item.quantity;
-                        const lineSetupFee = setupFeeByCartItemId[item.cartItemId] || 0;
+                        const lineSetupFee =
+                          setupFeeByCartItemId[item.cartItemId] || 0;
+                        const isLowerThanMoQ = checkIfLowerThanMoQ(item);
+                        const lowerMoQ = isLowerThanMoQ.lowerMoQ;
+                        const lowerThanMoQ = isLowerThanMoQ.lowerThanMoQ;
                         return (
                           <tr
                             key={item.cartItemId}
@@ -368,7 +384,7 @@ const CartComponent = () => {
 
                             {/* Quantity */}
                             <td className="px-6 py-4 text-center">
-                              <div className="flex items-center justify-center">
+                              <div className="flex flex-col items-center justify-center max-w-[200px]">
                                 <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                                   <div className="flex items-center">
                                     <button
@@ -418,6 +434,13 @@ const CartComponent = () => {
                                     </button>
                                   </div>
                                 </div>
+                                {!item?.sample && lowerThanMoQ && (
+                                  <div className="text-xs text-red-500 mt-2">
+                                    This product has a minimum order quantity of{" "}
+                                    {lowerMoQ}. For lower MOQ, please place an
+                                    order and we will get back to you.
+                                  </div>
+                                )}
                               </div>
                             </td>
 
@@ -425,10 +448,13 @@ const CartComponent = () => {
                             <td className="px-6 py-4 text-center">
                               <div className="text-2xl font-bold text-smallHeader">
                                 $
-                                {(subTotal + lineSetupFee || 0).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })}
+                                {(subTotal + lineSetupFee || 0).toLocaleString(
+                                  "en-US",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  },
+                                )}
                               </div>
                             </td>
 
@@ -453,7 +479,8 @@ const CartComponent = () => {
                 <div className="md:hidden space-y-4">
                   {items.map((item) => {
                     const subTotal = item.price * item.quantity;
-                    const lineSetupFee = setupFeeByCartItemId[item.cartItemId] || 0;
+                    const lineSetupFee =
+                      setupFeeByCartItemId[item.cartItemId] || 0;
                     return (
                       <div
                         key={item.cartItemId}
@@ -602,7 +629,9 @@ const CartComponent = () => {
                                 </span>
                                 <span className="text-lg font-bold text-smallHeader">
                                   $
-                                  {((subTotal + lineSetupFee) || 0).toLocaleString("en-US", {
+                                  {(
+                                    subTotal + lineSetupFee || 0
+                                  ).toLocaleString("en-US", {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,
                                   })}
@@ -628,10 +657,13 @@ const CartComponent = () => {
                     </span>
                     <span className="text-lg font-bold text-gray-900">
                       $
-                      {((totalAmount + normalizedSetupFee) || 0).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {(totalAmount + normalizedSetupFee || 0).toLocaleString(
+                        "en-US",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        },
+                      )}
                     </span>
                   </div>
 
@@ -687,9 +719,9 @@ const CartComponent = () => {
                         $
                         {items.length > 0
                           ? (total || 0).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "0.00"}
                       </span>
                     </div>
@@ -705,10 +737,11 @@ const CartComponent = () => {
                     {appliedCoupon && (
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-sm font-medium ${couponDiscountExceedsLimit
-                            ? "text-blue-600"
-                            : "text-green-600"
-                            }`}
+                          className={`text-sm font-medium ${
+                            couponDiscountExceedsLimit
+                              ? "text-blue-600"
+                              : "text-green-600"
+                          }`}
                         >
                           {appliedCoupon.coupen}{" "}
                           {couponDiscountExceedsLimit
