@@ -2,7 +2,6 @@ import { useState } from "react";
 import { FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import HotDeals from "./HotDeals";
-import ImageCarousel from "./TrendingCarousel";
 import HelpMePickModal from "./HelpMePickModal";
 
 import "swiper/css";
@@ -28,7 +27,8 @@ const HeroWithHotDeals = () => {
       description:
         "Bring joy to your loved ones with our premium gift hampers. Delivered straight to their door, ready to enjoy. Order now and save 15% on your first order.",
       buttonText: "Shop Gift Hampers",
-      imageUrl: `/gift.png`,
+      imageUrl: `/gift.webp`,
+      fallbackImageUrl: `/gift.png`,
       url: "/return-gifts",
       dontShowHelpMePick: true,
     },
@@ -50,7 +50,8 @@ const HeroWithHotDeals = () => {
       description:
         "Create memorable experiences with our custom printing and embroidery services. Perfect for businesses, events, and teams.",
       buttonText: "Contact Us",
-      imageUrl: `/pgHome.jpg`,
+      imageUrl: `/pgHome.webp`,
+      fallbackImageUrl: `/pgHome.jpg`,
       url: "/contact",
     },
     {
@@ -60,7 +61,8 @@ const HeroWithHotDeals = () => {
       description:
         "Scale your promotional campaigns with our competitive bulk pricing. Ideal for corporate events, conferences, and marketing campaigns.",
       buttonText: "Contact Us",
-      imageUrl: `/pgHome1.jpg`,
+      imageUrl: `/pgHome1.webp`,
+      fallbackImageUrl: `/pgHome1.jpg`,
       url: "/contact",
     },
   ];
@@ -116,20 +118,29 @@ const HeroWithHotDeals = () => {
               modules={[Autoplay, Navigation]}
               className="mySwiper h-full"
             >
-              {slider.map((slide) => {
-                // decide inline style only if imageUrl is present
-                const style = slide.imageUrl
-                  ? { backgroundImage: `url(${slide.imageUrl})` }
-                  : {};
-
+              {slider.map((slide, slideIndex) => {
+                const isFirstSlide = slideIndex === 0;
                 return (
                   <SwiperSlide key={slide.id}>
                     <div
                       className={`${
                         slide.bgClass ?? ""
-                      } bg-cover bg-center w-full h-full flex justify-start items-end relative`}
-                      style={style}
+                      } w-full h-full flex justify-start items-end relative`}
                     >
+                      {slide.imageUrl ? (
+                        <picture className="absolute inset-0 block w-full h-full">
+                          <source srcSet={slide.imageUrl} type="image/webp" />
+                          <img
+                            src={slide.fallbackImageUrl || slide.imageUrl}
+                            alt={slide.title}
+                            className="w-full h-full object-cover"
+                            loading={isFirstSlide ? "eager" : "lazy"}
+                            fetchPriority={isFirstSlide ? "high" : "auto"}
+                            decoding="async"
+                          />
+                        </picture>
+                      ) : null}
+
                       {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 via-black/30 to-transparent"></div>
 
