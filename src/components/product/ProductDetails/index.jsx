@@ -22,7 +22,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
+import "swiper/css/pagination";
+import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import banner from "@/assets/cuo.jpg";
 import { AppContext } from "../../../context/AppContext";
@@ -175,6 +176,7 @@ const ProductDetails = () => {
   const [isShiftPressed, setIsShiftPressed] = useState(false);
   const [isAPressed, setIsAPressed] = useState(false);
   const aKeyTimeoutRef = useRef(null);
+  const mobileSwiperRef = useRef(null);
 
   // Drag and drop states
   const [isDragging2, setIsDragging2] = useState(false);
@@ -543,7 +545,12 @@ const ProductDetails = () => {
 
   const handleColorClick = (color) => {
     setSelectedColor(color);
-    setActiveImage(colorImages[color] || noimage);
+    const colorImg = colorImages[color] || noimage;
+    setActiveImage(colorImg);
+    if (mobileSwiperRef.current) {
+      const idx = (product?.images || []).indexOf(colorImg);
+      if (idx >= 0) mobileSwiperRef.current.slideTo(idx);
+    }
   };
 
   useEffect(() => {
@@ -1018,20 +1025,20 @@ const ProductDetails = () => {
                       )}
                       {(selectedPrintMethod?.description ||
                         selectedPrintMethod?.promodata_decoration) && (
-                        <div className="flex justify-between py-1.5 border-b border-gray-50">
-                          <dt className="text-gray-500">Print / Decoration</dt>
-                          <dd
-                            className="font-medium text-gray-900 text-right max-w-[180px] truncate"
-                            title={
-                              selectedPrintMethod?.promodata_decoration ||
-                              selectedPrintMethod?.description
-                            }
-                          >
-                            {selectedPrintMethod?.promodata_decoration ||
-                              selectedPrintMethod?.description}
-                          </dd>
-                        </div>
-                      )}
+                          <div className="flex justify-between py-1.5 border-b border-gray-50">
+                            <dt className="text-gray-500">Print / Decoration</dt>
+                            <dd
+                              className="font-medium text-gray-900 text-right max-w-[180px] truncate"
+                              title={
+                                selectedPrintMethod?.promodata_decoration ||
+                                selectedPrintMethod?.description
+                              }
+                            >
+                              {selectedPrintMethod?.promodata_decoration ||
+                                selectedPrintMethod?.description}
+                            </dd>
+                          </div>
+                        )}
                       {deliveryDate && (
                         <div className="flex justify-between py-1.5 border-b border-gray-50">
                           <dt className="text-gray-500">Est. delivery</dt>
@@ -1085,77 +1092,112 @@ const ProductDetails = () => {
           images={product?.images || []}
           productName={product?.name}
         />
+        {/* Mobile/Tablet: swipeable main images */}
+        <div className="lg:hidden">
+          <Swiper
+            onSwiper={(swiper) => { mobileSwiperRef.current = swiper; }}
+            onSlideChange={(swiper) => {
+              const imgs = product?.images || [];
+              if (imgs[swiper.activeIndex]) {
+                setActiveImage(imgs[swiper.activeIndex]);
+              }
+            }}
+            modules={[Pagination]}
+            pagination={{ clickable: true }}
+            spaceBetween={0}
+            slidesPerView={1}
+            className="w-full"
+          >
+            {product?.images?.map((item, index) => (
+              <SwiperSlide key={index}>
+                <div
+                  className="flex justify-center cursor-pointer"
+                  onClick={() => setImageModel(true)}
+                >
+                  <img
+                    src={item}
+                    alt={`${product?.name} ${index + 1}`}
+                    className="w-full object-contain"
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[35%_35%_25%] gap-4 mt-2 justify-between">
           <div>
-            <div
-              className="mb-4  border-border2 overflow-hidden relative group cursor-zoom-in"
-              onClick={() => setImageModel(true)}
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                e.currentTarget.querySelector("img").style.transformOrigin =
-                  `${x}% ${y}%`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.querySelector("img").style.transformOrigin =
-                  "center center";
-              }}
-            >
-              <img
-                src={activeImage}
-                alt={product?.name}
-                className="w-full transition-transform duration-300 ease-out group-hover:scale-150"
-              />
-            </div>
+            <div className="hidden lg:block">
+              <div
+                className="mb-4  border-border2 overflow-hidden relative group cursor-zoom-in"
 
-            <Swiper
-              navigation={{
-                prevEl: ".custom-prev",
-                nextEl: ".custom-next",
-              }}
-              modules={[Navigation]}
-              className="mySwiper"
-              breakpoints={{
-                0: { slidesPerView: 2, spaceBetween: 5 },
-                580: { slidesPerView: 3, spaceBetween: 10 },
-                1024: { slidesPerView: 4, spaceBetween: 10 },
-              }}
-            >
-              <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
-                <button className="p-1 text-white rounded-full custom-prev bg-primary lg:p-2 md:p-1 sm:p-1">
-                  <IoArrowBackOutline className="text-base text-md" />
-                </button>
+                onClick={() => setImageModel(true)}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  e.currentTarget.querySelector("img").style.transformOrigin =
+                    `${x}% ${y}%`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.querySelector("img").style.transformOrigin =
+                    "center center";
+                }}
+              >
+                <img
+                  src={activeImage}
+                  alt={product?.name}
+                  className="w-full transition-transform duration-300 ease-out group-hover:scale-150"
+                />
               </div>
 
-              <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
-                <button className="p-1 text-white rounded-full custom-next bg-primary lg:p-2 md:p-1 sm:p-1">
-                  <IoMdArrowForward className="text-base text-md" />
-                </button>
-              </div>
+              <Swiper
+                navigation={{
+                  prevEl: ".custom-prev",
+                  nextEl: ".custom-next",
+                }}
+                modules={[Navigation]}
+                className="mySwiper"
+                breakpoints={{
+                  0: { slidesPerView: 2, spaceBetween: 5 },
+                  580: { slidesPerView: 3, spaceBetween: 10 },
+                  1024: { slidesPerView: 4, spaceBetween: 10 },
+                }}
+              >
+                <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
+                  <button className="p-1 text-white rounded-full custom-prev bg-primary lg:p-2 md:p-1 sm:p-1">
+                    <IoArrowBackOutline className="text-base text-md" />
+                  </button>
+                </div>
 
-              {product?.images?.map((item, index) => (
-                <SwiperSlide key={index}>
-                  <div
-                    className="flex justify-center px-2 py-3 cursor-pointer bg-line lg:px-0 md:px-0 sm:px-0"
-                    onClick={() => {
-                      setActiveImage(item);
-                      // setSelectedColor('')
-                    }}
-                  >
-                    <img
-                      src={item}
-                      alt={`Thumbnail ${index}`}
-                      className={`w-full border-2  ${
-                        activeImage === item
+                <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
+                  <button className="p-1 text-white rounded-full custom-next bg-primary lg:p-2 md:p-1 sm:p-1">
+                    <IoMdArrowForward className="text-base text-md" />
+                  </button>
+                </div>
+
+                {product?.images?.map((item, index) => (
+                  <SwiperSlide key={index}>
+                    <div
+                      className="flex justify-center px-2 py-3 cursor-pointer bg-line lg:px-0 md:px-0 sm:px-0"
+                      onClick={() => {
+                        setActiveImage(item);
+                        // setSelectedColor('')
+                      }}
+                    >
+                      <img
+                        src={item}
+                        alt={`Thumbnail ${index}`}
+                        className={`w-full border-2  ${activeImage === item
                           ? "border-smallHeader"
                           : "border-transparent"
-                      }`}
-                    />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                          }`}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
           </div>
           {/* // )} */}
           {/* 2nd column  */}
@@ -1164,9 +1206,8 @@ const ProductDetails = () => {
               <div className="w-full">
                 <div className="flex items-start justify-between gap-3">
                   <h2
-                    className={`text-2xl flex-1 min-w-0 ${
-                      product?.name ? "font-bold" : "font-medium"
-                    } cursor-pointer transition-colors capitalize`}
+                    className={`text-2xl flex-1 min-w-0 ${product?.name ? "font-bold" : "font-medium"
+                      } cursor-pointer transition-colors capitalize`}
                     onClick={handleHeadingClick}
                     onKeyDown={(e) => {
                       if (e.shiftKey && e.key.toLowerCase() === "a") {
@@ -1239,28 +1280,25 @@ const ProductDetails = () => {
                                 className="relative inline-flex items-center justify-center"
                               >
                                 <div
-                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${
-                                    isSelected
-                                      ? "w-7 h-7 shadow-xl"
-                                      : "w-6 h-6 hover:shadow-lg hover:scale-110"
-                                  }`}
+                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${isSelected
+                                    ? "w-7 h-7 shadow-xl"
+                                    : "w-6 h-6 hover:shadow-lg hover:scale-110"
+                                    }`}
                                   style={{
                                     backgroundColor:
                                       matchedColor?.hex || "#9ca3af",
                                   }}
                                   onClick={() => handleColorClick(color)}
                                   title={color}
-                                  aria-label={`Color: ${color}${
-                                    isSelected ? " (Selected)" : ""
-                                  }`}
+                                  aria-label={`Color: ${color}${isSelected ? " (Selected)" : ""
+                                    }`}
                                 >
                                   {/* White border for contrast */}
                                   <div
-                                    className={`absolute inset-0 rounded-full ${
-                                      isSelected
-                                        ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
-                                        : "border-[2px] border-gray-400/60"
-                                    }`}
+                                    className={`absolute inset-0 rounded-full ${isSelected
+                                      ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
+                                      : "border-[2px] border-gray-400/60"
+                                      }`}
                                   ></div>
 
                                   {/* Checkmark badge for selected */}
@@ -1300,11 +1338,10 @@ const ProductDetails = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveInfoTab(tab.key)}
-                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${
-                      activeInfoTab === tab.key
-                        ? "border-primary text-primary"
-                        : "border-transparent text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`flex-shrink-0 sm:px-4 px-2 xs:px-1 py-2 sm:text-lg text-sm font-bold border-b-2 -mb-px transition-colors ${activeInfoTab === tab.key
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-600 hover:text-gray-900"
+                      }`}
                   >
                     {tab.label}
                   </button>
