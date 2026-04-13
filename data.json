@@ -1,0 +1,478 @@
+{
+  "addons": [],
+  "price_tags": {
+    "lead_time": []
+  },
+  "price_groups": [
+    {
+      "additions": [
+        {
+          "key": "608406df0141e1be7bc0a5bb53328b4a",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 500",
+          "currency": "AUD",
+          "lead_time": "Same Day",
+          "description": "Same Day Print Per Col/Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.23
+            },
+            {
+              "qty": 250,
+              "price": 0.23
+            },
+            {
+              "qty": 500,
+              "price": 0.23
+            },
+            {
+              "qty": 1000,
+              "price": 0.23
+            },
+            {
+              "qty": 2500,
+              "price": 0.23
+            },
+            {
+              "qty": 5000,
+              "price": 0.23
+            }
+          ],
+          "promodata_decoration": "Direct Print: Screen Print"
+        },
+        {
+          "key": "cc2e4c5d86e5fad2d96d34096ee748b9",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 250",
+          "currency": "AUD",
+          "lead_time": "Same Day",
+          "description": "Same Day Digital Label Per Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.3
+            },
+            {
+              "qty": 250,
+              "price": 0.3
+            },
+            {
+              "qty": 500,
+              "price": 0.3
+            },
+            {
+              "qty": 1000,
+              "price": 0.3
+            },
+            {
+              "qty": 2500,
+              "price": 0.3
+            },
+            {
+              "qty": 5000,
+              "price": 0.3
+            }
+          ],
+          "promodata_decoration": "Applied Label/Sticker: Label with white background"
+        },
+        {
+          "key": "bb7046db1b0cdf834935aca3ff6a06b7",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 1000",
+          "currency": "AUD",
+          "lead_time": "24 Hours",
+          "description": "24 Hrs. Print Per Col/Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.23
+            },
+            {
+              "qty": 250,
+              "price": 0.23
+            },
+            {
+              "qty": 500,
+              "price": 0.23
+            },
+            {
+              "qty": 1000,
+              "price": 0.23
+            },
+            {
+              "qty": 2500,
+              "price": 0.23
+            },
+            {
+              "qty": 5000,
+              "price": 0.23
+            }
+          ],
+          "promodata_decoration": "Direct Print: Screen Print"
+        },
+        {
+          "key": "1d6c480fb763867f592ae019a48c58d6",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 500",
+          "currency": "AUD",
+          "lead_time": "24 Hours",
+          "description": "24 Hrs. Digital Label Per Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.3
+            },
+            {
+              "qty": 250,
+              "price": 0.3
+            },
+            {
+              "qty": 500,
+              "price": 0.3
+            },
+            {
+              "qty": 1000,
+              "price": 0.3
+            },
+            {
+              "qty": 2500,
+              "price": 0.3
+            },
+            {
+              "qty": 5000,
+              "price": 0.3
+            }
+          ],
+          "promodata_decoration": "Applied Label/Sticker: Label with white background"
+        },
+        {
+          "key": "778870c1165d54862ab6fb8e4ea7e7e9",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 2500",
+          "currency": "AUD",
+          "lead_time": "3 Working Days",
+          "description": "3 Days Print Per Col/Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.18
+            },
+            {
+              "qty": 250,
+              "price": 0.18
+            },
+            {
+              "qty": 500,
+              "price": 0.18
+            },
+            {
+              "qty": 1000,
+              "price": 0.18
+            },
+            {
+              "qty": 2500,
+              "price": 0.18
+            },
+            {
+              "qty": 5000,
+              "price": 0.18
+            }
+          ],
+          "promodata_decoration": "Direct Print: Screen Print"
+        },
+        {
+          "key": "96a83323b643aa3acf465c9d428fd226",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 1000",
+          "currency": "AUD",
+          "lead_time": "3 Working Days",
+          "description": "3 Days Digital Label Per Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.25
+            },
+            {
+              "qty": 250,
+              "price": 0.25
+            },
+            {
+              "qty": 500,
+              "price": 0.25
+            },
+            {
+              "qty": 1000,
+              "price": 0.25
+            },
+            {
+              "qty": 2500,
+              "price": 0.25
+            },
+            {
+              "qty": 5000,
+              "price": 0.25
+            }
+          ],
+          "promodata_decoration": "Applied Label/Sticker: Label with white background"
+        },
+        {
+          "key": "7a3760531b2e2dfd40d81f3bb424dfff",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 5000",
+          "currency": "AUD",
+          "lead_time": "7 Working Days",
+          "description": "7 Days Print Per Col/Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.15
+            },
+            {
+              "qty": 250,
+              "price": 0.15
+            },
+            {
+              "qty": 500,
+              "price": 0.15
+            },
+            {
+              "qty": 1000,
+              "price": 0.15
+            },
+            {
+              "qty": 2500,
+              "price": 0.15
+            },
+            {
+              "qty": 5000,
+              "price": 0.15
+            }
+          ],
+          "promodata_decoration": "Direct Print: Screen Print"
+        },
+        {
+          "key": "55a9cda62451678ef63e8f996a1fdb7f",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 5000",
+          "currency": "AUD",
+          "lead_time": "7 Working Days",
+          "description": "7 Days Digital Label Per Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.22
+            },
+            {
+              "qty": 250,
+              "price": 0.22
+            },
+            {
+              "qty": 500,
+              "price": 0.22
+            },
+            {
+              "qty": 1000,
+              "price": 0.22
+            },
+            {
+              "qty": 2500,
+              "price": 0.22
+            },
+            {
+              "qty": 5000,
+              "price": 0.22
+            }
+          ],
+          "promodata_decoration": "Applied Label/Sticker: Label with white background"
+        },
+        {
+          "key": "d62d7416712512731aba95bfe05cbff6",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 5000",
+          "currency": "AUD",
+          "lead_time": "12 Working Days",
+          "description": "12 Days Print Per Col/Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.13
+            },
+            {
+              "qty": 250,
+              "price": 0.13
+            },
+            {
+              "qty": 500,
+              "price": 0.13
+            },
+            {
+              "qty": 1000,
+              "price": 0.13
+            },
+            {
+              "qty": 2500,
+              "price": 0.13
+            },
+            {
+              "qty": 5000,
+              "price": 0.13
+            }
+          ],
+          "promodata_decoration": "Direct Print: Screen Print"
+        },
+        {
+          "key": "da92b1e51bf3ce1c865bdc3140f2ab02",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 5000",
+          "currency": "AUD",
+          "lead_time": "12 Working Days",
+          "description": "12 Days Digital Label Per Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.2
+            },
+            {
+              "qty": 250,
+              "price": 0.2
+            },
+            {
+              "qty": 500,
+              "price": 0.2
+            },
+            {
+              "qty": 1000,
+              "price": 0.2
+            },
+            {
+              "qty": 2500,
+              "price": 0.2
+            },
+            {
+              "qty": 5000,
+              "price": 0.2
+            }
+          ],
+          "promodata_decoration": "Applied Label/Sticker: Label with white background"
+        }
+      ],
+      "base_price": {
+        "key": "6054265c00a06751cae293cbc511d17f",
+        "tags": [],
+        "type": "Undecorated",
+        "setup": 0,
+        "indent": false,
+        "currency": "AUD",
+        "lead_time": null,
+        "description": "Local Blank Stock",
+        "undecorated": true,
+        "price_breaks": [
+          {
+            "qty": 100,
+            "price": 0.8999999999999999
+          },
+          {
+            "qty": 250,
+            "price": 0.8699999999999999
+          },
+          {
+            "qty": 500,
+            "price": 0.8400000000000001
+          },
+          {
+            "qty": 1000,
+            "price": 0.81
+          },
+          {
+            "qty": 2500,
+            "price": 0.78
+          },
+          {
+            "qty": 5000,
+            "price": 0.75
+          }
+        ]
+      },
+      "promodata_decoration": "Unbranded"
+    },
+    {
+      "additions": [
+        {
+          "key": "9c877b048fd4e57aac3ab4d5e23489ec",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 5000",
+          "currency": "AUD",
+          "lead_time": "28 Working Days",
+          "description": "28 Days Print Per Col/Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.06
+            }
+          ],
+          "promodata_decoration": "Direct Print: Screen Print"
+        },
+        {
+          "key": "f6d27e0ad6ec8daabb25c8318bd35cba",
+          "type": "",
+          "setup": 40,
+          "details": "Max qty: 5000",
+          "currency": "AUD",
+          "lead_time": "28 Working Days",
+          "description": "28 Days Digital Label Per Pos",
+          "undecorated": false,
+          "price_breaks": [
+            {
+              "qty": 100,
+              "price": 0.1
+            }
+          ],
+          "promodata_decoration": "Applied Label/Sticker: Label with white background"
+        }
+      ],
+      "base_price": {
+        "key": "2710ef10f840beb9c6bb071b67f6f72d",
+        "tags": [],
+        "type": "Undecorated",
+        "setup": 0,
+        "indent": true,
+        "currency": "AUD",
+        "lead_time": null,
+        "description": "28 Days CE Blank Stock",
+        "undecorated": true,
+        "price_breaks": [
+          {
+            "qty": 100,
+            "price": 0.72
+          }
+        ]
+      },
+      "promodata_decoration": "Unbranded"
+    }
+  ],
+  "price_disclaimer": null,
+  "currency_options": "AUD"
+}
