@@ -928,7 +928,14 @@ const ProductsContextProvider = ({ children }) => {
         // setSkeletonLoading(true);
         try {
             const response = await fetch(`${backendUrl}/api/v1-categories`);
-            if (!response.ok) throw new Error("Failed to fetch products");
+            if (!response.ok) {
+                const errorBody = await response.json().catch(() => null);
+                throw new Error(
+                    errorBody?.error ||
+                    errorBody?.message ||
+                    "Failed to fetch categories",
+                );
+            }
 
             const data = await response.json();
             // console.log('API Response:', data);
@@ -937,10 +944,12 @@ const ProductsContextProvider = ({ children }) => {
                 throw new Error("Unexpected API response structure");
             }
 
-            setV1categories(data.data);
-            return data.data;
+            const apiCategories = Array.isArray(data.data) ? data.data : [];
+            setV1categories(apiCategories);
+            return apiCategories;
         } catch (err) {
             console.log("Error fetching products:", err);
+            setV1categories([]);
             setError(err.message);
         }
         // finally {

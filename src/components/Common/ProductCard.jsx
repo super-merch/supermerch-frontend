@@ -147,7 +147,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
             height: "auto",
           }}
           loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
+          fetchpriority={priority ? "high" : "auto"}
         />
 
         {/* Discount Badge */}

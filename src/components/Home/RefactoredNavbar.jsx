@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // Import reusable components
-import { buildMegaMenu, clothingNavConfig, promotionalNavConfig } from "@/config/navCategoryConfig";
 import { ProductsContext } from "../../context/ProductsContext";
 import { AuthContext } from "../../context/AuthContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
@@ -32,6 +31,94 @@ import {
 } from "../../redux/slices/filterSlice";
 import { LuX, LuXCircle } from "react-icons/lu";
 import LogoutModal from "../Common/LogoutModal";
+
+const resolveNavGroup = (category) => {
+  const explicitGroup = String(category?.navGroup || "").trim().toLowerCase();
+  if (["promotional", "clothing", "headwear"].includes(explicitGroup)) {
+    return explicitGroup;
+  }
+
+  return null;
+};
+
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const inferColumnTitle = (name) => {
+  const words = String(name || "")
+    .replace(/[^\w\s&-]/g, "")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!words.length) return "Misc";
+
+  const lastWord = words[words.length - 1];
+  if (lastWord.length >= 3) return toTitleCase(lastWord);
+
+  return "Misc";
+};
+
+const buildCategoryColumns = (subTypes = [], maxColumns = 4) => {
+  if (!Array.isArray(subTypes) || subTypes.length === 0) {
+    return [];
+  }
+
+  const grouped = new Map();
+
+  for (const subType of subTypes) {
+    const title = inferColumnTitle(subType?.name);
+    if (!grouped.has(title)) grouped.set(title, []);
+    grouped.get(title).push(subType);
+  }
+
+  const sortedGroups = Array.from(grouped.entries()).sort(
+    (a, b) => b[1].length - a[1].length,
+  );
+
+  const primaryGroups = sortedGroups.slice(0, maxColumns);
+  const overflowGroups = sortedGroups.slice(maxColumns);
+
+  if (overflowGroups.length > 0) {
+    const overflowItems = overflowGroups.flatMap((entry) => entry[1]);
+    if (overflowItems.length > 0) {
+      primaryGroups.push(["Misc", overflowItems]);
+    }
+  }
+
+  return primaryGroups.map(([title, items]) => ({
+    title: title.toUpperCase(),
+    items: items.map((item) => item.name),
+    sourceItems: items,
+  }));
+};
+
+const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
+  categories.map((category) => {
+    const columns = buildCategoryColumns(category.subTypes, 4);
+
+    return {
+      id: category.id,
+      name: category.name,
+      onClick: () => handlers.onCategory(category.name, category.id, parentType),
+      columns,
+      subItems: columns.flatMap((column) =>
+        (column.sourceItems || []).map((item) => ({
+          id: item.id,
+          name: item.name,
+          columnTitle: column.title,
+          onClick: () =>
+            handlers.onSubCategory(
+              item.name,
+              item.id,
+              category.name,
+              parentType,
+            ),
+        })),
+      ),
+    };
+  });
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const { token, setToken } = useContext(AuthContext);
@@ -69,20 +156,41 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const { coupons, coupenLoading } = useCoupons();
   // Create menu items from categories
   const createMenuItems = () => {
+    const allCategories = Array.isArray(v1categories) ? v1categories : [];
+    const promotionalCategories = allCategories.filter(
+      (cat) => resolveNavGroup(cat) === "promotional",
+    );
+    const clothingCategories = allCategories.filter(
+      (cat) => resolveNavGroup(cat) === "clothing",
+    );
+    const headwearCategories = allCategories.filter(
+      (cat) => resolveNavGroup(cat) === "headwear",
+    );
+    const headwearCategory = headwearCategories[0];
+
+    const promoDefault = promotionalCategories[0];
+    const clothingDefault = clothingCategories[0];
+
     const baseMenuItems = [
       {
         name: "Promotional",
-        path: "/promotional?categoryName=Bags&category=PA&type=Promotional",
+        path: promoDefault
+          ? `/promotional?categoryName=${encodeURIComponent(promoDefault.name)}&category=${encodeURIComponent(promoDefault.id)}&type=Promotional`
+          : "/promotional?type=Promotional",
         hasSubmenu: true,
       },
       {
         name: "Clothing",
-        path: "/promotional?categoryName=Bottoms&category=PB&type=Clothing",
+        path: clothingDefault
+          ? `/promotional?categoryName=${encodeURIComponent(clothingDefault.name)}&category=${encodeURIComponent(clothingDefault.id)}&type=Clothing`
+          : "/promotional?type=Clothing",
         hasSubmenu: true,
       },
       {
         name: "Headwear",
-        path: "/promotional?categoryName=Headwear&category=PK&type=Headwear",
+        path: headwearCategory
+          ? `/promotional?categoryName=${encodeURIComponent(headwearCategory.name)}&category=${encodeURIComponent(headwearCategory.id)}&type=Headwear`
+          : "/promotional?type=Headwear",
         hasSubmenu: true,
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
@@ -93,10 +201,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
     return baseMenuItems.map((item) => {
       if (item.name === "Promotional") {
-        const megaMenu = buildMegaMenu(promotionalNavConfig, v1categories, {
-          onCategory: handleNameCategories,
-          onSubCategory: handleSubCategories,
-        }, "Promotional");
+        const megaMenu = buildDynamicMegaMenu(
+          promotionalCategories,
+          {
+            onCategory: handleNameCategories,
+            onSubCategory: handleSubCategories,
+          },
+          "Promotional",
+        );
 
         return {
           ...item,
@@ -107,10 +219,14 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         };
       }
       if (item.name === "Clothing") {
-        const megaMenu = buildMegaMenu(clothingNavConfig, v1categories, {
-          onCategory: handleNameCategories,
-          onSubCategory: handleSubCategories,
-        }, "Clothing");
+        const megaMenu = buildDynamicMegaMenu(
+          clothingCategories,
+          {
+            onCategory: handleNameCategories,
+            onSubCategory: handleSubCategories,
+          },
+          "Clothing",
+        );
 
         return {
           ...item,
@@ -120,27 +236,21 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           onClick: () => handleMenuClick(item),
         };
       }
-
-
       if (item.name === "Headwear") {
-        const headwearCategory = v1categories?.find(
-          (cat) => cat.name === "Headwear",
+        const megaMenu = buildDynamicMegaMenu(
+          headwearCategories,
+          {
+            onCategory: handleNameCategories,
+            onSubCategory: handleSubCategories,
+          },
+          "Headwear",
         );
+
         return {
           ...item,
           id: "headwear",
-          submenu:
-            headwearCategory?.subTypes?.map((subType) => ({
-              id: subType.id,
-              name: subType.name,
-              onClick: () =>
-                handleSubCategories(
-                  subType.name,
-                  subType.id,
-                  headwearCategory.name,
-                  "Headwear",
-                ),
-            })) || [],
+          submenu: megaMenu,
+          megaMenu: true,
           onClick: () => handleMenuClick(item),
         };
       }

@@ -1,0 +1,27 @@
+name: Deploy Frontend/Admin Build
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Build via rsync
+        run: |
+          sudo apt-get update && sudo apt-get install -y rsync sshpass
+
+          sshpass -p "${{ secrets.SSH_PASSWORD_TEST }}" rsync -avz \
+            --no-perms \
+            --no-owner \
+            --no-group \
+            --omit-dir-times \
+            --chmod=D755,F644 \
+            -e "ssh -p 22 -o StrictHostKeyChecking=no" \
+            ./build/ ${{ secrets.SSH_USER_TEST }}@${{ secrets.SSH_HOST_TEST }}:/home/${{ secrets.FTP_USERNAME_TEST }}/public_html/out/front/
