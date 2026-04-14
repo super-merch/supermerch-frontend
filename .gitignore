@@ -6,8 +6,8 @@
 /node_modules/
 
 # Build output
-/dist/
-/build/
+# /dist/
+# /build/
 /.next/
 /out/
 
@@ -26,7 +26,7 @@ logs/
 *.log
 
 # Environment Variables
-.env
+# .env
 .env.*
 !.env.example
 

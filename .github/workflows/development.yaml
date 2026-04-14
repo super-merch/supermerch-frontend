@@ -24,4 +24,4 @@ jobs:
             --omit-dir-times \
             --chmod=D755,F644 \
             -e "ssh -p 22 -o StrictHostKeyChecking=no" \
-            ./build/ ${{ secrets.SSH_USER_TEST }}@${{ secrets.SSH_HOST_TEST }}:/home/${{ secrets.FTP_USERNAME_TEST }}/public_html/out/front/
+            ./build/ ${{ secrets.SSH_USER_TEST }}@${{ secrets.SSH_HOST_TEST }}:/home/${{ secrets.FTP_USERNAME_TEST }}/public_html/
