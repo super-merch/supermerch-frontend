@@ -1,10 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Home, ArrowLeft } from "lucide-react";
+import SeoHelmet from "@/components/Common/SeoHelmet";
 
 const NotFound = () => {
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4">
+            <SeoHelmet
+                entityType="cmsPage"
+                entityId="404"
+                fallback={{
+                    title: "404 - Page Not Found | Super Merch Australia",
+                    description: "The page you requested could not be found.",
+                    canonicalUrl: "https://supermerch.com.au/404",
+                    robots: "noindex, nofollow",
+                }}
+            />
             <div className="max-w-2xl w-full text-center">
                 {/* 404 Number */}
                 <div className="mb-8">

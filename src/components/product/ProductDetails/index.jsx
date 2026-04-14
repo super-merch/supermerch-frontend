@@ -1,4 +1,5 @@
 import LoadingOverlay from "@/components/Common/LoadingOverlay";
+import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
 import SeoHelmet from "@/components/Common/SeoHelmet";
 import {
   getProductPrice,
@@ -50,6 +51,7 @@ import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
 import LeadTimeTab from "./LeadTime";
 import { Tooltip } from "@mui/material";
+import useRecommendations from "@/hooks/useRecommendations";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -162,6 +164,29 @@ const ProductDetails = () => {
 
   const product = single_product?.product || {};
   const productId = single_product?.meta?.id || "";
+  const productTags = Array.isArray(single_product?.productTags)
+    ? single_product.productTags
+    : [];
+
+  const { recommendations: relatedProducts, recommendationsLoading } =
+    useRecommendations({
+      backendUrl,
+      type: "product",
+      productId,
+      userId: userData?._id,
+      limit: 8,
+      enabled: Boolean(productId),
+    });
+
+  const toProductUrl = (pid, name) => {
+    const slug = String(name || "product")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    const encodedId = btoa(String(pid));
+    return `/product/${encodeURIComponent(slug)}?ref=${encodedId}`;
+  };
 
   // Fetch effective pricing for direct URL navigation (when product not in listing cache)
   const [localPricing, setLocalPricing] = useState(null);
@@ -1196,6 +1221,38 @@ const ProductDetails = () => {
                       View cart
                     </button>
                   </div>
+
+                  {relatedProducts.length > 0 && (
+                    <div className="px-6 pb-6">
+                      <p className="text-sm font-semibold text-gray-900 mb-3">
+                        You may also like
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {relatedProducts.slice(0, 4).map((item) => (
+                          <button
+                            key={item?.meta?.id}
+                            type="button"
+                            className="text-left border border-gray-200 rounded-lg p-2 hover:border-primary transition-colors"
+                            onClick={() => {
+                              setShowAddToCartNotification(false);
+                              navigate(
+                                toProductUrl(item?.meta?.id, item?.overview?.name)
+                              );
+                            }}
+                          >
+                            <img
+                              src={item?.overview?.hero_image || noimage}
+                              alt={item?.overview?.name || "Product"}
+                              className="w-full h-20 object-contain bg-gray-50 rounded"
+                            />
+                            <p className="mt-2 text-xs font-medium text-gray-900 line-clamp-2">
+                              {item?.overview?.name}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -1390,6 +1447,19 @@ const ProductDetails = () => {
                       Stock info unavailable
                     </span>
                   )}
+                  {productTags.map((tag) => (
+                    <span
+                      key={tag?._id || tag?.slug || tag?.name}
+                      className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset"
+                      style={{
+                        backgroundColor: tag?.color || "#3b82f6",
+                        color: tag?.textColor || "#ffffff",
+                        borderColor: tag?.color || "#3b82f6",
+                      }}
+                    >
+                      {tag?.name}
+                    </span>
+                  ))}
                 </div>
                 {/* Color Selection */}
                 {single_product?.product?.colours?.list.length > 0 && (
@@ -1617,6 +1687,15 @@ const ProductDetails = () => {
       </div>
 
       {/* Tabs moved above within the middle column for better UX */}
+
+      <div className="Mycontainer">
+        <RecommendationsStrip
+          title="Related Products"
+          products={relatedProducts}
+          loading={recommendationsLoading}
+          maxItems={4}
+        />
+      </div>
 
       {/* Quote Modal */}
       {showQuoteForm?.state && (

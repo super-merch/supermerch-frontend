@@ -11,9 +11,12 @@ export default function useSeoMeta(entityType, entityId) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!entityType || !entityId) return;
+    if (!backendUrl || !entityType || !entityId) return;
 
-    const cacheKey = `${entityType}:${entityId}`;
+    const normalizedId = String(entityId).trim();
+    if (!normalizedId) return;
+
+    const cacheKey = `${entityType}:${normalizedId}`;
 
     if (seoCache.has(cacheKey)) {
       setSeoData(seoCache.get(cacheKey));
@@ -24,7 +27,7 @@ export default function useSeoMeta(entityType, entityId) {
     setLoading(true);
 
     axios
-      .get(`${backendUrl}/api/seo-meta/by-entity/${entityType}/${entityId}`)
+      .get(`${backendUrl}/api/seo-meta/by-entity/${entityType}/${encodeURIComponent(normalizedId)}`)
       .then((res) => {
         if (!cancelled && res.data?.success && res.data?.data) {
           seoCache.set(cacheKey, res.data.data);

@@ -1,24 +1,69 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import tracksuit from "../../assets/tracksuit.png";
 import ShopNow from "./ShopNow";
+
 const Promotional = () => {
-  const list = [
-    {
-      name: "A FREE virtual proof to review your design before you order.",
-    },
-    {
-      name: "FREE samples of select items, just cover shipping.",
-    },
-    {
-      name: "Friendly, expert service with over 40,000+ positive reviews.",
-    },
-    {
-      name: "Over 5,000+ items with 1-day rush production.",
-    },
-    {
-      name: "An Extended 100-day return policy.",
-    },
-  ];
+  const [benefits, setBenefits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/promo-content/by-type/promotional-benefits")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success && data.data) {
+          const content = data.data.content;
+          const benefitsList = Array.isArray(content) ? content : [];
+          setBenefits(benefitsList);
+          setError(null);
+        } else {
+          throw new Error("Invalid response format from server");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Promotional Content Error:", err);
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (error) {
+    return (
+      <div className="relative">
+        <div className="bg-primary relative text-white h-[100%] lg:pb-72 md:pb-72 pb-16">
+          <div className="Mycontainer">
+            <div className="lg:pt-36 md:pt-36 pt-16">
+              <h1 className="text-3xl font-semibold text-red-200 mb-4">
+                Error Loading Promotional Content
+              </h1>
+              <p className="text-white">{error}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="relative">
+        <div className="bg-primary relative text-white h-[100%] lg:pb-72 md:pb-72 pb-16">
+          <div className="Mycontainer flex flex-wrap items-center justify-between">
+            <div className="lg:pt-36 md:pt-36 pt-16 w-full">
+              <h1 className="leading-tight lg:text-4xl md:text-3xl text-3xl font-semibold">
+                Loading Promotional Content...
+              </h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       <div className="bg-primary relative text-white h-[100%] lg:pb-72 md:pb-72 pb-16">
@@ -35,15 +80,15 @@ const Promotional = () => {
           </div>
           <div className="lg:pt-36 md:pt-36 pt-16 w-full ">
             <h1 className="leading-tight lg:text-4xl md:text-3xl text-3xl font-semibold lg:max-w-[43%] md:max-w-[43%] max-w-full	">
-              Shop AnyPromo’s Promotional Products & Receive
+              Shop AnyPromo's Promotional Products & Receive
             </h1>
             <div className="lg:mt-8 md:mt-8 mt-4">
-              {list.map((list, i) => {
+              {benefits.map((item, i) => {
                 return (
                   <div key={i} className="flex items-center gap-4 pt-2 ">
                     <div className="w-2 h-2 bg-white rounded-[50%]"></div>
                     <p className="max-w-[410px] font-normal text-lg text-list">
-                      {list.name}
+                      {item.name}
                     </p>
                   </div>
                 );

@@ -41,6 +41,7 @@ import ChatWidget from "./components/Chat/ChatWidget";
 import AustraliaMade from "./pages/AustraliaMade";
 import NotFound from "./pages/NotFound";
 import SitePopups from "./components/Home/SitePopups";
+import RouteSeo from "./components/Common/RouteSeo";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -92,6 +93,7 @@ const App = () => {
       <Navbar onCouponClick={handleCouponClick} />
       <ScrollToTop />
       <HelmetProvider>
+        <RouteSeo />
         <RouteTransition>
           <Routes>
             <Route path="/" element={<Home />} />
