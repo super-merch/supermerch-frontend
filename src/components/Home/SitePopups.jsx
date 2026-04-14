@@ -44,6 +44,28 @@ const SitePopups = () => {
     setActivePopup(null);
   }, [activePopup, markSeen]);
 
+  // Allow header/top-banner CTA to open an admin-managed pop-up immediately.
+  useEffect(() => {
+    const handleManualTrigger = () => {
+      if (!Array.isArray(popups) || popups.length === 0) return;
+
+      const candidate =
+        popups.find((p) => p.couponCode && p.isActive) ||
+        popups.find((p) => p.type === "FIRST_VISIT" && p.isActive) ||
+        popups.find((p) => p.type === "TIMED" && p.isActive) ||
+        popups.find((p) => p.isActive);
+
+      if (candidate) {
+        setActivePopup(candidate);
+      }
+    };
+
+    window.addEventListener("triggerDiscountModal", handleManualTrigger);
+    return () => {
+      window.removeEventListener("triggerDiscountModal", handleManualTrigger);
+    };
+  }, [popups]);
+
   // Handle FIRST_VISIT popups
   useEffect(() => {
     if (activePopup) return;

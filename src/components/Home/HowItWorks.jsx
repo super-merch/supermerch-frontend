@@ -16,6 +16,10 @@ const ICON_MAP = { FaShoppingCart, FaChartLine, FaTag, FaCreditCard, FaClipboard
 export default function HowItWorks({ className = "" }) {
   const { data: cmsData } = useCmsData("/api/general-cms/by-slug/how-it-works");
   const cmsSteps = Array.isArray(cmsData?.points) ? cmsData.points : null;
+  const heading = cmsData?.header || "Simple Steps to Success";
+  const description =
+    cmsData?.description ||
+    "Our streamlined process makes it easy to get exactly what you need, when you need it. From browsing to delivery, we've got you covered every step of the way.";
 
   const steps = (cmsSteps || []).map((s) => ({
     ...s,
@@ -32,26 +36,18 @@ export default function HowItWorks({ className = "" }) {
         <Heading
           title={
             <>
-              Simple Steps to{" "}
+              {heading.split(" to ")[0] || "Simple Steps"} to{" "}
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Success
+                {heading.includes(" to ")
+                  ? heading.split(" to ").slice(1).join(" to ")
+                  : "Success"}
               </span>
             </>
           }
           align="center"
           size="default"
           titleClassName="uppercase"
-          description={
-            <>
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Our streamlined process
-              </span>
-              {` `}
-              makes it easy to get exactly what you need, when you need it.{" "}
-              <br /> From browsing to delivery, we've got you covered every step
-              of the way.
-            </>
-          }
+          description={description}
           containerClassName="mb-12 py-0 !py-0"
           showUnderline={true}
         />
