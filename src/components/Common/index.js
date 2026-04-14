@@ -14,3 +14,4 @@ export { default as ProductCard } from "./ProductCard";
 export { default as Tooltip } from "./Tooltip";
 export { default as EmptyState } from "./EmptyState";
 export { default as LoadingOverlay } from "./LoadingOverlay";
+export { default as RecommendationsStrip } from "./RecommendationsStrip";

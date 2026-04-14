@@ -68,6 +68,9 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
   const productPrice =
     product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]
       ?.price;
+  const productTags = Array.isArray(product?.productTags)
+    ? product.productTags.slice(0, 2)
+    : [];
 
   // Extract unique colors
   const uniqueColors =
@@ -113,6 +116,23 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
             <span className="truncate max-w-[50px] sm:max-w-none">AU Made</span>
           </span>
         )}
+
+        {productTags.map((tag) => (
+          <span
+            key={tag?._id || tag?.slug || tag?.name}
+            className="inline-flex items-center px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] md:text-xs font-semibold border shadow-sm overflow-hidden"
+            style={{
+              backgroundColor: tag?.color || "#3b82f6",
+              color: tag?.textColor || "#ffffff",
+              borderColor: tag?.color || "#3b82f6",
+            }}
+            title={tag?.name || ""}
+          >
+            <span className="truncate max-w-[72px] sm:max-w-[120px]">
+              {tag?.name}
+            </span>
+          </span>
+        ))}
       </div>
 
       {/* Favorite Button - Top Right */}

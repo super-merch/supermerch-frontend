@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Block utility/account flows from indexing
+Disallow: /checkout
+Disallow: /cart
+Disallow: /login
+Disallow: /signup
+Disallow: /my-account
+Disallow: /success
+Disallow: /cancel
+
+Sitemap: https://supermerch.com.au/sitemap.xml

@@ -9,6 +9,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import { ProductsContext } from "../../context/ProductsContext";
+import RecommendationsStrip from "../Common/RecommendationsStrip";
+import useRecommendations from "@/hooks/useRecommendations";
 import {
   clearCart,
   decrementQuantity,
@@ -42,6 +44,16 @@ const CartComponent = () => {
   const [customQuantities, setCustomQuantities] = useState({});
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
+  const cartProductIds = items.map((item) => item.id);
+  const { recommendations: cartRecommendations, recommendationsLoading } =
+    useRecommendations({
+      backendUrl: API_BASE,
+      type: "cart",
+      cartProductIds,
+      limit: 8,
+      enabled: items.length > 0,
+    });
 
   useEffect(() => {
     const quantities = {};
@@ -849,6 +861,13 @@ const CartComponent = () => {
               </div>
             </div>
           </div>
+
+          <RecommendationsStrip
+            title="Complete Your Order"
+            products={cartRecommendations}
+            loading={recommendationsLoading}
+            maxItems={4}
+          />
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
