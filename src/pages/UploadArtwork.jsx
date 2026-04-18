@@ -25,7 +25,10 @@ const UploadArtwork = () => {
   // Get cart data from Redux
   const items = useSelector(selectCurrentUserCartItems);
   // Get data passed from cart page
-  const { cartTotal, appliedCoupon, couponDiscount } = location.state || {};
+  const { cartTotal, appliedCoupon, couponDiscount, fromDeal, dealData } = location.state || {};
+
+  const roundToTwo = (value) =>
+    Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 
   // Helper: get artwork preview for an item — try Redux first, then localStorage fallback
   const getArtworkPreview = (item) => {
@@ -50,7 +53,14 @@ const UploadArtwork = () => {
   };
   const itemsWithCustomization = items.filter(itemHasAnyCustomization);
   const itemsWithoutCustomization = items.filter((item) => !itemHasAnyCustomization(item));
+  const itemsNeedingArtworkInput = itemsWithoutCustomization.filter((item) => {
+    const printLabel = String(item.print || "").trim().toLowerCase();
+    return printLabel !== "" && printLabel !== "none";
+  });
+  const hasPendingArtworkInputs = itemsNeedingArtworkInput.length > 0;
   const allItemsHaveCustomization = itemsWithoutCustomization.length === 0 && itemsWithCustomization.length > 0;
+  const dealItems = items.filter((item) => item.dealSource?.dealId);
+  const activeDealTitle = dealData?.dealTitle || dealItems[0]?.dealSource?.dealTitle || null;
 
   // Check if any item has an uploaded customization file (admin customization with file)
   const hasUploadedArtwork = itemsWithCustomization.some(
@@ -58,13 +68,28 @@ const UploadArtwork = () => {
   );
 
   // State for artwork uploads — auto-select "upload" if items already have artwork uploaded
-  const [artworkFile, setArtworkFile] = useState(null);
+  const [artworkFilesByTarget, setArtworkFilesByTarget] = useState({});
   const [artworkInstructions, setArtworkInstructions] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [artworkOption, setArtworkOption] = useState(
     allItemsHaveCustomization ? "no_artwork" : "no_artwork"
   ); // 'upload' | 'text' | 'on_file' | 'no_artwork'
+  const [artworkTarget, setArtworkTarget] = useState("all");
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
+  const currentArtworkTargetKey = artworkTarget === "all" ? "all" : artworkTarget;
+  const artworkFile = artworkFilesByTarget[currentArtworkTargetKey] || null;
+  const hasAnyUploadedArtworkFile = Object.keys(artworkFilesByTarget).length > 0;
+
+  const getArtworkTargetLabel = (targetKey) => {
+    if (targetKey === "all") {
+      return "All products in this order";
+    }
+    const targetItem = itemsNeedingArtworkInput.find((item) => (item.cartItemId || item.id) === targetKey);
+    if (!targetItem) {
+      return "All products in this order";
+    }
+    return `${targetItem.name}${targetItem.color ? ` - ${targetItem.color}` : ""}${targetItem.size ? ` / ${targetItem.size}` : ""}`;
+  };
 
   // Auto-select appropriate artwork option based on cart items
   useEffect(() => {
@@ -73,6 +98,21 @@ const UploadArtwork = () => {
       setArtworkOption("no_artwork");
     }
   }, [allItemsHaveCustomization, hasUploadedArtwork]);
+
+  useEffect(() => {
+    if (!hasPendingArtworkInputs) {
+      setArtworkTarget("all");
+      setArtworkOption("no_artwork");
+      return;
+    }
+
+    if (
+      artworkTarget !== "all" &&
+      !itemsNeedingArtworkInput.some((item) => (item.cartItemId || item.id) === artworkTarget)
+    ) {
+      setArtworkTarget("all");
+    }
+  }, [hasPendingArtworkInputs, itemsNeedingArtworkInput, artworkTarget]);
 
   const totalDiscountPercent = items.reduce(
     (sum, item) => sum + (totalDiscount[item.id] || 0),
@@ -84,6 +124,16 @@ const UploadArtwork = () => {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const dealRawSubtotal = dealItems.reduce(
+    (sum, item) => sum + (Number(item.rawUnitPrice ?? item.price) * Number(item.quantity || 0)),
+    0
+  );
+  const dealAppliedSubtotal = dealItems.reduce(
+    (sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 0)),
+    0
+  );
+  const dealDiscountAmount = roundToTwo(Math.max(dealRawSubtotal - dealAppliedSubtotal, 0));
 
   const normalizedSetupFee = Number(setupFee) || 0;
   const normalizedShipping = Number(shippingCharges) || 0;
@@ -118,11 +168,15 @@ const UploadArtwork = () => {
     ) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setArtworkFile({
+        const uploadedArtwork = {
           file,
           preview: e.target.result,
           name: file.name,
-        });
+        };
+        setArtworkFilesByTarget((prev) => ({
+          ...prev,
+          [currentArtworkTargetKey]: uploadedArtwork,
+        }));
       };
       reader.readAsDataURL(file);
     } else {
@@ -151,8 +205,11 @@ const UploadArtwork = () => {
   };
 
   const removeArtwork = () => {
-    setArtworkFile(null);
-    setArtworkInstructions("");
+    setArtworkFilesByTarget((prev) => {
+      const next = { ...prev };
+      delete next[currentArtworkTargetKey];
+      return next;
+    });
   };
 
   const handleProceedToCheckout = () => {
@@ -162,10 +219,10 @@ const UploadArtwork = () => {
     }
 
     // If all items have admin customization, skip validation for hardcoded artwork
-    if (!allItemsHaveCustomization) {
+    if (hasPendingArtworkInputs) {
       // Validate based on selected option
       if (artworkOption === "upload") {
-        if (!artworkFile && !artworkInstructions.trim()) {
+        if (!hasAnyUploadedArtworkFile && !artworkInstructions.trim()) {
           toast.error("Upload a file or add instructions for your artwork");
           return;
         }
@@ -186,11 +243,16 @@ const UploadArtwork = () => {
         appliedCoupon,
         couponDiscount,
         shippingCharges,
-        artworkFile,
+        artworkFile: artworkFile || artworkFilesByTarget.all || null,
+        artworkFilesByTarget,
         artworkInstructions,
         artworkOption: allItemsHaveCustomization && artworkOption === "no_artwork"
           ? "admin_customization"
-          : artworkOption,
+          : (hasPendingArtworkInputs ? artworkOption : "no_artwork"),
+        artworkTarget,
+        dealDiscountAmount,
+        dealRawSubtotal: roundToTwo(dealRawSubtotal),
+        dealAppliedSubtotal: roundToTwo(dealAppliedSubtotal),
         setupFee,
       },
     });
@@ -216,6 +278,15 @@ const UploadArtwork = () => {
         <p className="text-gray-600">
           Upload artwork and provide instructions for your products
         </p>
+        {(fromDeal || dealItems.length > 0) && (
+          <div className="mt-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+            <p className="font-semibold">Deal pricing active{activeDealTitle ? `: ${activeDealTitle}` : ""}</p>
+            <p>
+              Your order summary includes the bundle discount.
+              {dealDiscountAmount > 0 ? ` Applied deal discount: $${dealDiscountAmount.toFixed(2)}` : ""}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap items-start gap-6 lg:flex-nowrap">
@@ -340,10 +411,10 @@ const UploadArtwork = () => {
                       );
                     })}
                   </div>
-                  {itemsWithoutCustomization.length > 0 && (
+                  {itemsNeedingArtworkInput.length > 0 && (
                     <div className="border-t border-gray-200 mt-4 pt-4">
                       <p className="text-sm text-gray-600">
-                        The remaining {itemsWithoutCustomization.length} item(s) below still need artwork instructions:
+                        The remaining {itemsNeedingArtworkInput.length} item(s) below still need artwork instructions:
                       </p>
                     </div>
                   )}
@@ -351,7 +422,7 @@ const UploadArtwork = () => {
               )}
 
               {/* Artwork Choice — shown only for items WITHOUT admin customization */}
-              {!allItemsHaveCustomization && (
+              {hasPendingArtworkInputs && (
                 <div className="mb-6 space-y-4">
                   <label className="block text-lg font-bold text-gray-900">
                     Tell us about your artwork
@@ -433,13 +504,41 @@ const UploadArtwork = () => {
                 </div>
               )}
 
-              {allItemsHaveCustomization && (
+              {hasPendingArtworkInputs && (
+                <div className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Artwork applies to
+                  </label>
+                  <select
+                    value={artworkTarget}
+                    onChange={(e) => setArtworkTarget(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                  >
+                    <option value="all">All products in this order</option>
+                    {itemsNeedingArtworkInput.map((item) => {
+                      const key = item.cartItemId || item.id;
+                      return (
+                        <option key={key} value={key}>
+                          {item.name}
+                          {item.color ? ` - ${item.color}` : ""}
+                          {item.size ? ` / ${item.size}` : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Current selection: {getArtworkTargetLabel(artworkTarget)}
+                  </p>
+                </div>
+              )}
+
+              {!hasPendingArtworkInputs && (
                 <div className="mb-6 space-y-4 border-t border-gray-200 pt-4">
                   <label className="block text-lg font-bold text-gray-900">
                     Additional Comments (Optional)
                   </label>
                   <p className="text-sm text-gray-500 -mt-2">
-                    All items have customization configured. Add any extra notes for our design team, or proceed directly to checkout.
+                    No pending artwork upload is required for this order. Add any extra notes for our design team, or proceed directly to checkout.
                   </p>
                 </div>
               )}
@@ -449,6 +548,9 @@ const UploadArtwork = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Upload Artwork
                   </label>
+                  <p className="text-xs text-gray-600 mb-2">
+                    Current upload target: {getArtworkTargetLabel(artworkTarget)}
+                  </p>
                   <div
                     className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${isDragging
                         ? "border-smallHeader bg-primary/5"
@@ -533,6 +635,32 @@ const UploadArtwork = () => {
                       }
                     }}
                   />
+
+                  {hasAnyUploadedArtworkFile && (
+                    <div className="mt-3 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                      <p className="text-xs font-semibold text-gray-700 mb-2">Uploaded artwork by target</p>
+                      <div className="space-y-1">
+                        {Object.entries(artworkFilesByTarget).map(([targetKey, fileObj]) => (
+                          <div key={targetKey} className="text-xs text-gray-700 flex items-center justify-between gap-2">
+                            <span className="truncate">{getArtworkTargetLabel(targetKey)}: {fileObj?.name || "File"}</span>
+                            <button
+                              type="button"
+                              className="text-red-500 hover:text-red-700"
+                              onClick={() => {
+                                setArtworkFilesByTarget((prev) => {
+                                  const next = { ...prev };
+                                  delete next[targetKey];
+                                  return next;
+                                });
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -653,6 +781,12 @@ const UploadArtwork = () => {
                   <span>Total Setup Charges:</span>
                   <span>{setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}</span>
                 </div>
+                {dealDiscountAmount > 0 && (
+                  <div className="flex justify-between text-lg text-green-700">
+                    <span>Deal Discount:</span>
+                    <span>-${dealDiscountAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 {/* <div className="flex justify-between text-lg">
                   <span>Product Discount:</span>
                   <span>{totalDiscountPercent}%</span>

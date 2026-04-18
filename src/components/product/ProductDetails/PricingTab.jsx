@@ -1,6 +1,7 @@
-import { getClothingAdditionalCost, isProductCategory } from "@/utils/utils";
-import { useEffect } from "react";
+import { isProductCategory } from "@/utils/utils";
+import { useEffect, useMemo } from "react";
 import { IoCartOutline } from "react-icons/io5";
+import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 const PricingTab = ({
@@ -21,9 +22,13 @@ const PricingTab = ({
   setSelectedSize,
   single_product,
   setShowQuoteForm,
+  handleBuySample,
+  setupFee,
+  freightFee,
   setQuantity,
   selectedLeadTimeAddition,
   setSelectedLeadTimeAddition,
+  stockAvailability,
 }) => {
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
@@ -116,10 +121,109 @@ const PricingTab = ({
   };
 
   const isClothing = isProductCategory(single_product, "Clothing");
+  const quoteIsLowStock = Boolean(stockAvailability?.isQuoteLowStock);
+  const sampleIsLowStock = Boolean(stockAvailability?.isSampleLowStock);
+  const lowMoqIsLowStock = Boolean(stockAvailability?.isLowMoqLowStock);
+
+  const isNonArtworkAddition = (group) => {
+    const decoration = String(group?.promodata_decoration || "").toLowerCase();
+    const description = String(group?.description || "").toLowerCase();
+
+    if (decoration.startsWith("addition:")) return true;
+
+    const nonArtworkPatterns = [
+      "polybag",
+      "packaging",
+      "surcharge",
+      "metallic thread",
+      "additional charge",
+      "additional 5,000",
+      "additional 5000",
+    ];
+
+    return nonArtworkPatterns.some(
+      (token) => description.includes(token) || decoration.includes(token),
+    );
+  };
+
+  const artworkOptions = useMemo(() => {
+    const baseOption = availablePriceGroups.find((group) => group.type === "base");
+    const options = [];
+
+    if (baseOption) {
+      options.push(baseOption);
+    }
+
+    const seenKeys = new Set();
+    availablePriceGroups.forEach((group) => {
+      if (group.type !== "addition") return;
+      if (isNonArtworkAddition(group)) return;
+
+      const optionKey = group.key || group.description || group.promodata_decoration;
+
+      if (!optionKey || seenKeys.has(optionKey)) return;
+      seenKeys.add(optionKey);
+      options.push(group);
+    });
+
+    return options;
+  }, [availablePriceGroups]);
+
+  const selectedArtworkValue = useMemo(() => {
+    if (!selectedPrintMethod) return artworkOptions[0]?.key || "";
+
+    const exactMatch = artworkOptions.find(
+      (option) => option.key === selectedPrintMethod.key,
+    );
+    if (exactMatch) return exactMatch.key;
+
+    return artworkOptions[0]?.key || "";
+  }, [artworkOptions, selectedPrintMethod]);
+
+  const handleArtworkChange = (event) => {
+    const selectedKey = event.target.value;
+    const selectedOption = artworkOptions.find((option) => option.key === selectedKey);
+    if (!selectedOption) return;
+
+    setSelectedLeadTimeAddition(null);
+    setSelectedPrintMethod(selectedOption);
+
+    const sortedBreaks = [...(selectedOption.price_breaks || [])].sort(
+      (a, b) => a.qty - b.qty,
+    );
+    if (sortedBreaks.length > 0) {
+      setCurrentQuantity(sortedBreaks[0].qty);
+      setActiveIndex(0);
+    }
+  };
 
   return (
     <div className="overflow-x-auto space-y-1 !text-black">
       <div className="flex md:flex-row flex-col justify-between items-start gap-2 w-full">
+        <div className="flex flex-col">
+          <div className="flex justify-start items-center gap-4">
+            <label htmlFor="artwork-method" className="font-medium my-2">
+              Artwork:
+            </label>
+            <select
+              id="artwork-method"
+              value={selectedArtworkValue}
+              onChange={handleArtworkChange}
+              className="px-2 py-2 border rounded-md outline-none min-w-[230px]"
+            >
+              {artworkOptions.map((option) => (
+                <option key={option.key} value={option.key}>
+                  {option.type === "base"
+                    ? "None"
+                    : getTrimmedDescription(option.description) ||
+                      option.promodata_decoration ||
+                      "Artwork"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {isClothing && parseSizing()?.sizes?.length > 1 && (
           <div className="flex flex-col">
             <div className="flex justify-start items-center gap-4">
@@ -244,9 +348,14 @@ const PricingTab = ({
                         setShowQuoteForm?.({ state: true, from: "lowMOQ" });
                         setCurrentQuantity(0);
                       }}
-                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-medium rounded-md transition-colors"
+                      disabled={lowMoqIsLowStock}
+                      className={`px-3 py-1.5 text-white text-xs sm:text-sm font-medium rounded-md transition-colors ${
+                        lowMoqIsLowStock
+                          ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                          : "bg-primary hover:bg-primary/90"
+                      }`}
                     >
-                      For Low MOQ, Contact Us
+                      {lowMoqIsLowStock ? "Low Stock" : "For Low MOQ, Contact Us"}
                     </button>
                   </td>
                 </tr>
@@ -257,14 +366,6 @@ const PricingTab = ({
                   effectivePrintMethod.type === "base"
                     ? item.price
                     : baseProductPrice + item.price;
-
-                // Add clothing-specific additional cost per unit if applicable
-                if (isClothing) {
-                  const clothingAdditionalCost = getClothingAdditionalCost(
-                    effectivePrintMethod.description,
-                  );
-                  methodUnit += clothingAdditionalCost;
-                }
 
                 const unitWithMargin = methodUnit * (1 + (marginPct || 0) / 100);
                 const unitDiscounted = unitWithMargin * discountMultiplier;
@@ -410,6 +511,56 @@ const PricingTab = ({
         <button className="text-lg uppercase">Add to cart</button>
         <IoCartOutline className="text-xl" />
       </Link>
+
+      <div className="mt-4 p-4 sm:p-5 rounded-xl border border-primary/20 bg-gradient-to-r from-white to-primary/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setShowQuoteForm?.({ state: true, from: "quoteButton" })}
+            disabled={quoteIsLowStock}
+            className={`flex items-center justify-center gap-2 h-11 text-sm font-semibold border rounded-md transition-colors ${
+              quoteIsLowStock
+                ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
+                : "text-primary border-primary hover:bg-primary/5"
+            }`}
+          >
+            <FaMoneyBill1Wave className="text-primary" />
+            {quoteIsLowStock ? "Low Stock" : "Get Express Quote"}
+          </button>
+          <button
+            type="button"
+            onClick={handleBuySample}
+            disabled={sampleIsLowStock}
+            className={`flex items-center justify-center gap-2 h-11 text-sm font-semibold rounded-md transition-colors ${
+              sampleIsLowStock
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "text-white bg-primary hover:bg-primary/85"
+            }`}
+          >
+            <img src="/buy2.png" alt="" className="w-4 h-4 object-contain" />
+            {sampleIsLowStock ? "Low Stock" : "BUY 1 SAMPLE"}
+          </button>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="rounded-lg bg-white border border-gray-200 px-4 py-3">
+            <p className="text-xs font-semibold tracking-wide uppercase text-gray-500">
+              Setup Charge
+            </p>
+            <p className="mt-1 text-xl font-bold text-gray-900">
+              ${setupFee?.toFixed(2) || "0.00"}
+            </p>
+          </div>
+          <div className="rounded-lg bg-white border border-gray-200 px-4 py-3">
+            <p className="text-xs font-semibold tracking-wide uppercase text-gray-500">
+              Freight Charge
+            </p>
+            <p className="mt-1 text-xl font-bold text-gray-900">
+              {freightFee > 0 ? `$${freightFee.toFixed(2)}` : "TBD"}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

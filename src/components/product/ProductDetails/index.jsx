@@ -3,12 +3,9 @@ import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
 import SeoHelmet from "@/components/Common/SeoHelmet";
 import {
   getProductPrice,
-  getClothingAdditionalCost,
-  getClothingPricing,
   isProductCategory,
   findNearestColor,
   getProductCategory,
-  getProductSupplier,
 } from "@/utils/utils";
 import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
@@ -19,7 +16,7 @@ import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "swiper/css";
@@ -45,7 +42,6 @@ import SizeGuideModal from "../SizeGuideModal";
 import DecorationTab from "./DecorationTab";
 import FeaturesTab from "./FeaturesTab";
 import ImageGalleryModal from "./ImageGalleryModal";
-import OrderSummary from "./OrderSummary";
 import PricingTab from "./PricingTab";
 import ShippingTab from "./ShippingTab";
 import noimage from "/noimage.png";
@@ -55,15 +51,18 @@ import useRecommendations from "@/hooks/useRecommendations";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
+  const { id: routeIdentifier } = useParams();
   const [searchParams] = useSearchParams();
   const encodedId = searchParams.get("ref");
   const location = useLocation();
   const stateProductId = location?.state?.productId;
-  const id = encodedId
-    ? atob(encodedId)
-    : stateProductId
-      ? String(stateProductId)
-      : null;
+  const id = routeIdentifier
+    ? String(routeIdentifier)
+    : encodedId
+      ? atob(encodedId)
+      : stateProductId
+        ? String(stateProductId)
+        : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
@@ -99,7 +98,7 @@ const ProductDetails = () => {
 
     const headerSizes = String(detailString)
       .split("\n")[0]
-      .split(/[|, ;:]/)
+      .split(/[|,;:]/)
       .map((s) => s.trim())
       .filter(Boolean);
 
@@ -123,12 +122,16 @@ const ProductDetails = () => {
     }
 
     return sizesString
-      .split(/[|, ;:]/)
+      .split(/[|,;:]/)
       .map((s) => s.trim())
       .filter(Boolean);
   };
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setLoading(false);
+      setErrorFetching(true);
+      return;
+    }
     const fetchSingleProduct = async () => {
       setLoading(true);
       try {
@@ -168,6 +171,39 @@ const ProductDetails = () => {
     ? single_product.productTags
     : [];
 
+  const resolveImageUrl = (image) => {
+    if (!image) return "";
+    if (typeof image === "string") return image;
+    return image.url || image.original || image.large_square || image.medium_square || image.small_square || "";
+  };
+
+  const normalizedImages = useMemo(() => {
+    const primary = Array.isArray(product?.images)
+      ? product.images.map(resolveImageUrl).filter(Boolean)
+      : [];
+
+    const fallback = Array.isArray(product?.image_data)
+      ? product.image_data
+        .map((img) => resolveImageUrl(img?.original || img))
+        .filter(Boolean)
+      : [];
+
+    const colorImages = Array.isArray(product?.colours?.list)
+      ? product.colours.list
+        .map((colorObj) => resolveImageUrl(colorObj?.image))
+        .filter(Boolean)
+      : [];
+
+    const heroImage = resolveImageUrl(single_product?.overview?.hero_image);
+
+    return Array.from(new Set([
+      ...primary,
+      ...fallback,
+      ...colorImages,
+      ...(heroImage ? [heroImage] : []),
+    ]));
+  }, [product?.images, product?.image_data, product?.colours?.list, single_product?.overview?.hero_image]);
+
   const { recommendations: relatedProducts, recommendationsLoading } =
     useRecommendations({
       backendUrl,
@@ -184,8 +220,7 @@ const ProductDetails = () => {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
-    const encodedId = btoa(String(pid));
-    return `/product/${encodeURIComponent(slug)}?ref=${encodedId}`;
+    return `/product/${slug}`;
   };
 
   // Fetch effective pricing for direct URL navigation (when product not in listing cache)
@@ -218,7 +253,7 @@ const ProductDetails = () => {
           sessionId,
           productId: String(productId),
           productName: product?.name || "",
-          productImage: product?.images?.[0]?.url || product?.images?.[0] || "",
+          productImage: normalizedImages[0] || "",
           productPrice: 0,
           supplierName: single_product?.meta?.supplier_name || "",
         });
@@ -227,7 +262,7 @@ const ProductDetails = () => {
       }
     };
     trackView();
-  }, [productId]);
+  }, [productId, normalizedImages]);
 
   // Fetch admin customization options for this product
   useEffect(() => {
@@ -247,37 +282,40 @@ const ProductDetails = () => {
     fetchCustomizations();
   }, [productId, backendUrl]);
 
-  // Live stock levels from PromoData
-  const [stockData, setStockData] = useState(null);
-  const [stockLoading, setStockLoading] = useState(false);
-
   useEffect(() => {
     if (!productId) return;
-    let cancelled = false;
-    const fetchStock = async () => {
-      setStockLoading(true);
+
+    let isCancelled = false;
+
+    const fetchStockLevels = async () => {
+      setIsStockChecking(true);
+      setStockCheckData(null);
+
       try {
         const { data } = await axios.post(
           `${backendUrl}/api/products/${productId}/check-stock`,
         );
-        if (!cancelled && data.success) {
-          setStockData(data.data);
+
+        if (!isCancelled && data?.success) {
+          setStockCheckData(data.data ?? null);
         }
       } catch {
-        // Stock check is best-effort — fail silently
+        // Best-effort only: inconsistent or missing stock data must not block ordering.
       } finally {
-        if (!cancelled) setStockLoading(false);
+        if (!isCancelled) {
+          setIsStockChecking(false);
+        }
       }
     };
-    fetchStock();
-    return () => { cancelled = true; };
-  }, [productId, backendUrl]);
 
-  // Parse stock array: each item is [description, quantity, due_date]
-  const stockItems = stockData?.data?.stock || [];
-  const totalStockQty = stockItems.reduce((sum, item) => sum + (item[1] || 0), 0);
-  const hasStock = stockItems.length > 0 && totalStockQty > 0;
+    fetchStockLevels();
 
+    return () => {
+      isCancelled = true;
+    };
+  }, [backendUrl, productId]);
+
+  // Live stock levels from PromoData
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFile2, setSelectedFile2] = useState(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -306,7 +344,7 @@ const ProductDetails = () => {
     // file: selectedFile2,
   });
   const [activeImage, setActiveImage] = useState(
-    product?.images?.[0] || noimage,
+    noimage,
   );
   const [logoColor, setLogoColor] = useState("1 Colour Print");
 
@@ -320,6 +358,8 @@ const ProductDetails = () => {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [customizationFile, setCustomizationFile] = useState(null);
   const [imageModel, setImageModel] = useState(false);
+  const [stockCheckData, setStockCheckData] = useState(null);
+  const [isStockChecking, setIsStockChecking] = useState(false);
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
@@ -361,97 +401,184 @@ const ProductDetails = () => {
   const discountPct = totalDiscount?.[productId] || localPricing?.discount || 0;
   const discountMultiplier = 1 - discountPct / 100;
 
-  useEffect(() => {
-    if (priceGroups.length > 0) {
-      const isClothing = isProductCategory(single_product, "Clothing");
-      const supplier = getProductSupplier(single_product);
-      let allGroups = [];
-
-      if (isClothing) {
-        // Create static print methods for clothing products
-        // Use the base price breaks from the first price group for all clothing methods
-        const basePriceBreaks = priceGroups[0]?.base_price?.price_breaks || [];
-
-        const clothingMethods = [
-          {
-            key: "pocket-size-front-print",
-            description: "Pocket size Front print",
-            type: "base",
-            setup: 29,
-            price_breaks: basePriceBreaks,
-          },
-          {
-            key: "pocket-size-front-embroidery",
-            description: "Pocket size Front embroidery",
-            type: "base",
-            setup: 49,
-            price_breaks: basePriceBreaks,
-          },
-          {
-            key: "big-print-in-back",
-            description: "Big Print in Back",
-            type: "base",
-            setup: 29,
-            price_breaks: basePriceBreaks,
-          },
-          {
-            key: "pocket-front-big-back",
-            description: "Pocket size front + Big print back",
-            type: "base",
-            setup: 49,
-            price_breaks: basePriceBreaks,
-          },
-          {
-            key: "unbranded",
-            description: "Unbranded",
-            type: "base",
-            setup: 0,
-            price_breaks: basePriceBreaks,
-          },
-        ];
-
-        const staticClothingMethods =
-          supplier === "AS Colour"
-            ? clothingMethods.filter((method) => method.key !== "unbranded")
-            : clothingMethods;
-
-        allGroups = staticClothingMethods;
-      } else {
-        // For non-clothing items, use backend data as before
-        const baseGroup = {
-          ...priceGroups[0].base_price,
-          type: "base",
-        };
-
-        const additionGroups = priceGroups.flatMap((group) =>
-          group.additions.map((add) => ({
-            ...add,
-            type: "addition",
-            description: add.description,
-          })),
-        );
-
-        allGroups = [baseGroup, ...additionGroups];
+  const parsePromodataStockQuantity = (payload) => {
+    const parseNumber = (value) => {
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return value;
       }
-      setAvailablePriceGroups(allGroups);
-      setSelectedPrintMethod(
-        allGroups?.length > 1 ? allGroups[1] : allGroups[0],
+
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) {
+          return Number(trimmed);
+        }
+      }
+
+      return null;
+    };
+
+    const parseItem = (item) => {
+      if (Array.isArray(item)) {
+        return parseNumber(item[1]);
+      }
+
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const candidateKeys = [
+        "stockQty",
+        "quantity",
+        "qty",
+        "liveStock",
+        "availableStock",
+        "available",
+        "count",
+      ];
+
+      for (const key of candidateKeys) {
+        const parsed = parseNumber(item[key]);
+        if (parsed !== null) {
+          return parsed;
+        }
+      }
+
+      return null;
+    };
+
+    const parseCollection = (collection) => {
+      if (!Array.isArray(collection)) {
+        return null;
+      }
+
+      let total = 0;
+      let hasParsedValue = false;
+
+      for (const item of collection) {
+        const parsed = parseItem(item);
+        if (parsed === null) {
+          continue;
+        }
+        hasParsedValue = true;
+        total += parsed;
+      }
+
+      return hasParsedValue ? total : null;
+    };
+
+    if (!payload) {
+      return null;
+    }
+
+    if (Array.isArray(payload)) {
+      return parseCollection(payload);
+    }
+
+    if (typeof payload !== "object") {
+      return parseNumber(payload);
+    }
+
+    const arrayCandidates = [
+      payload.stock,
+      payload.data?.stock,
+      payload.liveStockLevel,
+      payload.data?.liveStockLevel,
+      payload.stockLevels,
+      payload.data?.stockLevels,
+      payload.items,
+      payload.data?.items,
+    ];
+
+    for (const candidate of arrayCandidates) {
+      const parsedCollection = parseCollection(candidate);
+      if (parsedCollection !== null) {
+        return parsedCollection;
+      }
+    }
+
+    const directCandidates = [
+      payload.stockQty,
+      payload.quantity,
+      payload.qty,
+      payload.liveStock,
+      payload.availableStock,
+      payload.available,
+      payload.count,
+      payload.data?.stockQty,
+      payload.data?.quantity,
+      payload.data?.qty,
+      payload.data?.liveStock,
+      payload.data?.availableStock,
+      payload.data?.available,
+      payload.data?.count,
+    ];
+
+    for (const candidate of directCandidates) {
+      const parsed = parseNumber(candidate);
+      if (parsed !== null) {
+        return parsed;
+      }
+    }
+
+    return null;
+  };
+
+  const resolvedStockQuantity = useMemo(
+    () => parsePromodataStockQuantity(stockCheckData),
+    [stockCheckData],
+  );
+  const hasReliableStockQuantity = resolvedStockQuantity !== null;
+  const firstPriceBreakQuantity = sortedPriceBreaks[0]?.qty || 0;
+  const isQuoteLowStock =
+    hasReliableStockQuantity && currentQuantity > resolvedStockQuantity;
+  const isSampleLowStock =
+    hasReliableStockQuantity && resolvedStockQuantity < 1;
+  const isLowMoqLowStock =
+    hasReliableStockQuantity && firstPriceBreakQuantity > resolvedStockQuantity;
+
+  useEffect(() => {
+    if (priceGroups.length > 0 || (product?.prices?.addons || []).length > 0) {
+      const basePriceData = priceGroups.find((group) => group?.base_price)?.base_price;
+      const baseGroup = basePriceData
+        ? {
+            ...basePriceData,
+            type: "base",
+          }
+        : null;
+
+      const groupedAdditions = priceGroups.flatMap((group) =>
+        (group?.additions || []).map((add) => ({
+          ...add,
+          type: "addition",
+          description: add.description,
+        })),
       );
+
+      const standaloneAddons = (product?.prices?.addons || []).map((add) => ({
+        ...add,
+        type: "addition",
+        description: add.description,
+      }));
+
+      const additionGroups = [...groupedAdditions, ...standaloneAddons].filter(Boolean);
+      const dedupedAdditions = additionGroups.filter(
+        (item, index, self) =>
+          index === self.findIndex((other) => (other.key || other.description) === (item.key || item.description)),
+      );
+
+      const allGroups = [baseGroup, ...dedupedAdditions].filter(Boolean);
+      setAvailablePriceGroups(allGroups);
+      const initialMethod = baseGroup || allGroups[0] || null;
+      setSelectedPrintMethod(initialMethod);
       // Initialize quantity and price based on first price break
-      const initialMethod = allGroups[0];
       if (initialMethod?.price_breaks?.length > 0) {
         const firstBreak = initialMethod.price_breaks[0];
         setCurrentQuantity(firstBreak.qty);
         setUnitPrice(firstBreak.price);
-        const setupFee = isClothing
-          ? getClothingPricing(initialMethod.description).setupFee
-          : allGroups[1]?.setup * 1.5 || 0;
-        setCurrentPrice(
-          firstBreak.price * firstBreak.qty + setupFee + freightFee,
-        );
+        setCurrentPrice(firstBreak.price * firstBreak.qty);
       }
     }
-  }, [priceGroups, single_product]);
+  }, [priceGroups, product?.prices?.addons, single_product]);
 
   useEffect(() => {
     if (product) {
@@ -462,14 +589,14 @@ const ProductDetails = () => {
         const firstColorName = firstColorObj.name || firstColorObj.colours.join("/");
         setSelectedColor(firstColorName);
         setActiveImage(
-          colorImages[firstColorName] || product.images?.[0] || noimage,
+          firstColorObj.image || normalizedImages[0] || noimage,
         );
       } else {
         // Product has no colors - use first product image
-        setActiveImage(product.images?.[0] || noimage);
+        setActiveImage(normalizedImages[0] || noimage);
       }
     }
-  }, [product]);
+  }, [product, normalizedImages]);
 
   // SEO meta is now handled by <SeoHelmet> in JSX — falls back to product name/description
 
@@ -588,15 +715,6 @@ const ProductDetails = () => {
       finalUnitPrice = baseProductPrice + selectedBreak.price;
     }
 
-    // Add clothing-specific additional cost per unit if applicable
-    const isClothing = isProductCategory(single_product, "Clothing");
-    if (isClothing) {
-      const clothingAdditionalCost = getClothingAdditionalCost(
-        selectedPrintMethod.description,
-      );
-      finalUnitPrice += clothingAdditionalCost;
-    }
-
     setUnitPrice(finalUnitPrice);
 
     const rawPerUnit = finalUnitPrice;
@@ -621,7 +739,7 @@ const ProductDetails = () => {
     const colorImg = colorImages[color] || noimage;
     setActiveImage(colorImg);
     if (mobileSwiperRef.current) {
-      const idx = (product?.images || []).indexOf(colorImg);
+      const idx = normalizedImages.indexOf(colorImg);
       if (idx >= 0) mobileSwiperRef.current.slideTo(idx);
     }
   };
@@ -630,27 +748,26 @@ const ProductDetails = () => {
     if (product) {
       const hasColors = product?.colours?.list?.length > 0;
       if (hasColors) {
-        const firstColor = product.colours.list[0].colours[0];
-        setActiveImage(product.images?.[0] || noimage); // show 0 index image when component mounts
+        setActiveImage(normalizedImages[0] || noimage); // show first image when component mounts
       } else {
-        setActiveImage(product.images?.[0] || noimage);
+        setActiveImage(normalizedImages[0] || noimage);
       }
     }
-  }, [product?.images?.length > 0]); // Run whenever product data changes
+  }, [normalizedImages.length]); // Run whenever product image data changes
 
   const colorImages = useMemo(() => {
     if (!product?.colours?.list) return {};
 
     return product.colours.list.reduce((acc, colorObj) => {
       const colorName = colorObj.name || colorObj.colours.join("/");
-      acc[colorName] = colorObj.image || product.images?.[0] || noimage;
+      acc[colorName] = colorObj.image || normalizedImages[0] || noimage;
       // Also map individual color names for backwards compatibility
       colorObj.colours.forEach((color) => {
-        if (!acc[color]) acc[color] = colorObj.image || product.images?.[0] || noimage;
+        if (!acc[color]) acc[color] = colorObj.image || normalizedImages[0] || noimage;
       });
       return acc;
     }, {});
-  }, [product]);
+  }, [product, normalizedImages]);
 
   // Enhanced drag and drop handlers for second upload area (quote form)
   const handleDragEnter2 = (e) => {
@@ -848,20 +965,9 @@ const ProductDetails = () => {
 
   const rawPerUnit = unitPrice;
   const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
-  // Calculate setup fee - use clothing-specific setup fee if applicable
+  // Setup fee comes directly from the selected supplier-provided artwork method.
   const getSetupFee = () => {
-    const isClothing = isProductCategory(single_product, "Clothing");
-    if (isClothing && selectedPrintMethod?.description) {
-      const clothingPricing = getClothingPricing(
-        selectedPrintMethod.description,
-      );
-      return clothingPricing?.setupFee;
-    }
-    return (
-      priceGroups[0]?.additions[0]?.setup * 1.5 ||
-      selectedPrintMethod?.setup * 1.5 ||
-      0
-    );
+    return (selectedLeadTimeAddition?.setup ?? selectedPrintMethod?.setup ?? 0) * 1.5;
   };
 
   const setupFee = getSetupFee();
@@ -924,7 +1030,7 @@ const ProductDetails = () => {
         name: product.name,
         basePrices:
           priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
-        image: product.images?.[0] || "",
+        image: normalizedImages[0] || "",
         price: (() => {
           const baseProductPrice = getPriceForQuantity(currentQuantity);
           const sortedBreaks = [...selectedPrintMethod?.price_breaks].sort(
@@ -947,15 +1053,6 @@ const ProductDetails = () => {
           } else {
             // For decoration, add decoration price to base product price
             finalUnitPrice = baseProductPrice + selectedBreak.price;
-          }
-
-          // Add clothing-specific additional cost per unit if applicable
-          const isClothing = isProductCategory(single_product, "Clothing");
-          if (isClothing) {
-            const clothingAdditionalCost = getClothingAdditionalCost(
-              selectedPrintMethod.description,
-            );
-            finalUnitPrice += clothingAdditionalCost;
           }
 
           const withMargin = finalUnitPrice * (1 + marginPct / 100);
@@ -1001,6 +1098,81 @@ const ProductDetails = () => {
       }),
     );
     setShowAddToCartNotification(true);
+  };
+
+  const handleBuySample = async () => {
+    let customizationFileData = null;
+    if (selectedAdminCustomization && customizationFile) {
+      try {
+        const base64Result = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => resolve(ev.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(customizationFile);
+        });
+        customizationFileData = {
+          preview: base64Result,
+          name: customizationFile.name,
+          type: customizationFile.type,
+        };
+        const artworkKey = `sm_artwork_${productId}_${selectedAdminCustomization.method._id}`;
+        try {
+          localStorage.setItem(artworkKey, JSON.stringify(customizationFileData));
+        } catch (storageErr) {
+          console.warn("Could not store artwork in localStorage (quota?):", storageErr);
+        }
+      } catch (err) {
+        console.error("Error converting customization file:", err);
+      }
+    }
+
+    dispatch(
+      addToCart({
+        id: productId,
+        name: product.name,
+        image: normalizedImages[0] || "",
+        basePrices:
+          priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
+        price: perUnitWithMargin,
+        discountPct,
+        totalPrice: perUnitWithMargin,
+        code: product.code,
+        color: selectedColor,
+        quantity: 1,
+        print:
+          selectedPrintMethod?.promodata_decoration ||
+          selectedPrintMethod?.description ||
+          "",
+        logoColor: logoColor,
+        size: selectedSize,
+        setupFee: 0,
+        dragdrop: selectedFile,
+        deliveryDate,
+        priceBreaks: selectedPrintMethod?.price_breaks || [],
+        printMethodKey: selectedPrintMethod?.key || "",
+        freightFee: freightFee,
+        userEmail: userEmail || "guest@gmail.com",
+        sample: true,
+        adminCustomization: selectedAdminCustomization
+          ? {
+              methodId: selectedAdminCustomization.method._id,
+              applicationMethod: selectedAdminCustomization.method.applicationMethod,
+              applicationType: selectedAdminCustomization.method.applicationType,
+              setupCharge: selectedAdminCustomization.method.setupCharge,
+              position: selectedPosition
+                ? {
+                    positionId: selectedPosition._id,
+                    positionName: selectedPosition.positionName,
+                    priceAdjustment: selectedPosition.priceAdjustment,
+                  }
+                : null,
+              customizationFile: customizationFileData,
+            }
+          : null,
+      }),
+    );
+
+    navigate("/cart");
   };
 
   // useEffect(() => {
@@ -1116,7 +1288,7 @@ const ProductDetails = () => {
                     <div className="flex gap-4">
                       <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                         <img
-                          src={activeImage || product?.images?.[0] || noimage}
+                          src={activeImage || normalizedImages[0] || noimage}
                           alt={product?.name}
                           className="w-full h-full object-cover"
                         />
@@ -1267,7 +1439,7 @@ const ProductDetails = () => {
           onClose={() => setImageModel(false)}
           activeImage={activeImage}
           setActiveImage={setActiveImage}
-          images={product?.images || []}
+          images={normalizedImages}
           productName={product?.name}
         />
         {/* Mobile/Tablet: swipeable main images */}
@@ -1275,7 +1447,7 @@ const ProductDetails = () => {
           <Swiper
             onSwiper={(swiper) => { mobileSwiperRef.current = swiper; }}
             onSlideChange={(swiper) => {
-              const imgs = product?.images || [];
+              const imgs = normalizedImages;
               if (imgs[swiper.activeIndex]) {
                 setActiveImage(imgs[swiper.activeIndex]);
               }
@@ -1286,7 +1458,7 @@ const ProductDetails = () => {
             slidesPerView={1}
             className="w-full"
           >
-            {product?.images?.map((item, index) => (
+            {normalizedImages.map((item, index) => (
               <SwiperSlide key={index}>
                 <div
                   className="flex justify-center cursor-pointer"
@@ -1303,83 +1475,65 @@ const ProductDetails = () => {
           </Swiper>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[35%_35%_25%] gap-4 mt-2 justify-between">
-          <div>
-            <div className="hidden lg:block">
-              <div
-                className="mb-4  border-border2 overflow-hidden relative group cursor-zoom-in"
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[44%_54%] gap-4 mt-2 justify-between lg:items-start">
+          <div className="hidden lg:flex gap-5 items-start self-start">
+            <div
+              className={`flex flex-col gap-4 overflow-x-hidden pr-1 w-[128px] shrink-0 scrollbar-hide self-start ${normalizedImages.length > 6
+                ? "h-[848px] overflow-y-auto"
+                : "h-auto overflow-y-visible"
+                }`}
+            >
+              {normalizedImages.map((item, index) => {
+                const fullImage = item;
+                return (
+                <button
+                  key={index}
+                  type="button"
+                  className={`w-[128px] h-[128px] min-h-[128px] shrink-0 rounded-2xl overflow-hidden border-2 bg-white transition-all duration-200 ${activeImage === fullImage
+                    ? "border-smallHeader shadow-md"
+                    : "border-transparent hover:border-gray-300"
+                    }`}
+                  onClick={() => {
+                    setActiveImage(fullImage);
+                  }}
+                  aria-label={`View image ${index + 1}`}
+                >
+                  <img
+                    src={item}
+                    alt={`Thumbnail ${index}`}
+                    className="w-full h-full object-cover bg-gray-50"
+                  />
+                </button>
+                );
+              })}
+            </div>
 
-                onClick={() => setImageModel(true)}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = ((e.clientX - rect.left) / rect.width) * 100;
-                  const y = ((e.clientY - rect.top) / rect.height) * 100;
-                  e.currentTarget.querySelector("img").style.transformOrigin =
-                    `${x}% ${y}%`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.querySelector("img").style.transformOrigin =
-                    "center center";
-                }}
-              >
-                <img
-                  src={activeImage}
-                  alt={product?.name}
-                  className="w-full transition-transform duration-300 ease-out group-hover:scale-150"
-                />
-              </div>
+            <div
+              className="flex-1 min-h-[760px] border-border2 overflow-hidden relative group cursor-zoom-in flex items-center justify-center"
 
-              <Swiper
-                navigation={{
-                  prevEl: ".custom-prev",
-                  nextEl: ".custom-next",
-                }}
-                modules={[Navigation]}
-                className="mySwiper"
-                breakpoints={{
-                  0: { slidesPerView: 2, spaceBetween: 5 },
-                  580: { slidesPerView: 3, spaceBetween: 10 },
-                  1024: { slidesPerView: 4, spaceBetween: 10 },
-                }}
-              >
-                <div className="absolute left-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-prev bg-primary lg:p-2 md:p-1 sm:p-1">
-                    <IoArrowBackOutline className="text-base text-md" />
-                  </button>
-                </div>
-
-                <div className="absolute right-0 top-[47%] transform -translate-y-1/2 z-10">
-                  <button className="p-1 text-white rounded-full custom-next bg-primary lg:p-2 md:p-1 sm:p-1">
-                    <IoMdArrowForward className="text-base text-md" />
-                  </button>
-                </div>
-
-                {product?.images?.map((item, index) => (
-                  <SwiperSlide key={index}>
-                    <div
-                      className="flex justify-center px-2 py-3 cursor-pointer bg-line lg:px-0 md:px-0 sm:px-0"
-                      onClick={() => {
-                        setActiveImage(item);
-                        // setSelectedColor('')
-                      }}
-                    >
-                      <img
-                        src={item}
-                        alt={`Thumbnail ${index}`}
-                        className={`w-full border-2  ${activeImage === item
-                          ? "border-smallHeader"
-                          : "border-transparent"
-                          }`}
-                      />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+              onClick={() => setImageModel(true)}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                e.currentTarget.querySelector("img").style.transformOrigin =
+                  `${x}% ${y}%`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.querySelector("img").style.transformOrigin =
+                  "center center";
+              }}
+            >
+              <img
+                src={activeImage}
+                alt={product?.name}
+                className="w-full max-h-[760px] max-w-full object-contain transition-transform duration-300 ease-out group-hover:scale-150"
+              />
             </div>
           </div>
           {/* // )} */}
           {/* 2nd column  */}
-          <div>
+          <div className="lg:self-start">
             <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="w-full">
                 <div className="flex items-start justify-between gap-3">
@@ -1428,23 +1582,6 @@ const ProductDetails = () => {
                   {!loading && (
                     <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200">
                       SKU: {single_product?.overview?.sku_number}
-                    </span>
-                  )}
-                  {stockLoading ? (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-50 px-3 py-1 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200 animate-pulse">
-                      Checking stock...
-                    </span>
-                  ) : stockData && hasStock ? (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-200">
-                      In Stock ({totalStockQty} units)
-                    </span>
-                  ) : stockData && !hasStock ? (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-200">
-                      Out of Stock
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-gray-50 px-3 py-1 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200">
-                      Stock info unavailable
                     </span>
                   )}
                   {productTags.map((tag) => (
@@ -1532,43 +1669,6 @@ const ProductDetails = () => {
                   </div>
                 )}
 
-                {/* Stock breakdown for selected color */}
-                {selectedColor && stockItems.length > 0 && (() => {
-                  // Find the colorObj matching the selected name to get individual colour names
-                  const matchedColorObj = single_product?.product?.colours?.list.find(
-                    (c) => (c.name || c.colours.join("/")) === selectedColor
-                  );
-                  const individualColors = matchedColorObj?.colours || [selectedColor];
-                  const colorStock = stockItems.filter((item) => {
-                    const desc = item[0]?.toLowerCase() || "";
-                    return individualColors.some((c) => desc.startsWith(c.toLowerCase()));
-                  });
-                  if (colorStock.length === 0) return null;
-                  const colorTotal = colorStock.reduce((sum, item) => sum + (item[1] || 0), 0);
-                  return (
-                    <div className="mt-2 p-2 bg-gray-50 rounded-lg ring-1 ring-gray-200">
-                      <p className="text-xs font-semibold text-gray-700 mb-1">
-                        {selectedColor} — {colorTotal} units available
-                      </p>
-                      <div className="flex flex-wrap gap-x-3 gap-y-1">
-                        {colorStock.map((item, i) => {
-                          // Strip all individual color name prefixes to get just the size
-                          let size = item[0];
-                          for (const c of individualColors) {
-                            size = size.replace(new RegExp(`^${c}\\s*`, 'i'), '');
-                          }
-                          size = size.trim() || item[0];
-                          const qty = item[1] || 0;
-                          return (
-                            <span key={i} className={`text-xs ${qty > 0 ? 'text-gray-600' : 'text-red-500'}`}>
-                              {size}: <strong>{qty}</strong>
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
             </div>
 
@@ -1597,7 +1697,7 @@ const ProductDetails = () => {
               </div>
 
               {/* Tab content */}
-              <div className="mt-3">
+              <div className="mt-3 min-h-[420px] lg:min-h-[520px]">
                 {activeInfoTab === "features" && (
                   <FeaturesTab
                     single_product={single_product}
@@ -1624,6 +1724,9 @@ const ProductDetails = () => {
                       setSelectedSize,
                       single_product,
                       setShowQuoteForm,
+                      handleBuySample,
+                      setupFee,
+                      freightFee,
                       selectedLeadTimeAddition,
                       setSelectedLeadTimeAddition,
                     }}
@@ -1656,33 +1759,6 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
-          {/* 3rd column  */}
-          <OrderSummary
-            rawPerUnit={rawPerUnit}
-            discountedUnitPrice={discountedUnitPrice}
-            discountPct={discountPct}
-            currentQuantity={currentQuantity}
-            currentPrice={currentPrice}
-            showQuoteForm={showQuoteForm}
-            setShowQuoteForm={setShowQuoteForm}
-            productId={productId}
-            product={product}
-            priceGroups={priceGroups}
-            perUnitWithMargin={perUnitWithMargin}
-            selectedColor={selectedColor}
-            selectedPrintMethod={selectedPrintMethod}
-            logoColor={logoColor}
-            selectedSize={selectedSize}
-            selectedFile={selectedFile}
-            deliveryDate={deliveryDate}
-            freightFee={freightFee}
-            userEmail={userEmail}
-            setupFee={setupFee}
-            setCurrentQuantity={setCurrentQuantity}
-            selectedAdminCustomization={selectedAdminCustomization}
-            selectedPosition={selectedPosition}
-            customizationFile={customizationFile}
-          />
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { slugify } from "@/utils/utils";
+import { slugify, toProductUrl } from "@/utils/utils";
 import { useContext, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { FaFire } from "react-icons/fa";
@@ -39,8 +39,8 @@ const TrendingCarousel = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleCardNavigate = (slug, encodedId) => {
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+  const handleCardNavigate = (productName) => {
+    navigate(toProductUrl(productName));
   };
 
   const handleToggleFavourite = (e, product, isFavourited) => {
@@ -154,9 +154,6 @@ const TrendingCarousel = () => {
                       .filter((price) => price !== undefined);
                     const minPrice = prices.length ? Math.min(...prices) : 0;
                     const maxPrice = prices.length ? Math.max(...prices) : 0;
-                    const encodedId = btoa(product.meta?.id); // base64 encode
-                    const slug = slugify(product.overview?.name);
-
                     const isFavourited = favouriteItems?.some(
                       (item) => item.meta?.id === product?.meta?.id,
                     );
@@ -168,7 +165,7 @@ const TrendingCarousel = () => {
                       >
                         <div
                           className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2"
-                          onClick={() => handleCardNavigate(slug, encodedId)}
+                          onClick={() => handleCardNavigate(product.overview?.name)}
                         >
                           {" "}
                           {/* Product Image */}

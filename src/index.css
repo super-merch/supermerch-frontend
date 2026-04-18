@@ -71,6 +71,15 @@ select {
   appearance: textfield;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @media all and (max-width: 768px) {
   .Mycontainer2 {
     width: 100%;

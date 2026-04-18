@@ -8,7 +8,7 @@ import { removeFromFavourite } from "../redux/slices/favouriteSlice";
 import { toast } from "react-toastify";
 import { AppContext } from "@/context/AppContext";
 import { ProductCard } from "@/components/Common";
-import { getProductPrice, backgroundColor } from "@/utils/utils";
+import { getProductPrice, backgroundColor, toProductUrl } from "@/utils/utils";
 import ShopOurBestSellers from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 
 const FavouritePage = () => {
@@ -61,9 +61,7 @@ const FavouritePage = () => {
       .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name));
   };
 
   const handleRemoveFavourite = (product) => {

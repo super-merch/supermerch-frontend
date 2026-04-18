@@ -54,8 +54,10 @@ const Checkout = () => {
 
   // Get artwork data from upload artwork page
   const [artworkFile, setArtworkFile] = useState(null);
+  const [artworkFilesByTarget, setArtworkFilesByTarget] = useState({});
   const [artworkInstructions, setArtworkInstructions] = useState("");
   const [artworkOption, setArtworkOption] = useState("");
+  const [artworkTarget, setArtworkTarget] = useState("all");
 
   // Login modal states
   const [loginEmail, setLoginEmail] = useState("");
@@ -119,11 +121,17 @@ const Checkout = () => {
     if (location.state?.artworkFile) {
       setArtworkFile(location.state.artworkFile);
     }
+    if (location.state?.artworkFilesByTarget) {
+      setArtworkFilesByTarget(location.state.artworkFilesByTarget);
+    }
     if (location.state?.artworkInstructions) {
       setArtworkInstructions(location.state.artworkInstructions);
     }
     if (location.state?.artworkOption) {
       setArtworkOption(location.state.artworkOption);
+    }
+    if (location.state?.artworkTarget) {
+      setArtworkTarget(location.state.artworkTarget);
     }
 
     // Handle payment success from Success page redirect
@@ -282,6 +290,31 @@ const Checkout = () => {
     0,
   );
 
+  const roundToTwo = (value) =>
+    Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+
+  const dealItems = items.filter((item) => item.dealSource?.dealId);
+  const dealRawSubtotal = dealItems.reduce(
+    (sum, item) => sum + (Number(item.rawUnitPrice ?? item.price) * Number(item.quantity || 0)),
+    0,
+  );
+  const dealAppliedSubtotal = dealItems.reduce(
+    (sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 0)),
+    0,
+  );
+  const dealDiscountAmount = roundToTwo(Math.max(dealRawSubtotal - dealAppliedSubtotal, 0));
+
+  const artworkTargetLabel = (() => {
+    if (!artworkTarget || artworkTarget === "all") {
+      return "All products in this order";
+    }
+    const targetItem = items.find((item) => (item.cartItemId || item.id) === artworkTarget);
+    if (!targetItem) {
+      return "All products in this order";
+    }
+    return `${targetItem.name}${targetItem.color ? ` - ${targetItem.color}` : ""}${targetItem.size ? ` / ${targetItem.size}` : ""}`;
+  })();
+
   const normalizedSetupFee = Number(setupFee) || 0;
   const normalizedShipping = Number(shippingCharges) || 0;
   const normalizedGstRate = Number(gstCharges) || 0;
@@ -310,7 +343,10 @@ const Checkout = () => {
       if (artworkOption !== "upload") return null;
 
       // Use the preview property which contains the base64 string
-      const logoPayload = artworkFile?.preview;
+      const firstMappedArtwork = Object.values(artworkFilesByTarget || {}).find(
+        (fileObj) => fileObj?.preview,
+      );
+      const logoPayload = artworkFile?.preview || firstMappedArtwork?.preview;
 
       if (!logoPayload) {
         throw new Error("No logo data found to upload");
@@ -404,10 +440,6 @@ const Checkout = () => {
     let logoId;
     if (artworkOption == "upload") {
       logoId = await uploadLogo();
-      if (!logoId) {
-        setLoading(false);
-        return;
-      }
     }
     const resolvedEmail =
       userData?.email ||
@@ -449,24 +481,40 @@ const Checkout = () => {
         email: data.shipping.email || userData?.email,
         phone: data.shipping.phone,
       },
-      products: items.map((item) => ({
-        name: item.name,
-        image: item.image,
-        quantity: item.quantity,
-        price: item.price,
-        subTotal: item.price * item.quantity,
-        color: item.color,
-        print: item.print || item.printMethodKey,
-        logoColor: item.logoColor,
-        logo: item.dragdrop,
-        id: item.id,
-        size: item.size,
-        supplierName: item?.supplierName,
-        adminCustomization: item.adminCustomization || null,
-      })),
+      products: items.map((item) => {
+        const itemTargetKey = item.cartItemId || item.id;
+        const perItemLogo = artworkFilesByTarget[itemTargetKey]?.preview || null;
+        const allLogo = artworkFilesByTarget.all?.preview || null;
+        const fallbackLogo = artworkFile?.preview || null;
+        const hasAdminCustomization = Boolean(item.adminCustomization);
+        const printLabel = String(item.print || item.printMethodKey || "").trim().toLowerCase();
+        const needsArtworkUpload = !hasAdminCustomization && printLabel !== "" && printLabel !== "none";
+        const selectedUploadLogo =
+          artworkOption === "upload" && needsArtworkUpload
+            ? (perItemLogo || allLogo || fallbackLogo)
+            : null;
+
+        return {
+          name: item.name,
+          image: item.image,
+          quantity: item.quantity,
+          price: item.price,
+          subTotal: item.price * item.quantity,
+          color: item.color,
+          print: item.print || item.printMethodKey,
+          logoColor: item.logoColor,
+          logo: selectedUploadLogo || item.dragdrop,
+          id: item.id,
+          cartItemId: item.cartItemId,
+          size: item.size,
+          supplierName: item?.supplierName,
+          adminCustomization: item.adminCustomization || null,
+        };
+      }),
       shipping: shippingCharges,
       setupFee: setupFee,
       discount: totalDiscountPercent,
+      dealDiscountAmount,
       // Add coupon information to order data
       coupon: appliedCoupon
         ? {
@@ -480,7 +528,7 @@ const Checkout = () => {
       total,
       paymentStatus: "Paid",
       // Add order-level artwork information
-      artworkMessage: artworkInstructions,
+      artworkMessage: `${artworkTargetLabel ? `Artwork applies to: ${artworkTargetLabel}` : ""}${artworkInstructions ? `\n${artworkInstructions}` : ""}`.trim(),
       artworkOption: artworkOption,
       logoId: logoId,
     };
@@ -681,13 +729,16 @@ const Checkout = () => {
               couponDiscountAmount={couponDiscountAmount}
               couponDiscountExceedsLimit={couponDiscountExceedsLimit}
               totalAmount={totalAmount}
+              dealDiscountAmount={dealDiscountAmount}
               shippingCharges={shippingCharges}
               setupFee={setupFee}
               gstCharges={gstCharges}
               gstAmount={gstAmount}
               total={total}
               artworkFile={artworkFile}
+              artworkFilesByTarget={artworkFilesByTarget}
               artworkInstructions={artworkInstructions}
+              artworkTargetLabel={artworkTargetLabel}
               loading={loading}
             />
           </div>

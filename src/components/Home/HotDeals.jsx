@@ -1,38 +1,39 @@
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFire } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { ProductsContext } from "../../context/ProductsContext";
+import { Link } from "react-router-dom";
+import axios from "axios";
 import noimage from "/noimage.png";
-import { getProductPrice, slugify } from "@/utils/utils";
 import Tooltip from "../Common/Tooltip";
 
 const HotDeals = () => {
-  const navigate = useNavigate();
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const hasRequestedRef = useRef(false);
-  const {
-    fetchDiscountedProducts,
-    discountedProducts,
-    products,
-    discountedProductsLoading,
-  } = useContext(ProductsContext);
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (hasRequestedRef.current) return;
-    if (discountedProducts.length === 0 && products.length === 0) {
-      hasRequestedRef.current = true;
-      fetchDiscountedProducts(1, "", 6);
-    }
-  }, [discountedProducts.length, products.length, fetchDiscountedProducts]);
 
+    const fetchDeals = async () => {
+      try {
+        hasRequestedRef.current = true;
+        setLoading(true);
 
-  // Use discounted products if available, otherwise fall back to regular products
-  const displayProducts =
-    discountedProducts && discountedProducts.length > 0
-      ? discountedProducts?.filter((product) => {
-        const price = getProductPrice(product);
-        return price > 0; // Only show products with valid prices
-      })
-      : products || [];
+        const response = await axios.get(`${backendUrl}/api/frontend/deals?limit=4&featured=true`);
+
+        if (response.data?.success) {
+          setDeals(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching deals:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeals();
+  }, [backendUrl]);
 
   return (
     <div className="border border-primary rounded-lg p-4 h-full flex flex-col shadow-lg shadow-primary/20 min-h-96 bg-white">
@@ -43,115 +44,106 @@ const HotDeals = () => {
       </div>
 
       {/* Hot Deals List */}
-      <div className="flex-1 flex flex-col justify-start overflow-y-auto ">
-        {discountedProductsLoading
+      <div className="flex-1 flex flex-col justify-start overflow-y-auto">
+        {loading
           ? // Loading skeleton
-          [...Array(4)].map((_, index) => {
-            const isLastItem = index === 3;
-            return (
-              <div
-                key={index}
-                className={`bg-blue-50 rounded-lg p-3 animate-pulse ${isLastItem ? "mb-0" : "mb-2"
-                  }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <div className="h-6 bg-gray-300 rounded w-16"></div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-          : // Real products
-          (() => {
-            if (displayProducts.length === 0) {
-              return (
-                <div className="flex items-center justify-center h-32">
-                  <p className="text-gray-500">No products available</p>
-                </div>
-              );
-            }
-
-            return displayProducts.slice(0, 4).map((product, index) => {
-              const price = getProductPrice(product);
+            [...Array(4)].map((_, index) => {
               const isLastItem = index === 3;
-              const encodedId = btoa(product.meta?.id); // base64 encode
-              const slug = slugify(product.overview?.name);
-              const discountPct = product.discountInfo?.discount || 0;
-              let unDiscountedPrice;
-              if (discountPct > 0) {
-                unDiscountedPrice =
-                  getProductPrice(product, product.meta.id) /
-                  (1 - discountPct / 100);
-              }
-
               return (
-                <Link
-                  to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
-                  key={`${product.meta?.id || "product"}-${index}`}
-                  className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${isLastItem ? "mb-0" : "mb-2"
-                    }`}
+                <div
+                  key={index}
+                  className={`bg-blue-50 rounded-lg p-3 animate-pulse ${
+                    isLastItem ? "mb-0" : "mb-2"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
-                    {/* Product Image */}
-                    <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0">
-                      <img
-                        src={product.overview?.hero_image || noimage}
-                        alt={product.overview?.name || "Product"}
-                        className="w-full h-full object-cover rounded-md"
-                      />
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex flex-col flex-1 min-w-0">
-                      {/* Product Name */}
-
-                      <Tooltip
-                        content={product.overview?.name || "No Name"}
-                        placement="top"
-                      >
-                        <h4
-                          className="text-sm font-semibold text-gray-800 truncate mb-1"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {product.overview?.name || "No Name"}
-                        </h4>
-                      </Tooltip>
-                      {/* Price */}
-                      {discountPct > 0 ? (
-                        <div className="flex items-center gap-0">
-                          <span className="text-base text-red-500 line-through mr-2">
-                            ${unDiscountedPrice.toFixed(2)}
-                          </span>
-                          <span className="text-base sm:text-base font-bold text-primary">
-                            $
-                            {getProductPrice(
-                              product,
-                              product.meta.id
-                            ).toFixed(2)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-base sm:text-base font-bold text-primary">
-                          $
-                          {getProductPrice(product, product.meta.id).toFixed(
-                            2
-                          )}
-                        </span>
-                      )}
+                    <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded w-16"></div>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
-            });
-          })()}
+            })
+          : // Real deals
+            (() => {
+              if (deals.length === 0) {
+                return (
+                  <div className="flex items-center justify-center h-32">
+                    <p className="text-gray-500">No deals available</p>
+                  </div>
+                );
+              }
+
+              return deals.map((deal, index) => {
+                const isLastItem = index === 3;
+                const imageUrl = deal.bannerImage
+                  ? deal.bannerImage.startsWith('http')
+                    ? deal.bannerImage
+                    : `${backendUrl}/${deal.bannerImage}`
+                  : noimage;
+
+                return (
+                  <Link
+                    to={`/deals/${deal.slug}`}
+                    key={deal.id || `deal-${index}`}
+                    className={`bg-blue-50 rounded-lg p-3 hover:bg-blue-100 transition-colors cursor-pointer ${
+                      isLastItem ? "mb-0" : "mb-2"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {/* Deal Image */}
+                      <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 relative">
+                        <img
+                          src={imageUrl}
+                          alt={deal.title}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                        {/* Discount Badge */}
+                        {deal.savingsPercentage > 0 && (
+                          <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                            -{deal.savingsPercentage}%
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Deal Info */}
+                      <div className="flex flex-col flex-1 min-w-0">
+                        {/* Deal Title */}
+                        <Tooltip content={deal.title} placement="top">
+                          <h4
+                            className="text-sm font-semibold text-gray-800 truncate mb-1"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {deal.title}
+                          </h4>
+                        </Tooltip>
+
+                        {/* Pricing - "From" pricing for quotation system */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-600">From</span>
+                          <span className="text-base font-bold text-primary">
+                            ${deal.dealPrice.toFixed(2)}
+                          </span>
+                        </div>
+
+                        {/* Items count */}
+                        <span className="text-xs text-gray-500">
+                          {deal.totalItems} items
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              });
+            })()}
       </div>
 
       {/* View All Link */}
       <div className="mt-4 pt-3 border-t border-gray-200">
         <Link
-          to="/sales"
+          to="/deals"
           className="text-sm text-secondary hover:text-primary font-medium transition-colors"
         >
           View All Hot Deals →

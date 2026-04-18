@@ -1,6 +1,6 @@
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
-import { slugify } from "@/utils/utils";
+import { slugify, toProductUrl } from "@/utils/utils";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -345,14 +345,10 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     currentParams.set("page", currentPage.toString());
     currentParams.set("scrollTo", productId.toString());
 
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
     const returnUrl = `${location.pathname}?${currentParams.toString()}`;
 
     navigate(
-      `/product/${encodeURIComponent(
-        slug
-      )}?ref=${encodedId}&return=${encodeURIComponent(returnUrl)}`,
+      toProductUrl(name),
       {
         state: { productId, returnUrl },
       }

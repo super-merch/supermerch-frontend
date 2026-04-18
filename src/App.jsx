@@ -42,6 +42,8 @@ import AustraliaMade from "./pages/AustraliaMade";
 import NotFound from "./pages/NotFound";
 import SitePopups from "./components/Home/SitePopups";
 import RouteSeo from "./components/Common/RouteSeo";
+import DealsPage from "./pages/DealsPage";
+import DealDetailPage from "./pages/DealDetailPage";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -106,7 +108,9 @@ const App = () => {
               element={<ShopPage category="promotional" />}
             />
 
-            <Route path="hot-deals" element={<ShopPage category="sales" />} />
+            <Route path="hot-deals" element={<DealsPage />} />
+            <Route path="/deals/:slug" element={<DealDetailPage />} />
+            <Route path="/deals" element={<DealsPage />} />
             <Route path="/favourites" element={<FavouritePage />} />
             <Route path="/Clothing" element={<ShopPage category="clothing" />} />
             <Route
@@ -122,7 +126,6 @@ const App = () => {
               element={<ShopPage category="24hr-production" />}
             />
             <Route path="/quote/respond/:id" element={<QuoteResponse />} />
-            <Route path="/sales" element={<ShopPage category="sales" />} />
             {/* SHOPPAGE  */}
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />

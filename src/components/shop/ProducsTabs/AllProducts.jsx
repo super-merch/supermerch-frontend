@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toProductUrl } from "@/utils/utils";
 import { AiOutlineEye } from "react-icons/ai";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
@@ -43,9 +44,7 @@ const AllProducts = ({ activeTab }) => {
   const dispatch = useDispatch();
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name));
   };
 
   const handleOpenModal = (product) => {
