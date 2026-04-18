@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import noimage from "/noimage.png";
-import { getProductPrice, slugify } from "@/utils/utils";
+import { getProductPrice, slugify, toProductUrl } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
@@ -30,8 +30,7 @@ const ProductCard = ({
   const minQty =
     product?.product?.prices?.price_groups?.[0]?.base_price?.price_breaks?.[0]
       ?.qty || 1;
-  const encodedId = btoa(product?.meta?.id); // base64 encode
-  const slug = slugify(product?.overview?.name);
+  const slug = toProductUrl(product?.overview?.name);
   const dispatch = useDispatch();
   const onAddFavourite = () => {
     dispatch(addToFavourite(product));
@@ -67,7 +66,7 @@ const ProductCard = ({
       onMouseLeave={() => setCardHover(null)}
     >
       <Link
-        to={`/product/${encodeURIComponent(slug)}?ref=${encodedId}`}
+        to={slug}
         className="text-center"
       >
         <div className="bg-white relative border border-border2 hover:border-1 transition-all duration-200 hover:border-primary  max-h-[320px] sm:max-h-[400px] h-full group rounded-lg">

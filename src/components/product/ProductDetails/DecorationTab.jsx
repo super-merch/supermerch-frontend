@@ -3,7 +3,6 @@ import LeadTimeModal from "./LeadTimeModal";
 import { FaPaintBrush, FaPrint, FaClock, FaCheckCircle, FaCloudUploadAlt, FaTimesCircle } from "react-icons/fa";
 import { MdColorLens } from "react-icons/md";
 import { GiSewingNeedle } from "react-icons/gi";
-import { isProductCategory } from "@/utils/utils";
 
 const DecorationTab = ({
   single_product,
@@ -21,14 +20,6 @@ const DecorationTab = ({
   setCurrentQuantity,
   uniquePriceGroups,
 }) => {
-  const filterByNamesForDecoration = (array) => {
-    const namesToInclude = ["Branding Options", "Print Areas"];
-    const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
-    return array?.filter((item) =>
-      lowerCaseNames.includes(item?.name?.toLowerCase())
-    );
-  };
-
   const [leadTimeModal, setLeadTimeModal] = useState(false);
 
   const getIconForMethod = (name) => {
@@ -53,10 +44,6 @@ const DecorationTab = ({
     return <FaPaintBrush className="w-5 h-5 text-primary" />;
   };
 
-  const decorationData = filterByNamesForDecoration(
-    single_product.product.details
-  );
-
   const leadTimeData = availablePriceGroups
     .map((group) => ({
       method: group.description || group.promodata_decoration || "Standard",
@@ -69,39 +56,7 @@ const DecorationTab = ({
         item.leadTime !== ""
     );
 
-  // PromoData artwork/print methods
-  const isClothing = isProductCategory(single_product, "Clothing");
-  const priceGroups = isClothing ? availablePriceGroups : uniquePriceGroups;
-
-  const getCleanName = (method) => {
-    if (isClothing) {
-      return (method.description || "")
-        .replace(/\s*-\s*set\s*up.*$/i, "")
-        .split(" (")[0]
-        .trim();
-    }
-    return (method.promodata_decoration || "")
-      .trim()
-      .split(" (")[0]
-      .trim();
-  };
-
   // ── Selection handlers ──
-
-  const handleSelectPrintMethod = (method) => {
-    // Deselect admin customization when selecting a hardcoded option
-    if (selectedAdminCustomization) {
-      setSelectedAdminCustomization(null);
-      setSelectedPosition(null);
-      setCustomizationFile?.(null);
-      setFilePreview(null);
-    }
-    setSelectedPrintMethod(method);
-    setSelectedLeadTimeAddition?.(null);
-    if (method?.price_breaks?.length > 0) {
-      setCurrentQuantity(method.price_breaks[0].qty);
-    }
-  };
 
   const handleSelectCustomization = (cust) => {
     if (selectedAdminCustomization?._id === cust._id) {
@@ -155,18 +110,17 @@ const DecorationTab = ({
   };
 
   const hasAdminCustomizations = adminCustomizations.length > 0;
-  const hasPromoMethods = priceGroups?.length > 0;
 
   return (
     <div className="space-y-6">
-      {/* ─── Unified Decoration Options (admin + hardcoded together) ─── */}
-      {(hasAdminCustomizations || hasPromoMethods) && (
+      {/* ─── Supermerch Admin Decoration Options ─── */}
+      {hasAdminCustomizations && (
         <div>
           <h3 className="text-lg font-bold text-secondary mb-1">
             Decoration Options
           </h3>
           <p className="text-sm text-gray-500 mb-3">
-            Select a decoration method. The pricing will update accordingly.
+            Select a Supermerch customization method and position.
           </p>
           <div className="grid gap-3">
             {/* ── Admin-defined customization cards ── */}
@@ -334,130 +288,21 @@ const DecorationTab = ({
                 </div>
               );
             })}
-
-            {/* ── Hardcoded PromoData artwork cards (same list, same format) ── */}
-            {priceGroups?.map((method, index) => {
-              const isSelected = !selectedAdminCustomization && selectedPrintMethod?.key === method.key;
-              const displayName = getCleanName(method);
-              const setupCost = method.setup || 0;
-
-              return (
-                <div
-                  key={`promo-${method.key}-${index}`}
-                  onClick={() => handleSelectPrintMethod(method)}
-                  className={`border rounded-xl p-4 cursor-pointer transition-all duration-200 ${
-                    isSelected
-                      ? "border-primary bg-primary/5 shadow-md"
-                      : "border-gray-200 bg-gradient-to-br from-gray-50 to-white hover:shadow-md"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${
-                        isSelected ? "bg-primary/20" : "bg-primary/10"
-                      }`}
-                    >
-                      {getMethodIcon(method.promodata_decoration || method.description)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-base font-bold text-secondary">
-                          {displayName}
-                        </h4>
-                        {method.type === "base" && (
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                            Base
-                          </span>
-                        )}
-                        {isSelected && (
-                          <FaCheckCircle className="w-4 h-4 text-primary ml-auto" />
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mt-1">
-                        {setupCost > 0 && (
-                          <p className="text-sm text-gray-500">
-                            Setup: <span className="font-semibold text-gray-700">${parseFloat(setupCost).toFixed(2)}</span>
-                          </p>
-                        )}
-                        {method.lead_time && (
-                          <p className="text-sm text-gray-500">
-                            Lead time: <span className="font-semibold text-gray-700">{method.lead_time}</span>
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       )}
 
-      {/* ─── Supplier Decoration Details (info only) ─── */}
-      {decorationData?.length > 0 && (
-        <>
-          {(hasAdminCustomizations || hasPromoMethods) && (
-            <div className="border-t border-gray-200 pt-4">
-              <h3 className="text-lg font-bold text-secondary mb-3">
-                Supplier Decoration Details
-              </h3>
-            </div>
-          )}
-          <div className="grid gap-6">
-            {decorationData.map((d, i) => (
-              <div
-                key={i}
-                className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-300"
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    {getIconForMethod(d.name)}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-secondary mb-1">
-                      {d.method || d.name}
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      Available decoration option
-                    </p>
-                  </div>
-                </div>
-                {d?.detail && (
-                  <div className="space-y-2 ml-16">
-                    {d?.detail?.split("\n").map((line, index) => {
-                      const trimmedLine = line.trim();
-                      if (!trimmedLine) return null;
-                      return (
-                        <div
-                          key={index}
-                          className="flex items-start gap-3 text-sm text-gray-700"
-                        >
-                          <FaCheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                          <span className="leading-relaxed">{trimmedLine}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
       {/* Empty state */}
-      {!hasAdminCustomizations && !hasPromoMethods && decorationData?.length === 0 && (
+      {!hasAdminCustomizations && (
         <div className="text-center py-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
             <FaPaintBrush className="w-10 h-10 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            No Decoration Information
+            No Supermerch Customization Methods
           </h3>
           <p className="text-sm text-gray-500 max-w-md mx-auto">
-            Decoration details are not currently available for this product.
-            Please contact us for custom branding options.
+            This product has no admin-defined customization options yet.
           </p>
         </div>
       )}

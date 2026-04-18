@@ -331,7 +331,7 @@ const RouteSeo = () => {
     "/Headwear",
     "/return-gifts",
     "/24hr-production",
-    "/sales",
+    "/deals",
     "/search",
     "/australia-made",
     "/clearance",

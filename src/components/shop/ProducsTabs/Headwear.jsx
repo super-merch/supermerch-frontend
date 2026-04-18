@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toProductUrl } from "@/utils/utils";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
@@ -43,9 +44,7 @@ const Headwear = ({ activeTab }) => {
   }, []);
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name));
   };
 
   const handleOpenModal = (product) => {

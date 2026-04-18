@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { toProductUrl } from "@/utils/utils";
 
 // Siri-like orb animation styles
 const orbStyles = `
@@ -407,20 +408,14 @@ const ChatWidget = () => {
   };
 
   const buildProductUrl = (item) => {
-    if (item?.url && item.url.includes("ref=")) {
+    if (item?.url && item.url.includes("/product/")) {
       return item.url;
     }
     const name = item?.name || "";
-    const slug = name
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
-    const encoded = item?.id ? btoa(String(item.id)) : "";
-    if (!encoded) {
+    if (!name) {
       return item?.url || "#";
     }
-    return `/product/${slug || "item"}?ref=${encodeURIComponent(encoded)}`;
+    return toProductUrl(name);
   };
 
   const sendQuery = async (nextQuery) => {

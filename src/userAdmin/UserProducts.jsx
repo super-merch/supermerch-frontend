@@ -8,7 +8,7 @@ import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
-import { slugify } from "@/utils/utils";
+import { slugify, toProductUrl } from "@/utils/utils";
 
 const UserProducts = () => {
   const { userOrder, loading, user, loadUserOrder } = useContext(AuthContext);

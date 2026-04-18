@@ -25,6 +25,15 @@ export const slugify = (s) =>
     // remove leading/trailing hyphens
     .replace(/(^-|-$)/g, "");
 
+/**
+ * Generate product URL using slug only (no query parameters)
+ * This creates clean, shareable URLs like /product/shirt-jacket-unisex
+ */
+export const toProductUrl = (productName) => {
+  if (!productName) return "/";
+  return `/product/${slugify(productName)}`;
+};
+
 export const findNearestColor = (colorName) => {
   if (!colorName || typeof colorName !== "string") {
     return null;

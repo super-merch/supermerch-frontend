@@ -5,15 +5,27 @@ export default function OrderSummarySidebar({
   couponDiscountAmount,
   couponDiscountExceedsLimit,
   totalAmount,
+  dealDiscountAmount,
   shippingCharges,
   setupFee,
   gstCharges,
   gstAmount,
   total,
   artworkFile,
+  artworkFilesByTarget,
   artworkInstructions,
+  artworkTargetLabel,
   loading,
 }) {
+  const getTargetLabel = (targetKey) => {
+    if (targetKey === "all") return "All products in this order";
+    const targetItem = items.find((item) => (item.cartItemId || item.id) === targetKey);
+    if (!targetItem) return "Selected product";
+    return `${targetItem.name}${targetItem.color ? ` - ${targetItem.color}` : ""}${targetItem.size ? ` / ${targetItem.size}` : ""}`;
+  };
+
+  const artworkEntries = Object.entries(artworkFilesByTarget || {});
+
   return (
     <div className="w-full h-fit lg:w-[35%]">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-6">
@@ -190,7 +202,7 @@ export default function OrderSummarySidebar({
             })}
           </ul>
 
-          {(artworkFile || artworkInstructions) && (
+          {(artworkFile || artworkInstructions || artworkTargetLabel || artworkEntries.length > 0) && (
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center space-x-2 mb-3">
                 <svg
@@ -264,6 +276,59 @@ export default function OrderSummarySidebar({
                   </p>
                 </div>
               )}
+
+              {artworkTargetLabel && (
+                <div className="mt-2">
+                  <p className="text-base text-blue-700 font-medium mb-1">
+                    Applies To:
+                  </p>
+                  <p className="text-sm text-blue-800 bg-white p-2 rounded border border-blue-200">
+                    {artworkTargetLabel}
+                  </p>
+                </div>
+              )}
+
+              {artworkEntries.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-base text-blue-700 font-medium mb-2">Per-product artwork</p>
+                  <div className="space-y-2">
+                    {artworkEntries.map(([targetKey, fileObj]) => {
+                      const isImage = fileObj?.file?.type?.startsWith("image/");
+                      return (
+                        <div key={targetKey} className="flex items-center gap-2 bg-white p-2 rounded border border-blue-200">
+                          {isImage ? (
+                            <img
+                              src={fileObj.preview}
+                              alt="Artwork target"
+                              className="w-8 h-8 object-cover rounded border border-gray-200"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                              <svg
+                                className="w-4 h-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-xs text-blue-800 font-medium truncate">{getTargetLabel(targetKey)}</p>
+                            <p className="text-xs text-gray-600 truncate">{fileObj?.name || "Artwork file"}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -292,6 +357,13 @@ export default function OrderSummarySidebar({
                 {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
               </span>
             </div>
+
+            {dealDiscountAmount > 0 && (
+              <div className="flex justify-between text-base text-green-700">
+                <span>Deal Discount:</span>
+                <span>-${dealDiscountAmount.toFixed(2)}</span>
+              </div>
+            )}
 
             {appliedCoupon && (
               <div className="flex flex-col gap-2">

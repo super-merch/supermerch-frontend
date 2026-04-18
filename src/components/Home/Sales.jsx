@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { ProductsContext } from "../../context/ProductsContext";
 import { useNavigate } from "react-router-dom";
+import { toProductUrl } from "@/utils/utils";
 import noimage from "/noimage.png";
 
 const Sale = () => {
@@ -62,9 +63,7 @@ const Sale = () => {
       .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name));
   };
 
   return (

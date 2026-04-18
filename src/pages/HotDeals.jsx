@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import { ProductsContext } from "../context/ProductsContext";
 import noimage from "/noimage.png";
-import { getProductPrice } from "@/utils/utils";
+import { getProductPrice, toProductUrl } from "@/utils/utils";
 import { Clock, Flag } from "lucide-react";
 
 const HotDeals = () => {
@@ -100,9 +100,7 @@ const HotDeals = () => {
       .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId);
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name));
   };
 
   const filteredProducts = useMemo(() => {

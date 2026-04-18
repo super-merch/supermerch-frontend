@@ -1,5 +1,5 @@
 import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
-import { slugify } from "@/utils/utils";
+import { slugify, toProductUrl } from "@/utils/utils";
 import { useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -501,22 +501,15 @@ const Cards = ({ category = "" }) => {
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set("page", currentPage.toString());
     currentParams.set("scrollTo", productId.toString());
-
-    const encodedId = btoa(productId);
-    const slug = slugify(name);
     const returnUrl = `${location.pathname}?${currentParams.toString()}`;
 
     // Replace current history entry with scrollTo so browser back preserves scroll
     navigate(returnUrl, { replace: true });
 
-    navigate(
-      `/product/${encodeURIComponent(
-        slug
-      )}?ref=${encodedId}&return=${encodeURIComponent(returnUrl)}`,
-      {
-        state: { productId, returnUrl },
-      }
-    );
+    // Navigate using clean slug-based URL
+    navigate(toProductUrl(name), {
+      state: { productId, returnUrl },
+    });
   };
 
   return (

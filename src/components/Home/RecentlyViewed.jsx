@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { FaClock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { toProductUrl } from "@/utils/utils";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -44,9 +45,7 @@ const RecentlyViewed = () => {
   if (loading || products.length === 0) return null;
 
   const handleCardNavigate = (product) => {
-    const slug = (product.productName || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const encodedId = btoa(String(product.productId));
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(product.productName || "product"));
   };
 
   return (

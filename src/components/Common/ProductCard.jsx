@@ -3,6 +3,7 @@ import {
   getProductPrice,
   is24HrProduct,
   isProductCategory,
+  toProductUrl,
 } from "@/utils/utils";
 import { Clock, Flag } from "lucide-react";
 import { CiHeart } from "react-icons/ci";
@@ -49,22 +50,13 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
     if (onViewProduct) {
       onViewProduct(product.meta.id, product.overview.name);
     } else {
-      // Default navigation if no callback provided
-      const slug = product.overview.name
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
-      const encodedId = btoa(product.meta.id.toString());
-      navigate(`/product/${slug}?ref=${encodedId}`);
+      // Navigate using clean slug-based URL
+      navigate(toProductUrl(product.overview.name));
     }
   };
 
   const productId = product?.meta?.id;
-  const slug = product.overview.name
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-  const encodedId = btoa(product.meta.id.toString());
+  const slug = toProductUrl(product.overview.name);
   const productPrice =
     product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]
       ?.price;
@@ -188,7 +180,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
       {/* Product Details */}
       <div className="flex-1 flex flex-col p-2 overflow-hidden min-h-0">
         <Link
-          to={`/product/${slug}?ref=${encodedId}`}
+          to={slug}
           onClick={(e) => e.stopPropagation()}
           className="flex-1 flex flex-col min-w-0 w-full h-full"
         >

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { IoMdArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { toProductUrl, slugify } from "@/utils/utils";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineEye } from "react-icons/ai";
 import { BsCursor } from "react-icons/bs";
@@ -30,9 +31,7 @@ const LatestDeals = () => {
     );
 
   const handleViewProduct = (productId, productName) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(productName);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`, {
+    navigate(toProductUrl(productName), {
       state: productId,
     });
   };

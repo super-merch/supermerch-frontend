@@ -7,6 +7,7 @@ import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { toProductUrl } from "@/utils/utils";
 import { AppContext } from "../../context/AppContext";
 import { ProductsContext } from "../../context/ProductsContext";
 import RecommendationsStrip from "../Common/RecommendationsStrip";
@@ -229,9 +230,7 @@ const CartComponent = () => {
       .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId); // base64 encode
-    const slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name));
   };
 
   const checkIfLowerThanMoQ = (item) => {

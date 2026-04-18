@@ -195,7 +195,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
       { name: "24hr Prod", path: "/24hr-production" },
-      { name: "Deals", path: "/sales" },
+      { name: "Deals", path: "/deals" },
       { name: "Australia Made", path: "/australia-made" },
     ];
 
