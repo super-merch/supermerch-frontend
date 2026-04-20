@@ -165,7 +165,11 @@ const TrendingCarousel = () => {
                       >
                         <div
                           className="bg-white border rounded-xl shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 cursor-pointer group overflow-hidden sm:mr-2"
-                          onClick={() => handleCardNavigate(product.overview?.name)}
+                          onClick={() =>
+                            handleCardNavigate(
+                              product?.slug || product?.overview?.originalName || product?.overview?.name
+                            )
+                          }
                         >
                           {" "}
                           {/* Product Image */}

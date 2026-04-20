@@ -180,7 +180,7 @@ const AllProducts = ({ activeTab }) => {
                           onClick={() =>
                             handleViewProduct(
                               product.meta.id,
-                              product.overview.name
+                                product?.slug || product?.overview?.originalName || product?.overview?.name
                             )
                           }
                           className="max-h-[50%] h-full border-b overflow-hidden"
@@ -244,7 +244,10 @@ const AllProducts = ({ activeTab }) => {
                               </p>
                               <button
                                 onClick={() =>
-                                  handleViewProduct(product.meta.id)
+                                  handleViewProduct(
+                                    product.meta.id,
+                                    product?.slug || product?.overview?.originalName || product?.overview?.name
+                                  )
                                 }
                                 className="text-sm uppercase"
                               >

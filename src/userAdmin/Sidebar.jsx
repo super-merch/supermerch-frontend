@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState, useRef, useCallback } from "rea
 import {
   LuLayoutDashboard,
   LuShoppingCart,
+  LuFileText,
   LuMapPin,
   LuCreditCard,
   LuMenu,
@@ -17,6 +18,7 @@ import Adress from "./Adress";
 import { IoIosLogOut } from "react-icons/io";
 import AccountDetail from "./AccountDetail";
 import OrdersContent from "./OrderContents";
+import UserQuotes from "./UserQuotes";
 import SupportTickets from "./SupportTickets";
 import SupportTicketDetail from "./SupportTicketDetail";
 import LogoutModal from "@/components/Common/LogoutModal";
@@ -24,6 +26,7 @@ import LogoutModal from "@/components/Common/LogoutModal";
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: LuLayoutDashboard },
   { id: "orders", label: "Orders", icon: LuShoppingCart },
+  { id: "quotes", label: "My Quotes", icon: LuFileText },
   { id: "ordersDetails", label: "OrdersDetails", icon: LuShoppingCart },
   { id: "support", label: "Support", icon: LuHeadphones },
   { id: "supportDetail", label: "Ticket Detail", icon: LuHeadphones },
@@ -59,6 +62,7 @@ export default function SidebarTabs() {
     const validTabs = [
       "dashboard",
       "orders",
+      "quotes",
       "address",
       "account",
       "ordersDetails",
@@ -278,6 +282,7 @@ export default function SidebarTabs() {
             <div className="flex-1 overflow-y-auto p-2 py-1">
               {activeTab === "dashboard" && <DashBoard />}
               {activeTab === "orders" && <OrdersContent />}
+              {activeTab === "quotes" && <UserQuotes />}
               {activeTab === "support" && <SupportTickets />}
               {activeTab === "supportDetail" && <SupportTicketDetail />}
               {activeTab === "address" && <Adress />}

@@ -124,7 +124,7 @@ const LatestDeals = () => {
                       onClick={() =>
                         handleViewProduct(
                           product.meta.id,
-                          product.overview.name
+                          product?.slug || product?.overview?.originalName || product?.overview?.name
                         )
                       }
                       className="relative border border-border2 cursor-pointer"
@@ -188,14 +188,24 @@ const LatestDeals = () => {
                             <CiHeart />
                           </p>
                           <div
-                            onClick={() => handleViewProduct(product.meta.id)}
+                            onClick={() =>
+                              handleViewProduct(
+                                product.meta.id,
+                                product?.slug || product?.overview?.originalName || product?.overview?.name
+                              )
+                            }
                             className="flex items-center justify-center w-full gap-1 px-2 py-3 text-white rounded-sm cursor-pointer bg-primary"
                           >
                             <p className="text-xl">
                               <IoCartOutline />
                             </p>
                             <button
-                              onClick={() => handleViewProduct(product.meta.id)}
+                              onClick={() =>
+                                handleViewProduct(
+                                  product.meta.id,
+                                  product?.slug || product?.overview?.originalName || product?.overview?.name
+                                )
+                              }
                               className="text-sm uppercase"
                             >
                               Add to cart

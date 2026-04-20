@@ -30,7 +30,9 @@ const ProductCard = ({
   const minQty =
     product?.product?.prices?.price_groups?.[0]?.base_price?.price_breaks?.[0]
       ?.qty || 1;
-  const slug = toProductUrl(product?.overview?.name);
+  const slug = toProductUrl(
+    product?.slug || product?.overview?.originalName || product?.overview?.name
+  );
   const dispatch = useDispatch();
   const onAddFavourite = () => {
     dispatch(addToFavourite(product));

@@ -48,15 +48,24 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
 
   const handleCardClick = () => {
     if (onViewProduct) {
-      onViewProduct(product.meta.id, product.overview.name);
+      onViewProduct(
+        product.meta.id,
+        product?.slug || product?.overview?.originalName || product?.overview?.name
+      );
     } else {
-      // Navigate using clean slug-based URL
-      navigate(toProductUrl(product.overview.name));
+      // Navigate using the stored slug/original name, not the display name
+      navigate(
+        toProductUrl(
+          product?.slug || product?.overview?.originalName || product?.overview?.name
+        )
+      );
     }
   };
 
   const productId = product?.meta?.id;
-  const slug = toProductUrl(product.overview.name);
+  const slug = toProductUrl(
+    product?.slug || product?.overview?.originalName || product?.overview?.name
+  );
   const productPrice =
     product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]
       ?.price;

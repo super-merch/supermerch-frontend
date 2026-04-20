@@ -944,6 +944,7 @@ const ProductDetails = () => {
       }
     } catch (error) {
       setQuoteLoading(false);
+      toast.error(error?.response?.data?.message || "Failed to send quote request");
     }
   };
 
@@ -1408,7 +1409,9 @@ const ProductDetails = () => {
                             onClick={() => {
                               setShowAddToCartNotification(false);
                               navigate(
-                                toProductUrl(item?.meta?.id, item?.overview?.name)
+                                toProductUrl(
+                                  item?.slug || item?.overview?.originalName || item?.overview?.name
+                                )
                               );
                             }}
                           >
