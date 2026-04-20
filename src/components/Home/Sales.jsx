@@ -156,7 +156,7 @@ const Sale = () => {
                             onClick={() =>
                               handleViewProduct(
                                 product.meta.id,
-                                product.overview.name
+                                product?.slug || product?.overview?.originalName || product?.overview?.name
                               )
                             }
                             className="flex items-center gap-3 p-4 mb-4 transition duration-300 transform border rounded-md cursor-pointer group hover:scale-105"

@@ -20,6 +20,24 @@ const getPriceForQuantity = (quantity, priceBreaks) => {
   return sortedBreaks[0]?.price || 0;
 };
 
+const getCartUnitPrice = (item, quantity) => {
+  const baseUnitPrice = getPriceForQuantity(quantity, item.basePrices);
+  const methodUnitPrice = getPriceForQuantity(quantity, item.priceBreaks || []);
+  const methodKey = norm(item.printMethodKey || item.print);
+  const isBaseSelection =
+    methodKey === "" ||
+    methodKey === "none" ||
+    methodKey.includes("base") ||
+    !Array.isArray(item.priceBreaks) ||
+    item.priceBreaks.length === 0;
+
+  if (isBaseSelection) {
+    return Number(baseUnitPrice || item.price || 0);
+  }
+
+  return Number((baseUnitPrice || 0) + (methodUnitPrice || 0));
+};
+
 const norm = (v) => String(v ?? "").trim().toLowerCase();
 const getCartLineKey = (item) =>
 [
@@ -95,9 +113,8 @@ const cartSlice = createSlice({
 
       if (existing) {
         existing.quantity += quantity;
-        const newUnitPrice = getPriceForQuantity(existing.quantity, existing.basePrices);
-        const priceWithMargin = newUnitPrice + (existing.marginFlat * newUnitPrice) / 100;
-        existing.price = priceWithMargin * (1 - existing.discountPct / 100);
+        const newUnitPrice = getCartUnitPrice(existing, existing.quantity);
+        existing.price = newUnitPrice;
         existing.totalPrice = existing.price * existing.quantity;
         if (dragdrop) {
           existing.dragdrop = dragdrop;
@@ -161,10 +178,9 @@ const cartSlice = createSlice({
 
       if (item) {
         item.quantity += 1;
-        // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
-        item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
+        // Recalculate from backend-finalized tier prices
+        const newUnitPrice = getCartUnitPrice(item, item.quantity);
+        item.price = newUnitPrice;
         item.totalPrice = item.price * item.quantity;
       }
 
@@ -188,10 +204,9 @@ const cartSlice = createSlice({
 
       if (item) {
         item.quantity = Math.max(quantity, 1);
-        // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) /100;
-        item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
+        // Recalculate from backend-finalized tier prices
+        const newUnitPrice = getCartUnitPrice(item, item.quantity);
+        item.price = newUnitPrice;
         item.totalPrice = item.price * item.quantity;
       }
 
@@ -215,10 +230,9 @@ const cartSlice = createSlice({
 
       if (item && item.quantity > 1) {
         item.quantity -= 1;
-        // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
-        item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
+        // Recalculate from backend-finalized tier prices
+        const newUnitPrice = getCartUnitPrice(item, item.quantity);
+        item.price = newUnitPrice;
         item.totalPrice = item.price * item.quantity;
       }
 

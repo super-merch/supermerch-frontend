@@ -395,11 +395,10 @@ const ProductDetails = () => {
       : 0,
   );
 
-  const marginPct = totalMargin?.[productId] || localPricing?.margin || 0;
-  const perUnitWithMargin = unitPrice * (1 + marginPct / 100);
+  const pricingSummary = single_product?.pricingSummary || null;
 
-  const discountPct = totalDiscount?.[productId] || localPricing?.discount || 0;
-  const discountMultiplier = 1 - discountPct / 100;
+  const discountPct =
+    pricingSummary?.discountPercent ?? totalDiscount?.[productId] ?? localPricing?.discount ?? 0;
 
   const parsePromodataStockQuantity = (payload) => {
     const parseNumber = (value) => {
@@ -717,11 +716,8 @@ const ProductDetails = () => {
 
     setUnitPrice(finalUnitPrice);
 
-    const rawPerUnit = finalUnitPrice;
-    const discountedPerUnit = rawPerUnit * (1 - discountPct / 100);
-
-    // Calculate total: (discounted per-unit × qty) + setup + freight
-    const total = discountedPerUnit * currentQuantity;
+    // API pricing already includes margin and discount adjustments.
+    const total = finalUnitPrice * currentQuantity;
 
     setCurrentPrice(total);
   }, [
@@ -944,6 +940,7 @@ const ProductDetails = () => {
       }
     } catch (error) {
       setQuoteLoading(false);
+      toast.error(error?.response?.data?.message || "Failed to send quote request");
     }
   };
 
@@ -963,8 +960,7 @@ const ProductDetails = () => {
     return formatDeliveryDate(twoWeeksLater);
   })();
 
-  const rawPerUnit = unitPrice;
-  const discountedUnitPrice = rawPerUnit * (1 - discountPct / 100);
+  const discountedUnitPrice = unitPrice;
   // Setup fee comes directly from the selected supplier-provided artwork method.
   const getSetupFee = () => {
     return (selectedLeadTimeAddition?.setup ?? selectedPrintMethod?.setup ?? 0) * 1.5;
@@ -1055,8 +1051,7 @@ const ProductDetails = () => {
             finalUnitPrice = baseProductPrice + selectedBreak.price;
           }
 
-          const withMargin = finalUnitPrice * (1 + marginPct / 100);
-          return withMargin * (1 - discountPct / 100);
+          return finalUnitPrice;
         })(),
         totalPrice: currentPrice,
         discountPct,
@@ -1133,9 +1128,9 @@ const ProductDetails = () => {
         image: normalizedImages[0] || "",
         basePrices:
           priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
-        price: perUnitWithMargin,
+        price: unitPrice,
         discountPct,
-        totalPrice: perUnitWithMargin,
+        totalPrice: unitPrice,
         code: product.code,
         color: selectedColor,
         quantity: 1,
@@ -1408,7 +1403,9 @@ const ProductDetails = () => {
                             onClick={() => {
                               setShowAddToCartNotification(false);
                               navigate(
-                                toProductUrl(item?.meta?.id, item?.overview?.name)
+                                toProductUrl(
+                                  item?.slug || item?.overview?.originalName || item?.overview?.name
+                                )
                               );
                             }}
                           >
@@ -1719,8 +1716,7 @@ const ProductDetails = () => {
                       handleAddToCart,
                       setShowSizeGuide,
                       getPriceForQuantity,
-                      discountMultiplier,
-                      marginPct,
+                      pricingSummary,
                       setSelectedSize,
                       single_product,
                       setShowQuoteForm,

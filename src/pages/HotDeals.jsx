@@ -216,7 +216,10 @@ const HotDeals = () => {
                   key={productId}
                   className="relative border border-border2 transition-all duration-200 hover:border-primary cursor-pointer max-h-[320px] sm:max-h-[400px] h-full group"
                   onClick={() =>
-                    handleViewProduct(productId, product.overview?.name)
+                    handleViewProduct(
+                      productId,
+                      product?.slug || product?.overview?.originalName || product?.overview?.name
+                    )
                   }
                 >
                   {discountPct > 0 && (

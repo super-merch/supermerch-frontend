@@ -322,7 +322,10 @@ const CartComponent = () => {
                               <div className="flex items-start space-x-4">
                                 <img
                                   onClick={() =>
-                                    handleViewProduct(item.id, item.name)
+                                    handleViewProduct(
+                                      item.id,
+                                      item.slug || item.originalName || item.name
+                                    )
                                   }
                                   src={item.image}
                                   alt={item.name}
@@ -332,7 +335,10 @@ const CartComponent = () => {
                                   <h3
                                     className="text-xl font-semibold text-gray-900 mb-1 cursor-pointer hover:text-smallHeader transition-colors capitalize"
                                     onClick={() =>
-                                      handleViewProduct(item.id, item.name)
+                                        handleViewProduct(
+                                          item.id,
+                                          item.slug || item.originalName || item.name
+                                        )
                                     }
                                   >
                                     {item.name} {item.sample ? "(Sample)" : ""}
@@ -517,7 +523,10 @@ const CartComponent = () => {
                           {/* Product Image */}
                           <img
                             onClick={() =>
-                              handleViewProduct(item.id, item.name)
+                              handleViewProduct(
+                                item.id,
+                                item.slug || item.originalName || item.name
+                              )
                             }
                             src={item.image}
                             alt={item.name}
@@ -529,7 +538,10 @@ const CartComponent = () => {
                             <h3
                               className="text-base font-semibold text-gray-900 mb-2 cursor-pointer hover:text-smallHeader transition-colors line-clamp-2"
                               onClick={() =>
-                                handleViewProduct(item.id, item.name)
+                                handleViewProduct(
+                                  item.id,
+                                  item.slug || item.originalName || item.name
+                                )
                               }
                             >
                               {item.name}
@@ -560,6 +572,17 @@ const CartComponent = () => {
                                     Print:{" "}
                                     <span className="font-medium text-gray-900">
                                       {item.print}
+                                    </span>
+                                  </span>
+                                </div>
+                              )}
+                              {Number(item.discountPct || 0) > 0 && (
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                                  <span>
+                                    Product Discount:{" "}
+                                    <span className="font-medium text-emerald-700">
+                                      {Number(item.discountPct).toFixed(2)}%
                                     </span>
                                   </span>
                                 </div>
@@ -730,6 +753,17 @@ const CartComponent = () => {
                       ${(gstAmount || 0).toFixed(2)}
                     </span>
                   </div>
+
+                  {items.some((item) => Number(item.discountPct || 0) > 0) && (
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm font-medium text-emerald-700">
+                        Product Discounts
+                      </span>
+                      <span className="text-sm font-semibold text-emerald-700">
+                        Included in unit prices
+                      </span>
+                    </div>
+                  )}
 
                   {appliedCoupon && (
                     <>

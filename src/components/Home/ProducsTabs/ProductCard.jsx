@@ -30,17 +30,16 @@ const ProductCard = ({
   const minQty =
     product?.product?.prices?.price_groups?.[0]?.base_price?.price_breaks?.[0]
       ?.qty || 1;
-  const slug = toProductUrl(product?.overview?.name);
+  const slug = toProductUrl(
+    product?.slug || product?.overview?.originalName || product?.overview?.name
+  );
   const dispatch = useDispatch();
   const onAddFavourite = () => {
     dispatch(addToFavourite(product));
     toast.success("Product added to favourites");
   };
-  let unDiscountedPrice;
-  if (discountPct > 0) {
-    unDiscountedPrice =
-      getProductPrice(product, product.meta.id) / (1 - discountPct / 100);
-  }
+  const finalPrice = Number(product?.pricingSummary?.finalMinPrice) || getProductPrice(product, product.meta.id);
+  const strikePrice = Number(product?.pricingSummary?.marginAdjustedMinPrice) || null;
   const is24HrProduct = (() => {
     const groups = product?.product?.prices?.price_groups ?? [];
     if (!Array.isArray(groups) || groups.length === 0) return false;
@@ -164,15 +163,15 @@ const ProductCard = ({
                 {discountPct > 0 ? (
                   <>
                     <span className="text-xs sm:text-sm text-red-500 line-through mr-2">
-                      ${unDiscountedPrice.toFixed(2)}
+                      ${(strikePrice || finalPrice).toFixed(2)}
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-primary">
-                      ${getProductPrice(product, product.meta.id).toFixed(2)}
+                      ${finalPrice.toFixed(2)}
                     </span>
                   </>
                 ) : (
                   <span className="text-xs sm:text-sm font-bold text-primary">
-                    ${getProductPrice(product, product.meta.id).toFixed(2)}
+                    ${finalPrice.toFixed(2)}
                   </span>
                 )}
               </h2>
