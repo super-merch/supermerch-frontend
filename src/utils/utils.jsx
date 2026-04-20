@@ -1,6 +1,11 @@
 import { colornames } from "color-name-list";
 
 export const getProductPrice = (product, id,isClothing) => {
+  const summaryFinal = Number(product?.pricingSummary?.finalMinPrice);
+  if (Number.isFinite(summaryFinal) && summaryFinal > 0) {
+    return Number(summaryFinal.toFixed(2));
+  }
+
   const priceGroups = product?.product?.prices?.price_groups || [];
   const basePrice = priceGroups.find((group) => group?.base_price) || {};
   const additionalPrice = priceGroups.find((group) => group?.additions.length>0) || {};

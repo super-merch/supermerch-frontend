@@ -17,8 +17,7 @@ const PricingTab = ({
   handleAddToCart,
   setShowSizeGuide,
   getPriceForQuantity,
-  discountMultiplier,
-  marginPct,
+  pricingSummary,
   setSelectedSize,
   single_product,
   setShowQuoteForm,
@@ -302,6 +301,12 @@ const PricingTab = ({
         </span>
       )}
 
+          {Number(pricingSummary?.discountPercent || 0) > 0 && (
+            <div className="mt-2 p-2 rounded-md border border-emerald-200 bg-emerald-50 text-sm text-emerald-900">
+              Product discount applied: <span className="font-semibold">{Number(pricingSummary.discountPercent).toFixed(2)}% OFF</span>
+            </div>
+          )}
+
       {(() => {
         // Sort price breaks once for reuse - use effectivePrintMethod
         const sortedBreaks = effectivePrintMethod?.price_breaks
@@ -366,10 +371,36 @@ const PricingTab = ({
                   effectivePrintMethod.type === "base"
                     ? item.price
                     : baseProductPrice + item.price;
+                let methodOriginal =
+                  effectivePrintMethod.type === "base"
+                    ? Number(item.originalPrice)
+                    : null;
 
-                const unitWithMargin = methodUnit * (1 + (marginPct || 0) / 100);
-                const unitDiscounted = unitWithMargin * discountMultiplier;
-                const total = unitDiscounted * item.qty;
+                if (effectivePrintMethod.type !== "base") {
+                  const baseGroup = availablePriceGroups.find((group) => group.type === "base");
+                  const baseBreaks = [...(baseGroup?.price_breaks || [])].sort((a, b) => a.qty - b.qty);
+                  let selectedBaseBreak = baseBreaks[0] || null;
+
+                  for (let k = 0; k < baseBreaks.length; k += 1) {
+                    if (item.qty >= baseBreaks[k].qty) {
+                      selectedBaseBreak = baseBreaks[k];
+                    } else {
+                      break;
+                    }
+                  }
+
+                  const baseOriginal = Number(selectedBaseBreak?.originalPrice);
+                  const additionOriginal = Number(item.originalPrice);
+                  if (Number.isFinite(baseOriginal) && Number.isFinite(additionOriginal)) {
+                    methodOriginal = baseOriginal + additionOriginal;
+                  }
+                }
+
+                const unitFinal = methodUnit;
+                const total = unitFinal * item.qty;
+                const originalTotal = Number.isFinite(methodOriginal)
+                  ? methodOriginal * item.qty
+                  : null;
 
                 // Check if this price tier applies to the current quantity
                 const isSelected =
@@ -403,18 +434,34 @@ const PricingTab = ({
                       {item.qty}+
                     </td>
                     <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
-                      $
-                      {unitDiscounted.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      <div className="flex flex-col">
+                        {Number(pricingSummary?.discountPercent || 0) > 0 && Number.isFinite(methodOriginal) && methodOriginal > unitFinal && (
+                          <span className="text-xs text-red-500 line-through">
+                            ${methodOriginal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        )}
+                        <span>
+                          ${unitFinal.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
                     </td>
                     <td className="py-2 align-middle text-base sm:text-lg text-black">
-                      $
-                      {total.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      <div className="flex flex-col">
+                        {Number(pricingSummary?.discountPercent || 0) > 0 && Number.isFinite(originalTotal) && originalTotal > total && (
+                          <span className="text-xs text-red-500 line-through">
+                            ${originalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        )}
+                        <span>
+                          ${total.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
                     </td>
                   </tr>
                 );

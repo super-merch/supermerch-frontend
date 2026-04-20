@@ -281,7 +281,7 @@ const Checkout = () => {
   const shippingPhone = watch("shipping.phone");
 
   const totalDiscountPercent = items.reduce(
-    (sum, item) => sum + (totalDiscount[item.id] || 0),
+    (sum, item) => sum + (Number(item.discountPct) || totalDiscount[item.id] || 0),
     0,
   );
 

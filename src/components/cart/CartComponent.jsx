@@ -576,6 +576,17 @@ const CartComponent = () => {
                                   </span>
                                 </div>
                               )}
+                              {Number(item.discountPct || 0) > 0 && (
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                                  <span>
+                                    Product Discount:{" "}
+                                    <span className="font-medium text-emerald-700">
+                                      {Number(item.discountPct).toFixed(2)}%
+                                    </span>
+                                  </span>
+                                </div>
+                              )}
                               {item.adminCustomization && (
                                 <div className="flex items-center space-x-2">
                                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -742,6 +753,17 @@ const CartComponent = () => {
                       ${(gstAmount || 0).toFixed(2)}
                     </span>
                   </div>
+
+                  {items.some((item) => Number(item.discountPct || 0) > 0) && (
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm font-medium text-emerald-700">
+                        Product Discounts
+                      </span>
+                      <span className="text-sm font-semibold text-emerald-700">
+                        Included in unit prices
+                      </span>
+                    </div>
+                  )}
 
                   {appliedCoupon && (
                     <>

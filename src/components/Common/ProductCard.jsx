@@ -26,11 +26,8 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
   const discountPct = product.discountInfo?.discount || 0;
   const isGlobalDiscount = product.discountInfo?.isGlobal || false;
-  let unDiscountedPrice;
-  if (discountPct > 0) {
-    unDiscountedPrice =
-      getProductPrice(product, product.meta.id) / (1 - discountPct / 100);
-  }
+  const finalPrice = Number(product?.pricingSummary?.finalMinPrice) || getProductPrice(product, product.meta.id);
+  const strikePrice = Number(product?.pricingSummary?.marginAdjustedMinPrice) || null;
   const handleRemoveFavourite = (product) => {
     toast.success("Product removed from favourites");
     dispatch(removeFromFavourite(product));
@@ -253,14 +250,11 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
                   <div className="flex items-center justify-center gap-1 sm:gap-1.5 flex-wrap">
                     {discountPct > 0 && (
                       <span className="text-[10px] sm:text-xs text-red-500 line-through whitespace-nowrap">
-                        ${unDiscountedPrice?.toFixed(2) || "0.00"}
+                        ${(strikePrice || finalPrice)?.toFixed(2) || "0.00"}
                       </span>
                     )}
                     <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
-                      $
-                      {getProductPrice
-                        ? getProductPrice(product, product.meta.id, isClothing).toFixed(2)
-                        : "0.00"}
+                      ${finalPrice.toFixed(2)}
                     </span>
                   </div>
                 </div>
