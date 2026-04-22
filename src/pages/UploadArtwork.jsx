@@ -59,7 +59,7 @@ const UploadArtwork = () => {
   });
   const hasPendingArtworkInputs = itemsNeedingArtworkInput.length > 0;
   const allItemsHaveCustomization = itemsWithoutCustomization.length === 0 && itemsWithCustomization.length > 0;
-  const dealItems = items.filter((item) => item.dealSource?.dealId);
+  const dealItems = items.filter((item) => item.dealSource?.dealId || String(item.itemType || item.type || "").toUpperCase() === "DEAL");
   const activeDealTitle = dealData?.dealTitle || dealItems[0]?.dealSource?.dealTitle || null;
 
   // Check if any item has an uploaded customization file (admin customization with file)
