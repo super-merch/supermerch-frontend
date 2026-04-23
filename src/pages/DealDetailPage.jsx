@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IoArrowBack, IoCheckmarkCircle, IoClose, IoInformationCircle } from 'react-icons/io5';
-import { MdLocalOffer } from 'react-icons/md';
-import { FaBoxOpen } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -14,6 +12,11 @@ import DealCustomizationModal from '@/components/deals/DealCustomizationModal';
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
 const roundToTwo = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+const formatPrice = (price) =>
+  new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+  }).format(Number(price || 0));
 
 const getPriceForQuantity = (quantity, priceBreaks = []) => {
   if (!Array.isArray(priceBreaks) || priceBreaks.length === 0) return 0;
@@ -130,7 +133,7 @@ const DealDetailPage = () => {
     if (!deal?.productSlots) return false;
     for (const slot of deal.productSlots) {
       const qty = getSlotTotalQuantity(slot.id);
-      if (!slot.isOptional && qty < slot.requiredQuantity) return false;
+      if (qty < Number(slot.requiredQuantity || 0)) return false;
     }
     return true;
   };
@@ -744,6 +747,21 @@ const DealDetailPage = () => {
 
   const totalItems = getTotalItems();
   const isComplete = areSelectionsComplete();
+  const requiredTotalItems = Number(deal?.totalItems || 0) || (deal?.productSlots || []).reduce((sum, slot) => {
+    return sum + Number(slot?.requiredQuantity || 0);
+  }, 0);
+  const discountedPrice = roundToTwo(Number(deal?.dealPrice || 0));
+  const mainPrice = roundToTwo(Number(deal?.basePrice || 0));
+  const calculatedSavings = mainPrice > 0
+    ? roundToTwo(Math.max(mainPrice - discountedPrice, 0))
+    : roundToTwo(Number(deal?.savingsAmount || 0));
+  const calculatedSavingsPercentage = mainPrice > 0
+    ? Math.round((calculatedSavings / mainPrice) * 100)
+    : 0;
+  const pricePerItem = requiredTotalItems > 0 ? roundToTwo(discountedPrice / requiredTotalItems) : 0;
+  const isInStock = typeof deal?.inStock === 'boolean' ? deal.inStock : true;
+  const isDealFulfilled = isComplete;
+  const isActionDisabled = !isDealFulfilled || !isInStock;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -757,77 +775,114 @@ const DealDetailPage = () => {
       </div>
 
       <div className="Mycontainer py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-xl overflow-hidden shadow-md">
               <div className="relative aspect-[4/3]">
                 <img src={getImageUrl(deal.bannerImage)} alt={deal.title} className="w-full h-full object-cover" />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{deal.title}</h1>
-              <p className="text-sm text-gray-500 mb-4">Deal Code: {deal.dealCode}</p>
-              {deal.description && <p className="text-gray-700 leading-relaxed mb-6">{deal.description}</p>}
+            <div className="bg-white rounded-xl border border-[#CBD5E1] p-6 space-y-4 shadow-sm">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">{deal.title}</h1>
+                {deal.description && <p className="text-sm text-gray-700 leading-relaxed">{deal.description}</p>}
+              </div>
 
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <FaBoxOpen className="text-primary" />
-                  What's Included:
-                </h3>
-                <div className="space-y-2">
-                  {deal.productSlots?.map((slot) => (
-                    <div key={slot.id} className="flex items-start gap-2">
-                      <IoCheckmarkCircle className="text-green-500 mt-1 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">
-                        {slot.requiredQuantity}x {slot.slotName}
-                        {slot.hasCustomization && <span className="text-primary ml-1">(Customization available)</span>}
-                      </span>
-                    </div>
-                  ))}
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-gray-900">{formatPrice(discountedPrice)}</span>
+                    {mainPrice > discountedPrice && (
+                      <span className="text-base text-gray-500 line-through">{formatPrice(mainPrice)}</span>
+                    )}
+                  </div>
+                  {calculatedSavingsPercentage > 0 && (
+                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded-full">
+                      Save {calculatedSavingsPercentage}%
+                    </span>
+                  )}
+                </div>
+
+                <div className="mb-3 space-y-1 text-sm text-gray-600">
+                  <p>
+                    Main Price (Admin): <span className="font-semibold text-gray-900">{formatPrice(mainPrice)}</span>
+                  </p>
+                  <p>
+                    Discounted Price: <span className="font-semibold text-gray-900">{formatPrice(discountedPrice)}</span>
+                  </p>
+                  <p>
+                    You Save: <span className="font-semibold text-green-700">{formatPrice(calculatedSavings)}</span>
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-gray-100 rounded-lg p-3">
+                    <span className="text-gray-600 block mb-1">Total Items</span>
+                    <span className="text-gray-900 font-semibold">{requiredTotalItems} pieces</span>
+                  </div>
+                  <div className="bg-gray-100 rounded-lg p-3">
+                    <span className="text-gray-600 block mb-1">Price Per Item</span>
+                    <span className="text-gray-900 font-semibold">{formatPrice(pricePerItem)}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-xl p-6 shadow-xl">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <MdLocalOffer className="text-2xl" />
-                Complete Your Selection
-              </h3>
-
-              <div className="bg-white/10 rounded-lg p-4 mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm opacity-90">Your Selection:</span>
-                  <span className="font-bold">{totalItems} items selected</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm opacity-90">Progress:</span>
-                  <span className={`font-semibold ${isComplete ? 'text-green-300' : 'text-yellow-300'}`}>
-                    {isComplete ? 'Complete' : 'In Progress'}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-white/20">
+                  <span className="text-sm opacity-90">Your Selection</span>
+                  <span className={`text-lg font-bold ${isComplete ? 'text-green-300' : 'text-yellow-300'}`}>
+                    {totalItems}/{requiredTotalItems}
                   </span>
                 </div>
-              </div>
 
-              <button
-                onClick={() => handleAddToCart()}
-                className="w-full py-4 bg-white text-teal-700 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all"
-              >
-                Add to Cart
-              </button>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm opacity-90">Bundle Price</span>
+                  <span className="text-2xl font-bold">{formatPrice(discountedPrice)}</span>
+                </div>
 
-              {deal.includesCustomization && (
+                {calculatedSavings > 0 && (
+                  <div className="flex items-center justify-between pb-4">
+                    <span className="text-sm opacity-90">You Save</span>
+                    <span className="text-xl font-bold text-green-300">{formatPrice(calculatedSavings)}</span>
+                  </div>
+                )}
+
                 <button
-                  onClick={() => setShowCustomizationModal(true)}
-                  className="mt-3 w-full py-4 bg-primary text-white rounded-lg font-bold text-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                  onClick={() => handleAddToCart()}
+                  disabled={isActionDisabled}
+                  className="w-full py-3 bg-white text-primary rounded-lg font-semibold hover:bg-[#EAFBF7] transition-colors disabled:cursor-not-allowed disabled:bg-[#5C8D86] disabled:text-[#E7F5F2]"
                 >
-                  <IoInformationCircle className="text-xl" />
-                  Add Logo & Personalisation
+                  {isComplete ? 'Add to Cart' : 'Complete Selection'}
                 </button>
-              )}
+
+                {deal.includesCustomization && (
+                  <button
+                    onClick={() => {
+                      if (isActionDisabled) return;
+                      setShowCustomizationModal(true);
+                    }}
+                    disabled={isActionDisabled}
+                    className="w-full py-3 bg-white/20 border border-white/35 text-white rounded-lg font-semibold hover:bg-white/30 transition-colors disabled:cursor-not-allowed disabled:bg-[#5C8D86] disabled:border-[#5C8D86] disabled:text-[#E7F5F2] flex items-center justify-center gap-2"
+                  >
+                    <IoInformationCircle className="text-lg" />
+                    Add Logo & Personalisation
+                  </button>
+                )}
+
+                {!isComplete && (
+                  <p className="text-xs text-center opacity-80 pt-2">
+                    <i className="ri-information-line mr-1"></i>
+                    Select colors and sizes for all products
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-xl p-6 shadow-md">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Configure Your Bundle</h2>
@@ -854,7 +909,7 @@ const DealDetailPage = () => {
                   const selectedChoice = getProductChoice(slot);
                   const totalQty = getSlotTotalQuantity(slot.id);
                   const progress = `${totalQty}/${slot.requiredQuantity}`;
-                  const isSlotComplete = slot.isOptional || totalQty >= slot.requiredQuantity;
+                  const isSlotComplete = totalQty >= slot.requiredQuantity;
 
                   return (
                     <div key={slot.id} className="border-2 border-gray-200 rounded-lg p-4">

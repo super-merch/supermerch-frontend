@@ -7,6 +7,7 @@ import {
   findNearestColor,
   getProductCategory,
 } from "@/utils/utils";
+import { getArtworkSource } from "@/utils/categoryMeta";
 import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -68,7 +69,7 @@ const ProductDetails = () => {
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   const { token, userData } = useContext(AuthContext);
-  const { error, totalDiscount, totalMargin } = useContext(ProductsContext);
+  const { error, totalDiscount, totalMargin, v1categories } = useContext(ProductsContext);
   const { backendUrl, shippingCharges: freightFee } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -170,6 +171,11 @@ const ProductDetails = () => {
   const productTags = Array.isArray(single_product?.productTags)
     ? single_product.productTags
     : [];
+  const categoryGroupId = product?.categorisation?.promodata_product_type?.type_group_id || "";
+  const artworkSource = useMemo(
+    () => getArtworkSource(categoryGroupId, v1categories),
+    [categoryGroupId, v1categories],
+  );
 
   const resolveImageUrl = (image) => {
     if (!image) return "";
@@ -1059,9 +1065,17 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: currentQuantity, // Use the actual quantity
-        print:
-          selectedPrintMethod.promodata_decoration ||
-          selectedPrintMethod.description,
+        print: artworkSource === "supermerch"
+          ? [
+              selectedAdminCustomization?.method?.applicationMethod,
+              selectedPosition?.positionName,
+            ]
+              .filter(Boolean)
+              .join(" - ") ||
+            selectedPrintMethod.promodata_decoration ||
+            selectedPrintMethod.description
+          : selectedPrintMethod.promodata_decoration ||
+            selectedPrintMethod.description,
         logoColor: logoColor,
         freightFee: freightFee,
         setupFee: setupFee,
@@ -1134,10 +1148,19 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: 1,
-        print:
-          selectedPrintMethod?.promodata_decoration ||
-          selectedPrintMethod?.description ||
-          "",
+        print: artworkSource === "supermerch"
+          ? [
+              selectedAdminCustomization?.method?.applicationMethod,
+              selectedPosition?.positionName,
+            ]
+              .filter(Boolean)
+              .join(" - ") ||
+            selectedPrintMethod?.promodata_decoration ||
+            selectedPrintMethod?.description ||
+            ""
+          : selectedPrintMethod?.promodata_decoration ||
+            selectedPrintMethod?.description ||
+            "",
         logoColor: logoColor,
         size: selectedSize,
         setupFee: 0,
@@ -1706,6 +1729,12 @@ const ProductDetails = () => {
                     {...{
                       productId,
                       selectedPrintMethod,
+                        artworkSource,
+                        adminCustomizations,
+                        selectedAdminCustomization,
+                        setSelectedAdminCustomization,
+                        selectedPosition,
+                        setSelectedPosition,
                       selectedSize,
                       currentQuantity,
                       availablePriceGroups,

@@ -1,12 +1,20 @@
 import { isProductCategory } from "@/utils/utils";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoCartOutline } from "react-icons/io5";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
+const NONE_ARTWORK_KEY = "__none_artwork__";
+
 const PricingTab = ({
   productId,
   selectedPrintMethod,
+  artworkSource,
+  adminCustomizations = [],
+  selectedAdminCustomization,
+  setSelectedAdminCustomization,
+  selectedPosition,
+  setSelectedPosition,
   selectedSize,
   currentQuantity,
   availablePriceGroups,
@@ -123,6 +131,8 @@ const PricingTab = ({
   const quoteIsLowStock = Boolean(stockAvailability?.isQuoteLowStock);
   const sampleIsLowStock = Boolean(stockAvailability?.isSampleLowStock);
   const lowMoqIsLowStock = Boolean(stockAvailability?.isLowMoqLowStock);
+  const isSupermerchArtwork = artworkSource === "supermerch" && adminCustomizations.length > 0;
+  const [isNoneArtworkSelected, setIsNoneArtworkSelected] = useState(false);
 
   const isNonArtworkAddition = (group) => {
     const decoration = String(group?.promodata_decoration || "").toLowerCase();
@@ -146,6 +156,16 @@ const PricingTab = ({
   };
 
   const artworkOptions = useMemo(() => {
+    if (isSupermerchArtwork) {
+      return adminCustomizations.map((cust) => ({
+        key: cust._id,
+        description: [cust.method?.applicationMethod, cust.method?.applicationType]
+          .filter(Boolean)
+          .join(" - "),
+        customization: cust,
+      }));
+    }
+
     const baseOption = availablePriceGroups.find((group) => group.type === "base");
     const options = [];
 
@@ -166,9 +186,14 @@ const PricingTab = ({
     });
 
     return options;
-  }, [availablePriceGroups]);
+  }, [availablePriceGroups, adminCustomizations, isSupermerchArtwork]);
 
   const selectedArtworkValue = useMemo(() => {
+    if (isSupermerchArtwork) {
+      if (isNoneArtworkSelected) return NONE_ARTWORK_KEY;
+      return selectedAdminCustomization?._id || artworkOptions[0]?.key || NONE_ARTWORK_KEY;
+    }
+
     if (!selectedPrintMethod) return artworkOptions[0]?.key || "";
 
     const exactMatch = artworkOptions.find(
@@ -177,13 +202,42 @@ const PricingTab = ({
     if (exactMatch) return exactMatch.key;
 
     return artworkOptions[0]?.key || "";
-  }, [artworkOptions, selectedPrintMethod]);
+  }, [artworkOptions, isNoneArtworkSelected, isSupermerchArtwork, selectedAdminCustomization, selectedPrintMethod]);
+
+  useEffect(() => {
+    if (!isSupermerchArtwork || artworkOptions.length === 0) return;
+    if (isNoneArtworkSelected) return;
+    if (selectedAdminCustomization?._id) return;
+
+    const firstCustomization = artworkOptions[0]?.customization;
+    if (firstCustomization) {
+      setSelectedAdminCustomization?.(firstCustomization);
+      setSelectedPosition?.(firstCustomization.positions?.[0] || null);
+    }
+  }, [artworkOptions, isNoneArtworkSelected, isSupermerchArtwork, selectedAdminCustomization, setSelectedAdminCustomization, setSelectedPosition]);
 
   const handleArtworkChange = (event) => {
     const selectedKey = event.target.value;
+
+    if (isSupermerchArtwork && selectedKey === NONE_ARTWORK_KEY) {
+      setIsNoneArtworkSelected(true);
+      setSelectedAdminCustomization?.(null);
+      setSelectedPosition?.(null);
+      return;
+    }
+
     const selectedOption = artworkOptions.find((option) => option.key === selectedKey);
     if (!selectedOption) return;
 
+    if (isSupermerchArtwork) {
+      setIsNoneArtworkSelected(false);
+      const customization = selectedOption.customization;
+      setSelectedAdminCustomization?.(customization || null);
+      setSelectedPosition?.(customization?.positions?.[0] || null);
+      return;
+    }
+
+    setIsNoneArtworkSelected(false);
     setSelectedLeadTimeAddition(null);
     setSelectedPrintMethod(selectedOption);
 
@@ -210,13 +264,20 @@ const PricingTab = ({
               onChange={handleArtworkChange}
               className="px-2 py-2 border rounded-md outline-none min-w-[230px]"
             >
+              {isSupermerchArtwork && (
+                <option value={NONE_ARTWORK_KEY}>None</option>
+              )}
               {artworkOptions.map((option) => (
                 <option key={option.key} value={option.key}>
-                  {option.type === "base"
-                    ? "None"
-                    : getTrimmedDescription(option.description) ||
-                      option.promodata_decoration ||
-                      "Artwork"}
+                  {isSupermerchArtwork
+                    ? getTrimmedDescription(option.description) ||
+                      option.customization?.method?.applicationMethod ||
+                      "Artwork"
+                    : option.type === "base"
+                      ? "None"
+                      : getTrimmedDescription(option.description) ||
+                        option.promodata_decoration ||
+                        "Artwork"}
                 </option>
               ))}
             </select>
