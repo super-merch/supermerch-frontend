@@ -7,12 +7,14 @@ import {
   findNearestColor,
   getProductCategory,
 } from "@/utils/utils";
+import { getArtworkSource } from "@/utils/categoryMeta";
 import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IoMdArrowForward } from "react-icons/io";
-import { IoArrowBackOutline } from "react-icons/io5";
+import { IoArrowBackOutline, IoCartOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
+import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,7 +70,7 @@ const ProductDetails = () => {
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
 
   const { token, userData } = useContext(AuthContext);
-  const { error, totalDiscount, totalMargin } = useContext(ProductsContext);
+  const { error, totalDiscount, totalMargin, v1categories } = useContext(ProductsContext);
   const { backendUrl, shippingCharges: freightFee } = useContext(AppContext);
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -170,6 +172,11 @@ const ProductDetails = () => {
   const productTags = Array.isArray(single_product?.productTags)
     ? single_product.productTags
     : [];
+  const categoryGroupId = product?.categorisation?.promodata_product_type?.type_group_id || "";
+  const artworkSource = useMemo(
+    () => getArtworkSource(categoryGroupId, v1categories),
+    [categoryGroupId, v1categories],
+  );
 
   const resolveImageUrl = (image) => {
     if (!image) return "";
@@ -829,6 +836,15 @@ const ProductDetails = () => {
     document.getElementById("fileUpload2").click();
   };
 
+  // Sync customizationFile from Decoration tab to Quote modal when it opens
+  useEffect(() => {
+    if (showQuoteForm.state && customizationFile && !selectedFile2) {
+      setSelectedFile2(customizationFile);
+      setPreviewImage2(URL.createObjectURL(customizationFile));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showQuoteForm.state]);
+
   useEffect(() => {
     if (!isNaN(originalPrice) && originalPrice > 0) {
       setCurrentPrice(originalPrice * 50);
@@ -839,6 +855,12 @@ const ProductDetails = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "phone") {
+      // Numbers only and max 10 characters
+      const cleaned = value.replace(/\D/g, "").slice(0, 10);
+      setFormData({ ...formData, [name]: cleaned });
+      return;
+    }
     const newFormData = { ...formData, [name]: value };
     setFormData(newFormData);
   };
@@ -852,15 +874,8 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         return;
       }
-      if (!formData.phone || formData.phone.length < 10) {
-        toast.error("Please enter a valid phone number");
-        setQuoteLoading(false);
-        return;
-      }
-      //phone validation
-      const phonePattern = /^\+?[0-9\s-]{10,15}$/; // Adjust pattern as needed
-      if (!phonePattern.test(formData.phone)) {
-        toast.error("Please enter a valid phone number");
+      if (!formData.phone || formData.phone.length !== 10) {
+        toast.error("Please enter a valid 10-digit phone number");
         setQuoteLoading(false);
         return;
       }
@@ -1059,9 +1074,17 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: currentQuantity, // Use the actual quantity
-        print:
-          selectedPrintMethod.promodata_decoration ||
-          selectedPrintMethod.description,
+        print: artworkSource === "supermerch"
+          ? [
+              selectedAdminCustomization?.method?.applicationMethod,
+              selectedPosition?.positionName,
+            ]
+              .filter(Boolean)
+              .join(" - ") ||
+            selectedPrintMethod.promodata_decoration ||
+            selectedPrintMethod.description
+          : selectedPrintMethod.promodata_decoration ||
+            selectedPrintMethod.description,
         logoColor: logoColor,
         freightFee: freightFee,
         setupFee: setupFee,
@@ -1134,10 +1157,19 @@ const ProductDetails = () => {
         code: product.code,
         color: selectedColor,
         quantity: 1,
-        print:
-          selectedPrintMethod?.promodata_decoration ||
-          selectedPrintMethod?.description ||
-          "",
+        print: artworkSource === "supermerch"
+          ? [
+              selectedAdminCustomization?.method?.applicationMethod,
+              selectedPosition?.positionName,
+            ]
+              .filter(Boolean)
+              .join(" - ") ||
+            selectedPrintMethod?.promodata_decoration ||
+            selectedPrintMethod?.description ||
+            ""
+          : selectedPrintMethod?.promodata_decoration ||
+            selectedPrintMethod?.description ||
+            "",
         logoColor: logoColor,
         size: selectedSize,
         setupFee: 0,
@@ -1236,7 +1268,7 @@ const ProductDetails = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm"
               onClick={() => setShowAddToCartNotification(false)}
               aria-hidden="true"
             />
@@ -1245,7 +1277,7 @@ const ProductDetails = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[101] flex items-center justify-center p-4 overflow-y-auto"
+              className="fixed inset-0 z-[1001] flex items-center justify-center p-4 overflow-y-auto"
               onClick={(e) =>
                 e.target === e.currentTarget &&
                 setShowAddToCartNotification(false)
@@ -1327,8 +1359,17 @@ const ProductDetails = () => {
                           </dd>
                         </div>
                       )}
-                      {(selectedPrintMethod?.description ||
-                        selectedPrintMethod?.promodata_decoration) && (
+                      {selectedAdminCustomization ? (
+                        <div className="flex justify-between py-1.5 border-b border-gray-50">
+                          <dt className="text-gray-500">Decoration</dt>
+                          <dd className="font-medium text-gray-900 text-right max-w-[200px] truncate">
+                            {selectedAdminCustomization.method.applicationMethod}
+                            {selectedPosition && ` — ${selectedPosition.positionName}`}
+                          </dd>
+                        </div>
+                      ) : (
+                        (selectedPrintMethod?.description ||
+                          selectedPrintMethod?.promodata_decoration) && (
                           <div className="flex justify-between py-1.5 border-b border-gray-50">
                             <dt className="text-gray-500">Print / Decoration</dt>
                             <dd
@@ -1342,15 +1383,7 @@ const ProductDetails = () => {
                                 selectedPrintMethod?.description}
                             </dd>
                           </div>
-                        )}
-                      {selectedAdminCustomization && (
-                        <div className="flex justify-between py-1.5 border-b border-gray-50">
-                          <dt className="text-gray-500">Customization</dt>
-                          <dd className="font-medium text-gray-900 text-right max-w-[180px] truncate">
-                            {selectedAdminCustomization.method.applicationMethod}
-                            {selectedPosition && ` — ${selectedPosition.positionName}`}
-                          </dd>
-                        </div>
+                        )
                       )}
                       {deliveryDate && (
                         <div className="flex justify-between py-1.5 border-b border-gray-50">
@@ -1706,6 +1739,12 @@ const ProductDetails = () => {
                     {...{
                       productId,
                       selectedPrintMethod,
+                        artworkSource,
+                        adminCustomizations,
+                        selectedAdminCustomization,
+                        setSelectedAdminCustomization,
+                        selectedPosition,
+                        setSelectedPosition,
                       selectedSize,
                       currentQuantity,
                       availablePriceGroups,
@@ -1713,18 +1752,20 @@ const ProductDetails = () => {
                       setSelectedPrintMethod,
                       setCurrentQuantity,
                       setActiveIndex,
-                      handleAddToCart,
                       setShowSizeGuide,
                       getPriceForQuantity,
                       pricingSummary,
                       setSelectedSize,
                       single_product,
                       setShowQuoteForm,
-                      handleBuySample,
-                      setupFee,
-                      freightFee,
                       selectedLeadTimeAddition,
                       setSelectedLeadTimeAddition,
+                      setActiveInfoTab,
+                      stockAvailability: {
+                        isQuoteLowStock,
+                        isSampleLowStock,
+                        isLowMoqLowStock,
+                      },
                     }}
                   />
                 )}
@@ -1753,6 +1794,123 @@ const ProductDetails = () => {
                   <ShippingTab single_product={single_product} />
                 )}
               </div>
+
+              {/* Global Quantity and Action Buttons Section */}
+              <div className="mt-8 border-t pt-8">
+                {(() => {
+                  const effectivePrintMethod = selectedLeadTimeAddition || selectedPrintMethod;
+                  const isSupermerchArtwork = artworkSource === "supermerch" && adminCustomizations.length > 0;
+                  const isAddToCartDisabled = isSupermerchArtwork && selectedAdminCustomization && !selectedPosition;
+
+                  return (
+                    <div className="space-y-6">
+                      {/* Quantity Selector */}
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center gap-4">
+                          <label className="text-lg font-medium text-gray-700 whitespace-nowrap">
+                            Order Quantity:
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min="1"
+                              value={currentQuantity}
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value) || 1;
+                                setCurrentQuantity(value);
+                                // Find the appropriate price tier for this quantity
+                                const sortedBreaks = [
+                                  ...(effectivePrintMethod?.price_breaks || []),
+                                ].sort((a, b) => a.qty - b.qty);
+                                let newActiveIndex = 0;
+                                for (let i = 0; i < sortedBreaks.length; i++) {
+                                  if (value >= sortedBreaks[i].qty) {
+                                    newActiveIndex = i;
+                                  } else {
+                                    break;
+                                  }
+                                }
+                                setActiveIndex(newActiveIndex);
+                              }}
+                              className="w-24 px-3 py-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Enter qty"
+                            />
+                            <span className="text-lg text-black">units</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Add to Cart Button */}
+                      <button
+                        disabled={isAddToCartDisabled}
+                        onClick={(e) => {
+                          if (isAddToCartDisabled) return;
+                          handleAddToCart(e);
+                        }}
+                        className={`flex items-center justify-center w-full gap-3 px-2 py-4 text-white rounded-lg transition-all duration-300 shadow-lg ${
+                          isAddToCartDisabled
+                            ? "bg-gray-400 cursor-not-allowed shadow-none"
+                            : "bg-primary hover:bg-primary/90 cursor-pointer hover:shadow-xl active:scale-[0.98]"
+                        }`}
+                      >
+                        <span className="text-xl font-bold uppercase tracking-wide">Add to cart</span>
+                        <IoCartOutline className="text-2xl" />
+                      </button>
+
+                      {/* Secondary Buttons and Charges */}
+                      <div className="p-5 rounded-2xl border border-primary/20 bg-gradient-to-r from-white to-primary/5 shadow-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <button
+                            type="button"
+                            onClick={() => setShowQuoteForm?.({ state: true, from: "quoteButton" })}
+                            disabled={isQuoteLowStock}
+                            className={`flex items-center justify-center gap-2 h-12 text-sm font-bold border-2 rounded-xl transition-all ${
+                              isQuoteLowStock
+                                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                                : "text-primary border-primary hover:bg-primary hover:text-white"
+                            }`}
+                          >
+                            <FaMoneyBill1Wave className="text-lg" />
+                            {isQuoteLowStock ? "Low Stock" : "Get Express Quote"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleBuySample}
+                            disabled={isSampleLowStock}
+                            className={`flex items-center justify-center gap-2 h-12 text-sm font-bold rounded-xl transition-all shadow-sm ${
+                              isSampleLowStock
+                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                : "text-white bg-primary hover:bg-primary/90 hover:shadow-md active:scale-[0.98]"
+                            }`}
+                          >
+                            <img src="/buy2.png" alt="" className="w-5 h-5 object-contain brightness-0 invert" />
+                            {isSampleLowStock ? "Low Stock" : "BUY 1 SAMPLE"}
+                          </button>
+                        </div>
+
+                        <div className="mt-5 grid grid-cols-2 gap-4">
+                          <div className="rounded-xl bg-white border border-gray-100 p-4 shadow-sm">
+                            <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400">
+                              Setup Charge
+                            </p>
+                            <p className="mt-1 text-2xl font-black text-gray-900">
+                              ${setupFee?.toFixed(2) || "0.00"}
+                            </p>
+                          </div>
+                          <div className="rounded-xl bg-white border border-gray-100 p-4 shadow-sm">
+                            <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400">
+                              Freight Charge
+                            </p>
+                            <p className="mt-1 text-2xl font-black text-gray-900">
+                              {freightFee > 0 ? `$${freightFee.toFixed(2)}` : "TBD"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           </div>
         </div>
@@ -1777,6 +1935,8 @@ const ProductDetails = () => {
             selectedColor,
             selectedSize,
             selectedPrintMethod,
+            selectedAdminCustomization,
+            selectedPosition,
             currentQuantity,
             discountedUnitPrice,
             currentPrice,

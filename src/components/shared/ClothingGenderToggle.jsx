@@ -12,35 +12,38 @@ const ClothingGenderToggle = () => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="space-y-2">
       <div className="flex space-x-2">
         <button
           onClick={() => handleGenderChange("all")}
-          className={`flex-1 py-2 px-4 text-sm font-medium rounded transition-colors duration-200 ${
+          className={`flex-1 py-2 px-4 text-sm font-semibold rounded-lg transition-all duration-200 border ${
             selectedGender === "all"
-              ? "bg-primary text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-[#009688] text-white border-[#009688] shadow-sm scale-[1.02]"
+              : "bg-white text-[#01164F] border-[#CBD5E1] hover:border-[#009688] hover:text-[#009688]"
           }`}
+          style={{ fontFamily: 'Inter, sans-serif' }}
         >
           All
         </button>
         <button
           onClick={() => handleGenderChange("men")}
-          className={`flex-1 py-2 px-4 text-sm font-medium rounded transition-colors duration-200 ${
+          className={`flex-1 py-2 px-4 text-sm font-semibold rounded-lg transition-all duration-200 border ${
             selectedGender === "men"
-              ? "bg-primary text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-[#009688] text-white border-[#009688] shadow-sm scale-[1.02]"
+              : "bg-white text-[#01164F] border-[#CBD5E1] hover:border-[#009688] hover:text-[#009688]"
           }`}
+          style={{ fontFamily: 'Inter, sans-serif' }}
         >
           Men
         </button>
         <button
           onClick={() => handleGenderChange("women")}
-          className={`flex-1 py-2 px-4 text-sm font-medium rounded transition-colors duration-200 ${
+          className={`flex-1 py-2 px-4 text-sm font-semibold rounded-lg transition-all duration-200 border ${
             selectedGender === "women"
-              ? "bg-primary text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-[#009688] text-white border-[#009688] shadow-sm scale-[1.02]"
+              : "bg-white text-[#01164F] border-[#CBD5E1] hover:border-[#009688] hover:text-[#009688]"
           }`}
+          style={{ fontFamily: 'Inter, sans-serif' }}
         >
           Women
         </button>

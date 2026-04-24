@@ -28,6 +28,15 @@ export default function CallUs() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "phoneNumber") {
+      // Numbers only and max 10 characters
+      const cleaned = value.replace(/\D/g, "").slice(0, 10);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: cleaned,
+      }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -50,8 +59,8 @@ export default function CallUs() {
       return;
     }
 
-    if (!formData.phoneNumber || formData.phoneNumber.length < 10) {
-      toast.error("Please enter a valid phone number");
+    if (!formData.phoneNumber || formData.phoneNumber.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number");
       return;
     }
 
@@ -213,8 +222,9 @@ export default function CallUs() {
                       value={formData.phoneNumber}
                       onChange={handleInputChange}
                       required
+                      maxLength={10}
                       className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
-                      placeholder="Enter your phone number"
+                      placeholder="Enter your 10-digit phone number"
                     />
                   </div>
                 </div>

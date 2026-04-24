@@ -71,21 +71,19 @@ export default function OrdersContent() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Total
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Action
-                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {userOrder.map((order, index) => (
-                        <tr key={order._id} className="hover:bg-gray-50">
+                        <tr
+                          key={order._id}
+                          onClick={() => handleSetView(order._id)}
+                          className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        >
                           <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                             {index + 1 + (currentPage - 1) * 10}.
                           </td>
-                          <td
-                            onClick={() => handleSetView(order._id)}
-                            className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 cursor-pointer"
-                          >
+                          <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                             #
                             {order?.orderId?.slice(-8)?.toUpperCase() ||
                               order.orderId}
@@ -115,14 +113,6 @@ export default function OrdersContent() {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              onClick={() => handleSetView(order._id)}
-                              className="inline-flex items-center text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
-                            >
-                              View details
-                            </button>
                           </td>
                         </tr>
                       ))}

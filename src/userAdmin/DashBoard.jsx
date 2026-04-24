@@ -225,73 +225,66 @@ const DashBoard = () => {
                 <>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200 text-sm">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Order ID
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Items
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {userOrder?.slice(0, 5).map((order) => (
-                          <tr key={order._id} className="hover:bg-gray-50">
-                            <td onClick={() => handleSetView(order._id)} className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 cursor-pointer">
-                              #{order?.orderId?.slice(-8)?.toUpperCase()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                              {new Date(
-                                order?.createdAt || order?.orderDate
-                              ).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                              {order?.products?.length || 0} items
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span
-                                className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-full ${order?.status === "completed" ||
-                                  order?.status === "delivered"
-                                  ? "bg-green-100 text-green-800"
-                                  : order?.status === "processing"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : "bg-amber-100 text-amber-800"
-                                  }`}
-                              >
-                                {order.status || "Pending"}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                              $
-                              {(order.total || 0).toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <button
-                                onClick={() => handleSetView(order._id)}
-                                className="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800"
-                              >
-                                View details
-                              </button>
-                            </td>
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Order ID
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Items
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Status
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Total
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {userOrder?.slice(0, 5).map((order) => (
+                            <tr
+                              key={order._id}
+                              onClick={() => handleSetView(order._id)}
+                              className="hover:bg-gray-50 cursor-pointer transition-colors"
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                                #{order?.orderId?.slice(-8)?.toUpperCase()}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                                {new Date(
+                                  order?.createdAt || order?.orderDate
+                                ).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                                {order?.products?.length || 0} items
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-full ${order?.status === "completed" ||
+                                    order?.status === "delivered"
+                                    ? "bg-green-100 text-green-800"
+                                    : order?.status === "processing"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : "bg-amber-100 text-amber-800"
+                                    }`}
+                                >
+                                  {order.status || "Pending"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                                $
+                                {(order.total || 0).toLocaleString("en-US", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
                     </table>
                   </div>
                   {userOrder.length > 5 && (

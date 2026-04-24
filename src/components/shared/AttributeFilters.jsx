@@ -3,13 +3,129 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import allAttributes from "./attributes";
+import { Tag, Ruler, Box, Layers, ChevronDown, Search } from "lucide-react";
+
+const getAttributeIcon = (name) => {
+  const n = name.toLowerCase();
+  if (n.includes("brand")) return <Tag size={18} />;
+  if (n.includes("size")) return <Ruler size={18} />;
+  if (n.includes("material")) return <Box size={18} />;
+  if (n.includes("collection")) return <Layers size={18} />;
+  return <Tag size={18} />;
+};
+
+const AttributeItem = ({ 
+  attribute, 
+  normalizeKey, 
+  normalizeValue, 
+  normalize, 
+  selectedAttributes, 
+  expandedAttributes, 
+  toggleAttributeExpansion, 
+  handleCheckboxChange 
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const nameKey = normalizeKey(attribute.name);
+  const isExpanded = expandedAttributes[nameKey];
+  const selectedCount = (selectedAttributes[nameKey]?.values || []).length;
+  const isAttributeSelected = selectedCount > 0;
+
+  const filteredValues = attribute.values.filter((val) =>
+    val.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div
+      className="bg-[#F8F9FA] border border-[#CBD5E1] rounded-lg overflow-hidden transition-all duration-200"
+    >
+      {/* Attribute Header */}
+      <button
+        type="button"
+        onClick={() => toggleAttributeExpansion(attribute.name)}
+        className="w-full flex items-center justify-between px-4 py-4 text-left group transition-colors"
+      >
+        <div className="flex items-center gap-2 text-[#01164F]">
+          <span className={`flex items-center transition-colors ${
+            isExpanded ? "text-[#009688]" : "text-[#01164F] group-hover:text-[#009688]"
+          }`}>
+            {getAttributeIcon(attribute.name)}
+          </span>
+          <h3 className={`text-sm font-semibold transition-colors ${
+            isExpanded ? "text-[#009688]" : "text-[#01164F] group-hover:text-[#009688]"
+          }`} style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px' }}>
+            {attribute.name}
+          </h3>
+          {isAttributeSelected && (
+            <span className="bg-[#009688] text-white text-[10px] px-1.5 py-0.5 rounded-full">
+              {selectedCount}
+            </span>
+          )}
+        </div>
+        <ChevronDown
+          className={`w-5 h-5 text-[#6B7380] transition-all duration-200 ${
+            isExpanded ? "rotate-180 text-[#009688]" : "group-hover:text-[#009688]"
+          }`}
+        />
+      </button>
+
+      {/* Attribute Values */}
+      {isExpanded && (
+        <div className="px-4 pb-4 animate-fade-in">
+          {/* Search Box for Attribute Values */}
+          <div className="relative mb-3">
+            <input
+              type="text"
+              placeholder={`Search ${attribute.name.toLowerCase()}...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 bg-white border border-[#CBD5E1] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#009688]/30 focus:border-[#009688] transition-all"
+              style={{ fontFamily: "Inter, sans-serif" }}
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7380] w-4 h-4" />
+          </div>
+
+          <div className="max-h-[250px] overflow-y-auto space-y-1 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            {filteredValues.length > 0 ? (
+              filteredValues.map((value) => {
+                const isChecked = (selectedAttributes[nameKey]?.values || []).some(
+                  (v) => normalizeValue(v) === normalizeValue(value)
+                );
+                return (
+                  <label
+                    key={value}
+                    className="flex items-center space-x-3 cursor-pointer group p-2 rounded-lg transition-colors hover:bg-white"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() =>
+                        handleCheckboxChange(attribute.name, value)
+                      }
+                      className="w-4 h-4 border-gray-300 rounded focus:ring-[#009688] focus:ring-2 cursor-pointer text-[#009688]"
+                    />
+                    <span className={`transition-colors flex-1 text-sm ${
+                      isChecked ? "text-[#009688] font-medium" : "text-[#1E2328] group-hover:text-[#009688]"
+                    }`} style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {value}
+                    </span>
+                  </label>
+                );
+              })
+            ) : (
+              <p className="text-xs text-gray-500 text-center py-2">No results found</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function AttributeFilters({ toggleSidebar, categoryType }) {
   const { getProducts, setPaginationData } = useContext(ProductsContext);
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [expandedAttributes, setExpandedAttributes] = useState({});
   const [cachedAttributes, setCachedAttributes] = useState([]);
-  //const [selectedValues, setSelectedValues]  = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -51,31 +167,24 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     return nextSelected;
   };
 
-  // Track previous category/search to detect changes
   const prevCategoryRef = useRef(null);
   const prevSearchRef = useRef(null);
 
-  // Create a cache key based on category and search
   const cacheKey = `${category || "none"}-${search || "none"}`;
   const prevCacheKeyRef = useRef(cacheKey);
-  // Filter attributes (at least 2 values)
   const incomingAttributes = (getProducts?.attributes || []).filter(
     (attr) => attr.values && attr.values.length >= 2
   );
 
-  // Update cached attributes only when category/search changes OR new attributes arrive
   useEffect(() => {
     const cacheKeyChanged = prevCacheKeyRef.current !== cacheKey;
 
     if (cacheKeyChanged) {
-      // Category or search changed - clear cache and wait for new data
       setCachedAttributes([]);
       prevCacheKeyRef.current = cacheKey;
     } else if (incomingAttributes.length > 0) {
-      // New attributes arrived - cache them
       setCachedAttributes(incomingAttributes);
     }
-    // Special case: show hardcoded attributes for allProducts
     else if (
       (categoryType === "allProducts" && cachedAttributes.length === 0) ||
       (!params.get("search") && cachedAttributes.length === 0)
@@ -87,7 +196,6 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     prevSearchRef.current = search;
   }, [category, search, cacheKey, incomingAttributes.length, categoryType]);
 
-  // Use cached attributes if available, otherwise show incoming
   const attributes =
     cachedAttributes.length > 0
       ? cachedAttributes
@@ -95,7 +203,6 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
         ? allAttributes
         : incomingAttributes;
 
-  // Reset selected filter when location changes
   useEffect(() => {
     const nextSelected = buildSelectedFromParams(params);
 
@@ -181,82 +288,19 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
 
   return (
     <div className="space-y-3">
-      {attributes.map((attribute) => {
-        const nameKey = normalizeKey(attribute.name);
-        const isExpanded = expandedAttributes[nameKey];
-        const selectedCount = (selectedAttributes[nameKey]?.values || []).length;
-        const isAttributeSelected = selectedCount > 0;
-
-        return (
-          <div
-            key={attribute.name}
-            className="bg-white border border-gray-200 rounded-lg overflow-hidden"
-          >
-            {/* Attribute Header */}
-            <button
-              type="button"
-              onClick={() => toggleAttributeExpansion(attribute.name)}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-gray-700">
-                  {attribute.name}
-                </h3>
-                {isAttributeSelected && (
-                  <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
-                    {selectedCount}
-                  </span>
-                )}
-              </div>
-              <svg
-                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
-                  }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {/* Attribute Values */}
-            {isExpanded && (
-              <div className="px-4 pb-3 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                <div className="space-y-2">
-                  {attribute.values.map((value) => {
-                    const isChecked = (selectedAttributes[nameKey]?.values || []).some(
-                      (v) => normalizeValue(v) === normalizeValue(value)
-                    );
-                    return (
-                      <label
-                        key={value}
-                        className="flex items-center gap-2 cursor-pointer group"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() =>
-                            handleCheckboxChange(attribute.name, value)
-                          }
-                          className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-2 focus:ring-primary cursor-pointer"
-                        />
-                        <span className="text-sm text-gray-700 group-hover:text-gray-900">
-                          {value}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {attributes.map((attribute) => (
+        <AttributeItem
+          key={attribute.name}
+          attribute={attribute}
+          normalizeKey={normalizeKey}
+          normalizeValue={normalizeValue}
+          normalize={normalize}
+          selectedAttributes={selectedAttributes}
+          expandedAttributes={expandedAttributes}
+          toggleAttributeExpansion={toggleAttributeExpansion}
+          handleCheckboxChange={handleCheckboxChange}
+        />
+      ))}
     </div>
   );
 }

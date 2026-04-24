@@ -39,6 +39,133 @@ const getCartUnitPrice = (item, quantity) => {
 };
 
 const norm = (v) => String(v ?? "").trim().toLowerCase();
+const isDealItem = (item) => norm(item?.itemType || item?.type) === "deal";
+
+const getSelectedProductsSignature = (selectedProducts) => {
+  const normalized = Array.isArray(selectedProducts)
+    ? selectedProducts
+    : Object.values(selectedProducts || {});
+
+  return normalized
+    .map((slot) => {
+      const slotId = norm(slot?.slotId);
+      const choiceId = norm(slot?.productChoiceId);
+      const colorSelections = Array.isArray(slot?.colorSelections)
+        ? slot.colorSelections
+        : [];
+
+      const colorSig = colorSelections
+        .map((colorSel) => {
+          const color = norm(colorSel?.colorName || colorSel?.colorId);
+          const qty = Number(colorSel?.quantity || 0);
+          const sizeSig = (Array.isArray(colorSel?.sizes)
+            ? colorSel.sizes
+            : []
+          )
+            .map((sizeItem) => `${norm(sizeItem?.size || sizeItem?.sizeId)}:${Number(sizeItem?.quantity || 0)}`)
+            .sort()
+            .join("|");
+          return `${color}:${qty}:${sizeSig}`;
+        })
+        .sort()
+        .join("~");
+
+      return `${slotId}:${choiceId}:${colorSig}`;
+    })
+    .sort()
+    .join("||");
+};
+
+const getCustomizationSignature = (customizationData) => {
+  const entries = Object.entries(customizationData || {}).filter(
+    ([key]) => key !== "pricing"
+  );
+
+  const slotSig = entries
+    .map(([slotId, customization]) => {
+      const methodId = norm(customization?.method?.id || customization?.methodId);
+      const appMethod = norm(
+        customization?.method?.applicationMethod || customization?.applicationMethod
+      );
+      const appType = norm(
+        customization?.method?.applicationType || customization?.applicationType
+      );
+      const positionSig = (Array.isArray(customization?.positions)
+        ? customization.positions
+        : customization?.position
+          ? [customization.position]
+          : []
+      )
+        .map((position) => norm(position?.id || position?.positionId || position?._id || position?.positionName))
+        .sort()
+        .join("|");
+
+      return `${norm(slotId)}:${methodId}:${appMethod}:${appType}:${positionSig}`;
+    })
+    .sort()
+    .join("||");
+
+  const setupFee = Number(customizationData?.pricing?.setupFee || 0);
+  const positionTotal = Number(customizationData?.pricing?.positionTotal || 0);
+
+  return `${slotSig}::setup:${setupFee}::position:${positionTotal}`;
+};
+
+const sanitizeSerializableValue = (value, depth = 0) => {
+  if (depth > 6) return null;
+  if (value == null) return value;
+
+  const valueType = typeof value;
+  if (valueType === "string" || valueType === "number" || valueType === "boolean") {
+    return value;
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeSerializableValue(item, depth + 1));
+  }
+
+  if (valueType === "object") {
+    if (
+      Object.prototype.hasOwnProperty.call(value, "nativeEvent") ||
+      typeof value.preventDefault === "function" ||
+      typeof value.stopPropagation === "function" ||
+      (typeof value.nodeType === "number" && typeof value.tagName === "string")
+    ) {
+      return null;
+    }
+
+    const sanitized = {};
+    Object.entries(value).forEach(([key, child]) => {
+      if (["nativeEvent", "target", "currentTarget", "srcElement", "view", "path", "composedPath"].includes(key)) {
+        return;
+      }
+      sanitized[key] = sanitizeSerializableValue(child, depth + 1);
+    });
+    return sanitized;
+  }
+
+  return null;
+};
+
+const sanitizeDealCustomizationData = (customizationData) => {
+  const sanitized = sanitizeSerializableValue(customizationData, 0);
+  return sanitized && typeof sanitized === "object" ? sanitized : {};
+};
+
+const getDealCartLineKey = (item) =>
+[
+  norm(item.id),
+  norm(item.userEmail),
+  norm(item.dealSource?.dealId || item.deal?.id),
+  norm(item.dealSource?.dealCode || item.deal?.dealCode),
+  norm(item.multiplier || item.quantity || 1),
+  getSelectedProductsSignature(item.selectedProducts),
+  getCustomizationSignature(item.customizationData),
+].join("::");
 const getCartLineKey = (item) =>
 [
   norm(item.id),
@@ -93,6 +220,94 @@ const cartSlice = createSlice({
       if (!state.currentUserEmail) {
         state.currentUserEmail = effectiveUserEmail;
       }
+
+      if (norm(rest.itemType || rest.type) === "deal") {
+        const sanitizedCustomizationData = sanitizeDealCustomizationData(
+          rest.customizationData || null
+        );
+        const incomingDealLine = {
+          id,
+          userEmail: effectiveUserEmail,
+          itemType: "DEAL",
+          type: "deal",
+          dealSource: rest.dealSource,
+          deal: rest.deal,
+          multiplier: rest.multiplier || quantity || 1,
+          quantity: quantity || rest.multiplier || 1,
+          selectedProducts: rest.selectedProducts || {},
+          customizationData: sanitizedCustomizationData,
+        };
+
+        const incomingDealKey = getDealCartLineKey(incomingDealLine);
+        const existingDeal = state.items.find(
+          (item) => isDealItem(item) && getDealCartLineKey(item) === incomingDealKey
+        );
+
+        if (existingDeal) {
+          existingDeal.quantity += quantity || 1;
+          existingDeal.multiplier = existingDeal.quantity;
+          existingDeal.price = Number(rest.price ?? existingDeal.price ?? 0);
+          existingDeal.totalPrice = existingDeal.price * existingDeal.quantity;
+          existingDeal.selectedProducts = rest.selectedProducts || existingDeal.selectedProducts;
+          existingDeal.customizationData = sanitizedCustomizationData || existingDeal.customizationData;
+          existingDeal.dealSource = rest.dealSource || existingDeal.dealSource;
+          existingDeal.deal = rest.deal || existingDeal.deal;
+        } else {
+          state.items.push({
+            cartItemId: `${Date.now()}-${Math.random()}`,
+            id,
+            userEmail: effectiveUserEmail,
+            itemType: "DEAL",
+            type: "deal",
+            dealSource: rest.dealSource || null,
+            deal: rest.deal || null,
+            multiplier: rest.multiplier || quantity || 1,
+            quantity: quantity || rest.multiplier || 1,
+            price: Number(rest.price ?? price ?? 0),
+            unitPrice: Number(rest.price ?? price ?? 0),
+            totalPrice: Number(rest.totalPrice ?? (Number(rest.price ?? price ?? 0) * (quantity || rest.multiplier || 1))),
+            basePrices,
+            setupFee,
+            freightFee,
+            sample: false,
+            selectedProducts: rest.selectedProducts || {},
+            customizationData: sanitizedCustomizationData,
+            customizationCharge: rest.customizationCharge || 0,
+            customizationGroupId: rest.customizationGroupId || null,
+            hasCustomization: rest.hasCustomization || false,
+            addLogoLater: rest.addLogoLater || false,
+            rawUnitPrice: rest.rawUnitPrice || rest.price || price || 0,
+            rawLineTotal: rest.rawLineTotal || Number(rest.price ?? price ?? 0) * (quantity || rest.multiplier || 1),
+            lineDealDiscountAmount: rest.lineDealDiscountAmount || 0,
+            ...rest,
+          });
+        }
+
+        const currentUserItems =
+          state.currentUserEmail === "guest@gmail.com"
+            ? state.items.filter((item) => item.userEmail === "guest@gmail.com")
+            : [
+                ...state.items.filter(
+                  (item) => item.userEmail === "guest@gmail.com"
+                ),
+                ...state.items.filter(
+                  (item) =>
+                    item.userEmail === state.currentUserEmail &&
+                    item.userEmail !== "guest@gmail.com"
+                ),
+              ];
+
+        state.totalQuantity = currentUserItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+        state.totalAmount = currentUserItems.reduce(
+          (sum, item) => sum + item.totalPrice,
+          0
+        );
+        return;
+      }
+
       const color = rest.color || "";
       const incomingLine = {
         id,
@@ -178,10 +393,15 @@ const cartSlice = createSlice({
 
       if (item) {
         item.quantity += 1;
-        // Recalculate from backend-finalized tier prices
-        const newUnitPrice = getCartUnitPrice(item, item.quantity);
-        item.price = newUnitPrice;
-        item.totalPrice = item.price * item.quantity;
+        if (isDealItem(item)) {
+          item.multiplier = item.quantity;
+          item.totalPrice = Number(item.price || 0) * item.quantity;
+        } else {
+          // Recalculate from backend-finalized tier prices
+          const newUnitPrice = getCartUnitPrice(item, item.quantity);
+          item.price = newUnitPrice;
+          item.totalPrice = item.price * item.quantity;
+        }
       }
 
       // Recalculate totals for current user
@@ -204,10 +424,15 @@ const cartSlice = createSlice({
 
       if (item) {
         item.quantity = Math.max(quantity, 1);
-        // Recalculate from backend-finalized tier prices
-        const newUnitPrice = getCartUnitPrice(item, item.quantity);
-        item.price = newUnitPrice;
-        item.totalPrice = item.price * item.quantity;
+        if (isDealItem(item)) {
+          item.multiplier = item.quantity;
+          item.totalPrice = Number(item.price || 0) * item.quantity;
+        } else {
+          // Recalculate from backend-finalized tier prices
+          const newUnitPrice = getCartUnitPrice(item, item.quantity);
+          item.price = newUnitPrice;
+          item.totalPrice = item.price * item.quantity;
+        }
       }
 
       // Recalculate totals for current user
@@ -230,10 +455,15 @@ const cartSlice = createSlice({
 
       if (item && item.quantity > 1) {
         item.quantity -= 1;
-        // Recalculate from backend-finalized tier prices
-        const newUnitPrice = getCartUnitPrice(item, item.quantity);
-        item.price = newUnitPrice;
-        item.totalPrice = item.price * item.quantity;
+        if (isDealItem(item)) {
+          item.multiplier = item.quantity;
+          item.totalPrice = Number(item.price || 0) * item.quantity;
+        } else {
+          // Recalculate from backend-finalized tier prices
+          const newUnitPrice = getCartUnitPrice(item, item.quantity);
+          item.price = newUnitPrice;
+          item.totalPrice = item.price * item.quantity;
+        }
       }
 
       // Recalculate totals for current user
@@ -285,14 +515,19 @@ const cartSlice = createSlice({
 
       if (item) {
         item.quantity = Math.max(quantity, 1);
-        // Recalculate price based on new quantity
-        const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-        const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
-        item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
-        item.totalPrice =
-          item.price * item.quantity +
-          (item.setupFee || 0) +
-          (item.freightFee || 0);
+        if (isDealItem(item)) {
+          item.multiplier = item.quantity;
+          item.totalPrice = Number(item.price || 0) * item.quantity;
+        } else {
+          // Recalculate price based on new quantity
+          const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
+          const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
+          item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
+          item.totalPrice =
+            item.price * item.quantity +
+            (item.setupFee || 0) +
+            (item.freightFee || 0);
+        }
       }
 
       // Recalculate totals for current user

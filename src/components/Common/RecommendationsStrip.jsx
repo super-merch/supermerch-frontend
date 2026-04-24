@@ -6,6 +6,8 @@ const RecommendationsStrip = ({
   loading = false,
   className = "",
   maxItems = 4,
+  emptyMessage = "",
+  keepVisibleWhenEmpty = false,
 }) => {
   if (loading) {
     return (
@@ -23,7 +25,18 @@ const RecommendationsStrip = ({
     );
   }
 
-  if (!products.length) return null;
+  if (!products.length) {
+    if (!keepVisibleWhenEmpty) return null;
+
+    return (
+      <div className={`mt-6 ${className}`}>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">{title}</h3>
+        <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-sm text-gray-600">
+          {emptyMessage || "Recommendations will appear here once the cart has valid product seeds."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`mt-6 ${className}`}>

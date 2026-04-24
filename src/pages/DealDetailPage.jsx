@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IoArrowBack, IoCheckmarkCircle, IoClose, IoInformationCircle } from 'react-icons/io5';
-import { MdLocalOffer } from 'react-icons/md';
-import { FaBoxOpen } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -10,9 +8,34 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import noimage from '/noimage.png';
 import { findNearestColor, toProductUrl } from '@/utils/utils';
 import { addToCart } from '@/redux/slices/cartSlice';
+import DealCustomizationModal from '@/components/deals/DealCustomizationModal';
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
 const roundToTwo = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+const formatPrice = (price) =>
+  new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+  }).format(Number(price || 0));
+
+const getPriceForQuantity = (quantity, priceBreaks = []) => {
+  if (!Array.isArray(priceBreaks) || priceBreaks.length === 0) return 0;
+
+  const sortedBreaks = [...priceBreaks].sort((a, b) => a.qty - b.qty);
+  for (let index = sortedBreaks.length - 1; index >= 0; index -= 1) {
+    if (quantity >= Number(sortedBreaks[index].qty || 0)) {
+      return Number(sortedBreaks[index].price || 0);
+    }
+  }
+
+  return Number(sortedBreaks[0]?.price || 0);
+};
+
+const getBasePriceBreaks = (productData) => {
+  const priceGroups = productData?.product?.prices?.price_groups || [];
+  const basePriceData = priceGroups.find((group) => group?.base_price)?.base_price;
+  return basePriceData?.price_breaks || [];
+};
 
 const DealDetailPage = () => {
   const { slug } = useParams();
@@ -33,11 +56,16 @@ const DealDetailPage = () => {
     slotId: null,
     productChoiceId: null,
     productKey: '',
+    productImage: '',
     color: null,
     selectedSize: '',
     selectedArtworkKey: '',
     selectedQuantity: 0,
+    sizeQuantities: {},
   });
+
+  const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+  const [slotCustomizations, setSlotCustomizations] = useState({});
 
   const resetModal = () => {
     setModal({
@@ -45,10 +73,12 @@ const DealDetailPage = () => {
       slotId: null,
       productChoiceId: null,
       productKey: '',
+      productImage: '',
       color: null,
       selectedSize: '',
       selectedArtworkKey: '',
       selectedQuantity: 0,
+      sizeQuantities: {},
     });
   };
 
@@ -103,7 +133,7 @@ const DealDetailPage = () => {
     if (!deal?.productSlots) return false;
     for (const slot of deal.productSlots) {
       const qty = getSlotTotalQuantity(slot.id);
-      if (!slot.isOptional && qty < slot.requiredQuantity) return false;
+      if (qty < Number(slot.requiredQuantity || 0)) return false;
     }
     return true;
   };
@@ -228,83 +258,6 @@ const DealDetailPage = () => {
     return ['Standard'];
   };
 
-  const getAvailablePriceGroups = (productData) => {
-    const priceGroups = productData?.product?.prices?.price_groups || [];
-    const addons = productData?.product?.prices?.addons || [];
-
-    const basePriceData = priceGroups.find((group) => group?.base_price)?.base_price;
-    const baseGroup = basePriceData ? { ...basePriceData, type: 'base', key: 'base-none' } : null;
-
-    const groupedAdditions = priceGroups.flatMap((group) =>
-      (group?.additions || []).map((add) => ({ ...add, type: 'addition' })),
-    );
-    const standaloneAddons = addons.map((add) => ({ ...add, type: 'addition' }));
-    const allAdditions = [...groupedAdditions, ...standaloneAddons].filter(Boolean);
-
-    const dedupedAdditions = allAdditions.filter(
-      (item, index, self) =>
-        index === self.findIndex((other) => (other.key || other.description) === (item.key || item.description)),
-    );
-
-    return [baseGroup, ...dedupedAdditions].filter(Boolean);
-  };
-
-  const isNonArtworkAddition = (group) => {
-    const decoration = String(group?.promodata_decoration || '').toLowerCase();
-    const description = String(group?.description || '').toLowerCase();
-    if (decoration.startsWith('addition:')) return true;
-
-    const nonArtworkPatterns = [
-      'polybag',
-      'packaging',
-      'surcharge',
-      'metallic thread',
-      'additional charge',
-      'additional 5,000',
-      'additional 5000',
-    ];
-
-    return nonArtworkPatterns.some((token) => description.includes(token) || decoration.includes(token));
-  };
-
-  const getArtworkOptions = (groups) => {
-    const base = groups.find((group) => group.type === 'base');
-    const output = [];
-    if (base) output.push(base);
-
-    const seen = new Set();
-    groups.forEach((group) => {
-      if (group.type !== 'addition') return;
-      if (isNonArtworkAddition(group)) return;
-      const optionKey = group.key || group.description || group.promodata_decoration;
-      if (!optionKey || seen.has(optionKey)) return;
-      seen.add(optionKey);
-      output.push(group);
-    });
-
-    return output;
-  };
-
-  const getMethodUnitPrice = (qty, selectedMethod, baseBreaks = []) => {
-    if (!selectedMethod) return 0;
-
-    const methodBreaks = [...(selectedMethod.price_breaks || [])].sort((a, b) => a.qty - b.qty);
-    let selectedBreak = methodBreaks[0] || { qty, price: 0 };
-    for (let i = 0; i < methodBreaks.length; i += 1) {
-      if (qty >= methodBreaks[i].qty) selectedBreak = methodBreaks[i];
-    }
-
-    if (selectedMethod.type === 'base') return Number(selectedBreak.price || 0);
-
-    const sortedBase = [...baseBreaks].sort((a, b) => a.qty - b.qty);
-    let basePrice = Number(sortedBase[0]?.price || 0);
-    for (let i = 0; i < sortedBase.length; i += 1) {
-      if (qty >= sortedBase[i].qty) basePrice = Number(sortedBase[i].price || 0);
-    }
-
-    return basePrice + Number(selectedBreak.price || 0);
-  };
-
   const getColorVisual = (colorItem, productChoice) => {
     const cachedProduct = productCache[getProductKey(productChoice)]?.product;
     const matchingColor = cachedProduct?.colours?.list?.find((item) => {
@@ -344,70 +297,151 @@ const DealDetailPage = () => {
     return { backgroundColor: c?.hex || '#9ca3af' };
   };
 
-  const openSizingModal = async (slotId, productChoice, color) => {
-    const productData = await fetchSingleProduct(productChoice);
-    const groups = getAvailablePriceGroups(productData);
-    const artworkOptions = getArtworkOptions(groups);
-    const selectedArtwork = artworkOptions[0] || null;
+  const resolveImageUrlForDeal = (url) => {
+    if (!url) return noimage;
+    return String(url).startsWith('http') ? url : `${backendUrl}/${url}`;
+  };
 
-    const breaks = [...(selectedArtwork?.price_breaks || [])].sort((a, b) => a.qty - b.qty);
-    const defaultQty = breaks[0]?.qty || 1;
+  const normalizeColorToken = (value) => String(value || '').trim().toLowerCase();
+
+  const resolveColorImageForModal = (productData, color, fallbackImage) => {
+    const pickColorImageCandidate = (entry) => {
+      if (!entry) return null;
+      if (typeof entry === 'string') return entry;
+      return entry.url || entry.image || null;
+    };
+
+    const directColorImage =
+      color?.image ||
+      color?.hero_image ||
+      pickColorImageCandidate(color?.images?.[0]);
+
+    if (directColorImage) {
+      return resolveImageUrlForDeal(directColorImage);
+    }
+
+    const targetTokens = new Set(
+      [
+        color?.name,
+        ...(Array.isArray(color?.colours) ? color.colours : []),
+        ...String(color?.name || '')
+          .split('/')
+          .map((token) => token.trim()),
+      ]
+        .map(normalizeColorToken)
+        .filter(Boolean),
+    );
+
+    const productColors = productData?.product?.colours?.list || [];
+
+    for (const productColor of productColors) {
+      const candidateTokens = [
+        productColor?.name,
+        ...(Array.isArray(productColor?.colours) ? productColor.colours : []),
+        ...String(productColor?.name || '')
+          .split('/')
+          .map((token) => token.trim()),
+      ]
+        .map(normalizeColorToken)
+        .filter(Boolean);
+
+      const hasMatch = candidateTokens.some((token) => targetTokens.has(token));
+      if (!hasMatch) continue;
+
+      const matchedImage =
+        productColor?.image ||
+        productColor?.main_image ||
+        productColor?.hero_image ||
+        pickColorImageCandidate(productColor?.images?.[0]);
+
+      if (matchedImage) {
+        return resolveImageUrlForDeal(matchedImage);
+      }
+    }
+
+    return resolveImageUrlForDeal(fallbackImage);
+  };
+
+  const openSizingModal = async (slotId, productChoice, color, requiredQuantity = 1) => {
+    const productData = await fetchSingleProduct(productChoice);
 
     const modalSizes = resolveModalSizes(color, productData);
+    const modalColorImage = resolveColorImageForModal(productData, color, productChoice.images?.[0]?.url);
 
     setModal({
       isOpen: true,
       slotId,
       productChoiceId: productChoice.id,
       productKey: getProductKey(productChoice),
+      productImage: modalColorImage,
       color,
       selectedSize: modalSizes[0] || '',
-      selectedArtworkKey: selectedArtwork?.key || '',
-      selectedQuantity: defaultQty,
+      selectedArtworkKey: '',
+      selectedQuantity: Math.max(Number(requiredQuantity || 1), 1),
+      sizeQuantities: Object.fromEntries(modalSizes.map((size) => [size, 0])),
     });
   };
 
-  const modalComputed = useMemo(() => {
-    const modalProduct = modal.productKey ? productCache[modal.productKey] : null;
-    const groups = getAvailablePriceGroups(modalProduct);
-    const artworkOptions = getArtworkOptions(groups);
-    const selectedArtwork = artworkOptions.find((opt) => opt.key === modal.selectedArtworkKey) || artworkOptions[0] || null;
-    const baseBreaks = groups.find((g) => g.type === 'base')?.price_breaks || [];
-    const priceBreaks = [...(selectedArtwork?.price_breaks || [])].sort((a, b) => a.qty - b.qty);
-
-    const sizes = resolveModalSizes(modal.color, modalProduct);
-
-    const qty = Number(modal.selectedQuantity || priceBreaks[0]?.qty || 0);
-    const unit = getMethodUnitPrice(qty, selectedArtwork, baseBreaks);
+  const getModalQuantityGuard = (slotId, colorName) => {
+    const colorSelections = selections?.[slotId]?.colorSelections || [];
+    const slotTotal = colorSelections.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+    const existingColorQty = colorSelections.find((item) => item.colorName === colorName)?.quantity || 0;
+    const otherColorsTotal = Math.max(slotTotal - Number(existingColorQty || 0), 0);
+    const requiredQty = Math.max(Number(modal.selectedQuantity || 0), 0);
+    const maxAllowedInModal = Math.max(requiredQty - otherColorsTotal, 0);
 
     return {
-      modalProduct,
-      groups,
-      artworkOptions,
-      selectedArtwork,
-      baseBreaks,
-      priceBreaks,
-      sizes,
-      qty,
-      unit,
-      total: unit * qty,
+      maxAllowedInModal,
+      otherColorsTotal,
     };
-  }, [modal, productCache]);
+  };
+
+  const handleModalSizeChange = (size, change) => {
+    setModal((prev) => {
+      const sizeQuantities = { ...(prev.sizeQuantities || {}) };
+      const currentQty = Number(sizeQuantities[size] || 0);
+      const currentTotal = Object.values(sizeQuantities).reduce((sum, qty) => sum + Number(qty || 0), 0);
+      const colorName = prev.color?.name || '';
+      const guard = getModalQuantityGuard(prev.slotId, colorName);
+
+      let nextQty = Math.max(currentQty + change, 0);
+      const newTotal = currentTotal - currentQty + nextQty;
+
+      // Match workwear behavior: stop incrementing when slot required quantity is reached.
+      if (newTotal > guard.maxAllowedInModal) {
+        nextQty = currentQty;
+      }
+
+      sizeQuantities[size] = nextQty;
+
+      return {
+        ...prev,
+        sizeQuantities,
+      };
+    });
+  };
+
+  const modalProduct = modal.productKey ? productCache[modal.productKey] : null;
+  const modalSizes = resolveModalSizes(modal.color, modalProduct);
+  const modalQty = Object.values(modal.sizeQuantities || {}).reduce((sum, quantity) => sum + Number(quantity || 0), 0);
+  const modalGuard = getModalQuantityGuard(modal.slotId, modal.color?.name || '');
+  const modalUnitPrice = getPriceForQuantity(Math.max(modalQty, 1), getBasePriceBreaks(modalProduct));
+  const modalTotal = roundToTwo(modalUnitPrice * modalQty);
 
   const confirmSelection = () => {
     const colorName = modal.color?.name || 'Selected Color';
-    const qty = Number(modal.selectedQuantity || 0);
+    const qty = Number(modalQty || 0);
     if (qty <= 0) return;
-
-    const selectedArtworkLabel =
-      modalComputed.selectedArtwork?.type === 'base'
-        ? 'None'
-        : (modalComputed.selectedArtwork?.description || modalComputed.selectedArtwork?.promodata_decoration || 'Artwork');
 
     const colorHex =
       modal.color?.hexCode ||
       findNearestColor(String(colorName).split('/')[0]?.trim())?.hex ||
       '#9ca3af';
+
+    const selectedArtworkLabel = modal.selectedArtworkKey?.trim() || '';
+    const selectedSizes = Object.entries(modal.sizeQuantities || {})
+      .filter(([, quantity]) => Number(quantity || 0) > 0)
+      .map(([size, quantity]) => ({ size, quantity: Number(quantity || 0) }));
 
     setSelections((prev) => {
       const slotSelections = { ...prev[modal.slotId] };
@@ -418,10 +452,11 @@ const DealDetailPage = () => {
         colorHex,
         quantity: qty,
         quantityTier: qty,
-        size: modal.selectedSize || '',
-        artwork: selectedArtworkLabel,
-        unitPrice: modalComputed.unit,
-        totalPrice: modalComputed.total,
+        size: modalSizes.find((size) => Number(modal.sizeQuantities?.[size] || 0) > 0) || '',
+        sizes: selectedSizes,
+        artwork: selectedArtworkLabel || undefined,
+        unitPrice: modalUnitPrice,
+        totalPrice: modalTotal,
       };
 
       if (existingIndex >= 0) {
@@ -445,9 +480,15 @@ const DealDetailPage = () => {
     });
   };
 
-  const handleRequestQuote = () => {
+  const handleAddToCart = (customizations = slotCustomizations) => {
+    const looksLikeEvent = customizations && (
+      typeof customizations.preventDefault === 'function' ||
+      Object.prototype.hasOwnProperty.call(customizations, 'nativeEvent')
+    );
+    const effectiveCustomizations = looksLikeEvent ? slotCustomizations : (customizations || slotCustomizations || {});
+
     if (!areSelectionsComplete()) {
-      toast.error('Please complete all required deal selections before requesting a quote.');
+      toast.error('Please complete all required deal selections before adding to cart.');
       return;
     }
 
@@ -467,8 +508,7 @@ const DealDetailPage = () => {
 
       const productKey = getProductKey(selectedChoice);
       const cached = productCache[productKey];
-      const groups = getAvailablePriceGroups(cached);
-      const basePrices = groups.find((g) => g.type === 'base')?.price_breaks || [];
+      const basePrices = getBasePriceBreaks(cached);
       const productImage = getImageUrl(selectedChoice.images?.[0]?.url);
       const colorSelections = selections?.[slot.id]?.colorSelections || [];
 
@@ -477,21 +517,35 @@ const DealDetailPage = () => {
         const unitPrice = Number(colorSel.unitPrice || 0);
         if (qty <= 0) return;
 
-        preparedLines.push({
-          slot,
-          selectedChoice,
-          basePrices,
-          productImage,
-          colorSel,
-          qty,
-          rawUnitPrice: unitPrice,
-          rawLineTotal: roundToTwo(unitPrice * qty),
+        const slotCustomization = effectiveCustomizations?.[slot.id] || null;
+        const sizeBreakdown = Array.isArray(colorSel.sizes) && colorSel.sizes.length > 0
+          ? colorSel.sizes.filter((sizeItem) => Number(sizeItem.quantity || 0) > 0)
+          : [{ size: colorSel.size || '', quantity: qty }];
+
+        sizeBreakdown.forEach((sizeItem) => {
+          const lineQty = Number(sizeItem.quantity || 0);
+          if (lineQty <= 0) return;
+
+          preparedLines.push({
+            slot,
+            selectedChoice,
+            basePrices,
+            productImage,
+            colorSel: {
+              ...colorSel,
+              size: sizeItem.size || colorSel.size || '',
+            },
+            qty: lineQty,
+            rawUnitPrice: unitPrice,
+            rawLineTotal: roundToTwo(unitPrice * lineQty),
+            slotCustomization,
+          });
         });
       });
     });
 
     if (preparedLines.length === 0) {
-      toast.error('No valid selections were found to request a quote.');
+      toast.error('No valid selections were found to add to cart.');
       return;
     }
 
@@ -512,98 +566,157 @@ const DealDetailPage = () => {
       eligibleBundles = Math.min(eligibleBundles, Number(deal.maxMultiplier));
     }
 
-    const savingsPerBundle = roundToTwo(
-      Number(deal?.savingsAmount || 0) > 0
-        ? Number(deal.savingsAmount)
-        : Math.max(Number(deal?.basePrice || 0) - Number(deal?.dealPrice || 0), 0),
+    const bundleQuantity = Math.max(eligibleBundles, 1);
+    const bundleUnitPrice = roundToTwo(Number(deal?.dealPrice || 0));
+    const totalDealPrice = roundToTwo(bundleUnitPrice * bundleQuantity);
+    const dealDiscountAmount = roundToTwo(Math.max(rawSubtotal - totalDealPrice, 0));
+    const rawUnitPrice = roundToTwo(bundleQuantity > 0 ? rawSubtotal / bundleQuantity : rawSubtotal);
+    const selectedProducts = {};
+
+    (deal?.productSlots || []).forEach((slot) => {
+      const selectedChoice = getProductChoice(slot);
+      const colorSelections = selections?.[slot.id]?.colorSelections || [];
+      const selectedProductKey = getProductKey(selectedChoice);
+      const cachedProductId = productCache[selectedProductKey]?.product?.meta?.id;
+      selectedProducts[slot.id] = {
+        slotId: slot.id,
+        slotName: slot.slotName,
+        productChoiceId: selectedChoice?.id || null,
+        productId: cachedProductId || selectedChoice?.product?.meta?.id || selectedChoice?.product?.id || null,
+        colorSelections: colorSelections.map((colorSel) => ({
+          ...colorSel,
+          sizes: Array.isArray(colorSel.sizes)
+            ? colorSel.sizes.map((sizeItem) => ({
+                ...sizeItem,
+                quantity: Number(sizeItem.quantity || 0),
+              }))
+            : [],
+        })),
+      };
+    });
+
+    const dealCustomizationsPayload = {};
+    Object.entries(effectiveCustomizations || {}).forEach(([slotId, customization]) => {
+      if (!customization || typeof customization !== 'object') return;
+
+      dealCustomizationsPayload[slotId] = {
+        slotId: customization.slotId,
+        slotName: customization.slotName,
+        productId: customization.productId,
+        productName: customization.productName,
+        productImage: customization.productImage,
+        quantity: customization.quantity,
+        method: customization.method
+          ? {
+              id: customization.method.id,
+              applicationMethod: customization.method.applicationMethod,
+              applicationType: customization.method.applicationType,
+              setupCharge: Number(customization.method.setupCharge || 0),
+            }
+          : null,
+        positions: Array.isArray(customization.positions)
+          ? customization.positions.map((position) => ({
+              id: position.id,
+              positionName: position.positionName,
+              positionCode: position.positionCode,
+              priceAdjustment: Number(position.priceAdjustment || 0),
+            }))
+          : [],
+        content: customization.content
+          ? {
+              type: customization.content.type,
+              text: customization.content.text,
+              imageUrl: customization.content.imageUrl,
+            }
+          : null,
+        customizationFile: customization.customizationFile
+          ? {
+              preview: customization.customizationFile.preview,
+              name: customization.customizationFile.name,
+              type: customization.customizationFile.type,
+            }
+          : null,
+      };
+    });
+
+    dispatch(
+      addToCart({
+        id: String(deal.id),
+        name: deal.title || 'Deal Bundle',
+        image: getImageUrl(deal.bannerImage),
+        price: bundleUnitPrice,
+        totalPrice: totalDealPrice,
+        quantity: bundleQuantity,
+        multiplier: bundleQuantity,
+        userEmail,
+        itemType: 'DEAL',
+        type: 'deal',
+        deal: {
+          id: deal.id,
+          title: deal.title,
+          dealCode: deal.dealCode,
+          bannerImage: deal.bannerImage,
+          productSlots: deal.productSlots || [],
+          savingsPercentage: deal.savingsPercentage,
+          savingsAmount: deal.savingsAmount,
+          basePrice: deal.basePrice,
+          dealPrice: deal.dealPrice,
+        },
+        selectedProducts,
+        dealSource: {
+          dealId: deal.id,
+          dealCode: deal.dealCode,
+          dealTitle: deal.title,
+        },
+        hasCustomization: Object.keys(dealCustomizationsPayload).length > 0,
+        customizationData: {
+          ...dealCustomizationsPayload,
+          pricing: {
+            setupFee: 0,
+            positionTotal: 0,
+          },
+        },
+        customizationCharge: 0,
+        customizationGroupId: `deal-${deal.id}-${Date.now()}`,
+        addLogoLater: false,
+        rawUnitPrice,
+        rawLineTotal: rawSubtotal,
+        lineDealDiscountAmount: dealDiscountAmount,
+      }),
     );
 
-    const totalBundleSavings = roundToTwo(Math.max(eligibleBundles * savingsPerBundle, 0));
-    const dealDiscountAmount = roundToTwo(Math.min(totalBundleSavings, rawSubtotal));
-    const adjustedSubtotalTarget = roundToTwo(rawSubtotal - dealDiscountAmount);
-    const shouldApplyDealDiscount = dealDiscountAmount > 0 && rawSubtotal > 0;
-    let runningAdjustedTotal = 0;
-    const requestTimestamp = Date.now();
-
-    preparedLines.forEach((line, index) => {
-      let adjustedLineTotal = line.rawLineTotal;
-
-      if (shouldApplyDealDiscount) {
-        if (index === preparedLines.length - 1) {
-          adjustedLineTotal = roundToTwo(adjustedSubtotalTarget - runningAdjustedTotal);
-        } else {
-          const proportional = (line.rawLineTotal / rawSubtotal) * adjustedSubtotalTarget;
-          adjustedLineTotal = roundToTwo(proportional);
-          runningAdjustedTotal = roundToTwo(runningAdjustedTotal + adjustedLineTotal);
-        }
-      }
-
-      const adjustedUnitPrice = line.qty > 0 ? adjustedLineTotal / line.qty : line.rawUnitPrice;
-      const lineDiscountAmount = roundToTwo(Math.max(line.rawLineTotal - adjustedLineTotal, 0));
-
-      dispatch(
-        addToCart({
-          id: String(line.selectedChoice.product.id || line.selectedChoice.product.code || line.selectedChoice.product.name),
-          name: line.selectedChoice.product.name || line.slot.slotName || 'Deal Item',
-          code: line.selectedChoice.product.code,
-          image: line.productImage,
-          basePrices: line.basePrices,
-          price: adjustedUnitPrice,
-          totalPrice: adjustedLineTotal,
-          quantity: line.qty,
-          size: line.colorSel.size || '',
-          color: line.colorSel.colorName || '',
-          print: line.colorSel.artwork || 'None',
-          printMethodKey: `${line.colorSel.artwork || 'none'}::deal::${deal.id}::${line.slot.id}::${line.colorSel.colorName || 'color'}::${line.colorSel.size || 'size'}::${requestTimestamp}::${index}`,
-          setupFee: 0,
-          freightFee: 0,
-          sample: false,
-          userEmail,
-          rawUnitPrice: line.rawUnitPrice,
-          rawLineTotal: line.rawLineTotal,
-          lineDealDiscountAmount: lineDiscountAmount,
-          dealSource: {
-            dealId: deal.id,
-            dealCode: deal.dealCode,
-            dealTitle: deal.title,
-            slotId: line.slot.id,
-          },
-        }),
-      );
-    });
-
-    const estimatedCartTotal = shouldApplyDealDiscount ? adjustedSubtotalTarget : rawSubtotal;
-
-    const quoteData = {
-      type: 'deal',
-      dealId: deal.id,
-      dealCode: deal.dealCode,
-      dealTitle: deal.title,
-      selections,
-      totalItems: getTotalItems(),
-      estimatedPrice: deal.dealPrice,
-      estimatedSavings: deal.savingsAmount,
-      rawSubtotal,
-      appliedDealTotal: estimatedCartTotal,
-      appliedDealDiscountAmount: dealDiscountAmount,
-      appliedBundleCount: eligibleBundles,
-      savingsPerBundle,
-    };
-
-    sessionStorage.setItem('dealQuoteData', JSON.stringify(quoteData));
-    navigate('/upload-artwork', {
-      state: {
-        fromDeal: true,
-        dealData: quoteData,
-        cartTotal: estimatedCartTotal,
-        dealDiscountAmount,
-        rawDealSubtotal: rawSubtotal,
-        couponDiscount: 0,
-        shippingCharges: 0,
-        setupFee: 0,
-      },
-    });
+    toast.success('Deal added to cart');
+    navigate('/cart');
   };
+
+  const handleCustomizationComplete = ({ dealCustomizations }) => {
+    const customizationMap = {};
+    (dealCustomizations || []).forEach((customization) => {
+      customizationMap[customization.slotId] = customization;
+    });
+    setSlotCustomizations(customizationMap);
+    setShowCustomizationModal(false);
+    handleAddToCart(customizationMap);
+  };
+
+  const customizationSlots = useMemo(() => {
+    return (deal?.productSlots || []).map((slot) => {
+      const selectedChoice = getProductChoice(slot);
+      const selectedProductKey = getProductKey(selectedChoice);
+      const cachedProductId = productCache[selectedProductKey]?.product?.meta?.id;
+      const selectedImage = selectedChoice?.images?.[0]?.url
+        ? (selectedChoice.images[0].url.startsWith('http') ? selectedChoice.images[0].url : `${backendUrl}/${selectedChoice.images[0].url}`)
+        : null;
+      return {
+        slotId: slot.id,
+        slotName: slot.slotName,
+        selectedProductId: cachedProductId || selectedChoice?.product?.meta?.id || selectedChoice?.product?.id || selectedChoice?.product?.code || slot.id,
+        selectedProductName: selectedChoice?.product?.name || slot.slotName,
+        selectedProductImage: selectedImage,
+        selectedQuantity: getSlotTotalQuantity(slot.id) || slot.requiredQuantity || 1,
+      };
+    });
+  }, [deal, selections, productCache]);
 
   const getImageUrl = (url) => {
     if (!url) return noimage;
@@ -634,6 +747,21 @@ const DealDetailPage = () => {
 
   const totalItems = getTotalItems();
   const isComplete = areSelectionsComplete();
+  const requiredTotalItems = Number(deal?.totalItems || 0) || (deal?.productSlots || []).reduce((sum, slot) => {
+    return sum + Number(slot?.requiredQuantity || 0);
+  }, 0);
+  const discountedPrice = roundToTwo(Number(deal?.dealPrice || 0));
+  const mainPrice = roundToTwo(Number(deal?.basePrice || 0));
+  const calculatedSavings = mainPrice > 0
+    ? roundToTwo(Math.max(mainPrice - discountedPrice, 0))
+    : roundToTwo(Number(deal?.savingsAmount || 0));
+  const calculatedSavingsPercentage = mainPrice > 0
+    ? Math.round((calculatedSavings / mainPrice) * 100)
+    : 0;
+  const pricePerItem = requiredTotalItems > 0 ? roundToTwo(discountedPrice / requiredTotalItems) : 0;
+  const isInStock = typeof deal?.inStock === 'boolean' ? deal.inStock : true;
+  const isDealFulfilled = isComplete;
+  const isActionDisabled = !isDealFulfilled || !isInStock;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -647,67 +775,114 @@ const DealDetailPage = () => {
       </div>
 
       <div className="Mycontainer py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-xl overflow-hidden shadow-md">
               <div className="relative aspect-[4/3]">
                 <img src={getImageUrl(deal.bannerImage)} alt={deal.title} className="w-full h-full object-cover" />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{deal.title}</h1>
-              <p className="text-sm text-gray-500 mb-4">Deal Code: {deal.dealCode}</p>
-              {deal.description && <p className="text-gray-700 leading-relaxed mb-6">{deal.description}</p>}
+            <div className="bg-white rounded-xl border border-[#CBD5E1] p-6 space-y-4 shadow-sm">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">{deal.title}</h1>
+                {deal.description && <p className="text-sm text-gray-700 leading-relaxed">{deal.description}</p>}
+              </div>
 
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <FaBoxOpen className="text-primary" />
-                  What's Included:
-                </h3>
-                <div className="space-y-2">
-                  {deal.productSlots?.map((slot) => (
-                    <div key={slot.id} className="flex items-start gap-2">
-                      <IoCheckmarkCircle className="text-green-500 mt-1 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">
-                        {slot.requiredQuantity}x {slot.slotName}
-                        {slot.hasCustomization && <span className="text-primary ml-1">(Customization available)</span>}
-                      </span>
-                    </div>
-                  ))}
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-gray-900">{formatPrice(discountedPrice)}</span>
+                    {mainPrice > discountedPrice && (
+                      <span className="text-base text-gray-500 line-through">{formatPrice(mainPrice)}</span>
+                    )}
+                  </div>
+                  {calculatedSavingsPercentage > 0 && (
+                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded-full">
+                      Save {calculatedSavingsPercentage}%
+                    </span>
+                  )}
+                </div>
+
+                <div className="mb-3 space-y-1 text-sm text-gray-600">
+                  <p>
+                    Main Price (Admin): <span className="font-semibold text-gray-900">{formatPrice(mainPrice)}</span>
+                  </p>
+                  <p>
+                    Discounted Price: <span className="font-semibold text-gray-900">{formatPrice(discountedPrice)}</span>
+                  </p>
+                  <p>
+                    You Save: <span className="font-semibold text-green-700">{formatPrice(calculatedSavings)}</span>
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-gray-100 rounded-lg p-3">
+                    <span className="text-gray-600 block mb-1">Total Items</span>
+                    <span className="text-gray-900 font-semibold">{requiredTotalItems} pieces</span>
+                  </div>
+                  <div className="bg-gray-100 rounded-lg p-3">
+                    <span className="text-gray-600 block mb-1">Price Per Item</span>
+                    <span className="text-gray-900 font-semibold">{formatPrice(pricePerItem)}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-xl p-6 shadow-xl">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <MdLocalOffer className="text-2xl" />
-                Request Your Quote
-              </h3>
-
-              <div className="bg-white/10 rounded-lg p-4 mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm opacity-90">Your Selection:</span>
-                  <span className="font-bold">{totalItems} items selected</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm opacity-90">Progress:</span>
-                  <span className={`font-semibold ${isComplete ? 'text-green-300' : 'text-yellow-300'}`}>
-                    {isComplete ? 'Complete' : 'In Progress'}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-white/20">
+                  <span className="text-sm opacity-90">Your Selection</span>
+                  <span className={`text-lg font-bold ${isComplete ? 'text-green-300' : 'text-yellow-300'}`}>
+                    {totalItems}/{requiredTotalItems}
                   </span>
                 </div>
-              </div>
 
-              <button
-                onClick={handleRequestQuote}
-                className="w-full py-4 bg-white text-teal-700 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all"
-              >
-                Get Custom Quote
-              </button>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm opacity-90">Bundle Price</span>
+                  <span className="text-2xl font-bold">{formatPrice(discountedPrice)}</span>
+                </div>
+
+                {calculatedSavings > 0 && (
+                  <div className="flex items-center justify-between pb-4">
+                    <span className="text-sm opacity-90">You Save</span>
+                    <span className="text-xl font-bold text-green-300">{formatPrice(calculatedSavings)}</span>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => handleAddToCart()}
+                  disabled={isActionDisabled}
+                  className="w-full py-3 bg-white text-primary rounded-lg font-semibold hover:bg-[#EAFBF7] transition-colors disabled:cursor-not-allowed disabled:bg-[#5C8D86] disabled:text-[#E7F5F2]"
+                >
+                  {isComplete ? 'Add to Cart' : 'Complete Selection'}
+                </button>
+
+                {deal.includesCustomization && (
+                  <button
+                    onClick={() => {
+                      if (isActionDisabled) return;
+                      setShowCustomizationModal(true);
+                    }}
+                    disabled={isActionDisabled}
+                    className="w-full py-3 bg-white/20 border border-white/35 text-white rounded-lg font-semibold hover:bg-white/30 transition-colors disabled:cursor-not-allowed disabled:bg-[#5C8D86] disabled:border-[#5C8D86] disabled:text-[#E7F5F2] flex items-center justify-center gap-2"
+                  >
+                    <IoInformationCircle className="text-lg" />
+                    Add Logo & Personalisation
+                  </button>
+                )}
+
+                {!isComplete && (
+                  <p className="text-xs text-center opacity-80 pt-2">
+                    <i className="ri-information-line mr-1"></i>
+                    Select colors and sizes for all products
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-xl p-6 shadow-md">
               <div className="mb-4">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Configure Your Bundle</h2>
@@ -722,8 +897,8 @@ const DealDetailPage = () => {
                     <ol className="text-xs text-gray-700 space-y-1">
                       <li>1. Select product for each slot</li>
                       <li>2. Click a color</li>
-                      <li>3. Choose artwork, size and quantity tier in modal</li>
-                      <li>4. Confirm selection and request quote</li>
+                      <li>3. Choose size and quantity in the popup</li>
+                      <li>4. Confirm selection and add to cart</li>
                     </ol>
                   </div>
                 </div>
@@ -734,7 +909,7 @@ const DealDetailPage = () => {
                   const selectedChoice = getProductChoice(slot);
                   const totalQty = getSlotTotalQuantity(slot.id);
                   const progress = `${totalQty}/${slot.requiredQuantity}`;
-                  const isSlotComplete = slot.isOptional || totalQty >= slot.requiredQuantity;
+                  const isSlotComplete = totalQty >= slot.requiredQuantity;
 
                   return (
                     <div key={slot.id} className="border-2 border-gray-200 rounded-lg p-4">
@@ -812,7 +987,7 @@ const DealDetailPage = () => {
                       {selectedChoice && (
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 mb-3">Select Colors & Sizes</label>
-                          <p className="text-xs text-gray-500 mb-3">Click a color to open artwork, size and pricing tiers</p>
+                          <p className="text-xs text-gray-500 mb-3">Click a color to open artwork, size and quantity selection</p>
 
                           <div className="flex flex-wrap gap-3 mb-3">
                             {(selectedChoice.colors || []).map((colorItem, idx) => {
@@ -821,7 +996,7 @@ const DealDetailPage = () => {
                               return (
                                 <button
                                   key={`${colorName}-${idx}`}
-                                  onClick={() => openSizingModal(slot.id, selectedChoice, colorItem)}
+                                    onClick={() => openSizingModal(slot.id, selectedChoice, colorItem, slot.requiredQuantity)}
                                   className="relative group"
                                   title={colorName}
                                 >
@@ -846,21 +1021,39 @@ const DealDetailPage = () => {
                             <div className="mt-3 space-y-2">
                               <p className="text-xs font-semibold text-gray-700">Selected:</p>
                               {selections[slot.id].colorSelections.map((colorSel, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded text-xs">
-                                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0" style={{ backgroundColor: colorSel.colorHex || '#9ca3af' }} />
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-semibold text-gray-900 truncate">{colorSel.colorName}</p>
-                                      <p className="text-gray-600">Qty: <span className="font-bold text-primary">{colorSel.quantity}</span></p>
-                                      {colorSel.size && <p className="text-gray-600">Size: <span className="font-bold">{colorSel.size}</span></p>}
-                                      {colorSel.artwork && <p className="text-gray-600">Artwork: <span className="font-bold">{colorSel.artwork}</span></p>}
-                                      {typeof colorSel.unitPrice === 'number' && <p className="text-gray-600">Unit: <span className="font-bold">A${colorSel.unitPrice.toFixed(2)}</span></p>}
+                                (() => {
+                                  const selectedSizes = Array.isArray(colorSel.sizes) && colorSel.sizes.length > 0
+                                    ? colorSel.sizes.filter((sizeItem) => Number(sizeItem.quantity || 0) > 0)
+                                    : (colorSel.size
+                                        ? [{ size: colorSel.size, quantity: Number(colorSel.quantity || 0) }]
+                                        : []);
+                                  const selectedQty = selectedSizes.reduce((sum, sizeItem) => sum + Number(sizeItem.quantity || 0), 0);
+                                  const sizeSummary = selectedSizes
+                                    .map((sizeItem) => `${sizeItem.size}: ${sizeItem.quantity}`)
+                                    .join(', ');
+
+                                  return (
+                                    <div key={idx} className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded text-xs">
+                                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                                        <div className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0" style={{ backgroundColor: colorSel.colorHex || '#9ca3af' }} />
+                                        <div className="flex-1 min-w-0">
+                                          <p className="font-semibold text-gray-900 truncate">{colorSel.colorName}</p>
+                                          <p className="text-gray-600">Qty: <span className="font-bold text-primary">{selectedQty || Number(colorSel.quantity || 0)}</span></p>
+                                          {sizeSummary && (
+                                            <p className="text-gray-600">
+                                              {selectedSizes.length > 1 ? 'Sizes' : 'Size'}: <span className="font-bold">{sizeSummary}</span>
+                                            </p>
+                                          )}
+                                          {colorSel.artwork && <p className="text-gray-600">Artwork: <span className="font-bold">{colorSel.artwork}</span></p>}
+                                          {typeof colorSel.unitPrice === 'number' && <p className="text-gray-600">Unit: <span className="font-bold">A${colorSel.unitPrice.toFixed(2)}</span></p>}
+                                        </div>
+                                      </div>
+                                      <button onClick={() => removeColorSelection(slot.id, idx)} className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0" title="Remove this color">
+                                        <IoClose className="text-lg" />
+                                      </button>
                                     </div>
-                                  </div>
-                                  <button onClick={() => removeColorSelection(slot.id, idx)} className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0" title="Remove this color">
-                                    <IoClose className="text-lg" />
-                                  </button>
-                                </div>
+                                  );
+                                })()
                               ))}
                             </div>
                           )}
@@ -878,7 +1071,7 @@ const DealDetailPage = () => {
       {modal.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-gradient-to-r from-teal-500 to-teal-600 text-white p-4 flex items-center justify-between z-10 rounded-t-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-primary to-primary/90 text-white p-4 flex items-center justify-between z-10 rounded-t-2xl">
               <div className="flex-1">
                 <h3 className="text-xl font-bold">Select Quantity and Size</h3>
                 <p className="text-sm opacity-90 mt-1">Color: {modal.color?.name}</p>
@@ -888,107 +1081,79 @@ const DealDetailPage = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border-b bg-gray-50">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Artwork</label>
-                <select
-                  value={modal.selectedArtworkKey}
-                  onChange={(e) => {
-                    const newKey = e.target.value;
-                    const selected = modalComputed.artworkOptions.find((o) => o.key === newKey) || modalComputed.artworkOptions[0] || null;
-                    const breaks = [...(selected?.price_breaks || [])].sort((a, b) => a.qty - b.qty);
-                    setModal((prev) => ({
-                      ...prev,
-                      selectedArtworkKey: newKey,
-                      selectedQuantity: breaks[0]?.qty || prev.selectedQuantity,
-                    }));
-                  }}
-                  className="w-full px-3 py-2 border rounded-md outline-none"
-                >
-                  {modalComputed.artworkOptions.map((option) => (
-                    <option key={option.key} value={option.key}>
-                      {option.type === 'base' ? 'None' : option.description || option.promodata_decoration || 'Artwork'}
-                    </option>
-                  ))}
-                </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border-b bg-gray-50">
+              <div className="rounded-2xl border border-[#CBD5E1] bg-white p-4 flex items-center justify-center">
+                <img
+                  src={modal.productImage || noimage}
+                  alt={modal.color?.name || 'Selected product'}
+                  className="max-h-[320px] object-contain"
+                />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Size</label>
-                <select
-                  value={modal.selectedSize}
-                  onChange={(e) => setModal((prev) => ({ ...prev, selectedSize: e.target.value }))}
-                  className="w-full px-3 py-2 border rounded-md outline-none"
-                >
-                  {modalComputed.sizes.length > 0 ? (
-                    modalComputed.sizes.map((size, idx) => (
-                      <option key={`${size}-${idx}`} value={size}>{size}</option>
-                    ))
-                  ) : (
-                    <option value="">Standard</option>
-                  )}
-                </select>
+              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-gray-900">Quantity Selected</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-primary">{modalQty}</p>
+                    <p className="text-xs text-gray-500">/{modalGuard.maxAllowedInModal}</p>
+                  </div>
+                </div>
+
+                {modalQty >= modalGuard.maxAllowedInModal && modalGuard.maxAllowedInModal > 0 && (
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
+                    Limit reached ({modalQty}/{modalGuard.maxAllowedInModal})
+                  </div>
+                )}
+
+                {modalSizes.length > 0 ? (
+                  modalSizes.map((size) => {
+                    const quantity = Number(modal.sizeQuantities?.[size] || 0);
+                    return (
+                      <div key={size} className="rounded-2xl border border-[#CBD5E1] px-4 py-3 flex items-center justify-between gap-3 bg-white">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-[#F8F9FA] flex items-center justify-center font-semibold text-gray-900">
+                            {size}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{size}</p>
+                            <p className="text-xs text-primary">100+ available</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleModalSizeChange(size, -1)}
+                            className="w-9 h-9 rounded-lg border border-[#CBD5E1] text-gray-900 hover:bg-primary/5"
+                          >
+                            −
+                          </button>
+                          <span className="w-10 text-center font-bold text-gray-900">{quantity}</span>
+                          <button
+                            onClick={() => handleModalSizeChange(size, 1)}
+                            disabled={modalQty >= modalGuard.maxAllowedInModal}
+                            className="w-9 h-9 rounded-lg border border-[#CBD5E1] text-gray-900 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+                    No size data available for this product.
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="p-6">
-              {loadingProductKey === modal.productKey && !modalComputed.modalProduct ? (
+              {loadingProductKey === modal.productKey && !modalProduct ? (
                 <div className="py-8 text-center text-gray-500 text-sm">Loading pricing and size data...</div>
               ) : (
                 <>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">Select</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">Qty</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">Unit (ex GST)</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {modalComputed.priceBreaks.length > 0 ? (
-                          modalComputed.priceBreaks.map((priceBreak, idx) => {
-                            const qty = Number(priceBreak.qty || 0);
-                            const unit = getMethodUnitPrice(qty, modalComputed.selectedArtwork, modalComputed.baseBreaks);
-                            const total = unit * qty;
-                            const isSelected = Number(modal.selectedQuantity) === qty;
-                            const isMinQty = idx === 0 && qty < 25;
-
-                            return (
-                              <tr key={`${qty}-${idx}`} className={`${isSelected ? 'bg-blue-50 border-2 border-primary' : 'hover:bg-gray-50'} ${isMinQty ? 'bg-yellow-50' : ''}`}>
-                                <td className="border border-gray-300 px-4 py-3 text-center">
-                                  <input
-                                    type="radio"
-                                    name="quantityTier"
-                                    checked={isSelected}
-                                    onChange={() => setModal((prev) => ({ ...prev, selectedQuantity: qty }))}
-                                    className="w-4 h-4 text-primary focus:ring-primary cursor-pointer"
-                                  />
-                                </td>
-                                <td className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-900">
-                                  {qty}+
-                                  {isMinQty && <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded">For Low MOQ, Contact Us</span>}
-                                </td>
-                                <td className="border border-gray-300 px-4 py-3 text-sm text-gray-700">${unit.toFixed(2)}</td>
-                                <td className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-900">${total.toFixed(2)}</td>
-                              </tr>
-                            );
-                          })
-                        ) : (
-                          <tr>
-                            <td colSpan="4" className="border border-gray-300 px-4 py-8 text-center text-gray-500">
-                              No pricing tiers available for this artwork method
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-
                   <div className="mt-3 p-3 rounded bg-blue-50 border border-blue-100 flex items-center justify-between text-sm">
-                    <span className="text-gray-700">Selected Tier Total</span>
-                    <span className="font-bold text-primary">A${modalComputed.total.toFixed(2)}</span>
+                    <span className="text-gray-700">Selected Total</span>
+                    <span className="font-bold text-primary">A${modalTotal.toFixed(2)}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-2">See size guide on product page for full measurements</p>
                 </>
@@ -999,13 +1164,23 @@ const DealDetailPage = () => {
               <button onClick={resetModal} className="flex-1 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all">
                 Cancel
               </button>
-              <button onClick={confirmSelection} className="flex-1 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+              <button onClick={confirmSelection} className="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
                 <IoCheckmarkCircle className="text-xl" />
                 Confirm Selection
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {showCustomizationModal && (
+        <DealCustomizationModal
+          isOpen={showCustomizationModal}
+          onClose={() => setShowCustomizationModal(false)}
+          onComplete={handleCustomizationComplete}
+          slots={customizationSlots}
+          initialCustomizations={slotCustomizations}
+        />
       )}
     </div>
   );

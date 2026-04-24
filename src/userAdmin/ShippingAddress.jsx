@@ -1,14 +1,41 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 const ShippingAddress = () => {
-  const { token, shippingAddressData, setShippingAddressData } =
+  const { token, shippingAddressData, setShippingAddressData, addressData } =
     useContext(AuthContext);
   
+  const [isSameAsBilling, setIsSameAsBilling] = useState(false);
+
+  useEffect(() => {
+    if (isSameAsBilling) {
+      setShippingAddressData((prev) => ({
+        ...prev,
+        firstName: addressData.firstName,
+        lastName: addressData.lastName,
+        companyName: addressData.companyName,
+        addressLine: addressData.addressLine,
+        city: addressData.city,
+        postalCode: addressData.postalCode,
+        state: addressData.state,
+        country: addressData.country,
+      }));
+    }
+  }, [isSameAsBilling, addressData, setShippingAddressData]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "phone") {
+      // Numbers only and max 10 characters
+      const cleaned = value.replace(/\D/g, "").slice(0, 10);
+      setShippingAddressData((prevData) => ({
+        ...prevData,
+        [name]: cleaned,
+      }));
+      return;
+    }
     setShippingAddressData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -39,16 +66,30 @@ const ShippingAddress = () => {
   };
 
   const inputClass =
-    "w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors";
+    "w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed";
   const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
         <h2 className="text-lg font-semibold text-gray-900">Shipping Address</h2>
-        <p className="text-xs text-gray-500 mt-0.5">
-          Where your orders will be delivered.
-        </p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-xs text-gray-500">
+            Where your orders will be delivered.
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="same-as-billing"
+              checked={isSameAsBilling}
+              onChange={(e) => setIsSameAsBilling(e.target.checked)}
+              className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+            />
+            <label htmlFor="same-as-billing" className="text-xs font-medium text-gray-700 cursor-pointer">
+              Same as billing address
+            </label>
+          </div>
+        </div>
       </div>
       <div className="p-5 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -64,6 +105,7 @@ const ShippingAddress = () => {
               placeholder="Enter first name"
               value={shippingAddressData.firstName}
               onChange={handleInputChange}
+              disabled={isSameAsBilling}
             />
           </div>
           <div>
@@ -78,6 +120,7 @@ const ShippingAddress = () => {
               placeholder="Enter last name"
               value={shippingAddressData.lastName}
               onChange={handleInputChange}
+              disabled={isSameAsBilling}
             />
           </div>
         </div>
@@ -94,6 +137,7 @@ const ShippingAddress = () => {
             placeholder="Enter company name"
             value={shippingAddressData.companyName}
             onChange={handleInputChange}
+            disabled={isSameAsBilling}
           />
         </div>
 
@@ -109,6 +153,7 @@ const ShippingAddress = () => {
             placeholder="Enter street address"
             value={shippingAddressData.addressLine}
             onChange={handleInputChange}
+            disabled={isSameAsBilling}
           />
         </div>
 
@@ -125,6 +170,7 @@ const ShippingAddress = () => {
               placeholder="Enter suburb"
               value={shippingAddressData.city}
               onChange={handleInputChange}
+              disabled={isSameAsBilling}
             />
           </div>
           <div>
@@ -139,6 +185,7 @@ const ShippingAddress = () => {
               placeholder="Enter postal code"
               value={shippingAddressData.postalCode}
               onChange={handleInputChange}
+              disabled={isSameAsBilling}
             />
           </div>
         </div>
@@ -156,6 +203,7 @@ const ShippingAddress = () => {
               placeholder="Enter state or region"
               value={shippingAddressData.state}
               onChange={handleInputChange}
+              disabled={isSameAsBilling}
             />
           </div>
           <div>
@@ -170,6 +218,7 @@ const ShippingAddress = () => {
               placeholder="Enter country"
               value={shippingAddressData.country}
               onChange={handleInputChange}
+              disabled={isSameAsBilling}
             />
           </div>
         </div>
@@ -198,9 +247,10 @@ const ShippingAddress = () => {
               type="tel"
               name="phone"
               className={inputClass}
-              placeholder="Enter phone number"
+              placeholder="Enter 10-digit phone number"
               value={shippingAddressData.phone}
               onChange={handleInputChange}
+              maxLength={10}
             />
           </div>
         </div>

@@ -1,4 +1,15 @@
-import { X } from "lucide-react";
+import {
+  X,
+  Filter,
+  User,
+  Tag,
+  Ruler,
+  Palette,
+  Box,
+  Layers,
+  CircleDollarSign,
+  Search,
+} from "lucide-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -459,7 +470,7 @@ const UnifiedSidebar = ({
         />
       )}
 
-      <div className="z-10 lg:sticky sm:sticky md:sticky lg:top-0 md:top-0 lg:h-[calc(100vh-0rem)] md:h-[calc(100vh-0rem)] lg:flex lg:flex-col md:flex md:flex-col lg:overflow-hidden md:overflow-hidden bg-gray-100">
+      <div className="z-10 lg:sticky md:sticky lg:top-[150px] md:top-[150px] lg:h-fit lg:max-h-[calc(100vh-160px)] md:h-fit md:max-h-[calc(100vh-160px)] lg:flex lg:flex-col md:flex md:flex-col bg-transparent mt-16">
         {/* Hidden toggle button for external control */}
         <button
           data-sidebar-toggle
@@ -469,40 +480,49 @@ const UnifiedSidebar = ({
         />
 
         {/* Sidebar - Desktop: sticky, Mobile: right drawer */}
-        <div
+        <aside
           data-sidebar-content
           onClick={(e) => e.stopPropagation()}
-          className={`transition-all duration-300 ease-in-out mt-6 ${
+          className={`transition-all duration-300 ease-in-out ${
             isMobile
-              ? `!mt-0 fixed top-0 right-0 h-screen w-[90%] xs:w-[280px] shadow-2xl z-[100] transform bg-white ${
+              ? `fixed top-0 right-0 h-screen w-[280px] shadow-2xl z-[100] transform bg-white ${
                   isSidebarOpen ? "translate-x-0" : "translate-x-full"
                 }`
               : isSidebarOpen
-              ? "lg:w-[100%] lg:flex-1 lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-col bg-gray-100"
+              ? "relative w-[260px] flex flex-col h-fit max-h-full bg-white border border-[#CBD5E1] rounded-xl overflow-hidden shadow-sm"
               : "hidden"
           }`}
         >
-          {/* Mobile Header with Close Button */}
-          {isMobile && (
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
-              <h2 className="text-base font-bold text-gray-900">
-                Filters & Categories
-              </h2>
-              <button
-                onClick={() => toggleSidebar()}
-                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Close filters"
+          {/* Sidebar Header - Workwear Style */}
+          <div className="p-4 md:p-5 border-b border-[#CBD5E1] bg-[#009688]">
+            <div className="flex items-center justify-between">
+              <h2
+                className="text-white font-bold flex items-center gap-2"
+                style={{
+                  fontFamily: "Poppins, sans-serif",
+                  fontSize: "18px",
+                }}
               >
-                <X className="w-5 h-5 text-gray-700" />
-              </button>
+                <Filter size={20} className="text-white" />
+                Filters
+              </h2>
+              {isMobile && (
+                <button
+                  type="button"
+                  className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
             </div>
-          )}
+          </div>
 
           <div
             className={`overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent ${
               isMobile
-                ? "h-[calc(100vh-60px)] px-4 py-4 bg-gray-50"
-                : "flex-1 min-h-0 pr-2 px-2 py-2 bg-gray-100"
+                ? "h-[calc(100vh-60px)] px-4 py-4 bg-white"
+                : "flex-1 min-h-0 px-4 py-4 bg-white"
             }`}
           >
             {appliedFilters.length > 0 && (
@@ -541,23 +561,51 @@ const UnifiedSidebar = ({
               </div>
             )}
 
-            {/* Categories Section */}
             {!isSearchPage && (
-              <CollapsibleSection title={config.title} defaultExpanded={false}>
-                {/* Categories List */}
-                <div className="space-y-0.5">
+            <CollapsibleSection
+              title="Categories"
+              defaultExpanded={false}
+              icon={<Layers size={18} />}
+            >
+              <div className="space-y-3 mt-2">
+                {/* Search Box for Categories */}
+                <div className="relative mb-3">
+                  <input
+                    type="text"
+                    placeholder="Search categories..."
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-[#CBD5E1] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#009688]/30 focus:border-[#009688] transition-all"
+                    style={{ fontFamily: "Inter, sans-serif" }}
+                    onChange={(e) => {
+                      const term = e.target.value.toLowerCase();
+                      const items = document.querySelectorAll(".category-item");
+                      items.forEach((item) => {
+                        const name = item.getAttribute("data-name").toLowerCase();
+                        if (name.includes(term)) {
+                          item.classList.remove("hidden");
+                        } else {
+                          item.classList.add("hidden");
+                        }
+                      });
+                    }}
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7380] w-4 h-4" />
+                </div>
+
+                {/* Scrollable Categories List */}
+                <div className="max-h-[250px] overflow-y-auto space-y-1 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                   {allCategories
                     .filter((category) => category.name !== "Capital Equipment")
                     .map((category) => {
                       const IconComponent = getCategoryIcon(category.name);
+                      const isMainOpen = openCategory === category.id;
                       return (
-                        <div key={category.id} className="w-full">
+                        <div key={category.id} className="w-full category-item" data-name={category.name}>
                           {/* Main Category */}
                           <div
-                            className={`group flex items-center justify-between py-1.5 px-1 cursor-pointer transition-all duration-200 ${
-                              openCategory === category.id
-                                ? "bg-gray-100 text-gray-800"
-                                : "hover:bg-gray-50 text-gray-600"
+                            className={`group flex items-center justify-between py-2 px-2 cursor-pointer rounded-lg transition-all duration-200 ${
+                              isMainOpen
+                                ? "bg-white text-[#009688] shadow-sm border border-[#CBD5E1]"
+                                : "hover:bg-white text-[#1E2328] border border-transparent hover:border-[#CBD5E1]"
                             }`}
                             onClick={() =>
                               handleMainCategoryClick(
@@ -567,10 +615,10 @@ const UnifiedSidebar = ({
                             }
                           >
                             <div className="flex items-center gap-2 flex-1">
-                              <div className="transition-colors duration-200 text-gray-500">
+                              <div className={`transition-colors duration-200 ${isMainOpen ? "text-[#009688]" : "text-[#6B7380] group-hover:text-[#009688]"}`}>
                                 <IconComponent size={14} />
                               </div>
-                              <span className="text-sm font-medium">
+                              <span className={`text-sm font-medium ${isMainOpen ? "text-[#009688]" : "group-hover:text-[#009688]"}`}>
                                 {category.name}
                               </span>
                             </div>
@@ -578,9 +626,9 @@ const UnifiedSidebar = ({
                             {/* Expand/Collapse Icon */}
                             <div
                               className={`transition-transform duration-200 ${
-                                openCategory === category.id
-                                  ? "rotate-180 text-primary"
-                                  : "text-gray-400 group-hover:text-gray-600"
+                                isMainOpen
+                                  ? "rotate-180 text-[#009688]"
+                                  : "text-[#6B7380] group-hover:text-[#009688]"
                               }`}
                             >
                               <FaCaretDown size={12} />
@@ -588,11 +636,10 @@ const UnifiedSidebar = ({
                           </div>
 
                           {/* Subcategories */}
-                          {openCategory === category.id &&
+                          {isMainOpen &&
                             category.subTypes && (
-                              <div className="ml-4 mt-1 space-y-0.5 animate-fade-in">
+                              <div className="ml-4 mt-1 space-y-1 animate-fade-in">
                                 {category.subTypes.map((subType) => {
-                                  // Check if this subcategory is active based on URL parameters or local state
                                   const isActive =
                                     (urlSubCategory === subType.name &&
                                       urlCategoryName === category.name) ||
@@ -609,11 +656,11 @@ const UnifiedSidebar = ({
                                           category.name
                                         )
                                       }
-                                      className={`w-full text-left py-1 px-1 transition-all duration-200 ${
+                                      className={`w-full text-left py-2 px-3 rounded-lg transition-all duration-200 ${
                                         isActive ||
                                         selectedCategory === subType.name
-                                          ? "bg-gray-100 text-gray-800 font-medium"
-                                          : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                                          ? "bg-white text-[#009688] shadow-sm font-medium border border-[#CBD5E1]"
+                                          : "text-[#6B7380] hover:text-[#009688] hover:bg-white border border-transparent"
                                       }`}
                                     >
                                       <span className="text-xs">
@@ -628,23 +675,33 @@ const UnifiedSidebar = ({
                       );
                     })}
                 </div>
-              </CollapsibleSection>
+              </div>
+            </CollapsibleSection>
             )}
             {/* Filters Section */}
-            <div className="mt-4 space-y-4">
+            <div className="mt-3 space-y-3">
               {pageType === "CLOTHING" && (
-                <CollapsibleSection title="Gender" defaultExpanded={false}>
+                <CollapsibleSection
+                  title="Gender"
+                  defaultExpanded={false}
+                  icon={<User size={18} />}
+                >
                   <ClothingGenderToggle />
                 </CollapsibleSection>
               )}
 
-              <CollapsibleSection title="Price Range" defaultExpanded={false}>
+              <CollapsibleSection
+                title="Price Range"
+                defaultExpanded={false}
+                icon={<CircleDollarSign size={18} />}
+              >
                 <PriceFilter toggleSidebar={() => toggleSidebar()} />
               </CollapsibleSection>
 
               <CollapsibleSection
-                title="Filter by Colour"
+                title="Color"
                 defaultExpanded={false}
+                icon={<Palette size={18} />}
               >
                 <ColorFilter toggleSidebar={toggleSidebar} />
               </CollapsibleSection>
@@ -652,8 +709,9 @@ const UnifiedSidebar = ({
                 categoryType !== "24hr-production" &&
                 categoryType !== "sales" && (
                   <CollapsibleSection
-                    title="Filter by Attributes"
+                    title="Attributes"
                     defaultExpanded={false}
+                    icon={<Tag size={18} />}
                   >
                     <AttributeFilters
                       toggleSidebar={toggleSidebar}
@@ -663,7 +721,7 @@ const UnifiedSidebar = ({
                 )}
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </>
   );

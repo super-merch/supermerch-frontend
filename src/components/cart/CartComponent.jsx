@@ -30,6 +30,57 @@ const getSetupChargeKey = (item) => {
   return `${productId}::${printKey}`;
 };
 
+const isDealCartItem = (item) => String(item?.itemType || item?.type || "").toUpperCase() === "DEAL";
+
+const normalizeDealSelectedProducts = (rawSelectedProducts = {}) => {
+  if (Array.isArray(rawSelectedProducts)) {
+    return rawSelectedProducts.reduce((acc, slot) => {
+      acc[slot.slotId] = slot;
+      return acc;
+    }, {});
+  }
+  return rawSelectedProducts || {};
+};
+
+const getRecommendationSeedIds = (cartItems = []) => {
+  const seedIds = [];
+
+  cartItems.forEach((item) => {
+    if (isDealCartItem(item)) {
+      const selectedProducts = normalizeDealSelectedProducts(item.selectedProducts || {});
+      Object.values(selectedProducts).forEach((slotSelection) => {
+        const productId = Number(slotSelection?.productId);
+        if (Number.isFinite(productId)) seedIds.push(String(productId));
+      });
+      return;
+    }
+
+    const productId = Number(item?.id);
+    if (Number.isFinite(productId)) seedIds.push(String(productId));
+  });
+
+  return [...new Set(seedIds)];
+};
+
+const formatDealSizeSummary = (slotSelection) => {
+  const selectedSizes = Array.isArray(slotSelection?.sizes) ? slotSelection.sizes.filter((sizeItem) => Number(sizeItem.quantity || 0) > 0) : [];
+  if (selectedSizes.length > 0) {
+    return selectedSizes.map((sizeItem) => `${sizeItem.size}: ${sizeItem.quantity}`).join(", ");
+  }
+
+  const totalQty = Number(slotSelection?.quantity || 0);
+  const fallbackSize = slotSelection?.size || "";
+  if (!fallbackSize) return "";
+  return `${fallbackSize}: ${totalQty}`;
+};
+
+const resolveCartImageUrl = (url) => {
+  if (!url) return "/placeholder-product.png";
+  if (url.startsWith("http")) return url;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
+  return `${backendUrl}/${url}`;
+};
+
 const CartComponent = () => {
   const { totalDiscount } = useContext(ProductsContext);
   const { shippingCharges, setupFee, gstCharges } = useContext(AppContext);
@@ -46,7 +97,7 @@ const CartComponent = () => {
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
-  const cartProductIds = items.map((item) => item.id);
+  const cartProductIds = getRecommendationSeedIds(items);
   const { recommendations: cartRecommendations, recommendationsLoading } =
     useRecommendations({
       backendUrl: API_BASE,
@@ -78,7 +129,7 @@ const CartComponent = () => {
     const feeMap = {};
 
     for (const item of items) {
-      const fee = Number(item?.setupFee) || 0;
+      const fee = Number(item?.setupFee || item?.customizationData?.pricing?.setupFee || 0);
       if (fee <= 0) {
         feeMap[item.cartItemId] = 0;
         continue;
@@ -233,6 +284,53 @@ const CartComponent = () => {
     navigate(toProductUrl(name));
   };
 
+  const renderDealSelections = (item) => {
+    const deal = item.deal || {};
+    const dealSlots = deal?.productSlots || [];
+    const selectedProducts = normalizeDealSelectedProducts(item.selectedProducts || {});
+
+    return (
+      <div className="space-y-3">
+        {dealSlots.map((slot) => {
+          const slotSelection = selectedProducts[slot.id] || selectedProducts[String(slot.id)];
+          if (!slotSelection) return null;
+
+          const colorSelections = Array.isArray(slotSelection.colorSelections) ? slotSelection.colorSelections : [];
+          const totalSelected = colorSelections.reduce((sum, colorSel) => {
+            const sizes = Array.isArray(colorSel.sizes) && colorSel.sizes.length > 0
+              ? colorSel.sizes
+              : [{ size: colorSel.size || "", quantity: colorSel.quantity || 0 }];
+            return sum + sizes.reduce((sizeSum, sizeItem) => sizeSum + Number(sizeItem.quantity || 0), 0);
+          }, 0);
+
+          return (
+            <div key={slot.id} className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 shadow-sm">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="text-sm font-semibold text-gray-800 truncate">{slot.slotName}</span>
+                <span className="text-xs font-medium text-gray-500 shrink-0">{totalSelected} selected</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                {colorSelections.map((colorSel, index) => {
+                  const sizeSummary = formatDealSizeSummary(colorSel);
+                  return (
+                    <div key={`${slot.id}-${index}`} className="flex flex-wrap items-center gap-2 leading-6">
+                      <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-sm text-gray-700 shadow-sm">
+                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colorSel.colorHex || "#9ca3af" }} />
+                        {colorSel.colorName}
+                      </span>
+                      {sizeSummary && <span className="text-sm">{sizeSummary}</span>}
+                      {colorSel.artwork && colorSel.artwork !== "None" && <span className="text-sm">{colorSel.artwork}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const checkIfLowerThanMoQ = (item) => {
     const lowerMoQ =
       item?.basePrices?.length > 0 ? item?.basePrices?.[0]?.qty : null;
@@ -306,6 +404,125 @@ const CartComponent = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {items.map((item) => {
+                        if (isDealCartItem(item)) {
+                          const deal = item.deal || {};
+                          const dealName = deal?.title || item.name || "Deal Bundle";
+                          const dealImage = resolveCartImageUrl(deal?.bannerImage || item.image);
+                          const dealSetupFee = Number(item?.setupFee || item?.customizationData?.pricing?.setupFee || 0);
+                          const dealQuantity = Number(item.quantity || 1);
+                          const dealUnitPrice = Number(item.price || 0);
+                          const dealTotal = (dealUnitPrice * dealQuantity) + dealSetupFee;
+                          const selectedProducts = normalizeDealSelectedProducts(item.selectedProducts || {});
+                          const totalDealItems = Object.values(selectedProducts).reduce((total, slot) => {
+                            return total + (slot?.colorSelections || []).reduce((slotTotal, colorSel) => {
+                              const sizes = Array.isArray(colorSel.sizes) && colorSel.sizes.length > 0
+                                ? colorSel.sizes
+                                : [{ quantity: colorSel.quantity || 0 }];
+                              return slotTotal + sizes.reduce((sizeTotal, sizeItem) => sizeTotal + Number(sizeItem.quantity || 0), 0);
+                            }, 0);
+                          }, 0);
+
+                          return (
+                            <tr
+                              key={item.cartItemId}
+                              className="hover:bg-gray-50 transition-colors"
+                            >
+                              <td className="px-6 py-4">
+                                <div className="flex items-start space-x-4">
+                                  <img
+                                    src={dealImage}
+                                    alt={dealName}
+                                    className="w-40 h-40 object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-1 capitalize">
+                                      {dealName}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                      {deal?.dealCode || item.dealSource?.dealCode || ""}
+                                      {totalDealItems > 0 ? ` • ${totalDealItems} items selected` : ""}
+                                    </p>
+                                    {renderDealSelections(item)}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <div className="text-2xl font-bold text-smallHeader">
+                                  ${dealSetupFee.toFixed(2)}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <div className="text-2xl font-bold text-smallHeader">
+                                  ${dealUnitPrice.toFixed(2)}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <div className="flex flex-col items-center justify-center max-w-[200px]">
+                                  <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                                    <div className="flex items-center">
+                                      <button
+                                        onClick={() =>
+                                          dispatch(
+                                            decrementQuantity({
+                                              cartItemId: item.cartItemId,
+                                            }),
+                                          )
+                                        }
+                                        className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
+                                      >
+                                        <FiMinus className="w-4 h-4" />
+                                      </button>
+                                      <input
+                                        type="number"
+                                        value={customQuantities[item.cartItemId] || item.quantity}
+                                        onChange={(e) =>
+                                          dispatch(
+                                            multipleQuantity({
+                                              cartItemId: item.cartItemId,
+                                              quantity: parseInt(e.target.value, 10) || 1,
+                                            }),
+                                          )
+                                        }
+                                        className="w-32 py-2 text-center outline-none border-0 bg-transparent font-bold text-2xl"
+                                        min="1"
+                                      />
+                                      <button
+                                        onClick={() =>
+                                          dispatch(
+                                            incrementQuantity({
+                                              cartItemId: item.cartItemId,
+                                            }),
+                                          )
+                                        }
+                                        className="p-2 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
+                                      >
+                                        <FiPlus className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <div className="text-2xl font-bold text-smallHeader">
+                                  ${(dealTotal || 0).toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <button
+                                  onClick={() => handleRemovefromCart(item)}
+                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                                  title="Remove from cart"
+                                >
+                                  <MdDelete className="w-5 h-5" />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        }
+
                         const subTotal = item.price * item.quantity;
                         const lineSetupFee =
                           setupFeeByCartItemId[item.cartItemId] || 0;
@@ -511,6 +728,126 @@ const CartComponent = () => {
                 {/* Mobile Card View */}
                 <div className="md:hidden space-y-4">
                   {items.map((item) => {
+                    if (isDealCartItem(item)) {
+                      const deal = item.deal || {};
+                      const dealName = deal?.title || item.name || "Deal Bundle";
+                      const dealImage = resolveCartImageUrl(deal?.bannerImage || item.image);
+                      const dealSetupFee = Number(item?.setupFee || item?.customizationData?.pricing?.setupFee || 0);
+                      const dealQuantity = Number(item.quantity || 1);
+                      const dealUnitPrice = Number(item.price || 0);
+                      const dealTotal = (dealUnitPrice * dealQuantity) + dealSetupFee;
+                      const selectedProducts = normalizeDealSelectedProducts(item.selectedProducts || {});
+                      const totalDealItems = Object.values(selectedProducts).reduce((total, slot) => {
+                        return total + (slot?.colorSelections || []).reduce((slotTotal, colorSel) => {
+                          const sizes = Array.isArray(colorSel.sizes) && colorSel.sizes.length > 0
+                            ? colorSel.sizes
+                            : [{ quantity: colorSel.quantity || 0 }];
+                          return slotTotal + sizes.reduce((sizeTotal, sizeItem) => sizeTotal + Number(sizeItem.quantity || 0), 0);
+                        }, 0);
+                      }, 0);
+
+                      return (
+                        <div
+                          key={item.cartItemId}
+                          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                        >
+                          <div className="flex space-x-3">
+                            <img
+                              src={dealImage}
+                              alt={dealName}
+                              className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                            />
+
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 capitalize">
+                                {dealName}
+                              </h3>
+                              <p className="text-xs text-gray-500 mb-3">
+                                {deal?.dealCode || item.dealSource?.dealCode || ""}
+                                {totalDealItems > 0 ? ` • ${totalDealItems} items selected` : ""}
+                              </p>
+
+                              <div className="space-y-3 mb-4">{renderDealSelections(item)}</div>
+
+                              <div className="flex items-center justify-between">
+                                <div className="text-left">
+                                  <div className="text-sm font-bold text-smallHeader">
+                                    ${dealUnitPrice.toFixed(2)}
+                                  </div>
+                                  <div className="text-xs text-gray-500">per bundle</div>
+                                </div>
+
+                                <div className="flex items-center space-x-3">
+                                  <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                                    <div className="flex items-center">
+                                      <button
+                                        onClick={() =>
+                                          dispatch(
+                                            decrementQuantity({
+                                              cartItemId: item.cartItemId,
+                                            }),
+                                          )
+                                        }
+                                        className="p-3 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
+                                      >
+                                        <FiMinus className="w-4 h-4" />
+                                      </button>
+                                      <input
+                                        type="number"
+                                        value={customQuantities[item.cartItemId] || item.quantity}
+                                        onChange={(e) =>
+                                          dispatch(
+                                            multipleQuantity({
+                                              cartItemId: item.cartItemId,
+                                              quantity: parseInt(e.target.value, 10) || 1,
+                                            }),
+                                          )
+                                        }
+                                        className="w-16 py-2 text-center outline-none border-0 bg-transparent font-bold text-base"
+                                        min="1"
+                                      />
+                                      <button
+                                        onClick={() =>
+                                          dispatch(
+                                            incrementQuantity({
+                                              cartItemId: item.cartItemId,
+                                            }),
+                                          )
+                                        }
+                                        className="p-3 text-gray-600 hover:text-smallHeader hover:bg-gray-50 transition-colors"
+                                      >
+                                        <FiPlus className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <button
+                                    onClick={() => handleRemovefromCart(item)}
+                                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                                    title="Remove from cart"
+                                  >
+                                    <MdDelete className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="mt-3 pt-3 border-t border-gray-100">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-sm font-medium text-gray-700">Total:</span>
+                                  <span className="text-lg font-bold text-smallHeader">
+                                    ${(dealTotal || 0).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     const subTotal = item.price * item.quantity;
                     const lineSetupFee =
                       setupFeeByCartItemId[item.cartItemId] || 0;
@@ -900,6 +1237,8 @@ const CartComponent = () => {
             products={cartRecommendations}
             loading={recommendationsLoading}
             maxItems={4}
+            keepVisibleWhenEmpty={items.length > 0}
+            emptyMessage="No recommendations are available yet for this cart."
           />
         </div>
       ) : (
@@ -935,7 +1274,7 @@ const CartComponent = () => {
         </div>
       )}
       {openModel && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-[1000] overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             {/* Backdrop */}
             <div

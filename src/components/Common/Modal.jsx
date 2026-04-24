@@ -89,7 +89,7 @@ const Modal = ({
 
   return (
     <motion.div
-      className={`fixed inset-0 z-50 flex justify-center p-4 ${showBackdrop ? "bg-black bg-opacity-50 backdrop-blur-sm" : ""} ${
+      className={`fixed inset-0 z-[1000] flex justify-center p-4 ${showBackdrop ? "bg-black bg-opacity-50 backdrop-blur-sm" : ""} ${
         variantClasses[variant]
       } ${backdropClassName}`}
       onClick={handleBackdropClick}

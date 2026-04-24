@@ -12,6 +12,10 @@ const AccountDetail = () => {
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  
+  const inputClass =
+    "w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
   useEffect(() => {
     fetchWebUser();
   }, []);
@@ -87,7 +91,7 @@ const AccountDetail = () => {
         {/* Name and Email */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className={labelClass}>
               Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -95,12 +99,12 @@ const AccountDetail = () => {
               disabled
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"
+              className={inputClass}
               placeholder="Name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className={labelClass}>
               Email address <span className="text-red-500">*</span>
             </label>
             <input
@@ -108,7 +112,7 @@ const AccountDetail = () => {
               disabled
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"
+              className={inputClass}
               placeholder="Email address"
               autoComplete="off"
             />
@@ -120,38 +124,38 @@ const AccountDetail = () => {
           <h2 className="mb-4 text-lg font-semibold">Password change</h2>
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className={labelClass}>
                 Current password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"
+                className={inputClass}
                 placeholder="Current password"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className={labelClass}>
                 New password
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"
+                className={inputClass}
                 placeholder="New password"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className={labelClass}>
                 Confirm new password
               </label>
               <input
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                className="block w-full p-2 mt-1 text-sm border border-gray-400 rounded"
+                className={inputClass}
                 placeholder="Confirm new password"
               />
             </div>
@@ -162,7 +166,7 @@ const AccountDetail = () => {
         <div className="flex justify-end mt-6">
           <button
             type="submit"
-            className="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
           >
             Save Changes
           </button>

@@ -214,8 +214,24 @@ const Checkout = () => {
       });
       dispatch(clearCart());
       toast.success("Order placed successfully!");
-      navigate("/", { replace: true });
       await loadUserOrder();
+
+      const createdOrder = response.data?.checkout;
+      const orderId =
+        createdOrder?.orderId || createdOrder?.orderNumber || createdOrder?._id;
+
+      if (orderId) {
+        navigate(`/track-order?order=${encodeURIComponent(orderId)}&source=checkout`, {
+          replace: true,
+          state: {
+            orderPlaced: true,
+            orderId,
+            orderMongoId: createdOrder?._id,
+          },
+        });
+      } else {
+        navigate("/", { replace: true });
+      }
 
       return response.data;
     } catch (error) {
@@ -293,7 +309,7 @@ const Checkout = () => {
   const roundToTwo = (value) =>
     Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 
-  const dealItems = items.filter((item) => item.dealSource?.dealId);
+  const dealItems = items.filter((item) => item.dealSource?.dealId || String(item.itemType || item.type || "").toUpperCase() === "DEAL");
   const dealRawSubtotal = dealItems.reduce(
     (sum, item) => sum + (Number(item.rawUnitPrice ?? item.price) * Number(item.quantity || 0)),
     0,
@@ -509,6 +525,14 @@ const Checkout = () => {
           size: item.size,
           supplierName: item?.supplierName,
           adminCustomization: item.adminCustomization || null,
+          itemType: item.itemType || item.type || null,
+          dealSource: item.dealSource || null,
+          deal: item.deal || null,
+          selectedProducts: item.selectedProducts || null,
+          multiplier: item.multiplier || item.quantity || 1,
+          rawUnitPrice: item.rawUnitPrice || null,
+          rawLineTotal: item.rawLineTotal || null,
+          lineDealDiscountAmount: item.lineDealDiscountAmount || 0,
         };
       }),
       shipping: shippingCharges,
@@ -679,6 +703,7 @@ const Checkout = () => {
                 loginLoading={loginLoading}
                 handleInlineLogin={handleInlineLogin}
                 register={register}
+                errors={errors}
                 watch={watch}
                 onContinue={() => {
                   setOpenCustomer(false);

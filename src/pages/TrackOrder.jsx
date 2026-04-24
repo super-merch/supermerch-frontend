@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "@/context/AppContext";
 import {
@@ -9,6 +9,8 @@ import {
   FaTruck,
   FaHome,
   FaClock,
+  FaArrowLeft,
+  FaClipboardList,
   FaExternalLinkAlt,
 } from "react-icons/fa";
 
@@ -82,6 +84,7 @@ const OrderStatusTimeline = ({ currentStatus, statusHistory = [] }) => {
 
 export default function TrackOrder() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { backendUrl } = useContext(AppContext);
   const [orderId, setOrderId] = useState(searchParams.get("order") || "");
@@ -90,6 +93,13 @@ export default function TrackOrder() {
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState(null);
   const [autoTracked, setAutoTracked] = useState(false);
+  const orderPlaced = Boolean(location.state?.orderPlaced || searchParams.get("source") === "checkout");
+
+  const orderDetailsId = orderData?._id || location.state?.orderMongoId || null;
+
+  const manageOrdersPath = orderDetailsId
+    ? `/my-account?orderId=${encodeURIComponent(orderDetailsId)}#ordersDetails`
+    : "/my-account#orders";
 
   // Auto-track if order param was provided in URL
   useEffect(() => {
@@ -106,6 +116,15 @@ export default function TrackOrder() {
     if (!orderNum.trim()) {
       setError("Please enter your Order ID.");
       return;
+    }
+
+    // Email validation (if provided)
+    if (email.trim()) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email.trim())) {
+        setError("Please enter a valid email address.");
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -134,6 +153,37 @@ export default function TrackOrder() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
+        {orderPlaced && (
+          <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-green-800">Order placed successfully</p>
+                <p className="mt-1 text-sm text-green-700">
+                  Your order is now on the tracking screen. You can review it here or open your account orders.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate("/")}
+                  className="inline-flex items-center gap-2 rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-semibold text-green-800 transition-colors hover:bg-green-100"
+                >
+                  <FaArrowLeft className="h-4 w-4" />
+                  Back to Home
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(manageOrdersPath)}
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+                >
+                  <FaClipboardList className="h-4 w-4" />
+                  Manage Orders
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Search form */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
           <div className="text-center mb-6">

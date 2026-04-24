@@ -177,20 +177,20 @@ const NavigationMenu = ({
                         <div>
                           {/* Columns Grid */}
                           <div
-                            className={`grid gap-6`}
+                            className={`grid gap-x-8 gap-y-4`}
                             style={{
                               gridTemplateColumns: `repeat(5, 1fr)`,
                             }}
                           >
                             {activeSubItem.columns.map((column, colIndex) => (
                               <div key={colIndex} className="space-y-2">
-                                <div className="flex items-center gap-2 mb-3">
+                                <div className="flex items-center gap-2 mb-2">
                                   <div className="w-1 h-4 bg-primary rounded-full"></div>
                                   <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wide">
                                     {column.title}
                                   </h4>
                                 </div>
-                                <div className="space-y-0.5">
+                                <div className="space-y-0">
                                   {column.items.map((itemName, itemIndex) => {
                                     const subSubItem =
                                       activeSubItem.subItems.find(
@@ -206,7 +206,7 @@ const NavigationMenu = ({
                                           subSubItem &&
                                           handleItemClick(subSubItem)
                                         }
-                                        className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 w-full group flex items-center justify-between"
+                                        className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1 rounded-md hover:bg-blue-50 transition-all duration-200 w-full group flex items-center justify-between"
                                       >
                                         <span className="leading-relaxed">
                                           {itemName}
@@ -230,7 +230,7 @@ const NavigationMenu = ({
                             <button
                               key={index}
                               onClick={() => handleItemClick(subSubItem)}
-                              className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
+                              className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
                             >
                               <span className="leading-relaxed">
                                 {subSubItem.name}
@@ -252,7 +252,7 @@ const NavigationMenu = ({
                     <button
                       key={index}
                       onClick={() => handleItemClick(subItem)}
-                      className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
+                      className="text-xs text-gray-700 hover:text-primary font-medium text-start px-2 py-1 rounded-md hover:bg-blue-50 transition-all duration-200 border border-transparent hover:border-blue-200 group flex items-center justify-between"
                     >
                       <span className="leading-relaxed">{subItem.name}</span>
                     </button>
@@ -412,7 +412,9 @@ const NavigationMenu = ({
                     handleMouseEnter(item);
                     if (
                       item.name === "Promotional" ||
-                      item.name === "Clothing"
+                      item.name === "Clothing" ||
+                      item.name === "Headwear" ||
+                      item.name === "Gifts"
                     ) {
                       if (item.submenu?.length > 0) {
                         setActiveItem(item.submenu[0].id);
