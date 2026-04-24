@@ -31,6 +31,7 @@ export default function CustomerStep({
   loginLoading,
   handleInlineLogin,
   register,
+  errors,
   watch,
   onContinue,
 }) {
@@ -165,19 +166,49 @@ export default function CustomerStep({
                 <input
                   type="email"
                   placeholder="Enter email address"
-                  {...register("shipping.email")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                  {...register("shipping.email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Please enter a valid email address",
+                    },
+                  })}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${
+                    errors?.shipping?.email ? "border-red-500" : "border-gray-300"
+                  }`}
                   required
                 />
+                {errors?.shipping?.email && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.shipping.email.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Phone</label>
                 <input
                   type="tel"
                   placeholder="Enter phone number"
-                  {...register("shipping.phone")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors"
+                  {...register("shipping.phone", {
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^\d{10}$/,
+                      message: "Please enter a valid 10-digit phone number",
+                    },
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    },
+                  })}
+                  maxLength={10}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-smallHeader focus:border-transparent transition-colors ${
+                    errors?.shipping?.phone ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
+                {errors?.shipping?.phone && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.shipping.phone.message}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex justify-end mt-6">

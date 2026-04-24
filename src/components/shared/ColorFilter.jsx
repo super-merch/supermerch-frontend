@@ -1,5 +1,5 @@
 import { ProductsContext } from "@/context/ProductsContext";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, Search } from "lucide-react";
 import { useState, useCallback, useContext, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -87,85 +87,59 @@ const ColorFilter = ({ toggleSidebar }) => {
   }, [setPaginationData, toggleSidebar, setSearchParams]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg py-4 px-2">
+    <div className="py-2">
       {/* Search Colors */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: 'Inter, sans-serif' }}>
           Search Colors
         </label>
-        <input
-          type="text"
-          placeholder="Search for colors..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search colors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 py-2 pl-9 text-sm border border-[#CBD5E1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009688]/30 focus:border-[#009688] transition-all bg-white"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7380] w-4 h-4" />
+        </div>
       </div>
 
-      {/* Color Swatches Grid */}
-      <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">
-          Select Colors
-        </h3>
-        <div className="grid grid-cols-5 gap-1">
-          {colorsToShow.map((color) => (
-            <button
-              key={color.name}
-              onClick={() => handleColorToggle(color.name)}
-              className="relative flex flex-col items-center gap-1 p-1 rounded hover:bg-gray-50"
-            >
-              <div
-                className={`w-8 h-8 rounded-full border transition-transform duration-200 hover:scale-110 ${
-                  color.name.toLowerCase() === "white"
-                    ? "border-gray-300"
-                    : "border-gray-200"
-                } ${
-                  selectedColors.includes(color.name)
-                    ? "ring-2 ring-blue-500 ring-offset-1"
-                    : ""
-                }`}
-                style={{ backgroundColor: color.hex }}
-              />
-
-              {selectedColors.includes(color.name) && (
-                <div className="absolute top-1 right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center shadow-md border-2 border-white z-10">
-                  <CheckCheck
-                    className="w-2.5 h-2.5 text-white"
-                    strokeWidth={3}
+      {/* Color List - Workwear Style */}
+      <div className="max-h-[250px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        {filteredColors.length > 0 ? (
+          <div className="space-y-1">
+            {filteredColors.map((color) => {
+              const isSelected = selectedColors.includes(color.name);
+              return (
+                <label
+                  key={color.name}
+                  className="flex items-center space-x-3 cursor-pointer group p-2 rounded-lg transition-colors hover:bg-white"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => handleColorToggle(color.name)}
+                    className="w-4 h-4 border-gray-300 rounded focus:ring-[#009688] focus:ring-2 cursor-pointer text-[#009688]"
                   />
-                </div>
-              )}
-              <span className="text-xs text-gray-700">{color.name}</span>
-            </button>
-          ))}
-        </div>
+                  
+                  {/* Color Circle */}
+                  <div className="w-5 h-5 rounded-full border border-gray-200 overflow-hidden flex-shrink-0 shadow-sm transition-transform duration-200 group-hover:scale-110"
+                    style={{ backgroundColor: color.hex }}
+                  />
 
-        {/* View More Colors Button - only show when not searching and not showing all */}
-        {!searchTerm && !showAllColors && availableColors.length > 10 && (
-          <div className="mt-3 text-center">
-            <button
-              onClick={() => setShowAllColors(true)}
-              className="text-primary hover:text-blue-800 text-sm font-medium"
-            >
-              View More Colors ({availableColors.length - 10} more)
-            </button>
+                  <span className={`transition-colors flex-1 text-sm font-medium ${
+                    isSelected ? "text-[#009688]" : "text-[#1E2328] group-hover:text-[#009688]"
+                  }`} style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {color.name}
+                  </span>
+                </label>
+              );
+            })}
           </div>
-        )}
-
-        {/* Show Less Button - only show when showing all colors */}
-        {!searchTerm && showAllColors && (
-          <div className="mt-3 text-center">
-            <button
-              onClick={() => setShowAllColors(false)}
-              className="text-primary hover:text-blue-800 text-sm font-medium"
-            >
-              Show Less
-            </button>
-          </div>
-        )}
-
-        {colorsToShow.length === 0 && (
-          <p className="text-sm text-gray-500 text-center py-3">
+        ) : (
+          <p className="text-sm text-gray-500 text-center py-4" style={{ fontFamily: 'Inter, sans-serif' }}>
             No colors found matching &ldquo;{searchTerm}&rdquo;
           </p>
         )}

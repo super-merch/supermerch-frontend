@@ -214,8 +214,24 @@ const Checkout = () => {
       });
       dispatch(clearCart());
       toast.success("Order placed successfully!");
-      navigate("/", { replace: true });
       await loadUserOrder();
+
+      const createdOrder = response.data?.checkout;
+      const orderId =
+        createdOrder?.orderId || createdOrder?.orderNumber || createdOrder?._id;
+
+      if (orderId) {
+        navigate(`/track-order?order=${encodeURIComponent(orderId)}&source=checkout`, {
+          replace: true,
+          state: {
+            orderPlaced: true,
+            orderId,
+            orderMongoId: createdOrder?._id,
+          },
+        });
+      } else {
+        navigate("/", { replace: true });
+      }
 
       return response.data;
     } catch (error) {
@@ -687,6 +703,7 @@ const Checkout = () => {
                 loginLoading={loginLoading}
                 handleInlineLogin={handleInlineLogin}
                 register={register}
+                errors={errors}
                 watch={watch}
                 onContinue={() => {
                   setOpenCustomer(false);

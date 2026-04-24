@@ -1,7 +1,5 @@
 import { isProductCategory } from "@/utils/utils";
 import { useEffect, useMemo, useState } from "react";
-import { IoCartOutline } from "react-icons/io5";
-import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 const NONE_ARTWORK_KEY = "__none_artwork__";
@@ -22,20 +20,16 @@ const PricingTab = ({
   setSelectedPrintMethod,
   setCurrentQuantity,
   setActiveIndex,
-  handleAddToCart,
   setShowSizeGuide,
   getPriceForQuantity,
   pricingSummary,
   setSelectedSize,
   single_product,
   setShowQuoteForm,
-  handleBuySample,
-  setupFee,
-  freightFee,
-  setQuantity,
   selectedLeadTimeAddition,
   setSelectedLeadTimeAddition,
   stockAvailability,
+  setActiveInfoTab,
 }) => {
   const getTrimmedDescription = (description) => {
     return description?.trim()?.split(" (")[0];
@@ -132,7 +126,6 @@ const PricingTab = ({
   const sampleIsLowStock = Boolean(stockAvailability?.isSampleLowStock);
   const lowMoqIsLowStock = Boolean(stockAvailability?.isLowMoqLowStock);
   const isSupermerchArtwork = artworkSource === "supermerch" && adminCustomizations.length > 0;
-  const [isNoneArtworkSelected, setIsNoneArtworkSelected] = useState(false);
 
   const isNonArtworkAddition = (group) => {
     const decoration = String(group?.promodata_decoration || "").toLowerCase();
@@ -190,8 +183,7 @@ const PricingTab = ({
 
   const selectedArtworkValue = useMemo(() => {
     if (isSupermerchArtwork) {
-      if (isNoneArtworkSelected) return NONE_ARTWORK_KEY;
-      return selectedAdminCustomization?._id || artworkOptions[0]?.key || NONE_ARTWORK_KEY;
+      return selectedAdminCustomization?._id || NONE_ARTWORK_KEY;
     }
 
     if (!selectedPrintMethod) return artworkOptions[0]?.key || "";
@@ -202,25 +194,14 @@ const PricingTab = ({
     if (exactMatch) return exactMatch.key;
 
     return artworkOptions[0]?.key || "";
-  }, [artworkOptions, isNoneArtworkSelected, isSupermerchArtwork, selectedAdminCustomization, selectedPrintMethod]);
+  }, [artworkOptions, isSupermerchArtwork, selectedAdminCustomization, selectedPrintMethod]);
 
-  useEffect(() => {
-    if (!isSupermerchArtwork || artworkOptions.length === 0) return;
-    if (isNoneArtworkSelected) return;
-    if (selectedAdminCustomization?._id) return;
 
-    const firstCustomization = artworkOptions[0]?.customization;
-    if (firstCustomization) {
-      setSelectedAdminCustomization?.(firstCustomization);
-      setSelectedPosition?.(firstCustomization.positions?.[0] || null);
-    }
-  }, [artworkOptions, isNoneArtworkSelected, isSupermerchArtwork, selectedAdminCustomization, setSelectedAdminCustomization, setSelectedPosition]);
 
   const handleArtworkChange = (event) => {
     const selectedKey = event.target.value;
 
     if (isSupermerchArtwork && selectedKey === NONE_ARTWORK_KEY) {
-      setIsNoneArtworkSelected(true);
       setSelectedAdminCustomization?.(null);
       setSelectedPosition?.(null);
       return;
@@ -230,14 +211,13 @@ const PricingTab = ({
     if (!selectedOption) return;
 
     if (isSupermerchArtwork) {
-      setIsNoneArtworkSelected(false);
       const customization = selectedOption.customization;
       setSelectedAdminCustomization?.(customization || null);
-      setSelectedPosition?.(customization?.positions?.[0] || null);
+      // Don't auto-select position, let user choose in Decoration tab
+      setSelectedPosition?.(null);
       return;
     }
 
-    setIsNoneArtworkSelected(false);
     setSelectedLeadTimeAddition(null);
     setSelectedPrintMethod(selectedOption);
 
@@ -282,6 +262,18 @@ const PricingTab = ({
               ))}
             </select>
           </div>
+          {isSupermerchArtwork && selectedAdminCustomization && !selectedPosition && (
+            <p className="text-sm text-primary font-medium mt-1">
+              Please go to the{" "}
+              <span
+                className="font-bold underline cursor-pointer hover:text-amber-700"
+                onClick={() => setActiveInfoTab("decoration")}
+              >
+                Decoration tab
+              </span>{" "}
+              to choose a position.
+            </p>
+          )}
         </div>
 
         {isClothing && parseSizing()?.sizes?.length > 1 && (
@@ -531,144 +523,6 @@ const PricingTab = ({
           </table>
         );
       })()}
-      <div className="mb-4 p-4 xs:p-2 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="flex items-center xs:gap-2 gap-4">
-          <label className="md:text-lg text-md font-medium text-gray-700 whitespace-nowrap">
-            Order Quantity:
-          </label>
-          <div className="flex items-center xs:gap-1 gap-2">
-            <input
-              type="number"
-              min="1"
-              value={currentQuantity}
-              onChange={(e) => {
-                const value = parseInt(e.target.value) || 1;
-                setCurrentQuantity(value);
-                // Find the appropriate price tier for this quantity
-                const sortedBreaks = [
-                  ...(effectivePrintMethod?.price_breaks || []),
-                ].sort((a, b) => a.qty - b.qty);
-                let newActiveIndex = 0;
-                for (let i = 0; i < sortedBreaks.length; i++) {
-                  if (value >= sortedBreaks[i].qty) {
-                    newActiveIndex = i;
-                  } else {
-                    break;
-                  }
-                }
-                setActiveIndex(newActiveIndex);
-              }}
-              className="w-24 xs:w-20 px-3 py-2 border border-gray-300 rounded-md text-md md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter qty"
-            />
-            <span className="text-md md:text-lg text-black block xs:hidden">
-              units
-            </span>{" "}
-            <span className="text-md md:text-lg text-black hidden xs:block">
-              pcs
-            </span>
-          </div>
-          {/* <div className="ml-auto text-sm text-black">
-                          <Button>Large Order?</Button>
-                        </div> */}
-        </div>
-      </div>
-      {/* Enhanced Drag and Drop Section */}
-      {/* <div
-                      className={`mt-2 px-6 py-2 mb-4 text-center border-2 border-dashed cursor-pointer bg-dots transition-all duration-200 ${
-                        isDragging
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-smallHeader"
-                      }`}
-                      onClick={handleDivClick}
-                      onDragEnter={handleDragEnter}
-                      onDragLeave={handleDragLeave}
-                      onDragOver={handleDragOver}
-                      onDrop={handleDrop}
-                    >
-                      <img
-                        src={selectedFile || "/drag.png"}
-                        alt="Uploaded File"
-                        className="flex m-auto max-w-[100px] max-h-[100px] object-contain"
-                      />
-                      <p className=" text-lg font-medium text-smallHeader">
-                        {selectedFile
-                          ? "Logo image Uploaded"
-                          : isDragging
-                          ? "Drop files here"
-                          : "Click or Drag your Artwork/Logo to upload"}
-                      </p>
-                      <p className="text-smallHeader  m-auto text-sm">
-                        Supported formats: AI, EPS, SVG, PDF, JPG, JPEG, PNG.
-                        Max file size: 16 MB
-                      </p>
-                      <input
-                        type="file"
-                        id="fileUpload"
-                        accept=".ai, .eps, .svg, .pdf, .jpg, .jpeg, .png"
-                        className="hidden"
-                        onChange={handleFileChange}
-                      />
-                    </div> */}
-      <Link
-        onClick={(e) => {
-          handleAddToCart(e);
-        }}
-        className="flex items-center justify-center w-full gap-3 px-2 py-3 mt-6 text-white rounded-sm cursor-pointer bg-primary hover:bg-primary/80 transition-all duration-300"
-      >
-        <button className="text-lg uppercase">Add to cart</button>
-        <IoCartOutline className="text-xl" />
-      </Link>
-
-      <div className="mt-4 p-4 sm:p-5 rounded-xl border border-primary/20 bg-gradient-to-r from-white to-primary/5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setShowQuoteForm?.({ state: true, from: "quoteButton" })}
-            disabled={quoteIsLowStock}
-            className={`flex items-center justify-center gap-2 h-11 text-sm font-semibold border rounded-md transition-colors ${
-              quoteIsLowStock
-                ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
-                : "text-primary border-primary hover:bg-primary/5"
-            }`}
-          >
-            <FaMoneyBill1Wave className="text-primary" />
-            {quoteIsLowStock ? "Low Stock" : "Get Express Quote"}
-          </button>
-          <button
-            type="button"
-            onClick={handleBuySample}
-            disabled={sampleIsLowStock}
-            className={`flex items-center justify-center gap-2 h-11 text-sm font-semibold rounded-md transition-colors ${
-              sampleIsLowStock
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "text-white bg-primary hover:bg-primary/85"
-            }`}
-          >
-            <img src="/buy2.png" alt="" className="w-4 h-4 object-contain" />
-            {sampleIsLowStock ? "Low Stock" : "BUY 1 SAMPLE"}
-          </button>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="rounded-lg bg-white border border-gray-200 px-4 py-3">
-            <p className="text-xs font-semibold tracking-wide uppercase text-gray-500">
-              Setup Charge
-            </p>
-            <p className="mt-1 text-xl font-bold text-gray-900">
-              ${setupFee?.toFixed(2) || "0.00"}
-            </p>
-          </div>
-          <div className="rounded-lg bg-white border border-gray-200 px-4 py-3">
-            <p className="text-xs font-semibold tracking-wide uppercase text-gray-500">
-              Freight Charge
-            </p>
-            <p className="mt-1 text-xl font-bold text-gray-900">
-              {freightFee > 0 ? `$${freightFee.toFixed(2)}` : "TBD"}
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

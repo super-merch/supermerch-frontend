@@ -66,6 +66,15 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      clearError();
+      return;
+    }
+
     try {
       const response = await axios.post(`${backendUrl}/api/auth/login`, {
         email: formData.email,

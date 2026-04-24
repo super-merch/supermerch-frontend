@@ -6,6 +6,8 @@ const QuoteFormModal = ({
   selectedColor,
   selectedSize,
   selectedPrintMethod,
+  selectedAdminCustomization,
+  selectedPosition,
   currentQuantity,
   discountedUnitPrice,
   currentPrice,
@@ -30,7 +32,7 @@ const QuoteFormModal = ({
   setCurrentQuantity,
 }) => {
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-2 border-b border-gray-200">
@@ -89,12 +91,22 @@ const QuoteFormModal = ({
                   {selectedSize || "Not selected"}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Print Method</span>
-                <span className="font-medium truncate max-w-[180px] text-right">
-                  {selectedPrintMethod?.description || "Not selected"}
-                </span>
-              </div>
+              {selectedAdminCustomization ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Decoration</span>
+                  <span className="font-medium truncate max-w-[200px] text-right">
+                    {selectedAdminCustomization.method.applicationMethod}
+                    {selectedPosition && ` — ${selectedPosition.positionName}`}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Print Method</span>
+                  <span className="font-medium truncate max-w-[180px] text-right">
+                    {selectedPrintMethod?.description || "Not selected"}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center justify-between gap-2">
                 <span className="text-gray-600">Quantity</span>
 
@@ -121,6 +133,12 @@ const QuoteFormModal = ({
                 <span className="text-gray-600">Total</span>
                 <span className="font-extrabold text-smallHeader">
                   ${currentPrice?.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Artwork</span>
+                <span className="font-medium text-primary text-xs truncate max-w-[150px]">
+                  {selectedFile2 ? selectedFile2.name : "Not uploaded yet"}
                 </span>
               </div>
             </div>
@@ -168,9 +186,10 @@ const QuoteFormModal = ({
                   name="phone"
                   value={formData?.phone}
                   type="tel"
-                  placeholder="+61 410 123 456"
+                  placeholder="e.g. 0410123456"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   onChange={handleChange}
+                  maxLength={10}
                   required
                 />
               </div>
@@ -214,7 +233,7 @@ const QuoteFormModal = ({
                       className="mx-auto max-w-[120px] max-h-[120px] object-contain rounded-lg"
                     />
                     <p className="text-sm text-green-600 font-medium">
-                      File uploaded successfully!
+                      Artwork attached to quote
                     </p>
                     <button
                       type="button"

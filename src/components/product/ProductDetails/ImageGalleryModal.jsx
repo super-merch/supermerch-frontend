@@ -56,7 +56,7 @@ const ImageGalleryModal = ({
   return (
     <div
       ref={modalRef}
-      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex flex-col justify-center items-center z-50 p-4"
+      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex flex-col justify-center items-center z-[1000] p-4"
       onClick={onClose}
       onKeyDown={handleKeyDown}
       tabIndex={0}

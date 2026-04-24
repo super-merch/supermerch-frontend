@@ -81,19 +81,16 @@ const PriceFilter = ({ toggleSidebar }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4">
-      {/* Title */}
-      <h3 className="text-sm font-semibold text-gray-800 mb-4">Price Range</h3>
-
+    <div className="py-2">
       {/* Input Fields */}
-      <div className="flex  items-center  gap-x-3 mb-4">
+      <div className="grid grid-cols-2 gap-4 mb-4">
         {/* Min Price */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1.5">
-            Minimum Price
+          <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Min Price
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">
               $
             </span>
 
@@ -110,18 +107,19 @@ const PriceFilter = ({ toggleSidebar }) => {
               onChange={(e) => {
                 setLocalMin(e.target.value);
               }}
-              className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              className="w-full pl-7 pr-3 py-2 text-sm border border-[#CBD5E1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009688]/30 focus:border-[#009688] transition-all bg-white"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             />
           </div>
         </div>
 
         {/* Max Price */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1.5">
-            Maximum Price
+          <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Max Price
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">
               $
             </span>
             <input
@@ -142,7 +140,8 @@ const PriceFilter = ({ toggleSidebar }) => {
                 e.stopPropagation();
                 setLocalMax(e.target.value);
               }}
-              className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              className="w-full pl-7 pr-3 py-2 text-sm border border-[#CBD5E1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009688]/30 focus:border-[#009688] transition-all bg-white"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             />
           </div>
         </div>
@@ -153,25 +152,20 @@ const PriceFilter = ({ toggleSidebar }) => {
         <button
           onClick={handleApplyCustomRange}
           disabled={isApplying}
-          className={`flex-1 py-2.5 px-4 text-white text-sm font-semibold rounded-lg transition-all duration-200 ${
+          className={`flex-1 py-2 px-4 text-white text-sm font-semibold rounded-lg transition-all duration-200 ${
             isApplying
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-primary hover:bg-primary/90 hover:shadow-md active:scale-[0.98]"
+              : "bg-[#009688] hover:bg-[#008080] active:scale-[0.98] shadow-sm"
           }`}
+          style={{ fontFamily: 'Inter, sans-serif' }}
         >
-          {isApplying ? (
-            <span className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Applying...
-            </span>
-          ) : (
-            "Apply"
-          )}
+          {isApplying ? "Applying..." : "Apply"}
         </button>
 
         <button
           onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
-          className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200 active:scale-[0.98]"
+          className="px-4 py-2 text-sm font-semibold text-[#01164F] bg-white border border-[#CBD5E1] hover:border-[#009688] hover:text-[#009688] rounded-lg transition-all duration-200 active:scale-[0.98]"
+          style={{ fontFamily: 'Inter, sans-serif' }}
         >
           Reset
         </button>

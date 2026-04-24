@@ -12,12 +12,12 @@ const Navbar = ({ onCouponClick }) => {
   };
 
   return (
-    <>
+    <div className="sticky top-0 z-[100] w-full">
       {/* New Top Banner */}
       <TopBanner onCouponClick={handleCouponClick} />
       {/* Refactored Main Navigation */}
       <RefactoredNavbar onCouponClick={handleCouponClick} />
-    </>
+    </div>
   );
 };
 

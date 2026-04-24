@@ -358,7 +358,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
   return (
     <>
       <div className="relative flex justify-between pt-0 Mycontainer lg:gap-4 md:gap-4">
-        <div className="lg:w-[280px] bg-gray-100">
+        <div className="lg:w-[280px]">
           <UnifiedSidebar pageType={pageType} categoryType={category} />
         </div>
 

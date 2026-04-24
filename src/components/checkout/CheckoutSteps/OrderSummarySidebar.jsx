@@ -1,3 +1,5 @@
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export default function OrderSummarySidebar({
   items,
   appliedCoupon,
@@ -169,7 +171,16 @@ export default function OrderSummarySidebar({
                               {" — "}
                               {item.adminCustomization.applicationType}
                               {item.adminCustomization.position && (
-                                <> ({item.adminCustomization.position.positionName})</>
+                                <span className="inline-flex items-center gap-1 ml-1 text-sm">
+                                  {item.adminCustomization.position.imageUrl && (
+                                    <img 
+                                      src={item.adminCustomization.position.imageUrl.startsWith('http') ? item.adminCustomization.position.imageUrl : `${BACKEND_URL}/${item.adminCustomization.position.imageUrl}`} 
+                                      alt="" 
+                                      className="w-3 h-3 object-contain inline-block"
+                                    />
+                                  )}
+                                  ({item.adminCustomization.position.positionName})
+                                </span>
                               )}
                             </p>
                             {item.adminCustomization.customizationFile?.preview && (

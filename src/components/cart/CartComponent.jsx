@@ -1274,7 +1274,7 @@ const CartComponent = () => {
         </div>
       )}
       {openModel && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-[1000] overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             {/* Backdrop */}
             <div

@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { AppContext } from "@/context/AppContext";
 import { ProductsContext } from "@/context/ProductsContext";
 import { selectCurrentUserCartItems } from "@/redux/slices/cartSlice";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const UploadArtwork = () => {
   const location = useLocation();
@@ -366,7 +367,14 @@ const UploadArtwork = () => {
                                       {ac.applicationType}
                                     </span>
                                     {ac.position?.positionName && (
-                                      <span className="px-2 py-1 bg-white rounded-full border border-gray-200">
+                                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-white rounded-full border border-gray-200">
+                                        {ac.position.imageUrl && (
+                                          <img 
+                                            src={ac.position.imageUrl.startsWith('http') ? ac.position.imageUrl : `${BACKEND_URL}/${ac.position.imageUrl}`} 
+                                            alt={ac.position.positionName} 
+                                            className="w-4 h-4 object-contain"
+                                          />
+                                        )}
                                         {ac.position.positionName}
                                       </span>
                                     )}
@@ -750,7 +758,16 @@ const UploadArtwork = () => {
                             {" — "}
                             {item.adminCustomization.applicationType}
                             {item.adminCustomization.position && (
-                              <> ({item.adminCustomization.position.positionName})</>
+                               <span className="inline-flex items-center gap-1 ml-1">
+                                 {item.adminCustomization.position.imageUrl && (
+                                   <img 
+                                     src={item.adminCustomization.position.imageUrl.startsWith('http') ? item.adminCustomization.position.imageUrl : `${BACKEND_URL}/${item.adminCustomization.position.imageUrl}`} 
+                                     alt="" 
+                                     className="w-3 h-3 object-contain"
+                                   />
+                                 )}
+                                 ({item.adminCustomization.position.positionName})
+                               </span>
                             )}
                           </p>
                         )}

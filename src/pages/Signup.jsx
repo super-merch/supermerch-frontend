@@ -51,6 +51,15 @@ const Signup = () => {
       clearError();
       return;
     }
+    
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      clearError();
+      return;
+    }
 
     if (!agreeToTerms) {
       setError("Please agree to the Terms & Conditions and Privacy Policy");

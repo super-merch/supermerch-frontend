@@ -65,7 +65,7 @@ const DecorationTab = ({
       setSelectedPosition(null);
     } else {
       setSelectedAdminCustomization(cust);
-      setSelectedPosition(cust.positions?.length > 0 ? cust.positions[0] : null);
+      setSelectedPosition(null);
     }
   };
 
