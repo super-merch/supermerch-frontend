@@ -1069,7 +1069,7 @@ const DealDetailPage = () => {
       </div>
 
       {modal.isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-gradient-to-r from-primary to-primary/90 text-white p-4 flex items-center justify-between z-10 rounded-t-2xl">
               <div className="flex-1">
