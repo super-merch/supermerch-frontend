@@ -378,52 +378,58 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       >
         <div className="flex items-center justify-between gap-3 !px-0 md:px-0 Mycontainer flex-wrap">
           {/* Mobile Menu Button */}
-          <Sheet
-            open={isSheetOpen}
-            onOpenChange={setIsSheetOpen}
-            className="xl:hidden"
-          >
-            <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors xl:hidden">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </SheetTrigger>
-            <SheetContent
-              className="overflow-y-auto w-[85vw] sm:w-[400px] bg-white"
-              side="left"
+          <div className="xl:hidden flex items-center">
+            <Sheet
+              open={isSheetOpen}
+              onOpenChange={setIsSheetOpen}
             >
-              <SheetHeader>
-                <SheetTitle className="mb-6 text-2xl text-primary font-bold">
-                  <img
-                    src={supermerch}
-                    alt="SuperMerch"
-                    className="h-20 w-auto object-contain mx-auto"
+              <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
                   />
-                </SheetTitle>
-              </SheetHeader>
-              <NavigationMenu
-                menuItems={menuItems}
-                onItemClick={(item) => {
-                  handleMenuClick(item);
-                  setIsSheetOpen(false);
-                }}
-                onSubItemClick={() => setIsSheetOpen(false)}
-                variant="vertical"
-                size="default"
-              />
-            </SheetContent>
-          </Sheet>
+                </svg>
+              </SheetTrigger>
+              <SheetContent
+                className="overflow-y-auto w-[90vw] sm:w-[450px] bg-white p-0 border-none scrollbar-hide"
+                side="left"
+              >
+                <div className="p-6 border-b border-gray-100">
+                  <SheetHeader>
+                    <SheetTitle className="text-2xl text-primary font-bold">
+                      <img
+                        src={supermerch}
+                        alt="SuperMerch"
+                        className="h-16 w-auto object-contain"
+                      />
+                    </SheetTitle>
+                  </SheetHeader>
+                </div>
+                <div className="py-4">
+                  <NavigationMenu
+                    menuItems={menuItems}
+                    onItemClick={(item) => {
+                      handleMenuClick(item);
+                      setIsSheetOpen(false);
+                    }}
+                    onSubItemClick={() => setIsSheetOpen(false)}
+                    variant="vertical"
+                    size="default"
+                    className="px-2"
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
 
           {/* Navigation Menu - Desktop */}
           <div className="hidden xl:block">
