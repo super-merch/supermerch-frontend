@@ -268,7 +268,7 @@ const NavigationMenu = ({
 
   if (variant === "vertical") {
     return (
-      <nav className={`space-y-2 ${className}`}>
+      <nav className={`space-y-2 scrollbar-hide ${className}`}>
         {menuItems.map((item) => {
           const isSubmenuVisible = clickedItem === item.id;
 
@@ -276,71 +276,65 @@ const NavigationMenu = ({
             <div key={item.id} className="space-y-1">
               <div
                 className={cn(
-                  "flex items-center justify-between cursor-pointer rounded-lg p-3 transition-all duration-200 group",
+                  "flex items-center justify-between cursor-pointer rounded-xl p-4 transition-all duration-300 group mx-2",
                   isSubmenuVisible
-                    ? "bg-blue-50 text-primary"
-                    : "hover:bg-gray-100 text-gray-700",
+                    ? "bg-primary text-white shadow-lg translate-x-1"
+                    : "hover:bg-gray-50 text-gray-800 hover:translate-x-1",
                   currentSize.item
                 )}
                 onClick={() => {
-                  handleItemClick(item);
-                  onSubItemClick && onSubItemClick();
+                  if (item.hasSubmenu) {
+                    setClickedItem(isSubmenuVisible ? null : item.id);
+                  } else {
+                    handleItemClick(item);
+                    onSubItemClick && onSubItemClick();
+                  }
                 }}
               >
-                <span className="capitalize font-semibold group-hover:text-primary transition-colors">
+                <span className="capitalize font-bold text-lg tracking-tight group-hover:opacity-90 transition-opacity">
                   {item.name}
                 </span>
                 {item.hasSubmenu && (
                   <RiArrowDropDownLine
                     className={cn(
-                      "text-2xl transition-all duration-300 cursor-pointer",
+                      "text-3xl transition-transform duration-500",
                       isSubmenuVisible
-                        ? "rotate-180 text-primary"
-                        : "rotate-0 text-gray-500"
+                        ? "rotate-180 text-white"
+                        : "rotate-0 text-gray-400 group-hover:text-primary"
                     )}
-                    onClick={(e) => handleArrowClick(item, e)}
                   />
                 )}
               </div>
 
               {item.hasSubmenu && item.submenu && isSubmenuVisible && (
-                <div className="ml-4 space-y-1 border-l-2 border-blue-200 pl-4 py-2">
+                <div className="mx-4 mt-2 space-y-1 border-l-2 border-primary/20 pl-4 py-2 animate-in fade-in slide-in-from-left-2 duration-300">
                   {item.submenu.map((subItem) => (
                     <div key={subItem.id} className="space-y-1">
                       <div
                         className={cn(
-                          "flex items-center justify-between cursor-pointer rounded-lg p-2.5 transition-all duration-200 group",
+                          "flex items-center justify-between cursor-pointer rounded-lg p-3 transition-all duration-200 group",
                           expandedSubItem === subItem.id
-                            ? "bg-blue-50 text-primary"
+                            ? "bg-gray-50 text-primary font-bold"
                             : "hover:bg-gray-50 text-gray-600",
                           currentSize.submenu
                         )}
                         onClick={() => {
-                          if (subItem.name && subItem.id) {
-                            handleItemClick(subItem);
-                            onSubItemClick && onSubItemClick();
+                          if (subItem.subItems && subItem.subItems.length > 0) {
+                            setExpandedSubItem(expandedSubItem === subItem.id ? null : subItem.id);
                           } else {
                             handleItemClick(subItem);
                             onSubItemClick && onSubItemClick();
                           }
                         }}
                       >
-                        <span className="font-medium group-hover:text-primary transition-colors">
+                        <span className="font-semibold tracking-tight transition-colors">
                           {subItem.name}
                         </span>
 
                         {subItem.subItems && subItem.subItems.length > 0 && (
                           <ChevronRight
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedSubItem(
-                                expandedSubItem === subItem.id
-                                  ? null
-                                  : subItem.id
-                              );
-                            }}
                             className={cn(
-                              "w-4 h-4 transition-all duration-200",
+                              "w-4 h-4 transition-transform duration-300",
                               expandedSubItem === subItem.id
                                 ? "rotate-90 text-primary"
                                 : "text-gray-400 group-hover:text-primary"
@@ -352,12 +346,12 @@ const NavigationMenu = ({
                       {subItem.subItems &&
                         subItem.subItems.length > 0 &&
                         expandedSubItem === subItem.id && (
-                          <div className="ml-3 mt-1 space-y-1 border-l border-gray-200 pl-3">
+                          <div className="ml-3 mt-1 space-y-1 border-l border-gray-100 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
                             {subItem.subItems.map((subSubItem, idx) => (
                               <div
                                 key={idx}
                                 className={cn(
-                                  "cursor-pointer rounded-lg p-2 transition-all duration-200 group hover:bg-gray-50",
+                                  "cursor-pointer rounded-lg p-3 transition-all duration-200 group hover:bg-gray-50",
                                   currentSize.submenu
                                 )}
                                 onClick={() => {
@@ -365,7 +359,7 @@ const NavigationMenu = ({
                                   onSubItemClick && onSubItemClick();
                                 }}
                               >
-                                <span className="text-gray-600 text-sm group-hover:text-primary transition-colors">
+                                <span className="text-gray-500 font-medium text-sm group-hover:text-primary transition-colors">
                                   {subSubItem.name}
                                 </span>
                               </div>
