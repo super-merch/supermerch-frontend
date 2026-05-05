@@ -8,6 +8,7 @@ import {
   getProductCategory,
 } from "@/utils/utils";
 import { getArtworkSource } from "@/utils/categoryMeta";
+import { extractSizesFromProduct as extractSizesFromPromodata } from "@/utils/promodataWorkwearPdpMap";
 import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -50,6 +51,8 @@ import noimage from "/noimage.png";
 import LeadTimeTab from "./LeadTime";
 import { Tooltip } from "@mui/material";
 import useRecommendations from "@/hooks/useRecommendations";
+import { useProductPrefetch } from "@/context/ProductPrefetchContext";
+import { useProductLayout } from "@/context/ProductLayoutContext";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
@@ -58,12 +61,22 @@ const ProductDetails = () => {
   const encodedId = searchParams.get("ref");
   const location = useLocation();
   const stateProductId = location?.state?.productId;
-  const id = routeIdentifier
-    ? String(routeIdentifier)
-    : encodedId
-      ? atob(encodedId)
-      : stateProductId
-        ? String(stateProductId)
+  const decodeRefId = (value) => {
+    if (!value) return null;
+    try {
+      return atob(value);
+    } catch {
+      return null;
+    }
+  };
+  const decodedRefId = decodeRefId(encodedId);
+  // Prefer stable product id from `ref`/state when present; fall back to slug route identifier.
+  const id = decodedRefId
+    ? String(decodedRefId)
+    : stateProductId
+      ? String(stateProductId)
+      : routeIdentifier
+        ? String(routeIdentifier)
         : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -72,6 +85,8 @@ const ProductDetails = () => {
   const { token, userData } = useContext(AuthContext);
   const { error, totalDiscount, totalMargin, v1categories } = useContext(ProductsContext);
   const { backendUrl, shippingCharges: freightFee } = useContext(AppContext);
+  const prefetch = useProductPrefetch();
+  const layoutVariant = useProductLayout();
   const [single_product, setSingle_Product] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorFetching, setErrorFetching] = useState(false);
@@ -80,7 +95,6 @@ const ProductDetails = () => {
   const [sizes, setSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
 
-  const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
   const pickDefaultSize = (list = []) => {
     const cleaned = list.map((s) => String(s).trim()).filter(Boolean);
     const nonFree = cleaned.filter(
@@ -89,51 +103,30 @@ const ProductDetails = () => {
     return nonFree[0] || cleaned[0] || "";
   };
 
-  const extractSizesFromProduct = (productData) => {
-    const details = productData?.product?.details || [];
-    const detailString =
-      details.find((d) =>
-        ["sizing", "sizes", "size", "product sizes"].includes(
-          String(d?.name || "").toLowerCase(),
-        ),
-      )?.detail || "";
-
-    const headerSizes = String(detailString)
-      .split("\n")[0]
-      .split(/[|,;:]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    if (headerSizes.length > 0) {
-      return headerSizes;
-    }
-
-    const description = productData?.product?.description || "";
-    const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
-    if (!sizesMatch) return [];
-
-    const sizesString = sizesMatch[1].trim();
-    if (sizesString.includes(" - ")) {
-      const [start, end] = sizesString.split(" - ").map((s) => s.trim());
-      const startIndex = SIZE_ORDER.indexOf(start);
-      const endIndex = SIZE_ORDER.indexOf(end);
-      if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
-        return SIZE_ORDER.slice(startIndex, endIndex + 1);
-      }
-      return [sizesString];
-    }
-
-    return sizesString
-      .split(/[|,;:]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-  };
+  const extractSizesFromProduct = (productData) => extractSizesFromPromodata(productData);
   useEffect(() => {
     if (!id) {
       setLoading(false);
       setErrorFetching(true);
       return;
     }
+
+    const email = userData?.email || "guest@gmail.com";
+    setUserEmail(email);
+
+    if (prefetch?.data != null && prefetch.fetchKey === String(id)) {
+      const d = prefetch.data;
+      setSingle_Product(d);
+      const parsedSizes = extractSizesFromProduct(d);
+      setSizes(parsedSizes);
+      setSelectedSize((prev) =>
+        parsedSizes.includes(prev) ? prev : pickDefaultSize(parsedSizes),
+      );
+      setErrorFetching(false);
+      setLoading(false);
+      return;
+    }
+
     const fetchSingleProduct = async () => {
       setLoading(true);
       try {
@@ -162,10 +155,8 @@ const ProductDetails = () => {
         setErrorFetching(true);
       }
     };
-    const email = userData?.email || "guest@gmail.com";
-    setUserEmail(email);
     fetchSingleProduct();
-  }, [id]);
+  }, [id, backendUrl, userData?.email, prefetch?.data, prefetch?.fetchKey]);
 
   const product = single_product?.product || {};
   const productId = single_product?.meta?.id || "";
@@ -1070,6 +1061,7 @@ const ProductDetails = () => {
         })(),
         totalPrice: currentPrice,
         discountPct,
+        clearanceInfo: single_product?.clearanceInfo || null,
         size: selectedSize,
         code: product.code,
         color: selectedColor,
@@ -1107,7 +1099,8 @@ const ProductDetails = () => {
                 ? {
                     positionId: selectedPosition._id,
                     positionName: selectedPosition.positionName,
-                    priceAdjustment: selectedPosition.priceAdjustment,
+                    priceAdjustment: Number(selectedPosition.pricePerApplication ?? selectedPosition.priceAdjustment ?? 0),
+                    pricePerApplication: Number(selectedPosition.pricePerApplication ?? selectedPosition.priceAdjustment ?? 0),
                   }
                 : null,
               customizationFile: customizationFileData,
@@ -1153,6 +1146,7 @@ const ProductDetails = () => {
           priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
         price: unitPrice,
         discountPct,
+        clearanceInfo: single_product?.clearanceInfo || null,
         totalPrice: unitPrice,
         code: product.code,
         color: selectedColor,
@@ -1190,7 +1184,8 @@ const ProductDetails = () => {
                 ? {
                     positionId: selectedPosition._id,
                     positionName: selectedPosition.positionName,
-                    priceAdjustment: selectedPosition.priceAdjustment,
+                    priceAdjustment: Number(selectedPosition.pricePerApplication ?? selectedPosition.priceAdjustment ?? 0),
+                    pricePerApplication: Number(selectedPosition.pricePerApplication ?? selectedPosition.priceAdjustment ?? 0),
                   }
                 : null,
               customizationFile: customizationFileData,
@@ -1249,7 +1244,7 @@ const ProductDetails = () => {
       />
     );
 
-  return (
+  const mainContent = (
     <>
       <SeoHelmet
         entityType="product"
@@ -2105,6 +2100,16 @@ const ProductDetails = () => {
       </AnimatePresence>
     </>
   );
+
+  if (layoutVariant === "workwearShell") {
+    return (
+      <div className="py-2 sm:py-4 md:py-6 bg-gradient-to-b from-[#F8FAFC] via-white to-[#F8FAFC] min-h-screen">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">{mainContent}</div>
+      </div>
+    );
+  }
+
+  return mainContent;
 };
 
 export default ProductDetails;

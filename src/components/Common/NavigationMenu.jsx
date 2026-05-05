@@ -5,6 +5,21 @@ import { cn } from "@/lib/utils";
 import PropTypes from "prop-types";
 import { useSearchParams } from "react-router-dom";
 
+const COLUMN_COLOR_MAP = {
+  primary: "#13a89e",
+  teal: "#0d9488",
+  blue: "#2563eb",
+  green: "#16a34a",
+  orange: "#ea580c",
+  purple: "#7c3aed",
+  pink: "#db2777",
+  red: "#dc2626",
+  gray: "#4b5563",
+};
+
+const resolveColumnColor = (colorKey) =>
+  COLUMN_COLOR_MAP[String(colorKey || "").toLowerCase()] || COLUMN_COLOR_MAP.primary;
+
 const NavigationMenu = ({
   menuItems = [],
   onItemClick,
@@ -108,6 +123,14 @@ const NavigationMenu = ({
     // On mobile, don't render submenu at all if not visible
     if (!isDesktop && !isVisible) return null;
 
+    const hasNestedSubcategories = item.submenu.some((subItem) => {
+      const hasColumnItems = Array.isArray(subItem.columns)
+        ? subItem.columns.some((column) => Array.isArray(column.items) && column.items.length > 0)
+        : false;
+      const hasSubItems = Array.isArray(subItem.subItems) && subItem.subItems.length > 0;
+      return hasColumnItems || hasSubItems;
+    });
+
     return (
       <div
         className={`absolute left-0 top-full z-50 transition-all duration-300 ${
@@ -125,6 +148,21 @@ const NavigationMenu = ({
             } shadow-2xl`}
           >
             {item.megaMenu ? (
+              !hasNestedSubcategories ? (
+                <div className="p-6 bg-white">
+                  <div className="grid grid-cols-4 gap-x-8 gap-y-4">
+                    {item.submenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleItemClick(subItem)}
+                        className="text-sm text-gray-700 hover:text-primary font-medium text-start px-2 py-1 rounded-md hover:bg-blue-50 transition-all duration-200 w-full"
+                      >
+                        <span className="leading-relaxed">{subItem.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
               <div className="grid grid-cols-[260px_1fr]">
                 {/* Sidebar Navigation */}
                 <div className="border-r border-gray-200 bg-gradient-to-b from-gray-50 to-white">
@@ -185,7 +223,10 @@ const NavigationMenu = ({
                             {activeSubItem.columns.map((column, colIndex) => (
                               <div key={colIndex} className="space-y-2">
                                 <div className="flex items-center gap-2 mb-2">
-                                  <div className="w-1 h-4 bg-primary rounded-full"></div>
+                                  <div
+                                    className="w-1 h-4 rounded-full"
+                                    style={{ backgroundColor: resolveColumnColor(column.color) }}
+                                  ></div>
                                   <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wide">
                                     {column.title}
                                   </h4>
@@ -244,6 +285,7 @@ const NavigationMenu = ({
                   })()}
                 </div>
               </div>
+              )
             ) : (
               // Regular submenu layout
               <div className="p-4 bg-white">

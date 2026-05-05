@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { IoArrowBack, IoCheckmarkCircle, IoClose, IoInformationCircle } from 'react-icons/io5';
+import { IoArrowBack, IoCheckmarkCircle, IoClose, IoInformationCircle, IoPencilOutline, IoTrashOutline } from 'react-icons/io5';
 import Skeleton from 'react-loading-skeleton';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -66,6 +66,18 @@ const DealDetailPage = () => {
 
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
   const [slotCustomizations, setSlotCustomizations] = useState({});
+
+  useEffect(() => {
+    if (modal.isOpen || showCustomizationModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [modal.isOpen, showCustomizationModal]);
 
   const resetModal = () => {
     setModal({
@@ -362,11 +374,18 @@ const DealDetailPage = () => {
     return resolveImageUrlForDeal(fallbackImage);
   };
 
-  const openSizingModal = async (slotId, productChoice, color, requiredQuantity = 1) => {
+  const openSizingModal = async (slotId, productChoice, color, requiredQuantity = 1, existingSelection = null) => {
     const productData = await fetchSingleProduct(productChoice);
 
     const modalSizes = resolveModalSizes(color, productData);
     const modalColorImage = resolveColorImageForModal(productData, color, productChoice.images?.[0]?.url);
+    const existingSizeQuantities = Object.fromEntries(
+      modalSizes.map((size) => {
+        const matched = (existingSelection?.sizes || []).find((s) => String(s?.size || '') === String(size));
+        return [size, Number(matched?.quantity || 0)];
+      }),
+    );
+    const existingQty = (existingSelection?.sizes || []).reduce((sum, sizeItem) => sum + Number(sizeItem?.quantity || 0), 0);
 
     setModal({
       isOpen: true,
@@ -377,8 +396,8 @@ const DealDetailPage = () => {
       color,
       selectedSize: modalSizes[0] || '',
       selectedArtworkKey: '',
-      selectedQuantity: Math.max(Number(requiredQuantity || 1), 1),
-      sizeQuantities: Object.fromEntries(modalSizes.map((size) => [size, 0])),
+      selectedQuantity: Math.max(Number(existingQty || requiredQuantity || 1), 1),
+      sizeQuantities: existingSelection ? existingSizeQuantities : Object.fromEntries(modalSizes.map((size) => [size, 0])),
     });
   };
 
@@ -619,7 +638,8 @@ const DealDetailPage = () => {
               id: position.id,
               positionName: position.positionName,
               positionCode: position.positionCode,
-              priceAdjustment: Number(position.priceAdjustment || 0),
+              priceAdjustment: Number(position.pricePerApplication ?? position.priceAdjustment ?? 0),
+              pricePerApplication: Number(position.pricePerApplication ?? position.priceAdjustment ?? 0),
             }))
           : [],
         content: customization.content
@@ -804,17 +824,7 @@ const DealDetailPage = () => {
                   )}
                 </div>
 
-                <div className="mb-3 space-y-1 text-sm text-gray-600">
-                  <p>
-                    Main Price (Admin): <span className="font-semibold text-gray-900">{formatPrice(mainPrice)}</span>
-                  </p>
-                  <p>
-                    Discounted Price: <span className="font-semibold text-gray-900">{formatPrice(discountedPrice)}</span>
-                  </p>
-                  <p>
-                    You Save: <span className="font-semibold text-green-700">{formatPrice(calculatedSavings)}</span>
-                  </p>
-                </div>
+                {/* Admin/discount breakdown intentionally removed per design request */}
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="bg-gray-100 rounded-lg p-3">
@@ -889,20 +899,7 @@ const DealDetailPage = () => {
                 <p className="text-sm text-gray-600">Select products, colors and sizes using product-page pricing logic.</p>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-teal-50 border-l-4 border-primary rounded-lg p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <IoInformationCircle className="text-primary text-xl mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-1">How It Works</p>
-                    <ol className="text-xs text-gray-700 space-y-1">
-                      <li>1. Select product for each slot</li>
-                      <li>2. Click a color</li>
-                      <li>3. Choose size and quantity in the popup</li>
-                      <li>4. Confirm selection and add to cart</li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
+              {/* Removed 'How It Works' block to match reference design */}
 
               <div className="space-y-6">
                 {deal.productSlots?.map((slot, slotIndex) => {
@@ -912,18 +909,25 @@ const DealDetailPage = () => {
                   const isSlotComplete = totalQty >= slot.requiredQuantity;
 
                   return (
-                    <div key={slot.id} className="border-2 border-gray-200 rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start gap-3 flex-1">
-                          <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold flex-shrink-0">
-                            {slotIndex + 1}
+                    <div key={slot.id} className="bg-white rounded-lg border border-[#E8ECF2] overflow-hidden shadow-sm">
+                      <div className="bg-gradient-to-r from-[#F8F9FA] to-white px-4 py-3 border-b border-[#CBD5E1]">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="w-7 h-7 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
+                              {slotIndex + 1}
+                            </span>
+                            <div>
+                              <h3 className="text-base font-semibold text-[#01164F]">{slot.slotName}</h3>
+                              <p className="text-xs text-[#6B7380]">
+                                Required: {slot.requiredQuantity} pieces
+                                {!isSlotComplete && <span className="text-[#FF4D4F] ml-2">({slot.requiredQuantity - totalQty} more needed)</span>}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-gray-900">{slot.slotName}</h3>
-                            <p className="text-sm text-gray-600">Required: {slot.requiredQuantity} pieces {slot.isOptional ? '(Optional)' : ''}</p>
+                          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${isSlotComplete ? 'bg-[#25B864] bg-opacity-10 text-[#25B864]' : 'bg-[#FF4D4F] bg-opacity-10 text-[#FF4D4F]'}`}>
+                            {progress}
                           </div>
                         </div>
-                        <div className={`text-sm font-semibold ${isSlotComplete ? 'text-green-600' : 'text-orange-600'}`}>{progress}</div>
                       </div>
 
                       {slot.productChoices && slot.productChoices.length > 1 && (
@@ -962,99 +966,136 @@ const DealDetailPage = () => {
                       )}
 
                       {selectedChoice?.product && (
-                        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center gap-3 mb-2">
-                            {selectedChoice.images?.[0] && (
-                              <div className="w-16 h-16 flex-shrink-0">
-                                <img src={getImageUrl(selectedChoice.images[0].url)} alt={selectedChoice.product.name} className="w-full h-full object-contain rounded" />
+                        <div className="p-4">
+                          <div className="flex gap-3 mb-4">
+                            <div className="w-16 h-16 bg-[#F8F9FA] rounded-lg overflow-hidden flex-shrink-0 border border-[#CBD5E1]">
+                              {selectedChoice.images?.[0] ? (
+                                <img src={getImageUrl(selectedChoice.images[0].url)} alt={selectedChoice.product.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <i className="ri-t-shirt-line text-xl text-gray-400"></i>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-[#01164F] mb-1">{selectedChoice.product.name}</h4>
+                              <div className="flex items-center gap-3 text-xs">
+                                <button onClick={() => navigate(toProductUrl(selectedChoice.product.name))} className="text-primary hover:underline flex items-center gap-1">
+                                  View Details
+                                </button>
                               </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm text-gray-900 truncate">{selectedChoice.product.name}</p>
-                              <p className="text-xs text-gray-600">Code: {selectedChoice.product.code}</p>
                             </div>
                           </div>
-                          <button
-                            onClick={() => navigate(toProductUrl(selectedChoice.product.name))}
-                            className="w-full py-2 text-xs font-medium text-primary border border-primary rounded hover:bg-blue-50 transition-colors flex items-center justify-center gap-1"
-                          >
-                            <IoInformationCircle className="text-sm" />
-                            View Full Product Details
-                          </button>
                         </div>
                       )}
 
                       {selectedChoice && (
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-3">Select Colors & Sizes</label>
-                          <p className="text-xs text-gray-500 mb-3">Click a color to open artwork, size and quantity selection</p>
-
-                          <div className="flex flex-wrap gap-3 mb-3">
-                            {(selectedChoice.colors || []).map((colorItem, idx) => {
+                        <div className="p-4">
+                          <div>
+                            <label className="text-xs font-medium text-[#6B7380] mb-2 block">Available Colors</label>
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {(selectedChoice.colors || []).map((colorItem, idx) => {
                               const colorName = colorItem.name;
                               const isSelected = selections[slot.id]?.colorSelections?.some((cs) => cs.colorName === colorName);
                               return (
                                 <button
                                   key={`${colorName}-${idx}`}
-                                    onClick={() => openSizingModal(slot.id, selectedChoice, colorItem, slot.requiredQuantity)}
-                                  className="relative group"
+                                  onClick={() => openSizingModal(slot.id, selectedChoice, colorItem, slot.requiredQuantity)}
+                                  disabled={isSelected}
+                                  className={`relative group transition-all ${isSelected ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
                                   title={colorName}
                                 >
                                   <div
-                                    className={`w-10 h-10 rounded-full border-2 ${isSelected ? 'border-primary ring-2 ring-primary' : 'border-gray-300'}`}
+                                    className={`w-10 h-10 rounded-lg border-2 ${isSelected ? 'border-primary' : 'border-gray-300 hover:border-primary'}`}
                                     style={getColorVisual(colorItem, selectedChoice)}
                                   />
                                   {isSelected && (
-                                    <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center">
-                                      <IoCheckmarkCircle className="text-sm" />
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
+                                      <IoCheckmarkCircle className="text-white text-lg drop-shadow-lg" />
                                     </div>
                                   )}
-                                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-[#6B7380] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-white px-2 py-1 rounded shadow-md z-10">
                                     {colorName}
                                   </span>
                                 </button>
                               );
                             })}
+                            </div>
                           </div>
 
                           {selections[slot.id]?.colorSelections?.length > 0 && (
-                            <div className="mt-3 space-y-2">
-                              <p className="text-xs font-semibold text-gray-700">Selected:</p>
-                              {selections[slot.id].colorSelections.map((colorSel, idx) => (
-                                (() => {
-                                  const selectedSizes = Array.isArray(colorSel.sizes) && colorSel.sizes.length > 0
-                                    ? colorSel.sizes.filter((sizeItem) => Number(sizeItem.quantity || 0) > 0)
-                                    : (colorSel.size
-                                        ? [{ size: colorSel.size, quantity: Number(colorSel.quantity || 0) }]
-                                        : []);
-                                  const selectedQty = selectedSizes.reduce((sum, sizeItem) => sum + Number(sizeItem.quantity || 0), 0);
-                                  const sizeSummary = selectedSizes
-                                    .map((sizeItem) => `${sizeItem.size}: ${sizeItem.quantity}`)
-                                    .join(', ');
+                            <div className="border-t border-[#CBD5E1]">
+                              {selections[slot.id].colorSelections.map((colorSel, idx) => {
+                                const totalPieces = (colorSel.sizes || []).reduce((sum, size) => sum + Number(size?.quantity || 0), 0);
+                                const sizeRows = colorSel.sizes || [];
 
-                                  return (
-                                    <div key={idx} className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded text-xs">
-                                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <div className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0" style={{ backgroundColor: colorSel.colorHex || '#9ca3af' }} />
-                                        <div className="flex-1 min-w-0">
-                                          <p className="font-semibold text-gray-900 truncate">{colorSel.colorName}</p>
-                                          <p className="text-gray-600">Qty: <span className="font-bold text-primary">{selectedQty || Number(colorSel.quantity || 0)}</span></p>
-                                          {sizeSummary && (
-                                            <p className="text-gray-600">
-                                              {selectedSizes.length > 1 ? 'Sizes' : 'Size'}: <span className="font-bold">{sizeSummary}</span>
-                                            </p>
-                                          )}
-                                          {colorSel.artwork && <p className="text-gray-600">Artwork: <span className="font-bold">{colorSel.artwork}</span></p>}
-                                          {typeof colorSel.unitPrice === 'number' && <p className="text-gray-600">Unit: <span className="font-bold">A${colorSel.unitPrice.toFixed(2)}</span></p>}
+                                return (
+                                      <div key={idx} className="px-4 py-3 bg-[#FAFAFA] border-b border-[#CBD5E1] last:border-b-0">
+                                        <div className="flex items-start justify-between gap-3">
+                                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                                            <div 
+                                              className="w-8 h-8 rounded-lg border-2 border-gray-200 flex-shrink-0 shadow-sm"
+                                              style={{ backgroundColor: colorSel.colorHex || '#ccc' }}
+                                            />
+
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-center justify-between mb-2">
+                                                <p className="text-sm font-medium text-[#01164F]">{colorSel.colorName}</p>
+                                                <span className="text-xs font-semibold text-[#6B7380] bg-white px-2 py-1 rounded">
+                                                  {totalPieces} pcs
+                                                </span>
+                                              </div>
+
+                                              <div className="flex flex-wrap gap-1.5">
+                                                {sizeRows.map((size, sIdx) => (
+                                                  <span
+                                                    key={sIdx}
+                                                    className="px-2 py-1 bg-white border border-[#CBD5E1] rounded text-xs font-medium text-[#01164F]"
+                                                  >
+                                                    {size.size} × {size.quantity}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-1 flex-shrink-0">
+                                            <button
+                                              onClick={() => {
+                                                const matchedColor = (selectedChoice.colors || []).find(
+                                                  (color) => String(color.name || '').toLowerCase() === String(colorSel.colorName || '').toLowerCase(),
+                                                );
+                                                if (matchedColor) {
+                                                  openSizingModal(slot.id, selectedChoice, matchedColor, slot.requiredQuantity, colorSel);
+                                                }
+                                              }}
+                                              className="inline-flex items-center justify-center w-8 h-8 border border-[#CBD5E1] bg-white text-[#6B7380] hover:text-primary hover:border-primary rounded transition-colors"
+                                              title="Edit"
+                                              aria-label="Edit color selection"
+                                            >
+                                              <IoPencilOutline className="text-sm" />
+                                            </button>
+                                            <button
+                                              onClick={() => removeColorSelection(slot.id, idx)}
+                                              className="inline-flex items-center justify-center w-8 h-8 border border-[#CBD5E1] bg-white text-[#6B7380] hover:text-[#FF4D4F] hover:border-[#FF4D4F] rounded transition-colors"
+                                              title="Delete"
+                                              aria-label="Delete color selection"
+                                            >
+                                              <IoTrashOutline className="text-sm" />
+                                            </button>
+                                          </div>
                                         </div>
                                       </div>
-                                      <button onClick={() => removeColorSelection(slot.id, idx)} className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0" title="Remove this color">
-                                        <IoClose className="text-lg" />
-                                      </button>
-                                    </div>
-                                  );
-                                })()
-                              ))}
+                                    );
+                              })}
+                            </div>
+                          )}
+
+                          {(!selections[slot.id]?.colorSelections || selections[slot.id].colorSelections.length === 0) && (
+                            <div className="p-4 bg-[#FFF8E1] border-t border-[#FFE8A3] text-center">
+                              <p className="text-xs text-primary">
+                                <i className="ri-information-line mr-1"></i>
+                                Click on a color above to select sizes
+                              </p>
                             </div>
                           )}
                         </div>
@@ -1069,70 +1110,99 @@ const DealDetailPage = () => {
       </div>
 
       {modal.isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-gradient-to-r from-primary to-primary/90 text-white p-4 flex items-center justify-between z-10 rounded-t-2xl">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold">Select Quantity and Size</h3>
-                <p className="text-sm opacity-90 mt-1">Color: {modal.color?.name}</p>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4"
+          onClick={resetModal}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 border-b border-[#CBD5E1] flex items-center justify-between bg-gradient-to-r from-[#F8F9FA] to-white flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-6 h-6 rounded-full border-2 border-gray-200"
+                  style={{ backgroundColor: modal.color?.primaryHexCode || '#ccc' }}
+                ></div>
+                <h3 className="text-lg font-semibold text-[#01164F]">
+                  {modal.color?.name}
+                </h3>
               </div>
-              <button onClick={resetModal} className="text-white hover:bg-white/20 rounded-full p-1 transition-colors">
-                <IoClose className="text-2xl" />
-              </button>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <span className="text-xs text-[#6B7380] block mb-1">Quantity Selected</span>
+                  <span className={`text-lg font-bold ${
+                    modalQty > 0 ? 'text-[#25B864]' : 'text-[#6B7380]'
+                  }`}>
+                    {modalQty}
+                  </span>
+                </div>
+                <button onClick={resetModal} className="w-8 h-8 flex items-center justify-center text-[#6B7380] hover:text-[#01164F] hover:bg-gray-100 rounded-lg transition-colors">
+                  <IoClose className="text-xl" />
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border-b bg-gray-50">
-              <div className="rounded-2xl border border-[#CBD5E1] bg-white p-4 flex items-center justify-center">
+            {/* Modal Body */}
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden">
+              {/* Product Image */}
+              <div className="h-full max-h-[400px] bg-[#F8F9FA] rounded-xl overflow-hidden border border-[#CBD5E1] flex items-center justify-center">
                 <img
                   src={modal.productImage || noimage}
                   alt={modal.color?.name || 'Selected product'}
-                  className="max-h-[320px] object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
 
-              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-gray-900">Quantity Selected</p>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-primary">{modalQty}</p>
-                    <p className="text-xs text-gray-500">/{modalGuard.maxAllowedInModal}</p>
-                  </div>
-                </div>
-
-                {modalQty >= modalGuard.maxAllowedInModal && modalGuard.maxAllowedInModal > 0 && (
-                  <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
-                    Limit reached ({modalQty}/{modalGuard.maxAllowedInModal})
-                  </div>
-                )}
-
+              {/* Sizes List - Scrollable */}
+              <div className="overflow-y-auto pr-2 space-y-3" style={{ maxHeight: '100%' }}>
                 {modalSizes.length > 0 ? (
                   modalSizes.map((size) => {
                     const quantity = Number(modal.sizeQuantities?.[size] || 0);
+                    const isSelected = quantity > 0;
                     return (
-                      <div key={size} className="rounded-2xl border border-[#CBD5E1] px-4 py-3 flex items-center justify-between gap-3 bg-white">
+                      <div 
+                        key={size}
+                        className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                          isSelected ? 'bg-blue-50 border-2 border-primary' : 'bg-[#F8F9FA] border border-[#CBD5E1]'
+                        }`}
+                      >
                         <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-[#F8F9FA] flex items-center justify-center font-semibold text-gray-900">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm ${
+                            isSelected ? 'bg-primary text-white' : 'bg-white text-[#6B7380]'
+                          }`}>
                             {size}
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">{size}</p>
-                            <p className="text-xs text-primary">100+ available</p>
+                            <span className="text-sm font-semibold text-[#01164F] block">
+                              {size}
+                            </span>
+                            <p className="text-xs text-[#25B864]">
+                              <i className="ri-check-line mr-1"></i>
+                              100+ available
+                            </p>
                           </div>
                         </div>
+                        
+                        {/* Quantity Controls */}
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleModalSizeChange(size, -1)}
-                            className="w-9 h-9 rounded-lg border border-[#CBD5E1] text-gray-900 hover:bg-primary/5"
+                            disabled={quantity === 0}
+                            className="w-8 h-8 flex items-center justify-center border border-[#CBD5E1] rounded-lg hover:border-primary hover:bg-primary hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
                           >
-                            −
+                            <span className="text-lg font-bold">−</span>
                           </button>
-                          <span className="w-10 text-center font-bold text-gray-900">{quantity}</span>
+                          <span className="w-10 text-center font-bold text-[#01164F]">
+                            {quantity}
+                          </span>
                           <button
                             onClick={() => handleModalSizeChange(size, 1)}
                             disabled={modalQty >= modalGuard.maxAllowedInModal}
-                            className="w-9 h-9 rounded-lg border border-[#CBD5E1] text-gray-900 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-8 h-8 flex items-center justify-center border border-[#CBD5E1] rounded-lg hover:border-primary hover:bg-primary hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit"
                           >
-                            +
+                            <span className="text-lg font-bold">+</span>
                           </button>
                         </div>
                       </div>
@@ -1146,28 +1216,20 @@ const DealDetailPage = () => {
               </div>
             </div>
 
-            <div className="p-6">
-              {loadingProductKey === modal.productKey && !modalProduct ? (
-                <div className="py-8 text-center text-gray-500 text-sm">Loading pricing and size data...</div>
-              ) : (
-                <>
-                  <div className="mt-3 p-3 rounded bg-blue-50 border border-blue-100 flex items-center justify-between text-sm">
-                    <span className="text-gray-700">Selected Total</span>
-                    <span className="font-bold text-primary">A${modalTotal.toFixed(2)}</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">See size guide on product page for full measurements</p>
-                </>
-              )}
-            </div>
-
-            <div className="sticky bottom-0 bg-white border-t-2 p-4 flex gap-3 rounded-b-2xl">
-              <button onClick={resetModal} className="flex-1 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all">
-                Cancel
-              </button>
-              <button onClick={confirmSelection} className="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
-                <IoCheckmarkCircle className="text-xl" />
-                Confirm Selection
-              </button>
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-[#CBD5E1] flex justify-between items-center bg-[#F8F9FA] flex-shrink-0">
+              <div className="text-sm text-[#6B7380]">
+                <i className="ri-information-line mr-1"></i>
+                Select the quantity for each size
+              </div>
+              <div className="flex gap-3">
+                <button onClick={resetModal} className="px-6 py-2.5 border border-[#CBD5E1] rounded-lg font-semibold text-[#6B7380] hover:border-[#01164F] hover:text-[#01164F] transition-colors">
+                  Cancel
+                </button>
+                <button onClick={confirmSelection} disabled={modalQty === 0} className="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  Add Selection
+                </button>
+              </div>
             </div>
           </div>
         </div>

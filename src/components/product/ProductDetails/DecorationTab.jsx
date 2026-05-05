@@ -22,6 +22,26 @@ const DecorationTab = ({
 }) => {
   const [leadTimeModal, setLeadTimeModal] = useState(false);
 
+  const getPositionPriceForOne = (position) => {
+    const tierPrice = Number(position?.pricePerApplication);
+    if (Number.isFinite(tierPrice)) return tierPrice;
+
+    const tiers = Array.isArray(position?.pricingTiers) ? position.pricingTiers : [];
+    const tierForOne = tiers.find((tier) => {
+      const min = Number(tier?.minQuantity ?? 0);
+      const max = tier?.maxQuantity === null || tier?.maxQuantity === undefined || tier?.maxQuantity === ""
+        ? Infinity
+        : Number(tier.maxQuantity);
+      return min <= 1 && 1 <= max;
+    });
+    if (tierForOne) return Number(tierForOne.pricePerApplication || 0);
+
+    const minOneTier = tiers.find((tier) => Number(tier?.minQuantity) === 1);
+    if (minOneTier) return Number(minOneTier.pricePerApplication || 0);
+
+    return Number(position?.priceAdjustment || 0);
+  };
+
   const getIconForMethod = (name) => {
     const lowerName = name?.toLowerCase() || "";
     if (lowerName.includes("branding"))
@@ -178,6 +198,7 @@ const DecorationTab = ({
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {cust.positions.map((pos) => {
                               const isPosSelected = selectedPosition?._id === pos._id;
+                              const perApplicationPrice = getPositionPriceForOne(pos);
                               return (
                                 <div
                                   key={pos._id}
@@ -201,9 +222,9 @@ const DecorationTab = ({
                                   <span className="text-xs font-medium text-center text-gray-700">
                                     {pos.positionName}
                                   </span>
-                                  {pos.priceAdjustment > 0 && (
+                                  {perApplicationPrice > 0 && (
                                     <span className="text-xs text-gray-500">
-                                      +${pos.priceAdjustment.toFixed(2)}
+                                      +${perApplicationPrice.toFixed(2)} / application
                                     </span>
                                   )}
                                   {isPosSelected && (

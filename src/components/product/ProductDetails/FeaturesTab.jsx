@@ -1,47 +1,43 @@
 import React from "react";
 import { FaCheckCircle, FaInfoCircle } from "react-icons/fa";
-import { FaHandDots } from "react-icons/fa6";
+
+const FEATURES_TAB_DETAIL_NAMES = [
+  "Materials",
+  "Material",
+  "Packing",
+  "Features",
+  "Product Dimensions",
+  "Dimensions",
+  "Fabric",
+  "Gender",
+  "Qty Per Carton",
+  "Product Materials",
+  "Product Material",
+  "Product Size",
+  "Product Item Size",
+  "Product Packaging Inner",
+  "Fabric Types",
+  "Genders",
+  "Blurb",
+  "Sleeve",
+  "Tech",
+  "Technology",
+  "Fit",
+  "Tags",
+  "hamper items",
+  "Branding Options",
+  "Print Areas",
+];
+
+/** Same filter as the legacy Details → technical fields block (used by clothing PDP tabs). */
+export function filterDetailsForFeaturesTab(array) {
+  const lowerCaseNames = FEATURES_TAB_DETAIL_NAMES.map((name) => name?.toLowerCase());
+  return array?.filter((item) =>
+    lowerCaseNames.includes(item?.name?.toLowerCase())
+  );
+}
 
 const FeaturesTab = ({ single_product, activeInfoTab }) => {
-  function filterByNames(array) {
-    const namesToInclude = [
-      "Materials",
-      "Material",
-      "Packing",
-      "Features",
-      // "Sizes",
-      // "Size",
-      // "Item Size",
-      // "Sizing",
-      "Product Dimensions",
-      "Dimensions",
-      "Fabric",
-      "Gender",
-      "Qty Per Carton",
-      "Product Materials",
-      "Product Material",
-      "Product Size",
-      "Product Item Size",
-      "Product Packaging Inner",
-      "Fabric Types",
-      "Genders",
-      "Blurb",
-      "Sleeve",
-      "Tech",
-      "Technology",
-      "Fit",
-      "Tags",
-      "hamper items",
-      "Branding Options",
-      "Print Areas",
-    ];
-
-    const lowerCaseNames = namesToInclude.map((name) => name?.toLowerCase());
-    return array?.filter((item) =>
-      lowerCaseNames.includes(item?.name?.toLowerCase())
-    );
-  }
-
   return (
     <div className="space-y-1 border- border-gray-200 pt-2">
       {/* Brief Description */}
@@ -73,21 +69,19 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
                   ))}
                 {single_product?.product?.categorisation?.promodata_attributes?.map(
                   (attribute, index) => (
-                    <p
+                    <li
                       key={index}
-                      className="mb-1 list-disc list-inside flex items-center gap-2"
+                      className="mb-1 list-none flex items-center gap-2"
                     >
                       <FaCheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />{" "}
-                      <>
-                        <span className="font-semibold">
-                          {attribute.split(":")[0]}
-                        </span>{" "}
-                        :
-                        <span className="font-normal">
-                          {attribute.split(":")[1]}
-                        </span>
-                      </>
-                    </p>
+                      <span className="font-semibold">
+                        {attribute.split(":")[0]}
+                      </span>
+                      :
+                      <span className="font-normal">
+                        {attribute.split(":")[1]}
+                      </span>
+                    </li>
                   )
                 )}
               </ul>
@@ -96,14 +90,16 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
           {single_product.product.description.split("Features:")[0] && (
             <div className="border-b border-gray-200 pb-2">
               <span className="text-lg font-semibold">Description:</span>
-              <p className="text-sm leading-6 text-black text">
+              <div className="text-sm leading-6 text-black">
                 {single_product.product.description
                   .split("Features:")[0]
                   .split("\n")
                   .map((line, index) => (
-                    <p key={index}>{line}</p>
+                    <p key={index} className="mb-0 last:mb-0">
+                      {line}
+                    </p>
                   ))}
-              </p>
+              </div>
             </div>
           )}
         </div>
@@ -134,7 +130,7 @@ const FeaturesTab = ({ single_product, activeInfoTab }) => {
         )}
       {activeInfoTab === "features" && (
         <div className="space-y-3 text-sm leading-6">
-          {filterByNames(single_product?.product?.details)?.map((d, i) => (
+          {filterDetailsForFeaturesTab(single_product?.product?.details)?.map((d, i) => (
             <div key={i} className="border-b last:border-0 pb-3">
               <p className="text-lg font-semibold capitalize">
                 {d.method || d.name}

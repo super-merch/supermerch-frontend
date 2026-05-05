@@ -2,6 +2,8 @@ import React from "react";
 import { FaBox, FaInfoCircle } from "react-icons/fa";
 
 const ShippingTab = ({ single_product }) => {
+  const details = single_product?.product?.details;
+
   const filterByNamesForShipping = (array) => {
     const namesToInclude = [
       "Packaging",
@@ -16,8 +18,8 @@ const ShippingTab = ({ single_product }) => {
   };
   return (
     <div className="space-y-3 text-sm leading-6">
-      {filterByNamesForShipping(single_product.product.details)?.length > 0 ? (
-        filterByNamesForShipping(single_product.product.details)?.map(
+      {filterByNamesForShipping(details)?.length > 0 ? (
+        filterByNamesForShipping(details)?.map(
           (d, i) => (
             <div key={i} className="border-b last:border-0 pb-3">
               <p className="font-semibold">{d.method || d.name}</p>

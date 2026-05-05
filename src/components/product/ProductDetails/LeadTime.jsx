@@ -2,7 +2,7 @@ import React from "react";
 import { FaClock, FaInfoCircle } from "react-icons/fa";
 import LeadTimeModal from "./LeadTimeModal";
 
-const LeadTimeTab = ({ availablePriceGroups = [] }) => {
+const LeadTimeTab = ({ availablePriceGroups = [], useGenericFallback = true }) => {
   // Fallback to default data if no leadTimeData provided
   const defaultLeadTimeData = [
     {
@@ -65,16 +65,37 @@ const LeadTimeTab = ({ availablePriceGroups = [] }) => {
         item.leadTime !== ""
     );
 
-  // Use provided data or fall back to default
-  const displayData =
+  const mappedFromApi =
     leadTimeData.length > 0
       ? leadTimeData.map((item) => ({
           process: item.method,
           leadTime: item.leadTime,
         }))
-      : defaultLeadTimeData;
+      : [];
+
+  const displayData =
+    mappedFromApi.length > 0
+      ? mappedFromApi
+      : useGenericFallback
+        ? defaultLeadTimeData
+        : [];
 
   const hasCustomData = leadTimeData.length > 0;
+
+  if (!useGenericFallback && mappedFromApi.length === 0) {
+    return (
+      <div className="text-center py-10 px-4">
+        <FaInfoCircle className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          No lead time data for this product
+        </h3>
+        <p className="text-sm text-gray-500 max-w-md mx-auto">
+          Decoration lead times appear when price groups are available from the supplier. Contact us for a quote to confirm timing.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {" "}

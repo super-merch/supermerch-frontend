@@ -3,7 +3,7 @@ import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
 import RouteTransition from "./components/Common/RouteTransition";
 import Home from "./pages/Home/Home";
-import ProducPage from "./pages/ProducPage";
+import ProductPageResolver from "./pages/ProductPageResolver";
 import Footer from "./components/Home/Footer";
 import CategoryPage from "./pages/CategoryPage";
 import ShopPage from "./pages/ShopPage";
@@ -99,7 +99,7 @@ const App = () => {
         <RouteTransition>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/product/:id" element={<ProducPage />} />
+            <Route path="/product/:id" element={<ProductPageResolver />} />
             {/* Product details page */}
             {/* Akash */}
             {/* Other routes */}

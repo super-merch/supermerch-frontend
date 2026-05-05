@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -80,6 +80,7 @@ const ProductsContextProvider = ({ children }) => {
         attributes: null,
         sendAttributes: false,
         searchTerms: [],
+        expressWindow: null,
     });
     const [totalCount, setTotalCount] = useState(0);
 
@@ -112,6 +113,9 @@ const ProductsContextProvider = ({ children }) => {
             ...(paginationData.sendAttributes != null && {
                 send_attributes: paginationData.sendAttributes,
             }),
+            ...(paginationData.expressWindow && {
+                express_window: paginationData.expressWindow,
+            }),
         });
         if (Array.isArray(paginationData.attributes) && paginationData.attributes.length > 0) {
             paginationData.attributes.forEach((attr) => {
@@ -141,6 +145,8 @@ const ProductsContextProvider = ({ children }) => {
             url = `${backendUrl}/api/24hour/get-products?${params.toString()}`;
         } else if (paginationData.category === "sales") {
             url = `${backendUrl}/api/client-products-discounted?${params.toString()}`;
+        } else if (paginationData.category === "clearance") {
+            url = `${backendUrl}/api/client-products-clearance?${params.toString()}`;
         } else if (paginationData.category === "allProducts") {
             url = `${backendUrl}/api/client-products?${params.toString()}`;
         } else if (paginationData.category === "search") {
@@ -187,6 +193,7 @@ const ProductsContextProvider = ({ children }) => {
             paginationData.colors,
             paginationData.attributes,
             paginationData.sendAttributes,
+            paginationData.expressWindow,
         ],
         queryFn: () => getProductsFromApi(),
         enabled: Boolean(backendUrl),
@@ -924,8 +931,7 @@ const ProductsContextProvider = ({ children }) => {
 
     const [v1categories, setV1categories] = useState([]);
     // ********************************************************************v1 categories
-    const fetchV1Categories = async () => {
-        // setSkeletonLoading(true);
+    const fetchV1Categories = useCallback(async () => {
         try {
             const response = await fetch(`${backendUrl}/api/v1-categories`);
             if (!response.ok) {
@@ -938,7 +944,6 @@ const ProductsContextProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            // console.log('API Response:', data);
 
             if (!data || !data.data) {
                 throw new Error("Unexpected API response structure");
@@ -952,10 +957,7 @@ const ProductsContextProvider = ({ children }) => {
             setV1categories([]);
             setError(err.message);
         }
-        // finally {
-        //   setSkeletonLoading(false);
-        // }
-    };
+    }, [backendUrl]);
 
     const [australia, setAustralia] = useState([]);
     const [totalAustraliaPages, setTotalAustraliaPages] = useState(0);

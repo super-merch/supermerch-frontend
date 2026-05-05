@@ -11,13 +11,46 @@
  * Returns the category entry from the v1categories array matching the given id,
  * or null if not found.
  *
- * @param {string} categoryId - _promodataGroupId value
+ * Lookup order:
+ * 1. Exact match on `id` (_promodataGroupId or mongo _id)
+ * 2. Fallback: first category whose `allowedTypeGroupIds` includes the given id
+ *
+ * @param {string} categoryId - _promodataGroupId value (e.g. "CL", "HW", "PW")
  * @param {Array} categories  - v1categories array from ProductsContext
  * @returns {object|null}
  */
 export function getCategoryMeta(categoryId, categories) {
   if (!categories || !Array.isArray(categories)) return null;
-  return categories.find((c) => c.id === categoryId) ?? null;
+  const exact = categories.find((c) => c.id === categoryId);
+  if (exact) return exact;
+
+  return (
+    categories.find(
+      (c) =>
+        Array.isArray(c.allowedTypeGroupIds) &&
+        c.allowedTypeGroupIds.includes(categoryId),
+    ) ?? null
+  );
+}
+
+/**
+ * Resolver-focused lookup:
+ * - Prefer exact only when it has navGroup
+ * - Else fallback to allowedTypeGroupIds match
+ * - Else fallback to exact
+ */
+export function getCategoryMetaForNavGroup(categoryId, categories) {
+  if (!categories || !Array.isArray(categories)) return null;
+  const exact = categories.find((c) => c.id === categoryId);
+  const fallback = categories.find(
+    (c) =>
+      Array.isArray(c.allowedTypeGroupIds) &&
+      c.allowedTypeGroupIds.includes(categoryId),
+  );
+  if (exact && String(exact?.navGroup || "").trim()) return exact;
+  if (fallback) return fallback;
+  if (exact) return exact;
+  return null;
 }
 
 /**

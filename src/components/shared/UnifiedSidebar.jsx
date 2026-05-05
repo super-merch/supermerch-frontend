@@ -707,7 +707,8 @@ const UnifiedSidebar = ({
               </CollapsibleSection>
               {categoryType !== "australia" &&
                 categoryType !== "24hr-production" &&
-                categoryType !== "sales" && (
+                categoryType !== "sales" &&
+                categoryType !== "clearance" && (
                   <CollapsibleSection
                     title="Attributes"
                     defaultExpanded={false}

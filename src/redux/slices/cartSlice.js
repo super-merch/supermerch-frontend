@@ -20,6 +20,23 @@ const getPriceForQuantity = (quantity, priceBreaks) => {
   return sortedBreaks[0]?.price || 0;
 };
 
+const applyLineDiscount = (unitPrice, item) => {
+  const clearanceType = norm(item?.clearanceInfo?.discountType);
+  const clearanceAmount = Number(item?.clearanceInfo?.amount || 0);
+  if (item?.clearanceInfo?.isActive && clearanceAmount > 0) {
+    if (clearanceType === "flat") {
+      return Math.max(unitPrice - clearanceAmount, 0);
+    }
+    return unitPrice * (1 - clearanceAmount / 100);
+  }
+
+  const pct = Number(item?.discountPct || 0);
+  if (pct > 0) {
+    return unitPrice * (1 - pct / 100);
+  }
+  return unitPrice;
+};
+
 const getCartUnitPrice = (item, quantity) => {
   const baseUnitPrice = getPriceForQuantity(quantity, item.basePrices);
   const methodUnitPrice = getPriceForQuantity(quantity, item.priceBreaks || []);
@@ -31,11 +48,11 @@ const getCartUnitPrice = (item, quantity) => {
     !Array.isArray(item.priceBreaks) ||
     item.priceBreaks.length === 0;
 
-  if (isBaseSelection) {
-    return Number(baseUnitPrice || item.price || 0);
-  }
+  const undecoratedUnitPrice = isBaseSelection
+    ? Number(baseUnitPrice || item.price || 0)
+    : Number((baseUnitPrice || 0) + (methodUnitPrice || 0));
 
-  return Number((baseUnitPrice || 0) + (methodUnitPrice || 0));
+  return Number(applyLineDiscount(undecoratedUnitPrice, item));
 };
 
 const norm = (v) => String(v ?? "").trim().toLowerCase();
@@ -338,6 +355,9 @@ const cartSlice = createSlice({
         if (rest.adminCustomization) {
           existing.adminCustomization = rest.adminCustomization;
         }
+        if (rest.addLogoLater !== undefined) {
+          existing.addLogoLater = rest.addLogoLater;
+        }
       } else {
         // const unitPrice = getPriceForQuantity(quantity, basePrices);
         // const priceWithMargin = unitPrice + (marginFlat * unitPrice) / 100;
@@ -520,9 +540,9 @@ const cartSlice = createSlice({
           item.totalPrice = Number(item.price || 0) * item.quantity;
         } else {
           // Recalculate price based on new quantity
-          const newUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
-          const priceWithMargin = newUnitPrice + ((item.marginFlat || 0) * newUnitPrice) / 100;
-          item.price = priceWithMargin * (1 - (item.discountPct || 0) / 100);
+          const baseUnitPrice = getPriceForQuantity(item.quantity, item.basePrices);
+          const priceWithMargin = baseUnitPrice + ((item.marginFlat || 0) * baseUnitPrice) / 100;
+          item.price = applyLineDiscount(priceWithMargin, item);
           item.totalPrice =
             item.price * item.quantity +
             (item.setupFee || 0) +

@@ -34,9 +34,18 @@ export const slugify = (s) =>
  * Generate product URL using slug only (no query parameters)
  * This creates clean, shareable URLs like /product/shirt-jacket-unisex
  */
-export const toProductUrl = (productName) => {
+export const toProductUrl = (productName, id) => {
   if (!productName) return "/";
-  return `/product/${slugify(productName)}`;
+  const base = `/product/${slugify(productName)}`;
+  try {
+    if (id !== undefined && id !== null && String(id).trim() !== "") {
+      return `${base}?ref=${encodeURIComponent(btoa(String(id)))}`;
+    }
+  } catch (e) {
+    // btoa may fail in some environments; fall back to base URL
+    return base;
+  }
+  return base;
 };
 
 export const findNearestColor = (colorName) => {
