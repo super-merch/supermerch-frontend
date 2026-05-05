@@ -94,7 +94,8 @@ const OrderSummary = ({
                 ? {
                     positionId: selectedPosition._id,
                     positionName: selectedPosition.positionName,
-                    priceAdjustment: selectedPosition.priceAdjustment,
+                    priceAdjustment: Number(selectedPosition.pricePerApplication ?? selectedPosition.priceAdjustment ?? 0),
+                    pricePerApplication: Number(selectedPosition.pricePerApplication ?? selectedPosition.priceAdjustment ?? 0),
                   }
                 : null,
               customizationFile: customizationFileData,

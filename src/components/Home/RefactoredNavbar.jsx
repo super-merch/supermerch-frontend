@@ -68,35 +68,43 @@ const buildCategoryColumns = (subTypes = [], maxColumns = 4) => {
   const grouped = new Map();
 
   for (const subType of subTypes) {
-    const title = inferColumnTitle(subType?.name);
-    if (!grouped.has(title)) grouped.set(title, []);
-    grouped.get(title).push(subType);
+    const title = String(subType?.menuColumnTitle || "").trim() || inferColumnTitle(subType?.name);
+    if (!grouped.has(title)) grouped.set(title, { items: [], color: "primary", order: 0 });
+    const group = grouped.get(title);
+    group.items.push(subType);
+    if (subType?.menuColumnColor) group.color = subType.menuColumnColor;
+    if (Number.isFinite(Number(subType?.menuColumnOrder))) {
+      group.order = Number(subType.menuColumnOrder);
+    }
   }
 
-  const sortedGroups = Array.from(grouped.entries()).sort(
-    (a, b) => b[1].length - a[1].length,
-  );
+  const sortedGroups = Array.from(grouped.entries()).sort((a, b) => {
+    const byOrder = (a[1].order || 0) - (b[1].order || 0);
+    if (byOrder !== 0) return byOrder;
+    return b[1].items.length - a[1].items.length;
+  });
 
   const primaryGroups = sortedGroups.slice(0, maxColumns);
   const overflowGroups = sortedGroups.slice(maxColumns);
 
   if (overflowGroups.length > 0) {
-    const overflowItems = overflowGroups.flatMap((entry) => entry[1]);
+    const overflowItems = overflowGroups.flatMap((entry) => entry[1].items);
     if (overflowItems.length > 0) {
-      primaryGroups.push(["Misc", overflowItems]);
+      primaryGroups.push(["Misc", { items: overflowItems, color: "primary", order: 999 }]);
     }
   }
 
-  return primaryGroups.map(([title, items]) => ({
+  return primaryGroups.map(([title, group]) => ({
     title: title.toUpperCase(),
-    items: items.map((item) => item.name),
-    sourceItems: items,
+    color: group.color || "primary",
+    items: group.items.map((item) => item.name),
+    sourceItems: group.items,
   }));
 };
 
 const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
   categories.map((category) => {
-    const columns = buildCategoryColumns(category.subTypes, 4);
+    const columns = buildCategoryColumns(category.subTypes, Number(category.menuColumnCount || 4));
 
     return {
       id: category.id,
@@ -119,6 +127,12 @@ const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
       ),
     };
   });
+
+const EXPRESS_WINDOWS = [
+  { id: "24hr", label: "24 hour prod" },
+  { id: "3days", label: "3 days" },
+  { id: "5days", label: "5 days" },
+];
 
 const RefactoredNavbar = ({ onCouponClick }) => {
   const { token, setToken } = useContext(AuthContext);
@@ -154,6 +168,10 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const [navbarLogout, setNavbarLogout] = useState(false);
   const [coupenModel, setCoupenModel] = useState(false);
   const { coupons, coupenLoading } = useCoupons();
+
+  const buildExpressPath = (windowId = "24hr") =>
+    `/24hr-production?expressWindow=${encodeURIComponent(windowId)}`;
+
   // Create menu items from categories
   const createMenuItems = () => {
     const allCategories = Array.isArray(v1categories) ? v1categories : [];
@@ -194,7 +212,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         hasSubmenu: true,
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
-      { name: "24hr Prod", path: "/24hr-production" },
+      { name: "Express", path: buildExpressPath("24hr"), hasSubmenu: true },
+      { name: "Clearance", path: "/clearance?category=clearance" },
       { name: "Deals", path: "/deals" },
       { name: "Australia Made", path: "/australia-made" },
     ];
@@ -265,6 +284,18 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               onClick: () => handleMenuClick(item),
             },
           ],
+          onClick: () => handleMenuClick(item),
+        };
+      }
+      if (item.name === "Express") {
+        return {
+          ...item,
+          id: "express",
+          submenu: EXPRESS_WINDOWS.map((window) => ({
+            id: `express-${window.id}`,
+            name: window.label,
+            onClick: () => navigate(buildExpressPath(window.id)),
+          })),
           onClick: () => handleMenuClick(item),
         };
       }

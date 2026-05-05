@@ -51,11 +51,12 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
       );
     } else {
       // Navigate using the stored slug/original name, not the display name
-      navigate(
-        toProductUrl(
-          product?.slug || product?.overview?.originalName || product?.overview?.name
-        )
+      const pid = product?.meta?.id;
+      const base = toProductUrl(
+        product?.slug || product?.overview?.originalName || product?.overview?.name
       );
+      const ref = pid ? `?ref=${encodeURIComponent(btoa(String(pid)))}` : "";
+      navigate(base + ref);
     }
   };
 
@@ -186,10 +187,19 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
       {/* Product Details */}
       <div className="flex-1 flex flex-col p-2 overflow-hidden min-h-0">
         <Link
-          to={slug}
-          onClick={(e) => e.stopPropagation()}
-          className="flex-1 flex flex-col min-w-0 w-full h-full"
-        >
+                to={
+                  (() => {
+                    try {
+                      const pid = product?.meta?.id;
+                      return pid ? `${slug}?ref=${encodeURIComponent(btoa(String(pid)))}` : slug;
+                    } catch (e) {
+                      return slug;
+                    }
+                  })()
+                }
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 flex flex-col min-w-0 w-full h-full"
+              >
           {/* Color Swatches */}
           {uniqueColors.length > 0 && (
             <div className="flex justify-center items-center gap-1 sm:gap-1.5 mb-1.5 sm:mb-2 flex-wrap overflow-hidden">

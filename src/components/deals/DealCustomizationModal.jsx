@@ -14,11 +14,8 @@ import {
   Trash2, 
   Upload, 
   X,
-  CheckCircle2,
   AlertCircle,
-  Layout,
-  Type,
-  Image as ImageIcon
+  Type
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -106,6 +103,26 @@ export default function DealCustomizationModal({
   }, [currentSlotData, selectedMethodType, selectedApplicationType]);
 
   const selectedPositionIds = useMemo(() => new Set(selectedPositions.map((position) => position._id || position.id)), [selectedPositions]);
+
+  const getPositionPriceForOne = (position) => {
+    const tierPrice = Number(position?.pricePerApplication);
+    if (Number.isFinite(tierPrice)) return tierPrice;
+
+    const tiers = Array.isArray(position?.pricingTiers) ? position.pricingTiers : [];
+    const tierForOne = tiers.find((tier) => {
+      const min = Number(tier?.minQuantity ?? 0);
+      const max = tier?.maxQuantity === null || tier?.maxQuantity === undefined || tier?.maxQuantity === ''
+        ? Infinity
+        : Number(tier.maxQuantity);
+      return min <= 1 && 1 <= max;
+    });
+    if (tierForOne) return Number(tierForOne.pricePerApplication || 0);
+
+    const minOneTier = tiers.find((tier) => Number(tier?.minQuantity) === 1);
+    if (minOneTier) return Number(minOneTier.pricePerApplication || 0);
+
+    return Number(position?.priceAdjustment || 0);
+  };
 
   const availablePositions = useMemo(() => {
     if (!selectedMethod) return [];
@@ -234,7 +251,8 @@ export default function DealCustomizationModal({
         positionName: position.positionName,
         positionCode: position.positionCode,
         imageUrl: position.imageUrl,
-        priceAdjustment: Number(position.priceAdjustment || 0),
+        priceAdjustment: getPositionPriceForOne(position),
+        pricePerApplication: getPositionPriceForOne(position),
       })),
       content: selectedApplicationType === 'TEXT'
         ? { type: 'TEXT', text: textValue }
@@ -374,6 +392,45 @@ export default function DealCustomizationModal({
     onClose();
   };
 
+  const reviewCustomizations = slots
+    .map((slot) => slotCustomizations[slot.slotId])
+    .filter(Boolean);
+
+  const setupChargesTotal = reviewCustomizations.reduce(
+    (sum, customization) => sum + Number(customization?.method?.setupCharge || 0),
+    0,
+  );
+
+  const applicationChargesTotal = reviewCustomizations.reduce((sum, customization) => {
+    const positionTotal = (customization?.positions || []).reduce(
+      (positionsSum, position) => positionsSum + Number(position?.pricePerApplication || 0),
+      0,
+    );
+    return sum + positionTotal * Number(customization?.quantity || 1);
+  }, 0);
+
+  const totalCustomization = setupChargesTotal + applicationChargesTotal;
+
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD',
+    }).format(Number(value || 0));
+
+  const handleDeleteCustomization = (slotId) => {
+    setSlotCustomizations((prev) => {
+      const updated = { ...prev };
+      delete updated[slotId];
+      return updated;
+    });
+  };
+
+  const handleAddMoreCustomizations = () => {
+    const nextIndex = slots.findIndex((slot) => !slotCustomizations[slot.slotId]);
+    handleSlotChange(nextIndex >= 0 ? nextIndex : 0);
+    setShowReview(false);
+  };
+
   if (!isOpen) return null;
 
   const modalContent = (
@@ -409,63 +466,65 @@ export default function DealCustomizationModal({
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar - Slot Selection */}
-          <div className="w-1/3 sm:w-1/4 border-r border-[#E8ECF2] bg-[#F8F9FA] flex flex-col">
-            <div className="p-4 border-b border-[#E8ECF2] bg-white">
-              <h3 className="text-[10px] font-bold text-[#6B7380] uppercase tracking-[0.1em]">Bundle Items</h3>
-              <p className="text-[10px] text-gray-500 mt-1">
-                {Object.keys(slotCustomizations).length} of {slots.length} configured
-              </p>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
-              {slots.map((slot, index) => {
-                const isSelected = index === currentSlotIndex;
-                const isDone = !!slotCustomizations[slot.slotId];
+          {!showReview && (
+            <div className="w-1/3 sm:w-1/4 border-r border-[#E8ECF2] bg-[#F8F9FA] flex flex-col">
+              <div className="p-4 border-b border-[#E8ECF2] bg-white">
+                <h3 className="text-[10px] font-bold text-[#6B7380] uppercase tracking-[0.1em]">Bundle Items</h3>
+                <p className="text-[10px] text-gray-500 mt-1">
+                  {Object.keys(slotCustomizations).length} of {slots.length} configured
+                </p>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                {slots.map((slot, index) => {
+                  const isSelected = index === currentSlotIndex;
+                  const isDone = !!slotCustomizations[slot.slotId];
 
-                return (
-                  <button
-                    key={slot.slotId}
-                    onClick={() => handleSlotChange(index)}
-                    className={`w-full text-left p-3 rounded-xl transition-all border ${
-                      isSelected
-                        ? 'bg-white border-[#009688] shadow-sm ring-1 ring-[#009688]'
-                        : isDone
-                        ? 'bg-white border-green-200 hover:border-green-300'
-                        : 'bg-transparent border-transparent hover:bg-white hover:border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-12 h-12 rounded-lg bg-white border border-gray-100 overflow-hidden shrink-0">
-                        {slot.selectedProductImage ? (
-                          <img
-                            src={slot.selectedProductImage}
-                            alt={slot.slotName}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
-                            <Sparkles size={20} />
-                          </div>
-                        )}
-                        {isDone && (
-                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                            <Check className="text-white w-3 h-3" />
-                          </div>
-                        )}
+                  return (
+                    <button
+                      key={slot.slotId}
+                      onClick={() => handleSlotChange(index)}
+                      className={`w-full text-left p-3 rounded-xl transition-all border ${
+                        isSelected
+                          ? 'bg-white border-[#009688] shadow-sm ring-1 ring-[#009688]'
+                          : isDone
+                          ? 'bg-white border-green-200 hover:border-green-300'
+                          : 'bg-transparent border-transparent hover:bg-white hover:border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 rounded-lg bg-white border border-gray-100 overflow-hidden shrink-0">
+                          {slot.selectedProductImage ? (
+                            <img
+                              src={slot.selectedProductImage}
+                              alt={slot.slotName}
+                              className="w-full h-full object-contain p-1"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
+                              <Sparkles size={20} />
+                            </div>
+                          )}
+                          {isDone && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                              <Check className="text-white w-3 h-3" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className={`text-xs font-bold truncate uppercase tracking-wider ${isSelected ? 'text-[#009688]' : 'text-gray-900'}`}>
+                            {slot.slotName}
+                          </p>
+                          <p className="text-[10px] text-gray-500 truncate mt-0.5">
+                            {slot.selectedProductName}
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className={`text-xs font-bold truncate uppercase tracking-wider ${isSelected ? 'text-[#009688]' : 'text-gray-900'}`}>
-                          {slot.slotName}
-                        </p>
-                        <p className="text-[10px] text-gray-500 truncate mt-0.5">
-                          {slot.selectedProductName}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Main Configuration Area */}
           <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
@@ -605,6 +664,7 @@ export default function DealCustomizationModal({
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {availablePositions.map((position) => {
                                   const isSelected = selectedPositionIds.has(position._id || position.id);
+                                  const perApplicationPrice = getPositionPriceForOne(position);
                                   const positionCode = position.positionCode?.toLowerCase() || '';
                                   let mockupQuery = `Clean minimalist white t-shirt mockup with logo placeholder on ${position.positionName}`;
                                   if (positionCode.includes('left-chest') || positionCode.includes('left-breast')) {
@@ -653,11 +713,8 @@ export default function DealCustomizationModal({
                                       
                                       <div className="p-4 border-t border-[#E8ECF2] bg-white">
                                         <div className="font-bold text-[#009688] text-sm mb-1">{position.positionName}</div>
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-[10px] text-[#6B7380] font-bold uppercase tracking-widest">{position.positionCode || 'Standard'}</p>
-                                          {Number(position.priceAdjustment || 0) > 0 && (
-                                            <p className="text-xs font-bold text-[#009688]">+${Number(position.priceAdjustment).toFixed(2)}</p>
-                                          )}
+                                        <div className="flex items-center justify-end">
+                                          <p className="text-xs font-bold text-[#009688]">{perApplicationPrice > 0 ? '+' : ''}${perApplicationPrice.toFixed(2)} /-</p>
                                         </div>
                                       </div>
 
@@ -855,111 +912,109 @@ export default function DealCustomizationModal({
             )}
 
             {showReview && (
-              <div className="flex-1 flex flex-col overflow-hidden bg-[#F8F9FA]">
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-10">
-                  <div className="max-w-4xl mx-auto space-y-10">
-                    <div className="text-center">
-                      <div className="w-20 h-20 bg-green-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
-                        <Check size={40} strokeWidth={3} />
-                      </div>
-                      <h3 className="text-3xl font-bold text-[#009688]">Review Customizations</h3>
-                      <p className="text-[#6B7380] mt-3 font-medium max-w-lg mx-auto">Excellent! Please review your configurations for each item before adding them to your cart.</p>
-                    </div>
+              <div className="flex-1 flex flex-col overflow-hidden bg-white">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-5">
+                  <div className="max-w-3xl mx-auto">
+                    <h3 className="text-[30px] font-semibold text-[#1D2939] leading-tight">Review Customizations</h3>
+                    <p className="text-sm text-[#98A2B3] mt-1">{currentSlot?.dealName || 'Bundle Customization'}</p>
 
-                    <div className="grid gap-6">
-                      {Object.values(slotCustomizations).map((customization) => (
-                        <div key={customization.slotId} className="group relative rounded-3xl border-2 border-white bg-white p-6 shadow-sm hover:shadow-2xl transition-all duration-300">
-                          <div className="flex flex-col md:flex-row gap-6">
-                            <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#F8F9FA] border border-[#E8ECF2] flex-shrink-0">
+                    <div className="mt-5 space-y-3">
+                      {reviewCustomizations.map((customization) => (
+                        <div key={customization.slotId} className="rounded-xl border border-[#EAECF0] bg-white px-4 py-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-14 h-14 rounded-lg overflow-hidden border border-[#F2F4F7] bg-[#F9FAFB] shrink-0">
                               {customization.productImage ? (
-                                <img src={customization.productImage} alt={customization.slotName} className="w-full h-full object-contain p-2" />
+                                <img src={customization.productImage} alt={customization.slotName} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                  <Sparkles size={32} />
+                                  <Sparkles size={18} />
                                 </div>
                               )}
                             </div>
-                            
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-4 mb-4">
-                                <div>
-                                  <h4 className="text-lg font-bold text-[#009688]">{customization.slotName}</h4>
-                                  <p className="text-sm text-[#6B7380] font-medium uppercase tracking-wider">{customization.selectedProductName}</p>
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                  <p className="text-base font-semibold text-[#101828] truncate">{customization.slotName}</p>
+                                  <p className="text-sm text-[#667085] truncate">{customization.productName}</p>
                                 </div>
-                                <button
-                                  onClick={() => handleSlotChange(slots.findIndex((slot) => slot.slotId === customization.slotId))}
-                                  className="w-10 h-10 rounded-full bg-[#009688]/5 text-[#009688] flex items-center justify-center hover:bg-[#009688] hover:text-white transition-all"
-                                >
-                                  <PencilLine size={18} />
-                                </button>
-                              </div>
-                              
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-2xl bg-[#F8F9FA] border border-[#E8ECF2]">
-                                <div>
-                                  <p className="text-[10px] font-bold text-[#6B7380] uppercase tracking-[0.2em] mb-2">Method & Decoration</p>
-                                  <p className="text-sm text-[#009688] font-bold">{customization.method.applicationMethod} • {customization.method.applicationType}</p>
-                                </div>
-                                <div>
-                                  <p className="text-[10px] font-bold text-[#6B7380] uppercase tracking-[0.2em] mb-2">Decoration Placements</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {customization.positions.map((p, pIdx) => (
-                                      <div key={p.id} className="flex items-center gap-2 bg-white border border-[#E8ECF2] rounded-lg px-2 py-1 shadow-sm">
-                                        {p.imageUrl && (
-                                          <img 
-                                            src={p.imageUrl.startsWith('http') ? p.imageUrl : `${BACKEND_URL}/${p.imageUrl}`} 
-                                            alt={p.positionName} 
-                                            className="w-5 h-5 object-contain"
-                                          />
-                                        )}
-                                        <span className="text-xs text-[#009688] font-bold">{p.positionName}</span>
-                                      </div>
-                                    ))}
-                                  </div>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => {
+                                      const slotIndex = slots.findIndex((slot) => slot.slotId === customization.slotId);
+                                      if (slotIndex >= 0) handleSlotChange(slotIndex);
+                                    }}
+                                    className="w-7 h-7 rounded-md text-[#98A2B3] hover:text-[#009688] hover:bg-[#009688]/10 flex items-center justify-center transition-colors"
+                                    aria-label="Edit customization"
+                                  >
+                                    <PencilLine size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteCustomization(customization.slotId)}
+                                    className="w-7 h-7 rounded-md text-[#98A2B3] hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors"
+                                    aria-label="Delete customization"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
                                 </div>
                               </div>
 
-                              <div className="mt-4 flex items-center gap-4">
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-[10px] font-bold text-[#6B7380] uppercase tracking-[0.2em] mb-2">Selected Content</p>
-                                  {customization.content.type === 'TEXT' ? (
-                                    <p className="text-sm text-[#009688] font-medium italic border-l-4 border-[#009688]/20 pl-3 py-1">"{customization.content.text}"</p>
-                                  ) : (
-                                    <div className="flex items-center gap-3">
-                                      {customization.content.imageUrl && (
-                                        <div className="w-10 h-10 rounded-lg border border-[#E8ECF2] p-1 bg-white">
-                                          <img src={customization.content.imageUrl} alt="Logo" className="w-full h-full object-contain" />
-                                        </div>
-                                      )}
-                                      <p className="text-sm text-[#009688] font-bold truncate">{customization.customizationFile?.name || 'custom-artwork.png'}</p>
-                                    </div>
-                                  )}
-                                </div>
+                              <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[#101828]">
+                                <span className="font-medium">{customization.method.applicationMethod}</span>
+                                <span className="font-medium">
+                                  {customization.content.type === 'IMAGE'
+                                    ? 'Logo/Image Upload'
+                                    : customization.content.text}
+                                </span>
+                                <span className="font-medium">
+                                  {(customization.positions || []).map((p) => p.positionName).join(', ')}
+                                </span>
                               </div>
+                              <p className="mt-1 text-xs text-[#667085]">Qty: {customization.quantity}</p>
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
 
+                    <div className="mt-4 rounded-xl bg-[#00796B] px-5 py-4 text-white">
+                      <p className="text-xl font-semibold">Pricing Summary</p>
+                      <div className="mt-3 space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/90">Setup Charges</span>
+                          <span>{formatCurrency(setupChargesTotal)}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/90">Application Charges</span>
+                          <span>{formatCurrency(applicationChargesTotal)}</span>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-white/30 flex items-center justify-between">
+                        <span className="text-2xl font-semibold">Total Customization</span>
+                        <span className="text-[30px] font-bold">{formatCurrency(totalCustomization)}</span>
+                      </div>
+                    </div>
 
-                    <div className="pt-4" />
+                    <button
+                      onClick={handleAddMoreCustomizations}
+                      className="mt-4 w-full h-12 rounded-xl border border-dashed border-[#D0D5DD] text-sm font-medium text-[#667085] hover:border-[#009688] hover:text-[#009688] transition-colors"
+                    >
+                      + Add More Customizations
+                    </button>
                   </div>
                 </div>
 
-                <div className="px-6 py-6 border-t border-[#E8ECF2] bg-white flex items-center justify-between shrink-0">
+                <div className="px-6 py-4 border-t border-[#EAECF0] bg-white flex items-center justify-between">
                   <button
                     onClick={() => setShowReview(false)}
-                    className="px-8 py-3.5 rounded-xl border-2 border-[#E8ECF2] text-[#6B7380] font-bold hover:text-[#009688] hover:border-[#009688] hover:bg-gray-50 transition-all flex items-center gap-2"
+                    className="text-sm text-[#667085] hover:text-[#009688] transition-colors"
                   >
-                    <ChevronLeft size={20} />
-                    Back to Setup
+                    ← Back
                   </button>
                   <button
                     onClick={handleComplete}
-                    className="px-12 py-3.5 rounded-xl bg-green-600 text-white font-bold shadow-xl shadow-green-600/20 hover:bg-green-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                    className="h-11 px-6 rounded-xl bg-[#12B76A] text-white text-sm font-semibold hover:bg-[#0FA15D] transition-colors"
                   >
-                    <CheckCircle2 size={20} />
-                    Add Deal to Cart
+                    Confirm & Add to Cart (+{formatCurrency(totalCustomization)})
                   </button>
                 </div>
               </div>

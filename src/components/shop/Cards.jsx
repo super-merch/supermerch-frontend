@@ -37,6 +37,7 @@ const Cards = ({ category = "" }) => {
     .filter((attr) => attr.name && attr.value);
   const urlMinPrice = searchParams.get("minPrice");
   const urlMaxPrice = searchParams.get("maxPrice");
+  const urlExpressWindow = searchParams.get("expressWindow") || "24hr";
   const scrollToProductId = searchParams.get("scrollTo");
 
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -99,6 +100,9 @@ const Cards = ({ category = "" }) => {
       ...(paginationData.sendAttributes != null && {
         send_attributes: paginationData.sendAttributes,
       }),
+      ...(paginationData.expressWindow && {
+        express_window: paginationData.expressWindow,
+      }),
     });
 
     if (Array.isArray(paginationData.attributes) && paginationData.attributes.length > 0) {
@@ -123,6 +127,8 @@ const Cards = ({ category = "" }) => {
       url = `${backendUrl}/api/24hour/get-products?${params.toString()}`;
     } else if (paginationData.category === "sales") {
       url = `${backendUrl}/api/client-products-discounted?${params.toString()}`;
+    } else if (paginationData.category === "clearance") {
+      url = `${backendUrl}/api/client-products-clearance?${params.toString()}`;
     } else if (paginationData.category === "allProducts") {
       url = `${backendUrl}/api/client-products?${params.toString()}`;
     } else if (paginationData.category === "search") {
@@ -271,6 +277,7 @@ const Cards = ({ category = "" }) => {
           urlCategoryParam === "australia" ||
           urlCategoryParam === "24hr-production" ||
           urlCategoryParam === "sales" ||
+          urlCategoryParam === "clearance" ||
           urlCategoryParam === "return-gifts" ||
           urlCategoryParam === "allProducts"
         ) {
@@ -285,6 +292,8 @@ const Cards = ({ category = "" }) => {
             attributes: null,
             pricerange: undefined,
             sendAttributes: false,
+            expressWindow:
+              urlCategoryParam === "24hr-production" ? urlExpressWindow : null,
           }));
         } else {
           setPaginationData((prev) => ({
@@ -302,6 +311,7 @@ const Cards = ({ category = "" }) => {
               urlMinPrice && urlMaxPrice
                 ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
                 : undefined,
+            expressWindow: null,
           }));
         }
       } else if (isSearchRoute) {
@@ -323,6 +333,7 @@ const Cards = ({ category = "" }) => {
                 max_price: Number(urlMaxPrice),
               }
               : undefined,
+          expressWindow: null,
         }));
       } else {
         const isTopLevel = ["promotional", "clothing", "headwear", "dress"].includes(category);
@@ -341,6 +352,7 @@ const Cards = ({ category = "" }) => {
               ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
               : undefined,
           sendAttributes: false,
+          expressWindow: category === "24hr-production" ? urlExpressWindow : null,
         }));
       }
     }
@@ -358,7 +370,7 @@ const Cards = ({ category = "" }) => {
       }-${paginationData.searchTerm}-${paginationData.sortOption
       }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
         paginationData.colors
-      )}`;
+      )}-${paginationData.expressWindow || ""}`;
 
     if (
       filtersKeyRef.current !== null &&
@@ -380,6 +392,7 @@ const Cards = ({ category = "" }) => {
     paginationData.productTypeId,
     paginationData.category,
     paginationData.searchTerm,
+    paginationData.expressWindow,
   ]);
 
   useEffect(() => {
@@ -506,9 +519,22 @@ const Cards = ({ category = "" }) => {
     // Replace current history entry with scrollTo so browser back preserves scroll
     navigate(returnUrl, { replace: true });
 
-    // Navigate using clean slug-based URL
-    navigate(toProductUrl(name), {
-      state: { productId, returnUrl },
+    const typeParam = String(searchParams.get("type") || "").toLowerCase().trim();
+    const normalizedCategory = String(category || "").toLowerCase().trim();
+    const browseNavGroup = ["clothing", "headwear"].includes(typeParam)
+      ? typeParam
+      : ["clothing", "headwear"].includes(normalizedCategory)
+        ? normalizedCategory
+        : null;
+
+    const encodedRef = productId != null ? btoa(String(productId)) : null;
+    const targetUrl = encodedRef
+      ? `${toProductUrl(name)}?ref=${encodeURIComponent(encodedRef)}`
+      : toProductUrl(name);
+
+    // Navigate using slug URL + stable ref, passing browsing context for PDP type.
+    navigate(targetUrl, {
+      state: { productId, returnUrl, browseNavGroup },
     });
   };
 
