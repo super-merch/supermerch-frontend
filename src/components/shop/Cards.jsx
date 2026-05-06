@@ -37,11 +37,11 @@ const Cards = ({ category = "" }) => {
     .filter((attr) => attr.name && attr.value);
   const urlMinPrice = searchParams.get("minPrice");
   const urlMaxPrice = searchParams.get("maxPrice");
-  const urlExpressWindow = searchParams.get("expressWindow") || "24hr";
+  const urlExpressWindow = searchParams.get("expressWindow") || "sameday";
   const scrollToProductId = searchParams.get("scrollTo");
 
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
-  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000;
+  const isPriceFilterActive = minPrice !== 0 || maxPrice !== 1000000;
   const isSearchRoute = location.pathname.includes("/search");
   const pageType = getPageTypeFromRoute(location.pathname);
   const limit = parseInt(searchParams.get("limit")) || 20;
@@ -264,12 +264,12 @@ const Cards = ({ category = "" }) => {
       }
 
       setSortOption(urlSort || "");
-      if (urlMinPrice && urlMaxPrice) {
-        dispatch(setMinPrice(Number(urlMinPrice)));
-        dispatch(setMaxPrice(Number(urlMaxPrice)));
+      if (urlMinPrice || urlMaxPrice) {
+        dispatch(setMinPrice(urlMinPrice ? Number(urlMinPrice) : 0));
+        dispatch(setMaxPrice(urlMaxPrice ? Number(urlMaxPrice) : 1000000));
       } else {
         dispatch(setMinPrice(0));
-        dispatch(setMaxPrice(1000));
+        dispatch(setMaxPrice(1000000));
       }
 
       if (urlCategoryParam) {
@@ -290,7 +290,10 @@ const Cards = ({ category = "" }) => {
             sortOption: "",
             colors: [],
             attributes: null,
-            pricerange: undefined,
+            pricerange: (urlMinPrice || urlMaxPrice) ? {
+              min_price: urlMinPrice ? Number(urlMinPrice) : 0,
+              max_price: urlMaxPrice ? Number(urlMaxPrice) : null,
+            } : undefined,
             sendAttributes: false,
             expressWindow:
               urlCategoryParam === "24hr-production" ? urlExpressWindow : null,
@@ -308,8 +311,11 @@ const Cards = ({ category = "" }) => {
             colors: urlColors ? urlColors.split(",") : [],
             attributes: urlAttributes.length > 0 ? urlAttributes : null,
             pricerange:
-              urlMinPrice && urlMaxPrice
-                ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
+              (urlMinPrice || urlMaxPrice)
+                ? { 
+                    min_price: urlMinPrice ? Number(urlMinPrice) : 0, 
+                    max_price: urlMaxPrice ? Number(urlMaxPrice) : null 
+                  }
                 : undefined,
             expressWindow: null,
           }));
@@ -327,10 +333,10 @@ const Cards = ({ category = "" }) => {
           colors: urlColors ? urlColors.split(",") : [],
           attributes: urlAttributes.length > 0 ? urlAttributes : null,
           pricerange:
-            urlMinPrice && urlMaxPrice
+            (urlMinPrice || urlMaxPrice)
               ? {
-                min_price: Number(urlMinPrice),
-                max_price: Number(urlMaxPrice),
+                min_price: urlMinPrice ? Number(urlMinPrice) : 0,
+                max_price: urlMaxPrice ? Number(urlMaxPrice) : null,
               }
               : undefined,
           expressWindow: null,
@@ -348,8 +354,11 @@ const Cards = ({ category = "" }) => {
           colors: urlColors ? urlColors.split(",") : [],
           attributes: urlAttributes.length > 0 ? urlAttributes : null,
           pricerange:
-            urlMinPrice && urlMaxPrice
-              ? { min_price: Number(urlMinPrice), max_price: Number(urlMaxPrice) }
+            (urlMinPrice || urlMaxPrice)
+              ? { 
+                  min_price: urlMinPrice ? Number(urlMinPrice) : 0, 
+                  max_price: urlMaxPrice ? Number(urlMaxPrice) : null 
+                }
               : undefined,
           sendAttributes: false,
           expressWindow: category === "24hr-production" ? urlExpressWindow : null,
@@ -622,7 +631,11 @@ const Cards = ({ category = "" }) => {
                   {isProductsLoading ? "Loading..." : `product found `}
                   {isProductsLoading && " Please wait a while..."}
                   {isPriceFilterActive && !isProductsLoading
-                    ? `between $${minPrice} and $${maxPrice}`
+                    ? minPrice > 0 && maxPrice < 1000000 
+                      ? `between $${minPrice} and $${maxPrice}`
+                      : minPrice > 0 
+                        ? `above $${minPrice}`
+                        : `below $${maxPrice}`
                     : ""}
                 </p>
               </div>
@@ -642,7 +655,11 @@ const Cards = ({ category = "" }) => {
                   {isProductsLoading ? "Loading..." : `product found`}
                   {isProductsLoading && " Please wait a while..."}
                   {isPriceFilterActive && !isProductsLoading
-                    ? ` between $${minPrice} and $${maxPrice}`
+                    ? minPrice > 0 && maxPrice < 1000000 
+                      ? ` between $${minPrice} and $${maxPrice}`
+                      : minPrice > 0 
+                        ? ` above $${minPrice}`
+                        : ` below $${maxPrice}`
                     : ""}
                 </p>
               </div>
@@ -706,10 +723,10 @@ const Cards = ({ category = "" }) => {
               Array.from({ length: 20 }, (_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
-            ) : accumulatedProducts?.length > 0 ? (
+            ) : (accumulatedProducts?.length > 0 || getProducts?.data?.length > 0) ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
-                  {accumulatedProducts.map((product, index) => {
+                  {(accumulatedProducts?.length > 0 ? accumulatedProducts : getProducts.data).map((product, index) => {
                     const productId = product.meta?.id?.toString();
                     return (
                       <div

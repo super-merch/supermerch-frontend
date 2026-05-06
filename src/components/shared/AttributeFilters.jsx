@@ -3,7 +3,8 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import allAttributes from "./attributes";
-import { Tag, Ruler, Box, Layers, ChevronDown, Search } from "lucide-react";
+import { Tag, Ruler, Box, Layers, Search } from "lucide-react";
+import { FaCaretDown } from "react-icons/fa";
 
 const getAttributeIcon = (name) => {
   const n = name.toLowerCase();
@@ -50,19 +51,20 @@ const AttributeItem = ({
           }`}>
             {getAttributeIcon(attribute.name)}
           </span>
-          <h3 className={`text-sm font-semibold transition-colors ${
+          <h2 className={`text-sm font-semibold transition-colors ${
             isExpanded ? "text-[#009688]" : "text-[#01164F] group-hover:text-[#009688]"
           }`} style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px' }}>
             {attribute.name}
-          </h3>
+          </h2>
           {isAttributeSelected && (
             <span className="bg-[#009688] text-white text-[10px] px-1.5 py-0.5 rounded-full">
               {selectedCount}
             </span>
           )}
         </div>
-        <ChevronDown
-          className={`w-5 h-5 text-[#6B7380] transition-all duration-200 ${
+        <FaCaretDown
+          size={14}
+          className={`text-[#6B7380] transition-all duration-200 ${
             isExpanded ? "rotate-180 text-[#009688]" : "group-hover:text-[#009688]"
           }`}
         />
@@ -207,6 +209,15 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     const nextSelected = buildSelectedFromParams(params);
 
     setSelectedAttributes(nextSelected);
+
+    // Auto-expand attributes that have selections
+    setExpandedAttributes((prev) => {
+      const next = { ...prev };
+      Object.keys(nextSelected).forEach((key) => {
+        next[key] = true;
+      });
+      return next;
+    });
 
     const attributesPayload = Object.values(nextSelected).map(
       ({ name, values }) => ({ name, value: values.join(",") })

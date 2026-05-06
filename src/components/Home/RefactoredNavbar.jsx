@@ -129,9 +129,9 @@ const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
   });
 
 const EXPRESS_WINDOWS = [
-  { id: "24hr", label: "24 hour prod" },
+  { id: "sameday", label: "Same day" },
+  { id: "nextday", label: "Next day" },
   { id: "3days", label: "3 days" },
-  { id: "5days", label: "5 days" },
 ];
 
 const RefactoredNavbar = ({ onCouponClick }) => {
@@ -169,7 +169,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const [coupenModel, setCoupenModel] = useState(false);
   const { coupons, coupenLoading } = useCoupons();
 
-  const buildExpressPath = (windowId = "24hr") =>
+  const buildExpressPath = (windowId = "sameday") =>
     `/24hr-production?expressWindow=${encodeURIComponent(windowId)}`;
 
   // Create menu items from categories
@@ -212,7 +212,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         hasSubmenu: true,
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
-      { name: "Express", path: buildExpressPath("24hr"), hasSubmenu: true },
+      { name: "Express", path: buildExpressPath("sameday"), hasSubmenu: true },
       { name: "Clearance", path: "/clearance?category=clearance" },
       { name: "Deals", path: "/deals" },
       { name: "Australia Made", path: "/australia-made" },

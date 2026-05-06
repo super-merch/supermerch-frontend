@@ -174,7 +174,7 @@ const PromotionalPriceFilter = () => {
     setTimeout(() => setIsApplying(false), 1000);
   };
 
-  const priceRanges = [{ label: "All Prices", min: 0, max: 1000 }];
+  const priceRanges = [{ label: "All Prices", min: 0, max: 1000000 }];
 
   const handleApplyCustomRange = () => {
     const minValue = Number(localMin);
@@ -223,7 +223,7 @@ const PromotionalPriceFilter = () => {
       </h1>
 
       {/* Show current filter status */}
-      {(minPrice !== 0 || maxPrice !== 1000) && (
+      {(minPrice !== 0 || maxPrice !== 1000000) && (
         <div className="mb-4 p-2 bg-blue-100 border border-blue-300 rounded text-sm">
           <p className="text-blue-800">
             Active Filter: ${minPrice} - ${maxPrice}

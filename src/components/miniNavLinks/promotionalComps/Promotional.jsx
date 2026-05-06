@@ -126,7 +126,7 @@ const Promotional = () => {
     if (filterType === "brand") dispatch(setSelectedBrands([]));
     if (filterType === "price") {
       dispatch(setMinPrice(0));
-      dispatch(setMaxPrice(1000));
+      dispatch(setMaxPrice(1000000));
     }
     dispatch(applyFilters());
   };
@@ -361,7 +361,7 @@ const Promotional = () => {
               {activeFilters.price &&
                 activeFilters.price.length === 2 &&
                 (activeFilters.price[0] !== 0 ||
-                  activeFilters.price[1] !== 1000) && (
+                  activeFilters.price[1] !== 1000000) && (
                   <div className="filter-item">
                     <span className="text-sm">
                       ${activeFilters.price[0]} - ${activeFilters.price[1]}
