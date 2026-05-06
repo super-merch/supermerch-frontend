@@ -197,7 +197,7 @@ const ProductsContextProvider = ({ children }) => {
         ],
         queryFn: () => getProductsFromApi(),
         enabled: Boolean(backendUrl),
-        keepPreviousData: true,
+        keepPreviousData: false,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false,
     });

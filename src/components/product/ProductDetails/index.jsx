@@ -265,16 +265,23 @@ const ProductDetails = () => {
   // Fetch admin customization options for this product
   useEffect(() => {
     if (!productId) return;
+    
+    // Clear previous state when productId changes to prevent stale data
+    setAdminCustomizations([]);
+    setSelectedAdminCustomization(null);
+    setSelectedPosition(null);
+
     const fetchCustomizations = async () => {
       try {
         const { data } = await axios.get(
           `${backendUrl}/api/product-customizations/${productId}`,
         );
-        if (data.success && data.data?.length > 0) {
-          setAdminCustomizations(data.data);
+        if (data.success) {
+          setAdminCustomizations(data.data || []);
         }
       } catch {
         // Silently fail — admin customizations are optional
+        setAdminCustomizations([]);
       }
     };
     fetchCustomizations();
@@ -1500,7 +1507,7 @@ const ProductDetails = () => {
           </Swiper>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[44%_54%] gap-4 mt-2 justify-between lg:items-start">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[60%_38%] gap-4 mt-2 justify-between lg:items-start">
           <div className="hidden lg:flex gap-5 items-start self-start">
             <div
               className={`flex flex-col gap-4 overflow-x-hidden pr-1 w-[128px] shrink-0 scrollbar-hide self-start ${normalizedImages.length > 6
@@ -1649,13 +1656,19 @@ const ProductDetails = () => {
                             return (
                               <div
                                 key={index}
-                                className="relative inline-flex items-center justify-center"
+                                className="relative inline-flex items-center justify-center w-9 h-9"
                               >
+                                {/* Outer selection ring */}
+                                {isSelected && (
+                                  <div className="absolute inset-[3px] rounded-full border-2 border-[#0d9488]" />
+                                )}
+
                                 <div
-                                  className={`relative rounded-full cursor-pointer transition-all duration-300 overflow-hidden ${isSelected
-                                    ? "w-7 h-7 shadow-xl"
-                                    : "w-6 h-6 hover:shadow-lg hover:scale-110"
-                                    }`}
+                                  className={`relative rounded-full cursor-pointer transition-all duration-300 ${
+                                    isSelected
+                                      ? "w-6 h-6 border-2 border-white shadow-sm"
+                                      : "w-6 h-6 hover:scale-110 border border-gray-200"
+                                  }`}
                                   style={isSingleColor ? {
                                     backgroundColor: color1?.hex || "#9ca3af",
                                   } : {
@@ -1665,24 +1678,17 @@ const ProductDetails = () => {
                                   title={colorName}
                                   aria-label={`Color: ${colorName}${isSelected ? " (Selected)" : ""}`}
                                 >
-                                  {/* White border for contrast */}
-                                  <div
-                                    className={`absolute inset-0 rounded-full ${isSelected
-                                      ? "border-[2.5px] border-white shadow-[0_0_0_2px_#0d9488]"
-                                      : "border-[2px] border-gray-400/60"
-                                      }`}
-                                  ></div>
-
-                                  {/* Checkmark badge for selected */}
-                                  {isSelected && (
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center shadow-md border-2 border-white z-10">
-                                      <CheckCheck
-                                        className="w-2.5 h-2.5 text-white"
-                                        strokeWidth={3}
-                                      />
-                                    </div>
-                                  )}
                                 </div>
+
+                                {/* Checkmark badge for selected */}
+                                {isSelected && (
+                                  <div className="absolute top-[2px] right-[2px] w-[16px] h-[16px] bg-[#0d9488] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
+                                    <CheckCheck
+                                      className="w-2.5 h-2.5 text-white"
+                                      strokeWidth={4}
+                                    />
+                                  </div>
+                                )}
                               </div>
                             );
                           })

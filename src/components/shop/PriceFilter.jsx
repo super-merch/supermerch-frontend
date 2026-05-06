@@ -23,13 +23,25 @@ const PriceFilter = ({ toggleSidebar }) => {
   }, [minPriceParam, maxPriceParam]);
 
   const applyRangeToBackend = (minValue, maxValue) => {
-    dispatch(setMinPrice(minValue));
-    dispatch(setMaxPrice(maxValue));
+    const finalMin = (minValue !== "" && minValue !== null) ? Number(minValue) : 0;
+    const finalMax = (maxValue !== "" && maxValue !== null) ? Number(maxValue) : null;
+
+    dispatch(setMinPrice(finalMin));
+    dispatch(setMaxPrice(finalMax !== null ? finalMax : 1000000));
 
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      newParams.set("minPrice", minValue.toString());
-      newParams.set("maxPrice", maxValue.toString());
+      if (minValue !== "" && minValue !== null) {
+        newParams.set("minPrice", minValue.toString());
+      } else {
+        newParams.delete("minPrice");
+      }
+
+      if (maxValue !== "" && maxValue !== null) {
+        newParams.set("maxPrice", maxValue.toString());
+      } else {
+        newParams.delete("maxPrice");
+      }
       newParams.set("page", "1");
       return newParams;
     });
@@ -37,7 +49,7 @@ const PriceFilter = ({ toggleSidebar }) => {
     setPaginationData((prev) => ({
       ...prev,
       page: 1, // reset to first page
-      pricerange: { min_price: Number(minValue), max_price: Number(maxValue) },
+      pricerange: { min_price: finalMin, max_price: finalMax },
       sendAttributes: false,
     }));
   };
@@ -45,23 +57,25 @@ const PriceFilter = ({ toggleSidebar }) => {
   const handleApplyCustomRange = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const minValue = Number(localMin);
-    const maxValue = Number(localMax);
 
-    if (
-      localMin === "" ||
-      localMax === "" ||
-      isNaN(minValue) ||
-      isNaN(maxValue)
-    ) {
-      toast.error("Please enter valid numbers for Min and Max Price");
+    if (localMin === "" && localMax === "") {
+      toast.error("Please enter a Min or Max Price");
       return;
     }
-    if (maxValue < 0 || minValue < 0) {
-      toast.error("Price cannot be negative");
+
+    const minValue = localMin !== "" ? Number(localMin) : null;
+    const maxValue = localMax !== "" ? Number(localMax) : null;
+
+    if (minValue !== null && (isNaN(minValue) || minValue < 0)) {
+      toast.error("Please enter a valid number for Min Price");
       return;
     }
-    if (minValue >= maxValue) {
+    if (maxValue !== null && (isNaN(maxValue) || maxValue < 0)) {
+      toast.error("Please enter a valid number for Max Price");
+      return;
+    }
+
+    if (minValue !== null && maxValue !== null && minValue >= maxValue) {
       toast.error("Min Price should be less than Max Price");
       return;
     }
@@ -72,12 +86,27 @@ const PriceFilter = ({ toggleSidebar }) => {
     setTimeout(() => setIsApplying(false), 800);
   };
 
-  const handlePresetRangeClick = (range) => {
-    setIsApplying(true);
+  const handleReset = () => {
     setLocalMin("");
     setLocalMax("");
-    applyRangeToBackend(range.min, range.max);
-    setTimeout(() => setIsApplying(false), 250);
+    
+    dispatch(setMinPrice(0));
+    dispatch(setMaxPrice(1000000));
+
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.delete("minPrice");
+      newParams.delete("maxPrice");
+      newParams.set("page", "1");
+      return newParams;
+    });
+
+    setPaginationData((prev) => ({
+      ...prev,
+      page: 1,
+      pricerange: undefined,
+      sendAttributes: false,
+    }));
   };
 
   return (
@@ -163,7 +192,7 @@ const PriceFilter = ({ toggleSidebar }) => {
         </button>
 
         <button
-          onClick={() => handlePresetRangeClick({ min: 0, max: 1000 })}
+          onClick={handleReset}
           className="px-4 py-2 text-sm font-semibold text-[#01164F] bg-white border border-[#CBD5E1] hover:border-[#009688] hover:text-[#009688] rounded-lg transition-all duration-200 active:scale-[0.98]"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >

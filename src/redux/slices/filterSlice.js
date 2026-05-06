@@ -7,7 +7,7 @@ const initialState = {
   selectedBrands: [],
   searchText: "",
   minPrice: 0,
-  maxPrice: 1000,
+  maxPrice: 1000000,
   clothingGender: "all",
   activeFilters: {
     category: null,
@@ -78,7 +78,7 @@ const filterSlice = createSlice({
       state.activeFilters = {
         category: selectedCategory !== "all" ? selectedCategory : null,
         brands: selectedBrands.length > 0 ? selectedBrands : null,
-        price: minPrice > 0 || maxPrice < 1000 ? [minPrice, maxPrice] : null,
+        price: minPrice > 0 || maxPrice < 1000000 ? [minPrice, maxPrice] : null,
       };
     },
   },
