@@ -1,4 +1,4 @@
-import { setMaxPrice, setMinPrice } from "@/redux/slices/filterSlice";
+import { setMaxPrice, setMinPrice, setMoq } from "@/redux/slices/filterSlice";
 import { slugify, toProductUrl } from "@/utils/utils";
 import { useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -38,6 +38,7 @@ const Cards = ({ category = "" }) => {
   const urlMinPrice = searchParams.get("minPrice");
   const urlMaxPrice = searchParams.get("maxPrice");
   const urlExpressWindow = searchParams.get("expressWindow") || "sameday";
+  const urlMoq = searchParams.get("moq");
   const scrollToProductId = searchParams.get("scrollTo");
 
   const { minPrice, maxPrice } = useSelector((state) => state.filters);
@@ -102,6 +103,9 @@ const Cards = ({ category = "" }) => {
       }),
       ...(paginationData.expressWindow && {
         express_window: paginationData.expressWindow,
+      }),
+      ...(paginationData.moq && {
+        moq: paginationData.moq,
       }),
     });
 
@@ -264,6 +268,12 @@ const Cards = ({ category = "" }) => {
       }
 
       setSortOption(urlSort || "");
+      if (urlMoq) {
+        dispatch(setMoq(urlMoq));
+      } else {
+        dispatch(setMoq(null));
+      }
+
       if (urlMinPrice || urlMaxPrice) {
         dispatch(setMinPrice(urlMinPrice ? Number(urlMinPrice) : 0));
         dispatch(setMaxPrice(urlMaxPrice ? Number(urlMaxPrice) : 1000000));
@@ -297,6 +307,7 @@ const Cards = ({ category = "" }) => {
             sendAttributes: false,
             expressWindow:
               urlCategoryParam === "24hr-production" ? urlExpressWindow : null,
+            moq: urlMoq,
           }));
         } else {
           setPaginationData((prev) => ({
@@ -318,6 +329,7 @@ const Cards = ({ category = "" }) => {
                   }
                 : undefined,
             expressWindow: null,
+            moq: urlMoq,
           }));
         }
       } else if (isSearchRoute) {
@@ -340,6 +352,7 @@ const Cards = ({ category = "" }) => {
               }
               : undefined,
           expressWindow: null,
+          moq: urlMoq,
         }));
       } else {
         const isTopLevel = ["promotional", "clothing", "headwear", "dress"].includes(category);
@@ -362,6 +375,7 @@ const Cards = ({ category = "" }) => {
               : undefined,
           sendAttributes: false,
           expressWindow: category === "24hr-production" ? urlExpressWindow : null,
+          moq: urlMoq,
         }));
       }
     }

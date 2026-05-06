@@ -49,12 +49,14 @@ import {
   setMaxPrice,
   setMinPrice,
   setSelectedCategory,
+  setMoq,
 } from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
 import AttributeFilters from "./AttributeFilters";
 import ClothingGenderToggle from "./ClothingGenderToggle";
 import CollapsibleSection from "./CollapsibleSection";
 import ColorFilter from "./ColorFilter";
+import MOQFilter from "./MOQFilter";
 
 
 
@@ -107,6 +109,16 @@ const UnifiedSidebar = ({
           value: color,
           params: ["colors"],
         });
+      });
+    }
+
+    const moq = searchParams.get("moq");
+    if (moq) {
+      filters.push({
+        type: "moq",
+        label: `MOQ: ${moq} or less`,
+        value: moq,
+        params: ["moq"],
       });
     }
 
@@ -218,6 +230,14 @@ const UnifiedSidebar = ({
         sendAttributes: false,
         page: 1,
       }));
+    } else if (filter.type === "moq") {
+      newParams.delete("moq");
+      dispatch(setMoq(null));
+      setPaginationData((prev) => ({
+        ...prev,
+        moq: null,
+        page: 1,
+      }));
     }
 
     newParams.set("page", "1");
@@ -241,12 +261,14 @@ const UnifiedSidebar = ({
     // Update all states immediately
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000000));
+    dispatch(setMoq(null));
 
     setPaginationData((prev) => ({
       ...prev,
       pricerange: undefined,
       colors: [],
       attributes: null,
+      moq: null,
       page: 1,
     }));
 
@@ -449,6 +471,14 @@ const UnifiedSidebar = ({
                 icon={<CircleDollarSign size={18} />}
               >
                 <PriceFilter toggleSidebar={() => toggleSidebar()} />
+              </CollapsibleSection>
+
+              <CollapsibleSection
+                title="Minimum Quantity"
+                defaultExpanded={false}
+                icon={<Box size={18} />}
+              >
+                <MOQFilter toggleSidebar={toggleSidebar} />
               </CollapsibleSection>
 
               <CollapsibleSection
