@@ -370,7 +370,10 @@ export default function OrderSummarySidebar({
             <div className="flex justify-between text-base">
               <span>Setup Fee:</span>
               <span>
-                {setupFee > 0 ? `$${setupFee.toFixed(2)}` : "-"}
+                {Number(setupFee || 0).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
               </span>
             </div>
 

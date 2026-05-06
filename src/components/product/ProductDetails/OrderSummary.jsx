@@ -241,8 +241,11 @@ const OrderSummary = ({
                 <FaCheck />
               </p>
               <p className="text-sm">
-                <span className="font-bold">Setup Charge:</span> $
-                {setupFee?.toFixed(2) || "0.00"}
+                <span className="font-bold">Setup Charge:</span>{" "}
+                {Number(setupFee || 0).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
               </p>
             </div>
             <div className="flex items-start gap-2 pt-3 ">

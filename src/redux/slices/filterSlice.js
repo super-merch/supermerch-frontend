@@ -14,8 +14,10 @@ const initialState = {
     brands: [],
     price: [],
     gender: null,
+    moq: null,
   },
   categoryId: null,
+  moq: null,
 };
 
 const filterSlice = createSlice({
@@ -49,6 +51,9 @@ const filterSlice = createSlice({
     },
     setClothingGender: (state, action) => {
       state.clothingGender = action.payload;
+    },
+    setMoq: (state, action) => {
+      state.moq = action.payload;
     },
     applyFilters: (state) => {
       const { products = [], selectedCategory, selectedBrands, searchText, minPrice, maxPrice } = state;
@@ -94,6 +99,7 @@ export const {
   applyFilters,
   setCategoryId,
   setClothingGender,
+  setMoq,
 } = filterSlice.actions;
 
 export const selectActiveFilters = (state) => state.filters.activeFilters;

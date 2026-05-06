@@ -81,6 +81,7 @@ const ProductsContextProvider = ({ children }) => {
         sendAttributes: false,
         searchTerms: [],
         expressWindow: null,
+        moq: null,
     });
     const [totalCount, setTotalCount] = useState(0);
 
@@ -115,6 +116,9 @@ const ProductsContextProvider = ({ children }) => {
             }),
             ...(paginationData.expressWindow && {
                 express_window: paginationData.expressWindow,
+            }),
+            ...(paginationData.moq && {
+                moq: paginationData.moq,
             }),
         });
         if (Array.isArray(paginationData.attributes) && paginationData.attributes.length > 0) {
@@ -194,6 +198,7 @@ const ProductsContextProvider = ({ children }) => {
             paginationData.attributes,
             paginationData.sendAttributes,
             paginationData.expressWindow,
+            paginationData.moq,
         ],
         queryFn: () => getProductsFromApi(),
         enabled: Boolean(backendUrl),
