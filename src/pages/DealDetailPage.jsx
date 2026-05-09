@@ -499,12 +499,15 @@ const DealDetailPage = () => {
     });
   };
 
-  const handleAddToCart = (customizations = slotCustomizations) => {
+  const handleAddToCart = (customizations = slotCustomizations, pricing = null) => {
     const looksLikeEvent = customizations && (
       typeof customizations.preventDefault === 'function' ||
       Object.prototype.hasOwnProperty.call(customizations, 'nativeEvent')
     );
+    
+    // If it's an event or no arguments provided, use current state
     const effectiveCustomizations = looksLikeEvent ? slotCustomizations : (customizations || slotCustomizations || {});
+    const effectivePricing = (pricing && !looksLikeEvent) ? pricing : null;
 
     if (!areSelectionsComplete()) {
       toast.error('Please complete all required deal selections before adding to cart.');
@@ -691,12 +694,13 @@ const DealDetailPage = () => {
         hasCustomization: Object.keys(dealCustomizationsPayload).length > 0,
         customizationData: {
           ...dealCustomizationsPayload,
-          pricing: {
+          pricing: effectivePricing || {
             setupFee: 0,
             positionTotal: 0,
+            totalCustomization: 0,
           },
         },
-        customizationCharge: 0,
+        customizationCharge: effectivePricing?.totalCustomization || 0,
         customizationGroupId: `deal-${deal.id}-${Date.now()}`,
         addLogoLater: false,
         rawUnitPrice,
@@ -709,18 +713,20 @@ const DealDetailPage = () => {
     navigate('/cart');
   };
 
-  const handleCustomizationComplete = ({ dealCustomizations }) => {
+  const handleCustomizationComplete = ({ dealCustomizations, pricing }) => {
     const customizationMap = {};
     (dealCustomizations || []).forEach((customization) => {
       customizationMap[customization.slotId] = customization;
     });
     setSlotCustomizations(customizationMap);
     setShowCustomizationModal(false);
-    handleAddToCart(customizationMap);
+    handleAddToCart(customizationMap, pricing);
   };
 
   const customizationSlots = useMemo(() => {
-    return (deal?.productSlots || []).map((slot) => {
+    return (deal?.productSlots || [])
+      .filter((slot) => slot.hasCustomization)
+      .map((slot) => {
       const selectedChoice = getProductChoice(slot);
       const selectedProductKey = getProductKey(selectedChoice);
       const cachedProductId = productCache[selectedProductKey]?.product?.meta?.id;
@@ -734,6 +740,9 @@ const DealDetailPage = () => {
         selectedProductName: selectedChoice?.product?.name || slot.slotName,
         selectedProductImage: selectedImage,
         selectedQuantity: getSlotTotalQuantity(slot.id) || slot.requiredQuantity || 1,
+        hasCustomization: slot.hasCustomization,
+        isFreeCustomization: slot.isFreeCustomization,
+        customizations: slot.customizations || [],
       };
     });
   }, [deal, selections, productCache]);
