@@ -205,6 +205,29 @@ export default function OrderSummarySidebar({
                             Size: {item.size || "No size"}
                           </p>
                         )}
+                        {item.customizationData?.pricing && item.customizationData.pricing.totalCustomization > 0 && (
+                          <div className="mt-2 pl-2 border-l-2 border-primary/20 bg-gray-50/50 p-1.5 rounded-r-md">
+                            <p className="text-sm font-semibold text-primary">Customization Charges:</p>
+                            <div className="flex flex-col gap-0.5 mt-1">
+                              {item.customizationData.pricing.setupFee > 0 && (
+                                <div className="flex justify-between text-xs text-gray-600">
+                                  <span>• Setup Fees:</span>
+                                  <span>${item.customizationData.pricing.setupFee.toFixed(2)}</span>
+                                </div>
+                              )}
+                              {item.customizationData.pricing.positionTotal > 0 && (
+                                <div className="flex justify-between text-xs text-gray-600">
+                                  <span>• Application:</span>
+                                  <span>${item.customizationData.pricing.positionTotal.toFixed(2)}</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between text-xs font-medium text-gray-900 border-t border-gray-200 mt-1 pt-1">
+                                <span>Total Extra:</span>
+                                <span>${item.customizationData.pricing.totalCustomization.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

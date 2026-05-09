@@ -52,7 +52,15 @@ export default function DealCustomizationModal({
   const selectedProductId = currentSlot?.selectedProductId || null;
 
   const uniqueMethodTypes = useMemo(() => {
-    const methods = currentSlotData?.methods || [];
+    let methods = currentSlotData?.methods || [];
+
+    // Filter by deal-specific customizations if restricted in Admin
+    const allowedCustomizations = currentSlot?.customizations || [];
+    if (allowedCustomizations.length > 0) {
+      const allowedMethodIds = new Set(allowedCustomizations.map((c) => String(c.customizationMethodId)));
+      methods = methods.filter((m) => allowedMethodIds.has(String(m.id)));
+    }
+
     const methodMap = new Map();
 
     methods.forEach((method) => {
@@ -73,7 +81,7 @@ export default function DealCustomizationModal({
     });
 
     return Array.from(methodMap.values());
-  }, [currentSlotData]);
+  }, [currentSlotData, currentSlot]);
 
   const availableApplicationTypes = useMemo(() => {
     if (!selectedMethodType) return [];
@@ -126,15 +134,31 @@ export default function DealCustomizationModal({
 
   const availablePositions = useMemo(() => {
     if (!selectedMethod) return [];
-    const positions = currentSlotData?.positions || [];
+    let positions = currentSlotData?.positions || [];
+
+    // Filter by deal-specific customizations if restricted in Admin
+    const allowedCustomizations = currentSlot?.customizations || [];
+    if (allowedCustomizations.length > 0) {
+      const allowedPositionIdsForMethod = new Set(
+        allowedCustomizations
+          .filter((c) => String(c.customizationMethodId) === String(selectedMethod.id))
+          .map((c) => String(c.positionId))
+      );
+      return positions.filter((p) => allowedPositionIdsForMethod.has(String(p._id || p.id)));
+    }
+
+    // Standard filtering based on methodId mapping
     const filtered = positions.filter(
       (position) =>
         position.methodId === selectedMethod.id ||
         position.methodId === null ||
         position.methodId === undefined,
     );
-    return filtered.length > 0 ? filtered : positions;
-  }, [currentSlotData, selectedMethod]);
+
+    // If we have a selected method, we should ONLY show positions mapped to it
+    // unless the product has no method-position mapping at all.
+    return filtered;
+  }, [currentSlotData, selectedMethod, currentSlot]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -233,6 +257,16 @@ export default function DealCustomizationModal({
         }
       : null;
 
+    const allowedCustoms = currentSlot?.customizations || [];
+    const selectedPosIds = selectedPositions.map(p => String(p._id || p.id));
+    const selectedCustomsConfigs = allowedCustoms.filter(c => 
+      String(c.customizationMethodId) === String(selectedMethod.id) && 
+      selectedPosIds.includes(String(c.positionId))
+    );
+    
+    // Setup charge is free if the whole slot is free OR if ALL selected positions for this method are marked as free
+    const isSetupFree = currentSlot.isFreeCustomization || (selectedCustomsConfigs.length > 0 && selectedCustomsConfigs.every(c => c.isFree));
+
     const customization = {
       slotId: currentSlot.slotId,
       slotName: currentSlot.slotName,
@@ -244,16 +278,27 @@ export default function DealCustomizationModal({
         id: selectedMethod.id,
         applicationMethod: selectedMethod.applicationMethod,
         applicationType: selectedMethod.applicationType,
-        setupCharge: Number(selectedMethod.setupCharge || 0),
+        setupCharge: isSetupFree ? 0 : Number(selectedMethod.setupCharge || 0),
       },
-      positions: selectedPositions.map((position) => ({
-        id: position._id || position.id,
-        positionName: position.positionName,
-        positionCode: position.positionCode,
-        imageUrl: position.imageUrl,
-        priceAdjustment: getPositionPriceForOne(position),
-        pricePerApplication: getPositionPriceForOne(position),
-      })),
+      positions: selectedPositions.map((position) => {
+        const posId = position._id || position.id;
+        const config = allowedCustoms.find(c => 
+          String(c.customizationMethodId) === String(selectedMethod.id) && 
+          String(c.positionId) === String(posId)
+        );
+        const isPosFree = currentSlot.isFreeCustomization || (config && config.isFree);
+        
+        const basePrice = getPositionPriceForOne(position);
+        const finalPrice = isPosFree ? 0 : basePrice;
+        return {
+          id: posId,
+          positionName: position.positionName,
+          positionCode: position.positionCode,
+          imageUrl: position.imageUrl,
+          priceAdjustment: finalPrice,
+          pricePerApplication: finalPrice,
+        };
+      }),
       content: selectedApplicationType === 'TEXT'
         ? { type: 'TEXT', text: textValue }
         : { type: 'IMAGE', imageUrl: uploadedImageUrl },
@@ -388,6 +433,11 @@ export default function DealCustomizationModal({
     const customizedSlots = Object.values(slotCustomizations);
     onComplete({
       dealCustomizations: customizedSlots,
+      pricing: {
+        setupFee: setupChargesTotal,
+        positionTotal: applicationChargesTotal,
+        totalCustomization: totalCustomization,
+      },
     });
     onClose();
   };
@@ -681,18 +731,26 @@ export default function DealCustomizationModal({
                                     mockupQuery = "Clean minimalist white t-shirt back view mockup with large logo placeholder";
                                   }
 
+                                  const posId = position._id || position.id;
+                                  const basePrice = getPositionPriceForOne(position);
+                                  const config = (currentSlot?.customizations || []).find(c => 
+                                    String(c.customizationMethodId) === String(selectedMethod?.id) && 
+                                    String(c.positionId) === String(posId)
+                                  );
+                                  const isActuallyFree = currentSlot.isFreeCustomization || (config && config.isFree);
+
                                   const mockupUrl = position.imageUrl
                                     ? (position.imageUrl.startsWith('http') ? position.imageUrl : `${BACKEND_URL}/${position.imageUrl}`)
                                     : `https://readdy.ai/api/search-image?query=${encodeURIComponent(mockupQuery)}&width=300&height=300&orientation=portrait`;
 
                                   return (
                                     <button
-                                      key={position._id || position.id}
+                                      key={posId}
                                       onClick={() => {
                                         setSelectedPositions((prev) => {
-                                          const exists = prev.find((item) => (item._id || item.id) === (position._id || position.id));
+                                          const exists = prev.find((item) => (item._id || item.id) === posId);
                                           if (exists) {
-                                            return prev.filter((item) => (item._id || item.id) !== (position._id || position.id));
+                                            return prev.filter((item) => (item._id || item.id) !== posId);
                                           }
                                           return [...prev, position];
                                         });
@@ -711,12 +769,16 @@ export default function DealCustomizationModal({
                                         />
                                       </div>
                                       
-                                      <div className="p-4 border-t border-[#E8ECF2] bg-white">
-                                        <div className="font-bold text-[#009688] text-sm mb-1">{position.positionName}</div>
-                                        <div className="flex items-center justify-end">
-                                          <p className="text-xs font-bold text-[#009688]">{perApplicationPrice > 0 ? '+' : ''}${perApplicationPrice.toFixed(2)} /-</p>
+                                        <div className="p-4 border-t border-[#E8ECF2] bg-white">
+                                          <div className="font-bold text-[#009688] text-sm mb-1">{position.positionName}</div>
+                                          <div className="flex items-center justify-end">
+                                            {isActuallyFree ? (
+                                              <p className="text-xs font-bold text-green-600 uppercase tracking-wider">Free with Deal</p>
+                                            ) : (
+                                              <p className="text-xs font-bold text-[#009688]">{basePrice > 0 ? '+' : ''}${basePrice.toFixed(2)} /-</p>
+                                            )}
+                                          </div>
                                         </div>
-                                      </div>
 
                                       {isSelected && (
                                         <div className="absolute top-4 right-4 w-8 h-8 bg-[#009688] rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
@@ -989,7 +1051,12 @@ export default function DealCustomizationModal({
                         </div>
                       </div>
                       <div className="mt-4 pt-3 border-t border-white/30 flex items-center justify-between">
-                        <span className="text-2xl font-semibold">Total Customization</span>
+                        <div className="flex flex-col">
+                          <span className="text-2xl font-semibold">Total Customization</span>
+                          {totalCustomization === 0 && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-green-300">Included with Deal</span>
+                          )}
+                        </div>
                         <span className="text-[30px] font-bold">{formatCurrency(totalCustomization)}</span>
                       </div>
                     </div>

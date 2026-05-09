@@ -532,6 +532,7 @@ const Checkout = () => {
           deal: item.deal || null,
           selectedProducts: item.selectedProducts || null,
           multiplier: item.multiplier || item.quantity || 1,
+          customizationData: item.customizationData || null,
           rawUnitPrice: item.rawUnitPrice || null,
           rawLineTotal: item.rawLineTotal || null,
           lineDealDiscountAmount: item.lineDealDiscountAmount || 0,
