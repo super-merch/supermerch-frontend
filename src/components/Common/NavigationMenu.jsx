@@ -45,7 +45,7 @@ const NavigationMenu = ({
     default: {
       item: "text-sm px-3 py-2",
       submenu: "text-base px-3 py-1",
-      megaMenu: "w-[900px]",
+      megaMenu: "w-[1100px]",
       noMegaMenu: "w-64",
     },
     large: {
@@ -216,7 +216,7 @@ const NavigationMenu = ({
                           <div>
                             {/* Columns Grid */}
                             <div
-                              className="flex flex-wrap gap-x-10 gap-y-6"
+                              className="flex flex-nowrap gap-x-8 gap-y-6"
                             >
                               {activeSubItem.columns.map((column, colIndex) => (
                                 <div key={colIndex} className="space-y-2">
