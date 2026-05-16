@@ -137,6 +137,8 @@ const Cards = ({ category = "" }) => {
       url = `${backendUrl}/api/client-products?${params.toString()}`;
     } else if (paginationData.category === "search") {
       url = `${backendUrl}/api/client-products/search?${params.toString()}`;
+    } else if (paginationData.category === "collection" && paginationData.collectionSlug) {
+      url = `${backendUrl}/api/public/collection/${paginationData.collectionSlug}?${params.toString()}`;
     } else if (paginationData.category) {
       url = `${backendUrl}/api/client-products/category?${params.toString()}`;
     } else if (paginationData.productTypeId) {
@@ -289,11 +291,13 @@ const Cards = ({ category = "" }) => {
           urlCategoryParam === "sales" ||
           urlCategoryParam === "clearance" ||
           urlCategoryParam === "return-gifts" ||
-          urlCategoryParam === "allProducts"
+          urlCategoryParam === "allProducts" ||
+          urlCategoryParam === "collection"
         ) {
           setPaginationData((prev) => ({
             ...prev,
             category: urlCategoryParam,
+            collectionSlug: urlCategoryParam === "collection" ? searchParams.get("slug") : null,
             productTypeId: null,
             page: 1,
             limit: effectiveLimit,
@@ -354,11 +358,12 @@ const Cards = ({ category = "" }) => {
           expressWindow: null,
           moq: urlMoq,
         }));
-      } else {
-        const isTopLevel = ["promotional", "clothing", "headwear", "dress"].includes(category);
+      } else if (location.pathname.startsWith("/collections/")) {
+        const slugFromPath = location.pathname.split("/").pop();
         setPaginationData((prev) => ({
           ...prev,
-          category: isTopLevel ? null : category,
+          category: "collection",
+          collectionSlug: slugFromPath,
           productTypeId: null,
           searchTerm: "",
           page: 1,
@@ -368,16 +373,40 @@ const Cards = ({ category = "" }) => {
           attributes: urlAttributes.length > 0 ? urlAttributes : null,
           pricerange:
             (urlMinPrice || urlMaxPrice)
-              ? { 
-                  min_price: urlMinPrice ? Number(urlMinPrice) : 0, 
-                  max_price: urlMaxPrice ? Number(urlMaxPrice) : null 
-                }
+              ? {
+                min_price: urlMinPrice ? Number(urlMinPrice) : 0,
+                max_price: urlMaxPrice ? Number(urlMaxPrice) : null,
+              }
               : undefined,
-          sendAttributes: false,
-          expressWindow: category === "24hr-production" ? urlExpressWindow : null,
+          sendAttributes: true,
+          expressWindow: null,
           moq: urlMoq,
         }));
-      }
+      } else {
+          const isTopLevel = ["promotional", "clothing", "headwear", "dress"].includes(category);
+          setPaginationData((prev) => ({
+            ...prev,
+            category: category === "collection" ? "collection" : (isTopLevel ? null : category),
+            collectionSlug: category === "collection" ? searchParams.get("slug") : null,
+            productTypeId: null,
+            searchTerm: "",
+            page: 1,
+            limit: effectiveLimit,
+            sortOption: urlSort,
+            colors: urlColors ? urlColors.split(",") : [],
+            attributes: urlAttributes.length > 0 ? urlAttributes : null,
+            pricerange:
+              (urlMinPrice || urlMaxPrice)
+                ? { 
+                    min_price: urlMinPrice ? Number(urlMinPrice) : 0, 
+                    max_price: urlMaxPrice ? Number(urlMaxPrice) : null 
+                  }
+                : undefined,
+            sendAttributes: true,
+            expressWindow: category === "24hr-production" ? urlExpressWindow : null,
+            moq: urlMoq,
+          }));
+        }
     }
   }, [
     searchParams,

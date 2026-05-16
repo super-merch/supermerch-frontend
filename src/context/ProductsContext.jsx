@@ -82,6 +82,8 @@ const ProductsContextProvider = ({ children }) => {
         searchTerms: [],
         expressWindow: null,
         moq: null,
+        collectionSlug: null,
+        collection: null,
     });
     const [totalCount, setTotalCount] = useState(0);
 
@@ -161,6 +163,8 @@ const ProductsContextProvider = ({ children }) => {
             url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
                 ","
             )}&page=${paginationData.page}&limit=${paginationData.limit}`;
+        } else if (paginationData.category === "collection" && paginationData.collectionSlug) {
+            url = `${backendUrl}/api/public/collection/${paginationData.collectionSlug}?${params.toString()}`;
         } else if (paginationData.category) {
             url = `${backendUrl}/api/client-products/category?${params.toString()}`;
         } else if (paginationData.productTypeId) {
@@ -199,6 +203,7 @@ const ProductsContextProvider = ({ children }) => {
             paginationData.sendAttributes,
             paginationData.expressWindow,
             paginationData.moq,
+            paginationData.collectionSlug,
         ],
         queryFn: () => getProductsFromApi(),
         enabled: Boolean(backendUrl),

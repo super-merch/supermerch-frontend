@@ -50,6 +50,7 @@ import {
   setMinPrice,
   setSelectedCategory,
   setMoq,
+  setClothingGender,
 } from "../../redux/slices/filterSlice";
 import PriceFilter from "../shop/PriceFilter";
 import AttributeFilters from "./AttributeFilters";
@@ -74,6 +75,7 @@ const UnifiedSidebar = ({
   const [isMobile, setIsMobile] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const {
+    getProducts,
     setPaginationData,
   } = useContext(ProductsContext);
 
@@ -140,6 +142,16 @@ const UnifiedSidebar = ({
             params: ["attrName", "attrValue"],
           });
         });
+      });
+    }
+
+    const gender = searchParams.get("gender");
+    if (gender && gender !== "all") {
+      filters.push({
+        type: "gender",
+        label: `Gender: ${gender.charAt(0).toUpperCase() + gender.slice(1)}`,
+        value: gender,
+        params: ["gender"],
       });
     }
 
@@ -238,6 +250,14 @@ const UnifiedSidebar = ({
         moq: null,
         page: 1,
       }));
+    } else if (filter.type === "gender") {
+      newParams.delete("gender");
+      dispatch(setClothingGender("all"));
+      setPaginationData((prev) => ({
+        ...prev,
+        gender: "all",
+        page: 1,
+      }));
     }
 
     newParams.set("page", "1");
@@ -256,12 +276,15 @@ const UnifiedSidebar = ({
     newParams.delete("colors");
     newParams.delete("attrName");
     newParams.delete("attrValue");
+    newParams.delete("moq");
+    newParams.delete("gender");
     newParams.set("page", "1");
 
     // Update all states immediately
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000000));
     dispatch(setMoq(null));
+    dispatch(setClothingGender("all"));
 
     setPaginationData((prev) => ({
       ...prev,
@@ -269,6 +292,7 @@ const UnifiedSidebar = ({
       colors: [],
       attributes: null,
       moq: null,
+      gender: "all",
       page: 1,
     }));
 
@@ -481,13 +505,27 @@ const UnifiedSidebar = ({
                 <MOQFilter toggleSidebar={toggleSidebar} />
               </CollapsibleSection>
 
-              <CollapsibleSection
-                title="Color"
-                defaultExpanded={false}
-                icon={<Palette size={18} />}
-              >
-                <ColorFilter toggleSidebar={toggleSidebar} />
-              </CollapsibleSection>
+              {/* Color Filter - Dynamic Check */}
+              {(() => {
+                const dynamicColorAttr = getProducts?.attributes?.find(
+                  (attr) => attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "colour"
+                );
+                const hasColors = (dynamicColorAttr && dynamicColorAttr.values?.length > 0) || 
+                                 (categoryType === "allProducts") || 
+                                 (!categoryType && !searchParams.get("search"));
+                
+                if (!hasColors) return null;
+
+                return (
+                  <CollapsibleSection
+                    title="Color"
+                    defaultExpanded={false}
+                    icon={<Palette size={18} />}
+                  >
+                    <ColorFilter toggleSidebar={toggleSidebar} />
+                  </CollapsibleSection>
+                );
+              })()}
               {categoryType !== "australia" &&
                 categoryType !== "24hr-production" &&
                 categoryType !== "sales" &&

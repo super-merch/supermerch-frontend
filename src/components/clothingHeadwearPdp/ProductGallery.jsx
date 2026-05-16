@@ -184,7 +184,7 @@ export default function ProductGallery({
     if (isLoading) {
         return (
             <div className="flex flex-row gap-3 sm:gap-4 items-start">
-                <div className="flex flex-col gap-2 sm:gap-3 w-[72px] sm:w-[100px] lg:w-[128px] shrink-0 max-h-[312px] sm:max-h-[436px] lg:max-h-[548px] overflow-y-hidden">
+                <div className="flex flex-col gap-2 sm:gap-3 w-[72px] sm:w-[85px] lg:w-[100px] shrink-0 max-h-[312px] sm:max-h-[380px] lg:max-h-[436px] overflow-y-hidden">
                     {[...Array(5)].map((_, i) => (
                         <Skeleton
                             key={i}
@@ -204,9 +204,9 @@ export default function ProductGallery({
 
     // Cap height to ~4 thumbnails so extra images scroll (matches w + gap-2 / sm:gap-3).
     const thumbColumnClass =
-        "flex flex-col gap-2 sm:gap-3 w-[72px] sm:w-[100px] lg:w-[128px] shrink-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-hide " +
+        "flex flex-col gap-2 sm:gap-3 w-[72px] sm:w-[85px] lg:w-[100px] shrink-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-hide " +
         (images.length > 4
-            ? "max-h-[312px] sm:max-h-[436px] lg:max-h-[548px]"
+            ? "max-h-[312px] sm:max-h-[380px] lg:max-h-[436px]"
             : "");
 
     return (

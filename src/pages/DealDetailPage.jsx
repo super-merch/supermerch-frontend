@@ -9,6 +9,7 @@ import noimage from '/noimage.png';
 import { findNearestColor, toProductUrl } from '@/utils/utils';
 import { addToCart } from '@/redux/slices/cartSlice';
 import DealCustomizationModal from '@/components/deals/DealCustomizationModal';
+import LoadingOverlay from '@/components/Common/LoadingOverlay';
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
 const roundToTwo = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
@@ -754,11 +755,12 @@ const DealDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="Mycontainer py-10">
-        <Skeleton height={400} className="mb-6" />
-        <Skeleton height={40} width={300} className="mb-4" />
-        <Skeleton count={3} className="mb-2" />
-      </div>
+      <LoadingOverlay
+        title="Loading deal"
+        subtitle="Crafting your personalized product bundle..."
+        variant="product"
+        showBrand={true}
+      />
     );
   }
 

@@ -5,86 +5,120 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ColorFilter = ({ toggleSidebar }) => {
+  const [selectedColors, setSelectedColors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllColors, setShowAllColors] = useState(false);
-  const { setPaginationData } = useContext(ProductsContext);
+  const { getProducts, setPaginationData } = useContext(ProductsContext);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get("category");
   const search = searchParams.get("search");
+
+  // Hex color mapping for common color names
+  const colorMap = {
+    "Red": "#ef4444",
+    "Blue": "#3b82f6",
+    "Green": "#10b981",
+    "Yellow": "#f59e0b",
+    "Orange": "#f97316",
+    "Purple": "#8b5cf6",
+    "Pink": "#ec4899",
+    "Black": "#1f2937",
+    "White": "#ffffff",
+    "Grey": "#6b7280",
+    "Gray": "#6b7280",
+    "Brown": "#92400e",
+    "Cyan": "#06b6d4",
+    "Navy": "#1e3a8a",
+    "Teal": "#0d9488",
+    "Indigo": "#4f46e5",
+    "Lime": "#84cc16",
+    "Amber": "#d97706",
+  };
+
+  // Available colors: try to get from dynamic attributes first, fallback to hardcoded
+  const availableColors = useMemo(() => {
+    // Look for "Color" or "Colour" in dynamic attributes
+    const dynamicColorAttr = getProducts?.attributes?.find(
+      (attr) => attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "colour"
+    );
+
+    if (dynamicColorAttr && dynamicColorAttr.values && dynamicColorAttr.values.length > 0) {
+      return dynamicColorAttr.values.map(name => ({
+        name: name,
+        hex: colorMap[name] || "#CBD5E1" // Fallback to a neutral grey if hex not mapped
+      }));
+    }
+
+    // Default fallback list if no dynamic colors found
+    return [
+      { name: "Red", hex: "#ef4444" },
+      { name: "Blue", hex: "#3b82f6" },
+      { name: "Green", hex: "#10b981" },
+      { name: "Yellow", hex: "#f59e0b" },
+      { name: "Orange", hex: "#f97316" },
+      { name: "Purple", hex: "#8b5cf6" },
+      { name: "Pink", hex: "#ec4899" },
+      { name: "Black", hex: "#1f2937" },
+      { name: "White", hex: "#ffffff" },
+      { name: "Grey", hex: "#6b7280" },
+      { name: "Brown", hex: "#92400e" },
+      { name: "Cyan", hex: "#06b6d4" },
+    ];
+  }, [getProducts?.attributes]);
+
   useEffect(() => {
     const urlColors = searchParams.get("colors");
     if (urlColors) {
-      setSelectedColors(urlColors.split(',').filter(Boolean));
+      const colorsArr = urlColors.split(",").filter(Boolean);
+      // Only update if different to avoid cycles
+      setSelectedColors((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(colorsArr)) {
+          return colorsArr;
+        }
+        return prev;
+      });
     } else {
-      setSelectedColors([]);
+      setSelectedColors((prev) => (prev.length > 0 ? [] : prev));
     }
-  }, [location.pathname, category, search,searchParams]);
-
-  // Available colors with their display names and hex values matching the image
-  const availableColors = [
-    { name: "Red", hex: "#ef4444" },
-    { name: "Blue", hex: "#3b82f6" },
-    { name: "Green", hex: "#10b981" },
-    { name: "Yellow", hex: "#f59e0b" },
-    { name: "Orange", hex: "#f97316" },
-    { name: "Purple", hex: "#8b5cf6" },
-    { name: "Pink", hex: "#ec4899" },
-    { name: "Black", hex: "#1f2937" },
-    { name: "White", hex: "#ffffff" },
-    { name: "Grey", hex: "#6b7280" },
-    { name: "Brown", hex: "#92400e" },
-    { name: "Cyan", hex: "#06b6d4" },
-  ];
+  }, [searchParams]);
 
   // Filter colors based on search term
   const filteredColors = availableColors.filter((color) =>
     color.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Selected colors state
-  const [selectedColors, setSelectedColors] = useState([]);
+  const handleColorToggle = useCallback(
+    (colorName) => {
+      const nextColors = selectedColors.includes(colorName)
+        ? selectedColors.filter((name) => name !== colorName)
+        : [...selectedColors, colorName];
 
-  // Determine which colors to display
-  const colorsToShow = searchTerm
-    ? filteredColors
-    : showAllColors
-    ? availableColors
-    : availableColors.slice(0, 10);
+      // Update local state (optional, as useEffect will sync it, but better for immediate feedback)
+      setSelectedColors(nextColors);
 
-  const handleColorToggle = useCallback((colorName) => {
-    setSelectedColors((prev) => {
-      let newColors;
-      if (prev.includes(colorName)) {
-        newColors = prev.filter((name) => name !== colorName);
+      // Update Search Params
+      const newParams = new URLSearchParams(searchParams);
+      if (nextColors.length > 0) {
+        newParams.set("colors", nextColors.join(","));
       } else {
-        newColors = [...prev, colorName];
+        newParams.delete("colors");
       }
-      setSearchParams((currentParams) => {
-        const newParams = new URLSearchParams(currentParams);
-        
-        if (newColors.length > 0) {
-          newParams.set("colors", newColors.join(','));
-        } else {
-          newParams.delete("colors");
-        }
-        
-        newParams.set("page", "1");
-        return newParams;
-      });
+      newParams.set("page", "1");
+      setSearchParams(newParams);
 
-      setPaginationData((prev) => ({
-        ...prev,
+      // Update Pagination Context
+      setPaginationData((prevPag) => ({
+        ...prevPag,
         page: 1,
-        colors: newColors,
+        colors: nextColors,
         sendAttributes: false,
       }));
-      
+
       if (window.innerWidth <= 1025) toggleSidebar();
-      
-      return newColors;
-    });
-  }, [setPaginationData, toggleSidebar, setSearchParams]);
+    },
+    [selectedColors, searchParams, setSearchParams, setPaginationData, toggleSidebar]
+  );
 
   return (
     <div className="py-2">

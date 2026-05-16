@@ -23,7 +23,7 @@ const LetsConnect = () => {
     },
     {
       id: "fallback-3",
-      image: "/bags.jfif",
+      image: "/bags.png",
       caption: "Eco-friendly Bags - Sustainable promotional products! 👜",
       link: "https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw",
     },

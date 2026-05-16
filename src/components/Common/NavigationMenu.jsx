@@ -144,19 +144,23 @@ const NavigationMenu = ({
             className={cn(
               "overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl transition-all duration-300",
               item.megaMenu
-                ? (item.submenu?.length === 1 ? "w-[750px]" : currentSize.megaMenu)
+                ? (item.submenu?.length === 1 || item.name === "Collections" ? "w-[1100px]" : currentSize.megaMenu)
                 : currentSize.noMegaMenu
             )}
           >
             {item.megaMenu ? (
               !hasNestedSubcategories ? (
                 <div className="p-6 bg-white">
-                  <div className="grid grid-cols-4 gap-x-8 gap-y-4">
+                  <div className={cn(
+                    item.name === "Collections" 
+                      ? "grid grid-cols-6 gap-x-6 gap-y-2" 
+                      : "flex flex-wrap gap-x-10 gap-y-4"
+                  )}>
                     {item.submenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleItemClick(subItem)}
-                        className="text-sm text-gray-700 hover:text-primary font-medium text-start px-2 py-1 rounded-md hover:bg-blue-50 transition-all duration-200 w-full"
+                        className="text-sm text-gray-700 hover:text-primary font-medium text-start px-3 py-2 rounded-md hover:bg-blue-50 transition-all duration-200 min-w-[150px] w-auto"
                       >
                         <span className="leading-relaxed">{subItem.name}</span>
                       </button>
@@ -448,7 +452,8 @@ const NavigationMenu = ({
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
                       item.name === "Headwear" ||
-                      item.name === "Gifts"
+                      item.name === "Gifts" ||
+                      item.name === "Collections"
                     ) {
                       if (item.submenu?.length > 0) {
                         setActiveItem(item.submenu[0].id);
@@ -460,7 +465,8 @@ const NavigationMenu = ({
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
                       item.name === "Headwear" ||
-                      item.name === "Gifts"
+                      item.name === "Gifts" ||
+                      item.name === "Collections"
                     ) {
                       return;
                     }

@@ -12,8 +12,8 @@ import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 
-// Import reusable components
 import { ProductsContext } from "../../context/ProductsContext";
 import { AuthContext } from "../../context/AuthContext";
 import { NavigationMenu, SearchBar, UserActions } from "../Common";
@@ -168,6 +168,25 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   const [navbarLogout, setNavbarLogout] = useState(false);
   const [coupenModel, setCoupenModel] = useState(false);
   const { coupons, coupenLoading } = useCoupons();
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7029';
+        const res = await axios.get(`${apiUrl}/api/public/collections`);
+        if (res.data?.success) {
+          const sorted = (res.data.data || []).sort((a, b) =>
+            (a.name || "").localeCompare(b.name || "")
+          );
+          setCollections(sorted);
+        }
+      } catch (err) {
+        console.error("Failed to fetch collections", err);
+      }
+    };
+    fetchCollections();
+  }, []);
 
   const buildExpressPath = (windowId = "sameday") =>
     `/24hr-production?expressWindow=${encodeURIComponent(windowId)}`;
@@ -213,6 +232,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
       { name: "Express", path: buildExpressPath("sameday"), hasSubmenu: true },
+      { 
+        name: "Collections", 
+        hasSubmenu: collections.length > 0,
+        megaMenu: collections.length > 0
+      },
       { name: "Clearance", path: "/clearance?category=clearance" },
       { name: "Deals", path: "/deals" },
       { name: "Australia Made", path: "/australia-made" },
@@ -299,8 +323,21 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           onClick: () => handleMenuClick(item),
         };
       }
+      if (item.name === "Collections" && collections.length > 0) {
+        return {
+          ...item,
+          id: "collections",
+          submenu: collections.map((col) => ({
+            id: `collection-${col.slug}`,
+            name: col.name,
+            onClick: () => navigate(`/collections/${col.slug}`),
+          })),
+          onClick: () => handleMenuClick(item),
+        };
+      }
 
       return {
+
         ...item,
         id: item.name.toLowerCase().replace(/\s+/g, "-"),
         onClick: () => handleMenuClick(item),

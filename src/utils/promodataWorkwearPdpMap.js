@@ -310,6 +310,7 @@ export function mapSingleProductToWorkwearModel(singleProduct, v1categories = []
     isVatFree: false,
     inStock: true,
     totalStock: 999,
+    specialTags: singleProduct?.specialTags || [],
     customizationMethods: [],
   };
 }

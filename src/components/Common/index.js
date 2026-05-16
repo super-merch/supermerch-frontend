@@ -15,3 +15,7 @@ export { default as Tooltip } from "./Tooltip";
 export { default as EmptyState } from "./EmptyState";
 export { default as LoadingOverlay } from "./LoadingOverlay";
 export { default as RecommendationsStrip } from "./RecommendationsStrip";
+import RouteSeo from "./RouteSeo";
+export { RouteSeo };
+
+export { default as Breadcrumb } from "./Breadcrumb";

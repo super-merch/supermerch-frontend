@@ -189,7 +189,7 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
     }
     else if (
       (categoryType === "allProducts" && cachedAttributes.length === 0) ||
-      (!params.get("search") && cachedAttributes.length === 0)
+      (!params.get("search") && !category && cachedAttributes.length === 0)
     ) {
       setCachedAttributes(allAttributes);
     }
@@ -199,11 +199,13 @@ export default function AttributeFilters({ toggleSidebar, categoryType }) {
   }, [category, search, cacheKey, incomingAttributes.length, categoryType]);
 
   const attributes =
-    cachedAttributes.length > 0
+    (cachedAttributes.length > 0
       ? cachedAttributes
       : categoryType === "allProducts"
         ? allAttributes
-        : incomingAttributes;
+        : incomingAttributes).filter(
+          (attr) => attr.name.toLowerCase() !== "color" && attr.name.toLowerCase() !== "colour"
+        );
 
   useEffect(() => {
     const nextSelected = buildSelectedFromParams(params);
