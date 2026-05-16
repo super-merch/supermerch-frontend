@@ -741,7 +741,7 @@ export default function ClothingHeadwearWorkwearPdp() {
       />
       <div className="py-2 sm:py-4 md:py-6 bg-gradient-to-b from-[#F8FAFC] via-white to-[#F8FAFC] min-h-screen">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.9fr] gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-8">
             <div className="flex flex-col min-h-0 lg:min-h-full">
               <div className="lg:sticky lg:top-20 lg:z-10 w-full">
                 <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-lg border-2 border-[#009688]/20 hover:border-[#009688]/40 transition-colors">

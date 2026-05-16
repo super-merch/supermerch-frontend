@@ -7,8 +7,10 @@ import {
   findNearestColor,
   getProductCategory,
 } from "@/utils/utils";
+import { getCleanArtworkName, isNonArtworkAddition } from "@/utils/productUtils";
 import { getArtworkSource } from "@/utils/categoryMeta";
 import { extractSizesFromProduct as extractSizesFromPromodata } from "@/utils/promodataWorkwearPdpMap";
+import { parseLeadTime, calculateEstimatedDelivery } from "@/utils/deliveryCalculations";
 import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -542,41 +544,46 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (priceGroups.length > 0 || (product?.prices?.addons || []).length > 0) {
-      const basePriceData = priceGroups.find((group) => group?.base_price)?.base_price;
-      const baseGroup = basePriceData
-        ? {
-            ...basePriceData,
-            type: "base",
-          }
-        : null;
+      // Map all base price groups
+      const baseGroups = priceGroups
+        .filter((group) => group?.base_price)
+        .map((group) => ({
+          ...group.base_price,
+          type: "base",
+        }));
 
+      // Map all additions from within price groups
       const groupedAdditions = priceGroups.flatMap((group) =>
         (group?.additions || []).map((add) => ({
           ...add,
           type: "addition",
-          description: add.description,
         })),
       );
 
+      // Map standalone addons
       const standaloneAddons = (product?.prices?.addons || []).map((add) => ({
         ...add,
         type: "addition",
-        description: add.description,
       }));
 
-      const additionGroups = [...groupedAdditions, ...standaloneAddons].filter(Boolean);
-      const dedupedAdditions = additionGroups.filter(
+      // Combine and deduplicate by key to avoid duplicates if the same addition is in multiple groups
+      const allGroups = [...baseGroups, ...groupedAdditions, ...standaloneAddons].filter(Boolean);
+      const dedupedGroups = allGroups.filter(
         (item, index, self) =>
           index === self.findIndex((other) => (other.key || other.description) === (item.key || item.description)),
       );
 
-      const allGroups = [baseGroup, ...dedupedAdditions].filter(Boolean);
-      setAvailablePriceGroups(allGroups);
-      const initialMethod = baseGroup || allGroups[0] || null;
+      setAvailablePriceGroups(dedupedGroups);
+
+      // Default selection: find the first valid decoration method (base or addition)
+      const firstDecoration = dedupedGroups.find((group) => !isNonArtworkAddition(group));
+      const initialMethod = firstDecoration || dedupedGroups[0] || null;
+      
       setSelectedPrintMethod(initialMethod);
-      // Initialize quantity and price based on first price break
+
       if (initialMethod?.price_breaks?.length > 0) {
-        const firstBreak = initialMethod.price_breaks[0];
+        const sortedBreaks = [...initialMethod.price_breaks].sort((a, b) => a.qty - b.qty);
+        const firstBreak = sortedBreaks[0];
         setCurrentQuantity(firstBreak.qty);
         setUnitPrice(firstBreak.price);
         setCurrentPrice(firstBreak.price * firstBreak.qty);
@@ -907,7 +914,7 @@ const ProductDetails = () => {
       formData1.append("price", Number(discountedUnitPrice.toFixed(2))); // per unit
       formData1.append("quantity", Number(currentQuantity));
       formData1.append("totalPrice", Number(currentPrice.toFixed(2)));
-      formData1.append("printMethod", selectedPrintMethod?.description || "");
+      formData1.append("printMethod", getCleanArtworkName(selectedPrintMethod));
       formData1.append("printMethodKey", selectedPrintMethod?.key || "");
       formData1.append("setupFee", Number(setupFee.toFixed(2)));
       formData1.append("freightFee", Number(freightFee.toFixed(2)));
@@ -967,10 +974,18 @@ const ProductDetails = () => {
   };
 
   const deliveryDate = (() => {
-    const today = new Date();
-    const twoWeeksLater = new Date(today);
-    twoWeeksLater.setDate(today.getDate() + 14);
-    return formatDeliveryDate(twoWeeksLater);
+    const supplierConfig = single_product?.supplierConfig || {};
+    const leadTimeStr = selectedLeadTimeAddition?.lead_time || selectedPrintMethod?.lead_time || "14 Days";
+    const leadTimeDays = parseLeadTime(leadTimeStr);
+    
+    const estDate = calculateEstimatedDelivery(
+      new Date(), 
+      leadTimeDays, 
+      supplierConfig.deliveryTime, 
+      supplierConfig.deliveryTimeUnit, 
+      supplierConfig.orderCutoffTime
+    );
+    return formatDeliveryDate(estDate);
   })();
 
   const discountedUnitPrice = unitPrice;
@@ -1042,7 +1057,7 @@ const ProductDetails = () => {
         image: normalizedImages[0] || "",
         price: (() => {
           const baseProductPrice = getPriceForQuantity(currentQuantity);
-          const sortedBreaks = [...selectedPrintMethod?.price_breaks].sort(
+          const sortedBreaks = [...(selectedPrintMethod?.price_breaks || [])].sort(
             (a, b) => a.qty - b.qty,
           );
           let selectedBreak = sortedBreaks[0];
@@ -1080,10 +1095,8 @@ const ProductDetails = () => {
             ]
               .filter(Boolean)
               .join(" - ") ||
-            selectedPrintMethod.promodata_decoration ||
-            selectedPrintMethod.description
-          : selectedPrintMethod.promodata_decoration ||
-            selectedPrintMethod.description,
+            getCleanArtworkName(selectedPrintMethod)
+          : getCleanArtworkName(selectedPrintMethod),
         logoColor: logoColor,
         freightFee: freightFee,
         setupFee: setupFee,
@@ -1165,12 +1178,8 @@ const ProductDetails = () => {
             ]
               .filter(Boolean)
               .join(" - ") ||
-            selectedPrintMethod?.promodata_decoration ||
-            selectedPrintMethod?.description ||
-            ""
-          : selectedPrintMethod?.promodata_decoration ||
-            selectedPrintMethod?.description ||
-            "",
+            getCleanArtworkName(selectedPrintMethod)
+          : getCleanArtworkName(selectedPrintMethod),
         logoColor: logoColor,
         size: selectedSize,
         setupFee: 0,
@@ -1507,11 +1516,11 @@ const ProductDetails = () => {
           </Swiper>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[60%_38%] gap-4 mt-2 justify-between lg:items-start">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[50%_42%] gap-12 mt-2 justify-center lg:items-start">
           <div className="hidden lg:flex gap-5 items-start self-start">
             <div
-              className={`flex flex-col gap-4 overflow-x-hidden pr-1 w-[128px] shrink-0 scrollbar-hide self-start ${normalizedImages.length > 6
-                ? "h-[848px] overflow-y-auto"
+              className={`flex flex-col gap-4 overflow-x-hidden pr-1 w-[100px] shrink-0 scrollbar-hide self-start ${normalizedImages.length > 6
+                ? "h-[680px] overflow-y-auto"
                 : "h-auto overflow-y-visible"
                 }`}
             >
@@ -1521,7 +1530,7 @@ const ProductDetails = () => {
                 <button
                   key={index}
                   type="button"
-                  className={`w-[128px] h-[128px] min-h-[128px] shrink-0 rounded-2xl overflow-hidden border-2 bg-white transition-all duration-200 ${activeImage === fullImage
+                  className={`w-[100px] h-[100px] min-h-[100px] shrink-0 rounded-2xl overflow-hidden border-2 bg-white transition-all duration-200 ${activeImage === fullImage
                     ? "border-smallHeader shadow-md"
                     : "border-transparent hover:border-gray-300"
                     }`}
@@ -1541,7 +1550,7 @@ const ProductDetails = () => {
             </div>
 
             <div
-              className="flex-1 min-h-[760px] border-border2 overflow-hidden relative group cursor-zoom-in flex items-center justify-center"
+              className="flex-1 min-h-[600px] border-border2 overflow-hidden relative group cursor-zoom-in flex items-center justify-center"
 
               onClick={() => setImageModel(true)}
               onMouseMove={(e) => {
@@ -1559,7 +1568,7 @@ const ProductDetails = () => {
               <img
                 src={activeImage}
                 alt={product?.name}
-                className="w-full max-h-[760px] max-w-full object-contain transition-transform duration-300 ease-out group-hover:scale-150"
+                className="w-full max-h-[600px] max-w-full object-contain transition-transform duration-300 ease-out group-hover:scale-150"
               />
             </div>
           </div>
@@ -1629,6 +1638,36 @@ const ProductDetails = () => {
                       {tag?.name}
                     </span>
                   ))}
+                </div>
+
+                {/* Quote and Sample Buttons Moved Up */}
+                <div className="grid grid-cols-2 gap-3 mt-3 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowQuoteForm?.({ state: true, from: "quoteButton" })}
+                    disabled={isQuoteLowStock}
+                    className={`flex items-center justify-center gap-2 h-10 text-xs font-bold border-2 rounded-xl transition-all ${
+                      isQuoteLowStock
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                        : "text-primary border-primary hover:bg-primary hover:text-white"
+                    }`}
+                  >
+                    <FaMoneyBill1Wave className="text-base" />
+                    {isQuoteLowStock ? "Low Stock" : "Get Express Quote"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleBuySample}
+                    disabled={isSampleLowStock}
+                    className={`flex items-center justify-center gap-2 h-10 text-xs font-bold rounded-xl transition-all shadow-sm ${
+                      isSampleLowStock
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "text-white bg-primary hover:bg-primary/90 hover:shadow-md active:scale-[0.98]"
+                    }`}
+                  >
+                    <img src="/buy2.png" alt="" className="w-4 h-4 object-contain brightness-0 invert" />
+                    {isSampleLowStock ? "Low Stock" : "BUY 1 SAMPLE"}
+                  </button>
                 </div>
                 {/* Color Selection */}
                 {single_product?.product?.colours?.list.length > 0 && (
@@ -1728,7 +1767,7 @@ const ProductDetails = () => {
               </div>
 
               {/* Tab content */}
-              <div className="mt-3 min-h-[420px] lg:min-h-[520px]">
+              <div className="mt-3 min-h-[300px] lg:min-h-[350px]">
                 {activeInfoTab === "features" && (
                   <FeaturesTab
                     single_product={single_product}
@@ -1797,18 +1836,18 @@ const ProductDetails = () => {
               </div>
 
               {/* Global Quantity and Action Buttons Section */}
-              <div className="mt-8 border-t pt-8">
+              <div className="mt-4 border-t pt-4">
                 {(() => {
                   const effectivePrintMethod = selectedLeadTimeAddition || selectedPrintMethod;
                   const isSupermerchArtwork = artworkSource === "supermerch" && adminCustomizations.length > 0;
                   const isAddToCartDisabled = isSupermerchArtwork && selectedAdminCustomization && !selectedPosition;
 
                   return (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {/* Quantity Selector */}
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="flex items-center gap-4">
-                          <label className="text-lg font-medium text-gray-700 whitespace-nowrap">
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <label className="text-base font-medium text-gray-700 whitespace-nowrap">
                             Order Quantity:
                           </label>
                           <div className="flex items-center gap-2">
@@ -1833,12 +1872,18 @@ const ProductDetails = () => {
                                 }
                                 setActiveIndex(newActiveIndex);
                               }}
-                              className="w-24 px-3 py-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Enter qty"
                             />
-                            <span className="text-lg text-black">units</span>
+                            <span className="text-base text-black">units</span>
                           </div>
                         </div>
+                        {deliveryDate && (
+                          <div className="flex flex-col md:items-end">
+                            <span className="text-[11px] font-medium text-gray-600">Est. Delivery:</span>
+                            <span className="text-base font-bold text-primary">{deliveryDate}</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Add to Cart Button */}
@@ -1848,61 +1893,32 @@ const ProductDetails = () => {
                           if (isAddToCartDisabled) return;
                           handleAddToCart(e);
                         }}
-                        className={`flex items-center justify-center w-full gap-3 px-2 py-4 text-white rounded-lg transition-all duration-300 shadow-lg ${
+                        className={`flex items-center justify-center w-full gap-3 px-2 py-2.5 text-white rounded-lg transition-all duration-300 shadow-md ${
                           isAddToCartDisabled
                             ? "bg-gray-400 cursor-not-allowed shadow-none"
-                            : "bg-primary hover:bg-primary/90 cursor-pointer hover:shadow-xl active:scale-[0.98]"
+                            : "bg-primary hover:bg-primary/90 cursor-pointer hover:shadow-lg active:scale-[0.98]"
                         }`}
                       >
-                        <span className="text-xl font-bold uppercase tracking-wide">Add to cart</span>
-                        <IoCartOutline className="text-2xl" />
+                        <span className="text-lg font-bold uppercase tracking-wide">Add to cart</span>
+                        <IoCartOutline className="text-xl" />
                       </button>
 
-                      {/* Secondary Buttons and Charges */}
-                      <div className="p-5 rounded-2xl border border-primary/20 bg-gradient-to-r from-white to-primary/5 shadow-sm">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <button
-                            type="button"
-                            onClick={() => setShowQuoteForm?.({ state: true, from: "quoteButton" })}
-                            disabled={isQuoteLowStock}
-                            className={`flex items-center justify-center gap-2 h-12 text-sm font-bold border-2 rounded-xl transition-all ${
-                              isQuoteLowStock
-                                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-                                : "text-primary border-primary hover:bg-primary hover:text-white"
-                            }`}
-                          >
-                            <FaMoneyBill1Wave className="text-lg" />
-                            {isQuoteLowStock ? "Low Stock" : "Get Express Quote"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleBuySample}
-                            disabled={isSampleLowStock}
-                            className={`flex items-center justify-center gap-2 h-12 text-sm font-bold rounded-xl transition-all shadow-sm ${
-                              isSampleLowStock
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "text-white bg-primary hover:bg-primary/90 hover:shadow-md active:scale-[0.98]"
-                            }`}
-                          >
-                            <img src="/buy2.png" alt="" className="w-5 h-5 object-contain brightness-0 invert" />
-                            {isSampleLowStock ? "Low Stock" : "BUY 1 SAMPLE"}
-                          </button>
-                        </div>
-
-                        <div className="mt-5 grid grid-cols-2 gap-4">
-                          <div className="rounded-xl bg-white border border-gray-100 p-4 shadow-sm">
-                            <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400">
+                      {/* Charges Section (Quote/Sample buttons moved up) */}
+                      <div className="p-4 rounded-xl border border-primary/20 bg-gradient-to-r from-white to-primary/5 shadow-sm">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="rounded-xl bg-white border border-gray-100 p-3 shadow-sm">
+                            <p className="text-[9px] font-bold tracking-wider uppercase text-gray-400">
                               Setup Charge
                             </p>
-                            <p className="mt-1 text-2xl font-black text-gray-900">
+                            <p className="mt-0.5 text-xl font-black text-gray-900">
                               ${setupFee?.toFixed(2) || "0.00"}
                             </p>
                           </div>
-                          <div className="rounded-xl bg-white border border-gray-100 p-4 shadow-sm">
-                            <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400">
+                          <div className="rounded-xl bg-white border border-gray-100 p-3 shadow-sm">
+                            <p className="text-[9px] font-bold tracking-wider uppercase text-gray-400">
                               Freight Charge
                             </p>
-                            <p className="mt-1 text-2xl font-black text-gray-900">
+                            <p className="mt-0.5 text-xl font-black text-gray-900">
                               {freightFee > 0 ? `$${freightFee.toFixed(2)}` : "TBD"}
                             </p>
                           </div>

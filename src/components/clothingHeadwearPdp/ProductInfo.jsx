@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Share2, Truck, Clock } from "lucide-react";
+import { Heart, Share2, Truck, Clock, CheckCheck } from "lucide-react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import { formatAud } from "@/utils/formatAud";
@@ -33,7 +33,6 @@ export default function ProductInfo({
     onBuySample = () => {},
 }) {
     const [showSizeGuide, setShowSizeGuide] = useState(false);
-    const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
     const [selectedColors, setSelectedColors] = useState([]);
     const [showAllPricingTiers, setShowAllPricingTiers] = useState(false);
 
@@ -56,27 +55,6 @@ export default function ProductInfo({
         }));
     };
 
-    const getStockStatus = () => {
-        if (!product.inStock)
-            return {
-                text: "Out of Stock",
-                color: "text-[#FF4D4F]",
-                bgColor: "bg-[#FF4D4F]/10",
-            };
-        if (product.stockLevel && product.stockLevel <= 5)
-            return {
-                text: `Only ${product.stockLevel} left`,
-                color: "text-[#FF6B35]",
-                bgColor: "bg-[#FF6B35]/10",
-            };
-        return {
-            text: "In Stock",
-            color: "text-[#10B981]",
-            bgColor: "bg-[#10B981]/10",
-        };
-    };
-
-    const stockStatus = getStockStatus();
 
     // Use price tiers from product data
     const pricingTiers = product.priceTiers || [];
@@ -168,38 +146,21 @@ export default function ProductInfo({
 
     return (
         <div className="space-y-4">
-            <div>
-                <div className="flex items-start justify-between gap-4 mb-2">
-                    {/* Left Column - Product Name, Stock, Brand/SKU */}
-                    <div className="flex-1">
-                        <h1
-                            className="text-[#1E2328] mb-2"
-                            style={{
-                                fontFamily: "Poppins, sans-serif",
-                                fontWeight: "700",
-                                fontSize: "clamp(18px, 5vw, 24px)",
-                                lineHeight: "1.3",
-                            }}
-                        >
-                            {product.name}
-                        </h1>
+            <h1
+                className="text-[#1E2328] mb-4 w-full whitespace-nowrap"
+                style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: "700",
+                    fontSize: "clamp(18px, 5vw, 24px)",
+                    lineHeight: "1.3",
+                }}
+            >
+                {product.name}
+            </h1>
 
-                        {/* Stock Status */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                            <div
-                                className={`px-2 py-0.5 rounded-full ${stockStatus.bgColor}`}
-                            >
-                                <span
-                                    className={`font-medium ${stockStatus.color}`}
-                                    style={{
-                                        fontFamily: "Inter, sans-serif",
-                                        fontSize: "11px",
-                                    }}
-                                >
-                                    {stockStatus.text}
-                                </span>
-                            </div>
-                        </div>
+            <div className="flex items-start justify-between gap-4 mb-2">
+                {/* Left Column - Stock, Brand/SKU */}
+                <div className="flex-1">
 
                         {/* Brand and SKU */}
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -210,7 +171,6 @@ export default function ProductInfo({
                                     fontSize: "12px",
                                 }}
                             >
-                                Brand:{" "}
                                 {product.brandSlug ? (
                                     <a
                                         href={`/products?brand=${encodeURIComponent(
@@ -243,7 +203,8 @@ export default function ProductInfo({
                                 </span>
                             </span>
                         </div>
-                    </div>
+
+                </div>
 
                     {/* Right Column - Brand Logo & Action Buttons */}
                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
@@ -331,24 +292,38 @@ export default function ProductInfo({
                         </div>
                     </div>
                 </div>
-
-                {/* Product Badges */}
+                {/* Dynamic Product Tags (Special Tags) */}
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3">
-                    {/* Best Seller Badge */}
-                    {product.isBestSelling && (
-                        <div className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-[#FEF3C7] border border-[#F59E0B]/30 text-[#B45309] text-[10px] sm:text-xs font-semibold">
-                            <i className="ri-fire-fill text-[10px] sm:text-xs"></i>
-                            <span>Best Seller</span>
-                        </div>
-                    )}
-
-                    {/* Faster Dispatch Badge */}
-                    {product.isFasterDispatch && (
-                        <div className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-[#EEF2FF] border border-[#6366F1]/30 text-[#4338CA] text-[10px] sm:text-xs font-semibold">
-                            <i className="ri-flashlight-fill text-[10px] sm:text-xs"></i>
-                            <span>Faster Dispatch</span>
-                        </div>
-                    )}
+                    {(product.specialTags || []).map((tag, idx) => {
+                        const getTagStyle = (tagName) => {
+                            const t = tagName.toLowerCase();
+                            if (t.includes("trending")) return { bg: "#FEF3C7", border: "rgba(245, 158, 11, 0.3)", text: "#B45309", icon: "ri-fire-fill" };
+                            if (t.includes("arrival")) return { bg: "#EEF2FF", border: "rgba(99, 102, 241, 0.3)", text: "#4338CA", icon: "ri-sparkling-fill" };
+                            if (t.includes("best seller")) return { bg: "#FEF3C7", border: "rgba(245, 158, 11, 0.3)", text: "#B45309", icon: "ri-medal-fill" };
+                            if (t.includes("24 hour")) return { bg: "#ECFEFF", border: "rgba(6, 182, 212, 0.3)", text: "#0E7490", icon: "ri-time-line" };
+                            if (t.includes("australia")) return { bg: "#FFF1F2", border: "rgba(244, 63, 94, 0.3)", text: "#BE123C", icon: "ri-map-pin-user-fill" };
+                            if (t.includes("clothing")) return { bg: "#F0FDF4", border: "rgba(34, 197, 94, 0.3)", text: "#15803D", icon: "ri-t-shirt-2-fill" };
+                            if (t.includes("headwear")) return { bg: "#F0FDFA", border: "rgba(20, 184, 166, 0.3)", text: "#0F766E", icon: "ri-mickey-fill" };
+                            if (t.includes("promotional")) return { bg: "#FAF5FF", border: "rgba(168, 85, 247, 0.3)", text: "#7E22CE", icon: "ri-poker-stars-fill" };
+                            // Default
+                            return { bg: "#F3F4F6", border: "#D1D5DB", text: "#374151", icon: "ri-price-tag-3-line" };
+                        };
+                        const style = getTagStyle(tag);
+                        return (
+                            <div 
+                                key={`special-${idx}`}
+                                className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md border text-[10px] sm:text-xs font-semibold shadow-sm"
+                                style={{ 
+                                    backgroundColor: style.bg, 
+                                    borderColor: style.border, 
+                                    color: style.text 
+                                }}
+                            >
+                                <i className={`${style.icon} text-[10px] sm:text-xs`}></i>
+                                <span>{tag}</span>
+                            </div>
+                        );
+                    })}
 
                     {/* Embroidery Available Badge */}
                     {product.customizationMethods?.some((m) =>
@@ -374,9 +349,75 @@ export default function ProductInfo({
                         </div>
                     )}
                 </div>
-            </div>
 
-            {/* Product Title and Rating */}
+            {/* Color Selection - Palette UI (Full Width) */}
+
+            {product.colors && product.colors.length > 0 && (
+                <div className="mt-2 mb-4">
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {product.colors.map((color) => {
+                            const {
+                                primaryColor,
+                                secondaryColor,
+                                hasTwoColors,
+                            } = swatchColorsFor(color);
+                            const isSelected =
+                                selectedColors.includes(color.id);
+
+                            return (
+                                <div
+                                    key={color.id}
+                                    className="relative inline-flex items-center justify-center w-9 h-9"
+                                >
+                                    {/* Outer selection ring */}
+                                    {isSelected && (
+                                        <div className="absolute inset-[3px] rounded-full border-2 border-[#009688]" />
+                                    )}
+
+                                    <div
+                                        className={`relative rounded-full cursor-pointer transition-all duration-300 ${
+                                            isSelected
+                                                ? "w-6 h-6 border-2 border-white shadow-sm"
+                                                : "w-6 h-6 hover:scale-110 border border-gray-200"
+                                        } overflow-hidden`}
+                                        style={
+                                            !hasTwoColors
+                                                ? {
+                                                      backgroundColor:
+                                                          primaryColor,
+                                                  }
+                                                : {
+                                                      background: `linear-gradient(135deg, ${primaryColor} 50%, ${secondaryColor} 50%)`,
+                                                  }
+                                        }
+                                        onClick={() =>
+                                            onColorChange(color.id)
+                                        }
+                                        title={color.name}
+                                        aria-label={`Color: ${
+                                            color.name
+                                        }${
+                                            isSelected
+                                                ? " (Selected)"
+                                                : ""
+                                        }`}
+                                    />
+
+                                    {/* Checkmark badge for selected */}
+                                    {isSelected && (
+                                        <div className="absolute top-[2px] right-[2px] w-[16px] h-[16px] bg-[#009688] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
+                                            <CheckCheck
+                                                className="w-2.5 h-2.5 text-white"
+                                                strokeWidth={4}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             {/* Price Tiers Display */}
             <div className="border-t-2 border-[#E5E7EB] pt-3 sm:pt-4">
@@ -537,356 +578,6 @@ export default function ProductInfo({
                     </div>
                 )}
             </div>
-
-            {/* Color Selection - Multi-Select Dropdown */}
-            {product.colors && product.colors.length > 0 && (
-                <div className="border-t border-[#E5E7EB] pt-3 sm:pt-4">
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
-                        <h3
-                            className="text-[#1E2328] text-sm sm:text-[15px] font-semibold"
-                            style={{
-                                fontFamily: "Inter, sans-serif",
-                            }}
-                        >
-                            Select Colors
-                        </h3>
-                        {selectedColors.length > 0 && (
-                            <span
-                                className="text-[#059669] font-medium text-xs sm:text-[13px]"
-                                style={{
-                                    fontFamily: "Inter, sans-serif",
-                                }}
-                            >
-                                {selectedColors.length} selected
-                            </span>
-                        )}
-                    </div>
-
-                    {/* Multi-Select Dropdown */}
-                    <div className="relative">
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setIsColorDropdownOpen(!isColorDropdownOpen)
-                            }
-                            className="w-full px-4 py-3 bg-[#F3F4F6] border-2 border-[#9CA3AF] rounded-xl text-left flex items-center justify-between hover:border-[#009688] transition-all focus:outline-none focus:ring-2 focus:ring-[#009688]/30"
-                        >
-                            <div className="flex items-center gap-2 flex-1 overflow-hidden">
-                                {selectedColors.length === 0 ? (
-                                    <span
-                                        className="text-[#6B7380]"
-                                        style={{
-                                            fontFamily: "Inter, sans-serif",
-                                            fontSize: "14px",
-                                        }}
-                                    >
-                                        Choose colors...
-                                    </span>
-                                ) : (
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        {selectedColors
-                                            .slice(0, 3)
-                                            .map((colorId) => {
-                                                const color =
-                                                    product.colors.find(
-                                                        (c) => c.id === colorId
-                                                    );
-                                                if (!color) return null;
-                                                const {
-                                                    primaryColor,
-                                                    secondaryColor,
-                                                    hasTwoColors,
-                                                } = swatchColorsFor(color);
-
-                                                return (
-                                                    <div
-                                                        key={colorId}
-                                                        className="flex items-center gap-1.5 bg-[#E5E7EB] px-2 py-1 rounded-lg"
-                                                    >
-                                                        <div className="w-4 h-4 rounded-full border border-[#E0E0E0] overflow-hidden flex-shrink-0">
-                                                            {hasTwoColors ? (
-                                                                <div className="w-full h-full flex">
-                                                                    <div
-                                                                        className="w-1/2 h-full"
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                primaryColor,
-                                                                        }}
-                                                                    />
-                                                                    <div
-                                                                        className="w-1/2 h-full"
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                secondaryColor,
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            ) : (
-                                                                <div
-                                                                    className="w-full h-full"
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            primaryColor,
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                        <span
-                                                            className="text-xs text-[#1E2328]"
-                                                            style={{
-                                                                fontFamily:
-                                                                    "Inter, sans-serif",
-                                                            }}
-                                                        >
-                                                            {color.name}
-                                                        </span>
-                                                    </div>
-                                                );
-                                            })}
-                                        {selectedColors.length > 3 && (
-                                            <span
-                                                className="text-xs text-[#6B7380] bg-[#E5E7EB] px-2 py-1 rounded-lg"
-                                                style={{
-                                                    fontFamily:
-                                                        "Inter, sans-serif",
-                                                }}
-                                            >
-                                                +{selectedColors.length - 3}{" "}
-                                                more
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                            <i
-                                className={`ri-arrow-down-s-line text-xl text-[#6B7380] transition-transform ${
-                                    isColorDropdownOpen ? "rotate-180" : ""
-                                }`}
-                            ></i>
-                        </button>
-
-                        {/* Dropdown Menu */}
-                        {isColorDropdownOpen && (
-                            <div className="absolute z-50 w-full mt-2 bg-[#F9FAFB] border-2 border-[#9CA3AF] rounded-xl shadow-xl max-h-[300px] overflow-y-auto">
-                                <div className="p-2 space-y-1">
-                                    {product.colors.map((color) => {
-                                        const {
-                                            primaryColor,
-                                            secondaryColor,
-                                            hasTwoColors,
-                                        } = swatchColorsFor(color);
-                                        const isSelected =
-                                            selectedColors.includes(color.id);
-
-                                        return (
-                                            <label
-                                                key={color.id}
-                                                className="flex items-center gap-3 p-2.5 rounded-lg cursor-pointer hover:bg-[#E5E7EB] transition-colors group"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isSelected}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            const newSelectedColors =
-                                                                [
-                                                                    ...selectedColors,
-                                                                    color.id,
-                                                                ];
-                                                            setSelectedColors(
-                                                                newSelectedColors
-                                                            );
-                                                            // Notify parent - use the last selected color
-                                                            onColorChange(
-                                                                color.id
-                                                            );
-                                                            // Close dropdown after selecting a color
-                                                            setIsColorDropdownOpen(false);
-                                                        } else {
-                                                            const newSelectedColors =
-                                                                selectedColors.filter(
-                                                                    (id) =>
-                                                                        id !==
-                                                                        color.id
-                                                                );
-                                                            setSelectedColors(
-                                                                newSelectedColors
-                                                            );
-                                                            // If unchecking, clear or select another
-                                                            if (
-                                                                newSelectedColors.length >
-                                                                0
-                                                            ) {
-                                                                onColorChange(
-                                                                    newSelectedColors[
-                                                                        newSelectedColors.length -
-                                                                            1
-                                                                    ]
-                                                                );
-                                                            } else {
-                                                                onColorChange(
-                                                                    ""
-                                                                );
-                                                            }
-                                                        }
-                                                    }}
-                                                    className="peer sr-only"
-                                                />
-                                                <span
-                                                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#009688]/40 peer-focus-visible:ring-offset-1 ${
-                                                        isSelected
-                                                            ? "border-[#009688] bg-[#009688]"
-                                                            : "border-[#D1D5DB] bg-white"
-                                                    }`}
-                                                    aria-hidden
-                                                >
-                                                    <i
-                                                        className={`ri-check-line text-[11px] leading-none text-white transition-opacity ${
-                                                            isSelected
-                                                                ? "opacity-100"
-                                                                : "opacity-0"
-                                                        }`}
-                                                    />
-                                                </span>
-                                                {/* Color Preview Circle */}
-                                                <div className="w-6 h-6 rounded-full border-2 border-[#E0E0E0] overflow-hidden flex-shrink-0 shadow-sm">
-                                                    {hasTwoColors ? (
-                                                        <div className="w-full h-full flex">
-                                                            <div
-                                                                className="w-1/2 h-full"
-                                                                style={{
-                                                                    backgroundColor:
-                                                                        primaryColor,
-                                                                }}
-                                                            />
-                                                            <div
-                                                                className="w-1/2 h-full"
-                                                                style={{
-                                                                    backgroundColor:
-                                                                        secondaryColor,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    ) : (
-                                                        <div
-                                                            className="w-full h-full"
-                                                            style={{
-                                                                backgroundColor:
-                                                                    primaryColor,
-                                                            }}
-                                                        />
-                                                    )}
-                                                </div>
-                                                <span
-                                                    className="text-[#1E2328] group-hover:text-[#009688] transition-colors flex-1"
-                                                    style={{
-                                                        fontFamily:
-                                                            "Inter, sans-serif",
-                                                        fontSize: "14px",
-                                                    }}
-                                                >
-                                                    {color.name}
-                                                </span>
-                                                {isSelected && (
-                                                    <i className="ri-check-line text-[#009688] text-lg"></i>
-                                                )}
-                                            </label>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Selected Colors Display with Swatches */}
-                    {selectedColors.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                            {selectedColors.map((colorId) => {
-                                const color = product.colors.find(
-                                    (c) => c.id === colorId
-                                );
-                                if (!color) return null;
-                                const {
-                                    primaryColor,
-                                    secondaryColor,
-                                    hasTwoColors,
-                                } = swatchColorsFor(color);
-
-                                return (
-                                    <div
-                                        key={colorId}
-                                        className="flex items-center gap-2 bg-[#F3F4F6] border-2 border-[#009688] rounded-lg px-3 py-2 shadow-sm"
-                                    >
-                                        <div className="w-5 h-5 rounded-full border border-[#E0E0E0] overflow-hidden flex-shrink-0">
-                                            {hasTwoColors ? (
-                                                <div className="w-full h-full flex">
-                                                    <div
-                                                        className="w-1/2 h-full"
-                                                        style={{
-                                                            backgroundColor:
-                                                                primaryColor,
-                                                        }}
-                                                    />
-                                                    <div
-                                                        className="w-1/2 h-full"
-                                                        style={{
-                                                            backgroundColor:
-                                                                secondaryColor,
-                                                        }}
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div
-                                                    className="w-full h-full"
-                                                    style={{
-                                                        backgroundColor:
-                                                            primaryColor,
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                        <span
-                                            className="text-sm font-medium text-[#1E2328]"
-                                            style={{
-                                                fontFamily: "Inter, sans-serif",
-                                            }}
-                                        >
-                                            {color.name}
-                                        </span>
-                                        <button
-                                            onClick={() => {
-                                                const newSelectedColors =
-                                                    selectedColors.filter(
-                                                        (id) => id !== colorId
-                                                    );
-                                                setSelectedColors(
-                                                    newSelectedColors
-                                                );
-                                                // Notify parent
-                                                if (
-                                                    newSelectedColors.length > 0
-                                                ) {
-                                                    onColorChange(
-                                                        newSelectedColors[
-                                                            newSelectedColors.length -
-                                                                1
-                                                        ]
-                                                    );
-                                                } else {
-                                                    onColorChange("");
-                                                }
-                                            }}
-                                            className="ml-1 text-[#6B7380] hover:text-[#FF4D4F] transition-colors"
-                                        >
-                                            <i className="ri-close-line text-base"></i>
-                                        </button>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-            )}
 
             {/* Size & Quantities Section - Redesigned */}
             <div className="border-t border-[#E5E7EB] pt-3 sm:pt-4">

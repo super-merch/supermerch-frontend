@@ -1,5 +1,6 @@
+import { getCleanArtworkName, isNonArtworkAddition } from "@/utils/productUtils";
 import { isProductCategory } from "@/utils/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const NONE_ARTWORK_KEY = "__none_artwork__";
@@ -36,37 +37,38 @@ const PricingTab = ({
   };
 
   // Find all additions with the same promodata_decoration as the selected print method
-  // Deduplicate by lead_time, keeping the first occurrence for each unique lead_time
-  const getLeadTimeOptions = () => {
-    if (!selectedPrintMethod || selectedPrintMethod.type !== "addition") {
-      return [];
-    }
-    const decoration = selectedPrintMethod.promodata_decoration;
-    if (!decoration) return [];
+  const getLeadTimeOptions = useCallback(
+    (decoration) => {
+      if (!decoration) return [];
 
-    // Filter all matching additions
-    const allOptions = availablePriceGroups.filter(
-      (group) =>
-        group.type === "addition" &&
-        group.promodata_decoration === decoration &&
-        group.lead_time,
-    );
+      // Find all groups (base or addition) that match this decoration name
+      const allOptions = availablePriceGroups.filter((group) => {
+        const decoName = group.promodata_decoration || group.description;
+        return decoName === decoration && group.lead_time;
+      });
 
-    // Deduplicate by lead_time, keeping the first occurrence
-    const uniqueOptionsMap = new Map();
-    allOptions.forEach((option) => {
-      const leadTime = option.lead_time;
-      // Only add if we haven't seen this lead_time before
-      if (!uniqueOptionsMap.has(leadTime)) {
-        uniqueOptionsMap.set(leadTime, option);
-      }
-    });
+      // Deduplicate by lead_time string to avoid redundant buttons
+      const uniqueOptionsMap = new Map();
+      allOptions.forEach((option) => {
+        const leadTime = option.lead_time;
+        if (!uniqueOptionsMap.has(leadTime)) {
+          uniqueOptionsMap.set(leadTime, option);
+        }
+      });
 
-    // Convert Map values to array and maintain original order (first occurrence)
-    return Array.from(uniqueOptionsMap.values());
-  };
+      return Array.from(uniqueOptionsMap.values()).sort((a, b) => {
+        // Optional: Sort lead times (e.g., 3 week before 8 week)
+        const getWeeks = (s) => parseInt(s) || 0;
+        return getWeeks(a.lead_time) - getWeeks(b.lead_time);
+      });
+    },
+    [availablePriceGroups]
+  );
 
-  const leadTimeOptions = getLeadTimeOptions();
+  const leadTimeOptions = useMemo(() => {
+    if (!selectedPrintMethod) return [];
+    return getLeadTimeOptions(selectedPrintMethod.promodata_decoration);
+  }, [selectedPrintMethod, getLeadTimeOptions]);
 
   // When print method changes, reset lead time selection
   useEffect(() => {
@@ -127,26 +129,6 @@ const PricingTab = ({
   const lowMoqIsLowStock = Boolean(stockAvailability?.isLowMoqLowStock);
   const isSupermerchArtwork = artworkSource === "supermerch" && adminCustomizations.length > 0;
 
-  const isNonArtworkAddition = (group) => {
-    const decoration = String(group?.promodata_decoration || "").toLowerCase();
-    const description = String(group?.description || "").toLowerCase();
-
-    if (decoration.startsWith("addition:")) return true;
-
-    const nonArtworkPatterns = [
-      "polybag",
-      "packaging",
-      "surcharge",
-      "metallic thread",
-      "additional charge",
-      "additional 5,000",
-      "additional 5000",
-    ];
-
-    return nonArtworkPatterns.some(
-      (token) => description.includes(token) || decoration.includes(token),
-    );
-  };
 
   const artworkOptions = useMemo(() => {
     if (isSupermerchArtwork) {
@@ -159,22 +141,17 @@ const PricingTab = ({
       }));
     }
 
-    const baseOption = availablePriceGroups.find((group) => group.type === "base");
     const options = [];
 
-    if (baseOption) {
-      options.push(baseOption);
-    }
-
-    const seenKeys = new Set();
+    const seenDecorations = new Set();
     availablePriceGroups.forEach((group) => {
-      if (group.type !== "addition") return;
       if (isNonArtworkAddition(group)) return;
 
-      const optionKey = group.key || group.description || group.promodata_decoration;
+      // Priority for decoration name: promodata_decoration field, then cleaned description
+      const decoName = group.promodata_decoration || group.description;
 
-      if (!optionKey || seenKeys.has(optionKey)) return;
-      seenKeys.add(optionKey);
+      if (!decoName || seenDecorations.has(decoName)) return;
+      seenDecorations.add(decoName);
       options.push(group);
     });
 
@@ -183,7 +160,7 @@ const PricingTab = ({
 
   const selectedArtworkValue = useMemo(() => {
     if (isSupermerchArtwork) {
-      return selectedAdminCustomization?._id || NONE_ARTWORK_KEY;
+      return selectedAdminCustomization?._id || artworkOptions[0]?.key || NONE_ARTWORK_KEY;
     }
 
     if (!selectedPrintMethod) return artworkOptions[0]?.key || "";
@@ -193,6 +170,12 @@ const PricingTab = ({
     );
     if (exactMatch) return exactMatch.key;
 
+    const decoMatch = artworkOptions.find(
+      (option) =>
+        option.promodata_decoration === selectedPrintMethod.promodata_decoration,
+    );
+    if (decoMatch) return decoMatch.key;
+
     return artworkOptions[0]?.key || "";
   }, [artworkOptions, isSupermerchArtwork, selectedAdminCustomization, selectedPrintMethod]);
 
@@ -201,11 +184,6 @@ const PricingTab = ({
   const handleArtworkChange = (event) => {
     const selectedKey = event.target.value;
 
-    if (isSupermerchArtwork && selectedKey === NONE_ARTWORK_KEY) {
-      setSelectedAdminCustomization?.(null);
-      setSelectedPosition?.(null);
-      return;
-    }
 
     const selectedOption = artworkOptions.find((option) => option.key === selectedKey);
     if (!selectedOption) return;
@@ -244,20 +222,13 @@ const PricingTab = ({
               onChange={handleArtworkChange}
               className="px-2 py-2 border rounded-md outline-none min-w-[230px]"
             >
-              {isSupermerchArtwork && (
-                <option value={NONE_ARTWORK_KEY}>None</option>
-              )}
               {artworkOptions.map((option) => (
                 <option key={option.key} value={option.key}>
                   {isSupermerchArtwork
                     ? getTrimmedDescription(option.description) ||
                       option.customization?.method?.applicationMethod ||
                       "Artwork"
-                    : option.type === "base"
-                      ? "None"
-                      : getTrimmedDescription(option.description) ||
-                        option.promodata_decoration ||
-                        "Artwork"}
+                    : getCleanArtworkName(option)}
                 </option>
               ))}
             </select>
@@ -372,19 +343,19 @@ const PricingTab = ({
           <table className="min-w-full text-xs sm:text-sm">
             <thead>
               <tr className="text-left text-black">
-                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Select</th>
-                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Qty</th>
-                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">
+                <th className="py-1.5 pr-4 text-base sm:text-xl w-1/4">Select</th>
+                <th className="py-1.5 pr-4 text-base sm:text-xl w-1/4">Qty</th>
+                <th className="py-1.5 pr-4 text-base sm:text-xl w-1/4">
                   Unit <span className="text-gray-500 text-xs">(ex GST)</span>
                 </th>
-                <th className="py-2 pr-4 text-base sm:text-xl w-1/4">Total</th>
+                <th className="py-1.5 pr-4 text-base sm:text-xl w-1/4">Total</th>
               </tr>
             </thead>
             <tbody>
               {/* Contact row for quantities below first price break */}
               {showContactRow && (
                 <tr className="border-t hover:bg-gray-50 text-black">
-                  <td className="py-2 pr-4 align-middle text-md text-black">
+                  <td className="py-1.5 pr-4 align-middle text-md text-black">
                     <input
                       type="radio"
                       name="priceTier"
@@ -393,11 +364,11 @@ const PricingTab = ({
                       className="opacity-50 cursor-not-allowed"
                     />
                   </td>
-                  <td className="py-2 pr-4 align-middle text-lg text-black">
+                  <td className="py-1.5 pr-4 align-middle text-lg text-black">
                     0-{firstQuantity - 1}
                   </td>
                   <td
-                    className="py-2   text-lg text-black text-right"
+                    className="py-1.5   text-lg text-black text-right"
                     colSpan={2}
                   >
                     <button
@@ -421,7 +392,7 @@ const PricingTab = ({
               {sortedBreaks.map((item, i) => {
                 const baseProductPrice = getPriceForQuantity(item.qty);
                 let methodUnit =
-                  effectivePrintMethod.type === "base"
+                  effectivePrintMethod?.type === "base"
                     ? item.price
                     : baseProductPrice + item.price;
                 let methodOriginal =
@@ -429,7 +400,7 @@ const PricingTab = ({
                     ? Number(item.originalPrice)
                     : null;
 
-                if (effectivePrintMethod.type !== "base") {
+                if (effectivePrintMethod?.type !== "base") {
                   const baseGroup = availablePriceGroups.find((group) => group.type === "base");
                   const baseBreaks = [...(baseGroup?.price_breaks || [])].sort((a, b) => a.qty - b.qty);
                   let selectedBaseBreak = baseBreaks[0] || null;
@@ -458,8 +429,10 @@ const PricingTab = ({
                 // Check if this price tier applies to the current quantity
                 const isSelected =
                   currentQuantity >= item.qty &&
-                  (i === sortedBreaks.length - 1 ||
+                  (i === (sortedBreaks?.length || 0) - 1 ||
                     currentQuantity < sortedBreaks[i + 1].qty);
+
+                if (!effectivePrintMethod) return null;
                 return (
                   <tr
                     key={item.qty}
@@ -471,7 +444,7 @@ const PricingTab = ({
                       setActiveIndex(i);
                     }}
                   >
-                    <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
+                    <td className="py-1.5 pr-4 align-middle text-base sm:text-lg text-black">
                       <input
                         type="radio"
                         name="priceTier"
@@ -483,10 +456,10 @@ const PricingTab = ({
                         }}
                       />
                     </td>
-                    <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
+                    <td className="py-1.5 pr-4 align-middle text-base sm:text-lg text-black">
                       {item.qty}+
                     </td>
-                    <td className="py-2 pr-4 align-middle text-base sm:text-lg text-black">
+                    <td className="py-1.5 pr-4 align-middle text-base sm:text-lg text-black">
                       <div className="flex flex-col">
                         {Number(pricingSummary?.discountPercent || 0) > 0 && Number.isFinite(methodOriginal) && methodOriginal > unitFinal && (
                           <span className="text-xs text-red-500 line-through">
@@ -501,7 +474,7 @@ const PricingTab = ({
                         </span>
                       </div>
                     </td>
-                    <td className="py-2 align-middle text-base sm:text-lg text-black">
+                    <td className="py-1.5 align-middle text-base sm:text-lg text-black">
                       <div className="flex flex-col">
                         {Number(pricingSummary?.discountPercent || 0) > 0 && Number.isFinite(originalTotal) && originalTotal > total && (
                           <span className="text-xs text-red-500 line-through">

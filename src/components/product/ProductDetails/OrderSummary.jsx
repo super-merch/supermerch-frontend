@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaMoneyBillWave, FaCheck } from "react-icons/fa";
 import { addToCart } from "../../../redux/slices/cartSlice";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
+import { getCleanArtworkName } from "@/utils/productUtils";
 
 const OrderSummary = ({
   rawPerUnit,
@@ -201,9 +202,7 @@ const OrderSummary = ({
                 <span className="font-bold">Artwork:</span>{" "}
                 {selectedAdminCustomization
                   ? `${selectedAdminCustomization.method.applicationMethod} — ${selectedAdminCustomization.method.applicationType}${selectedPosition ? ` (${selectedPosition.positionName})` : ""}`
-                  : selectedPrintMethod?.promodata_decoration ||
-                    selectedPrintMethod?.description ||
-                    "Not selected"}
+                  : getCleanArtworkName(selectedPrintMethod) || "Not selected"}
               </p>
             </div>
             {selectedAdminCustomization && customizationFile && (

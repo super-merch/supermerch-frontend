@@ -1,14 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { setClothingGender } from "../../redux/slices/filterSlice";
 
 const ClothingGenderToggle = () => {
-  const [selectedGender, setSelectedGender] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlGender = searchParams.get("gender") || "all";
+  const [selectedGender, setSelectedGender] = useState(urlGender);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (urlGender !== selectedGender) {
+      setSelectedGender(urlGender);
+      dispatch(setClothingGender(urlGender));
+    }
+  }, [urlGender, dispatch, selectedGender]);
 
   const handleGenderChange = (gender) => {
     setSelectedGender(gender);
     dispatch(setClothingGender(gender));
+    
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      if (gender === "all") {
+        newParams.delete("gender");
+      } else {
+        newParams.set("gender", gender);
+      }
+      newParams.set("page", "1");
+      return newParams;
+    });
   };
 
   return (

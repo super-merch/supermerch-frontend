@@ -1,6 +1,6 @@
 import React from "react";
+import { getCleanArtworkName, isNonArtworkAddition } from "@/utils/productUtils";
 import { FaClock, FaInfoCircle } from "react-icons/fa";
-import LeadTimeModal from "./LeadTimeModal";
 
 const LeadTimeTab = ({ availablePriceGroups = [], useGenericFallback = true }) => {
   // Fallback to default data if no leadTimeData provided
@@ -53,16 +53,17 @@ const LeadTimeTab = ({ availablePriceGroups = [], useGenericFallback = true }) =
     { process: "Sublimation - Umbrellas", leadTime: "3 Days" },
     { process: "x Melbourne Production", leadTime: "6 Days" },
   ];
+
   const leadTimeData = availablePriceGroups
+    .filter((group) => group.type === "base" || !isNonArtworkAddition(group))
     .map((group) => ({
-      method: group.description || group.promodata_decoration || "Standard",
+      method: group.description || group.promodata_decoration || group.type || "Standard",
       leadTime: group.lead_time,
     }))
     .filter(
-      (item) =>
-        item.leadTime !== null &&
-        item.leadTime !== undefined &&
-        item.leadTime !== ""
+      (item, index, self) =>
+        item.leadTime &&
+        index === self.findIndex((other) => other.method === item.method && other.leadTime === item.leadTime)
     );
 
   const mappedFromApi =
@@ -109,6 +110,7 @@ const LeadTimeTab = ({ availablePriceGroups = [], useGenericFallback = true }) =
                 <FaInfoCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-primary">
                   Lead times are estimates based on selected decoration methods.
+                  All deliveries include an automatic +1 day buffer for artwork approval.
                   Actual production time may vary depending on order complexity
                   and current workload.
                 </p>

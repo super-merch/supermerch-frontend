@@ -44,6 +44,7 @@ import SitePopups from "./components/Home/SitePopups";
 import RouteSeo from "./components/Common/RouteSeo";
 import DealsPage from "./pages/DealsPage";
 import DealDetailPage from "./pages/DealDetailPage";
+import CollectionDetailPage from "./pages/Collections/CollectionDetailPage";
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -112,6 +113,7 @@ const App = () => {
             <Route path="/deals/:slug" element={<DealDetailPage />} />
             <Route path="/deals" element={<DealsPage />} />
             <Route path="/favourites" element={<FavouritePage />} />
+            <Route path="/collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/Clothing" element={<ShopPage category="clothing" />} />
             <Route
               path="/Headwear"
