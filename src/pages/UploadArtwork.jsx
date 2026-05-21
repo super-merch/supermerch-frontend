@@ -70,15 +70,19 @@ const UploadArtwork = () => {
 
   // State for artwork uploads — auto-select "upload" if items already have artwork uploaded
   const [artworkFilesByTarget, setArtworkFilesByTarget] = useState({});
-  const [artworkInstructions, setArtworkInstructions] = useState("");
+  const [artworkOptionByTarget, setArtworkOptionByTarget] = useState({});
+  const [artworkInstructionsByTarget, setArtworkInstructionsByTarget] = useState({});
   const [isDragging, setIsDragging] = useState(false);
-  const [artworkOption, setArtworkOption] = useState(
-    allItemsHaveCustomization ? "no_artwork" : "no_artwork"
-  ); // 'upload' | 'text' | 'on_file' | 'no_artwork'
   const [artworkTarget, setArtworkTarget] = useState("all");
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
   const currentArtworkTargetKey = artworkTarget === "all" ? "all" : artworkTarget;
   const artworkFile = artworkFilesByTarget[currentArtworkTargetKey] || null;
+  const artworkOption = artworkOptionByTarget[currentArtworkTargetKey] ?? "no_artwork";
+  const artworkInstructions = artworkInstructionsByTarget[currentArtworkTargetKey] ?? "";
+  const setArtworkOption = (val) =>
+    setArtworkOptionByTarget((prev) => ({ ...prev, [currentArtworkTargetKey]: val }));
+  const setArtworkInstructions = (val) =>
+    setArtworkInstructionsByTarget((prev) => ({ ...prev, [currentArtworkTargetKey]: val }));
   const hasAnyUploadedArtworkFile = Object.keys(artworkFilesByTarget).length > 0;
 
   const getArtworkTargetLabel = (targetKey) => {
@@ -250,6 +254,8 @@ const UploadArtwork = () => {
         artworkOption: allItemsHaveCustomization && artworkOption === "no_artwork"
           ? "admin_customization"
           : (hasPendingArtworkInputs ? artworkOption : "no_artwork"),
+        artworkOptionByTarget,
+        artworkInstructionsByTarget,
         artworkTarget,
         dealDiscountAmount,
         dealRawSubtotal: roundToTwo(dealRawSubtotal),

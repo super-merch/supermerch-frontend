@@ -575,9 +575,19 @@ const ProductDetails = () => {
 
       setAvailablePriceGroups(dedupedGroups);
 
-      // Default selection: find the first valid decoration method (base or addition)
-      const firstDecoration = dedupedGroups.find((group) => !isNonArtworkAddition(group));
-      const initialMethod = firstDecoration || dedupedGroups[0] || null;
+      // Default selection: prefer a real print method, skip Unbranded/None as the auto-default
+      const isUnbrandedOrNone = (group) => {
+        const name = (getCleanArtworkName(group) || "").toLowerCase().trim();
+        return name === "unbranded" || name === "none" || name === "";
+      };
+      const firstDecoration = dedupedGroups.find(
+        (group) => !isNonArtworkAddition(group) && !isUnbrandedOrNone(group)
+      );
+      const initialMethod =
+        firstDecoration ||
+        dedupedGroups.find((g) => !isNonArtworkAddition(g)) ||
+        dedupedGroups[0] ||
+        null;
       
       setSelectedPrintMethod(initialMethod);
 
@@ -897,12 +907,6 @@ const ProductDetails = () => {
         setQuoteLoading(false);
         return;
       }
-      if (formData.comment.length < 10) {
-        toast.error("Comment must be at least 10 characters long");
-        setQuoteLoading(false);
-        return;
-      }
-
       formData1.append("name", formData.name);
       formData1.append("email", formData.email);
       formData1.append("phone", formData.phone);
