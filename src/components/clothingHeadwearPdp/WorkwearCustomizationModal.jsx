@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import TextCustomization, { FONTS, COLORS } from "./TextCustomization";
 import { AuthContext } from "@/context/AuthContext";
+import { AppContext } from "@/context/AppContext";
 import { formatAud } from "@/utils/formatAud";
 
 /**
@@ -106,6 +107,7 @@ export default function WorkwearCustomizationModal({
 
     // Auth state
     const { token, userData } = useContext(AuthContext);
+    const { gstCharges } = useContext(AppContext);
     const isAuthenticated = Boolean(token && userData);
     const apiOrigin = useMemo(() => String(backendUrl || "").replace(/\/$/, ""), [backendUrl]);
 
@@ -517,6 +519,7 @@ export default function WorkwearCustomizationModal({
         const positionCount = selectedPositions.length;
         let totalPositionCost = 0;
         let freePositionCount = 0;
+        const positionBreakdown = [];
 
         for (const position of selectedPositions) {
             // Check if this position is free for deals
@@ -543,7 +546,12 @@ export default function WorkwearCustomizationModal({
                     pricePerItem = parseFloat(tier.pricePerApplication);
                 }
             }
-            totalPositionCost += pricePerItem * quantity;
+            const positionCost = pricePerItem * quantity;
+            totalPositionCost += positionCost;
+            positionBreakdown.push({
+                name: position.positionName || position.name || "Position",
+                cost: positionCost,
+            });
         }
 
         // For deals with all positions free, setup fee may also be waived
@@ -553,20 +561,19 @@ export default function WorkwearCustomizationModal({
                 ? parseFloat(selectedMethod.setupCharge || 15)
                 : 0;
         const subtotal = totalPositionCost + setupFee;
-        const vat = subtotal * 0.2;
-        const total = subtotal + vat;
+        const gstRate = (Number(gstCharges) || 10) / 100;
+        const gst = subtotal * gstRate;
+        const total = subtotal + gst;
 
         setPricing({
-            pricePerPosition:
-                totalPositionCost /
-                    ((positionCount - freePositionCount) * quantity) || 0,
             positionCount,
             freePositionCount,
+            positionBreakdown,
             quantity,
             positionTotal: totalPositionCost,
             setupFee,
             subtotal,
-            vat,
+            gst,
             total,
             isFree: subtotal === 0,
         });
@@ -575,9 +582,9 @@ export default function WorkwearCustomizationModal({
         selectedPositions,
         quantity,
         isDeal,
-        isDeal,
         isFreeCustomization,
         isReusedLogo,
+        gstCharges,
     ]);
 
     useEffect(() => {
@@ -1878,32 +1885,16 @@ export default function WorkwearCustomizationModal({
                                                     </p>
                                                 </div>
                                             )}
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-[#6B7380]">
-                                                    Per position (
-                                                    {pricing.quantity} items):
-                                                </span>
-                                                <span className="text-[#1E2328]">
-                                                    {formatAud(
-                                                        pricing.pricePerPosition *
-                                                            pricing.quantity,
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-[#6B7380]">
-                                                    Positions (
-                                                    {pricing.positionCount -
-                                                        (pricing.freePositionCount ||
-                                                            0)}
-                                                    /{pricing.positionCount}):
-                                                </span>
-                                                <span className="text-[#1E2328]">
-                                                    {formatAud(
-                                                        pricing.positionTotal,
-                                                    )}
-                                                </span>
-                                            </div>
+                                            {pricing.positionBreakdown?.map((pb, i) => (
+                                                <div key={i} className="flex justify-between text-sm">
+                                                    <span className="text-[#6B7380]">
+                                                        {pb.name} (×{pricing.quantity}):
+                                                    </span>
+                                                    <span className="text-[#1E2328]">
+                                                        {formatAud(pb.cost)}
+                                                    </span>
+                                                </div>
+                                            ))}
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-[#6B7380]">
                                                     Setup fee (one-time):
@@ -1929,12 +1920,10 @@ export default function WorkwearCustomizationModal({
                                                 </div>
                                                 <div className="flex justify-between text-sm">
                                                     <span className="text-[#6B7380]">
-                                                        VAT (20%):
+                                                        GST ({gstCharges}%):
                                                     </span>
                                                     <span className="text-[#1E2328]">
-                                                        {formatAud(
-                                                            pricing.vat,
-                                                        )}
+                                                        {formatAud(pricing.gst)}
                                                     </span>
                                                 </div>
                                             </div>

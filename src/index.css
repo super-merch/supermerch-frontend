@@ -11,6 +11,7 @@ body {
   font-family: Figtree, ui-sans-serif, system-ui, -apple-system, "system-ui",
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  overflow-x: clip;
 }
 
 /* Ensure all elements use Figtree font with fallbacks */
@@ -69,6 +70,22 @@ select {
 .no-arrows {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+/* Hide scrollbars site-wide (vertical + horizontal) while keeping scroll behavior */
+html,
+body,
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .scrollbar-hide {
@@ -408,44 +425,3 @@ select {
   height: 300px !important;
 }
 
-/* Custom Scrollbar Styling - Workwear Aesthetic */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #009688;
-}
-
-/* Scrollbar Thin Utility */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #E2E8F0;
-  border-radius: 10px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #009688;
-}
-
-/* Firefox Support */
-.custom-scrollbar, .scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 transparent;
-}

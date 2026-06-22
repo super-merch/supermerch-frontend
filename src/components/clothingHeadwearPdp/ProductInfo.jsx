@@ -845,38 +845,21 @@ export default function ProductInfo({
                                                 .map((p) => p.name)
                                                 .join(", ")}
                                         </p>
-                                        {customization.pricing && (
+                                        {customization.pricing?.setupFee > 0 && (
                                             <div className="mt-1">
                                                 <p
-                                                    className="text-[#009688] font-semibold text-sm"
+                                                    className="text-[10px] text-[#6B7380]"
                                                     style={{
                                                         fontFamily:
                                                             "Inter, sans-serif",
                                                     }}
                                                 >
-                                                    +
+                                                    +{" "}
                                                     {formatAud(
-                                                        customization.pricing
-                                                            .positionTotal || 0,
+                                                        customization.pricing.setupFee,
                                                     )}{" "}
-                                                    per item
+                                                    setup (one-time)
                                                 </p>
-                                                {customization.pricing
-                                                    .setupFee > 0 && (
-                                                    <p
-                                                        className="text-[10px] text-[#6B7380]"
-                                                        style={{
-                                                            fontFamily:
-                                                                "Inter, sans-serif",
-                                                        }}
-                                                    >
-                                                        +{" "}
-                                                        {formatAud(
-                                                            customization.pricing.setupFee,
-                                                        )}{" "}
-                                                        setup (one-time)
-                                                    </p>
-                                                )}
                                             </div>
                                         )}
                                     </div>
