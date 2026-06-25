@@ -31,6 +31,7 @@ export default function ProductInfo({
     onViewPricing,
     onGetExpressQuote = () => {},
     onBuySample = () => {},
+    onHeadingClick = () => {},
 }) {
     const [showSizeGuide, setShowSizeGuide] = useState(false);
     const [selectedColors, setSelectedColors] = useState([]);
@@ -147,13 +148,22 @@ export default function ProductInfo({
     return (
         <div className="space-y-4">
             <h1
-                className="text-[#1E2328] mb-4 w-full whitespace-nowrap"
+                className="text-[#1E2328] mb-4 w-full whitespace-nowrap cursor-pointer"
                 style={{
                     fontFamily: "Poppins, sans-serif",
                     fontWeight: "700",
                     fontSize: "clamp(18px, 5vw, 24px)",
                     lineHeight: "1.3",
                 }}
+                onClick={onHeadingClick}
+                onKeyDown={(e) => {
+                    if (e.shiftKey && e.key.toLowerCase() === "a") {
+                        onHeadingClick(e);
+                    }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label="Product name - Press Shift+A to view supplier information"
             >
                 {product.name}
             </h1>
@@ -190,18 +200,11 @@ export default function ProductInfo({
                             <span className="text-[#E8ECF2] hidden sm:inline">
                                 •
                             </span>
-                            <span
-                                className="text-[#6B7380]"
-                                style={{
-                                    fontFamily: "Inter, sans-serif",
-                                    fontSize: "12px",
-                                }}
-                            >
-                                SKU:{" "}
-                                <span className="text-[#1E2328] font-medium">
-                                    {product.sku}
+                            {product.sku && (
+                                <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 ring-1 ring-inset ring-gray-200">
+                                    SKU: {product.sku}
                                 </span>
-                            </span>
+                            )}
                         </div>
 
                 </div>

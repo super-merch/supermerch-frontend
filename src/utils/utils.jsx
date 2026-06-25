@@ -294,6 +294,8 @@ export const getClothingAdditionalCost = (printMethodDescription) => {
 };
 
 export const is24HrProduct = (product) => {
+  if (product?.supplier?.supplier === "Promo Brands") return false;
+
   const groups = product?.product?.prices?.price_groups ?? [];
   if (!Array.isArray(groups) || groups.length === 0) return false;
 

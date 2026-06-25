@@ -136,7 +136,7 @@ const OrderSummary = ({
               </div>
               {discountPct > 0 && (
                 <span className="mt-2 inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-[11px] font-semibold text-green-700 ring-1 ring-inset ring-green-200">
-                  Save {discountPct}%
+                  Save {Math.round(discountPct)}%
                 </span>
               )}
             </div>

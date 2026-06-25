@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoClose } from "react-icons/io5";
 
 import SeoHelmet from "@/components/Common/SeoHelmet";
 import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
@@ -29,6 +31,7 @@ import {
   getDefaultPrintMethod,
   getPriceForQuantity,
   mapSingleProductToWorkwearModel,
+  normalizedImageList,
 } from "@/utils/promodataWorkwearPdpMap";
 
 function formatDeliveryDate(d) {
@@ -112,6 +115,12 @@ export default function ClothingHeadwearWorkwearPdp() {
   const [localPricing, setLocalPricing] = useState(null);
   const [availablePriceGroups, setAvailablePriceGroups] = useState([]);
 
+  // Supplier modal (Shift + A + click on product heading)
+  const [showSupplierModal, setShowSupplierModal] = useState(false);
+  const [isShiftPressed, setIsShiftPressed] = useState(false);
+  const [isAPressed, setIsAPressed] = useState(false);
+  const aKeyTimeoutRef = useRef(null);
+
   const promodataProduct = singleProduct?.product || {};
   const priceGroups = useMemo(
     () => promodataProduct?.prices?.price_groups || [],
@@ -188,6 +197,11 @@ export default function ClothingHeadwearWorkwearPdp() {
     return p.primaryImage?.imageUrl ? [p.primaryImage.imageUrl] : [];
   }, [singleProduct, v1categories]);
 
+  const allProductImages = useMemo(() => {
+    if (!singleProduct) return [];
+    return normalizedImageList(singleProduct);
+  }, [singleProduct]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -196,9 +210,53 @@ export default function ClothingHeadwearWorkwearPdp() {
     if (!workwearProduct?.availableColors?.length) return;
     setSelectedColor((prev) => {
       if (prev && workwearProduct.availableColors.some((c) => c.id === prev)) return prev;
-      return workwearProduct.availableColors[0].id;
+      return "";
     });
   }, [workwearProduct]);
+
+  // Keyboard event listeners for Shift + A (supplier modal trigger)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Shift") {
+        setIsShiftPressed(true);
+      }
+      if (e.key.toLowerCase() === "a" && e.shiftKey) {
+        setIsAPressed(true);
+        if (aKeyTimeoutRef.current) clearTimeout(aKeyTimeoutRef.current);
+        aKeyTimeoutRef.current = setTimeout(() => {
+          setIsAPressed(false);
+        }, 2000);
+      }
+      if (e.key === "Escape" && showSupplierModal) {
+        setShowSupplierModal(false);
+      }
+    };
+    const handleKeyUp = (e) => {
+      if (e.key === "Shift") setIsShiftPressed(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (aKeyTimeoutRef.current) clearTimeout(aKeyTimeoutRef.current);
+    };
+  }, [showSupplierModal]);
+
+  // Called when the product name heading is clicked
+  const handleHeadingClick = (e) => {
+    const shiftHeld = e.shiftKey || isShiftPressed;
+    if (shiftHeld && isAPressed) {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowSupplierModal(true);
+      setIsAPressed(false);
+      if (aKeyTimeoutRef.current) {
+        clearTimeout(aKeyTimeoutRef.current);
+        aKeyTimeoutRef.current = null;
+      }
+    }
+  };
 
   useEffect(() => {
     setSizeQuantities({});
@@ -746,7 +804,7 @@ export default function ClothingHeadwearWorkwearPdp() {
               <div className="lg:sticky lg:top-20 lg:z-10 w-full">
                 <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-lg border-2 border-[#009688]/20 hover:border-[#009688]/40 transition-colors">
                   <ProductGallery
-                    images={colorVariants?.images.map((img) => img.url) || [workwearProduct.primaryImage?.imageUrl]}
+                    images={colorVariants?.images.map((img) => img.url) || allProductImages}
                     productName={workwearProduct.name}
                     selectedColorName={workwearProduct.availableColors.find((c) => c.id === selectedColor)?.name}
                     isLoading={false}
@@ -779,6 +837,7 @@ export default function ClothingHeadwearWorkwearPdp() {
                 isInWishlist={isFavourited}
                 wishlistLoading={false}
                 onToggleWishlist={handleToggleWishlist}
+                onHeadingClick={handleHeadingClick}
               />
             </div>
           </div>
@@ -874,6 +933,108 @@ export default function ClothingHeadwearWorkwearPdp() {
           />
         )}
       </div>
+
+      {/* Supplier Information Modal (Shift + A + click product name) */}
+      <AnimatePresence>
+        {showSupplierModal && (
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowSupplierModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-[#009688] to-blue-600 px-6 py-5 rounded-t-2xl relative">
+                <div className="absolute top-4 right-4">
+                  <button
+                    onClick={() => setShowSupplierModal(false)}
+                    className="p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+                    aria-label="Close modal"
+                  >
+                    <IoClose className="w-6 h-6" />
+                  </button>
+                </div>
+                <h3 className="text-2xl font-bold text-white pr-10">Supplier Information</h3>
+                <p className="text-white/90 text-sm mt-1">Product supplier details</p>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {/* Supplier Name */}
+                {singleProduct?.overview?.supplier && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Supplier Name</h4>
+                    <p className="text-lg font-medium text-gray-900">{singleProduct.overview.supplier}</p>
+                  </div>
+                )}
+
+                {/* SKU Number */}
+                {singleProduct?.overview?.sku_number && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">SKU Number</h4>
+                    <p className="text-lg font-medium text-gray-900">{singleProduct.overview.sku_number}</p>
+                  </div>
+                )}
+
+                {/* Product Name */}
+                {workwearProduct?.name && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Product Name</h4>
+                    <p className="text-lg font-medium text-gray-900">{workwearProduct.name}</p>
+                  </div>
+                )}
+
+                {/* Product Code */}
+                {singleProduct?.product?.code && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Product Code</h4>
+                    <p className="text-lg font-medium text-gray-900">{singleProduct.product.code}</p>
+                  </div>
+                )}
+
+                {/* Supplier Category */}
+                {singleProduct?.product?.categorisation?.supplier_category && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Supplier Category</h4>
+                    <p className="text-lg font-medium text-gray-900">{singleProduct.product.categorisation.supplier_category}</p>
+                  </div>
+                )}
+
+                {!singleProduct?.overview?.supplier && !singleProduct?.overview?.sku_number && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No supplier information available for this product.</p>
+                  </div>
+                )}
+
+                {/* Tip */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">Tip:</span> Hold{" "}
+                    <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">Shift + A</kbd>{" "}
+                    and click on the product name to view supplier information.
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl flex justify-end">
+                <button
+                  onClick={() => setShowSupplierModal(false)}
+                  className="px-6 py-2 bg-[#009688] hover:bg-[#00796B] text-white font-medium rounded-lg transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -155,7 +155,7 @@ export default function OrderSummarySidebar({
                         </p>
                         {Number(item.discountPct || 0) > 0 && (
                           <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-2 py-0.5">
-                            {Number(item.discountPct).toFixed(2)}% product discount applied
+                            {Math.round(Number(item.discountPct))}% product discount applied
                           </span>
                         )}
                       </div>

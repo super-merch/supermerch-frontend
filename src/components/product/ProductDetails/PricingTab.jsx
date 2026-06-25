@@ -327,7 +327,12 @@ const PricingTab = ({
 
           {Number(pricingSummary?.discountPercent || 0) > 0 && (
             <div className="mt-2 p-2 rounded-md border border-emerald-200 bg-emerald-50 text-sm text-emerald-900">
-              Product discount applied: <span className="font-semibold">{Number(pricingSummary.discountPercent).toFixed(2)}% OFF</span>
+              Product discount applied:{" "}
+              <span className="font-semibold">
+                {pricingSummary.discountMode === "FLAT"
+                  ? `A$${Number(pricingSummary.discountAmount || 0).toFixed(2)} OFF`
+                  : `${Number(pricingSummary.discountAmount || pricingSummary.discountPercent || 0)}% OFF`}
+              </span>
             </div>
           )}
 

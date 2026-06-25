@@ -919,7 +919,7 @@ const CartComponent = () => {
                                   <span>
                                     Product Discount:{" "}
                                     <span className="font-medium text-emerald-700">
-                                      {Number(item.discountPct).toFixed(2)}%
+                                      {Math.round(Number(item.discountPct))}%
                                     </span>
                                   </span>
                                 </div>

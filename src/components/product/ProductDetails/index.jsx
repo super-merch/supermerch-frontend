@@ -603,19 +603,8 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (product) {
-      const hasColors = product?.colours?.list?.length > 0;
-
-      if (hasColors) {
-        const firstColorObj = product.colours.list[0];
-        const firstColorName = firstColorObj.name || firstColorObj.colours.join("/");
-        setSelectedColor(firstColorName);
-        setActiveImage(
-          firstColorObj.image || normalizedImages[0] || noimage,
-        );
-      } else {
-        // Product has no colors - use first product image
-        setActiveImage(normalizedImages[0] || noimage);
-      }
+      setSelectedColor("");
+      setActiveImage(normalizedImages[0] || noimage);
     }
   }, [product, normalizedImages]);
 
@@ -1412,7 +1401,9 @@ const ProductDetails = () => {
                         <div className="flex justify-between py-1.5 border-b border-gray-50">
                           <dt className="text-gray-500">Discount</dt>
                           <dd className="font-medium text-emerald-600">
-                            {discountPct}% off
+                            {pricingSummary?.discountMode === "FLAT"
+                              ? `A$${Number(pricingSummary?.discountAmount || 0).toFixed(2)} off`
+                              : `${Number(pricingSummary?.discountAmount || Math.round(discountPct))}% off`}
                           </dd>
                         </div>
                       )}

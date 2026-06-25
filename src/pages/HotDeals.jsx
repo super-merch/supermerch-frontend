@@ -188,6 +188,8 @@ const HotDeals = () => {
                   (1 - discountPct / 100);
               }
               const is24HrProduct = (() => {
+                if (product?.supplier?.supplier === "Promo Brands") return false;
+
                 const groups = product?.product?.prices?.price_groups ?? [];
                 if (!Array.isArray(groups) || groups.length === 0) return false;
 

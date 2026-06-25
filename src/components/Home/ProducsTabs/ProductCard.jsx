@@ -41,6 +41,8 @@ const ProductCard = ({
   const finalPrice = Number(product?.pricingSummary?.finalMinPrice) || getProductPrice(product, product.meta.id);
   const strikePrice = Number(product?.pricingSummary?.marginAdjustedMinPrice) || null;
   const is24HrProduct = (() => {
+    if (product?.supplier?.supplier === "Promo Brands") return false;
+
     const groups = product?.product?.prices?.price_groups ?? [];
     if (!Array.isArray(groups) || groups.length === 0) return false;
 

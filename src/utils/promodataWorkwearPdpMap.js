@@ -2,12 +2,69 @@ import { getCategoryMeta } from "@/utils/categoryMeta";
 
 const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
 
-const SIZE_SKIP = new Set(["FRE", "FREE", "ONE SIZE"]);
+// Numeric AU sizing (women's workwear)
+const NUMERIC_SIZE_ORDER = [
+  "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30",
+];
+
+// Children's sizing
+const KIDS_SIZE_ORDER = ["000", "00", "0", "1", "2", "4", "6", "8", "10", "12", "14", "16"];
+
+const SIZE_SKIP = new Set([
+  "FRE", "FREE", "ONE SIZE", "ONE-SIZE", "ONESIZE", "OS", "FREE SIZE",
+]);
 
 function normalizeSizeToken(sz) {
   if (sz == null) return "";
   if (typeof sz === "string") return sz.trim();
   return String(sz.name ?? sz.size ?? sz.label ?? sz.code ?? "").trim();
+}
+
+/**
+ * Expand a single token that may be a size range like "S - 5XL" or "S-5XL"
+ * into individual sizes from the known size orderings.
+ * Returns an array (single-element if not a recognized range).
+ */
+function expandSizeRangeToken(token) {
+  const t = String(token || "").trim();
+  if (!t) return [];
+
+  // Match "A - B", "A-B", "A – B", "A — B" (normal, en-dash, em-dash)
+  const rangeMatch = t.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+  if (!rangeMatch) return [t];
+
+  const startUp = rangeMatch[1].trim().toUpperCase();
+  const endUp = rangeMatch[2].trim().toUpperCase();
+
+  // Standard clothing sizes
+  const si = SIZE_ORDER.findIndex((s) => s.toUpperCase() === startUp);
+  const ei = SIZE_ORDER.findIndex((s) => s.toUpperCase() === endUp);
+  if (si !== -1 && ei !== -1 && ei >= si) return SIZE_ORDER.slice(si, ei + 1);
+
+  // Numeric AU sizing
+  const sn = NUMERIC_SIZE_ORDER.findIndex((s) => s === startUp);
+  const en = NUMERIC_SIZE_ORDER.findIndex((s) => s === endUp);
+  if (sn !== -1 && en !== -1 && en >= sn) return NUMERIC_SIZE_ORDER.slice(sn, en + 1);
+
+  // Kids sizing
+  const sk = KIDS_SIZE_ORDER.findIndex((s) => s === startUp);
+  const ek = KIDS_SIZE_ORDER.findIndex((s) => s === endUp);
+  if (sk !== -1 && ek !== -1 && ek >= sk) return KIDS_SIZE_ORDER.slice(sk, ek + 1);
+
+  // Unknown range — return token as-is so we never silently drop data
+  return [t];
+}
+
+/**
+ * Normalize raw PromoData size values (strings or objects) then expand any
+ * range tokens into individual sizes. Returns a flat array.
+ */
+function expandAndNormalizeSizes(rawList) {
+  if (!Array.isArray(rawList)) return [];
+  return rawList
+    .map(normalizeSizeToken)
+    .filter(Boolean)
+    .flatMap(expandSizeRangeToken);
 }
 
 function dedupeSizesPreserve(list) {
@@ -31,14 +88,14 @@ function sizesFromColourEntry(entry) {
     raw = entry.available_sizes;
   }
   if (!Array.isArray(raw)) return [];
-  return dedupeSizesPreserve(raw.map(normalizeSizeToken).filter(Boolean));
+  return dedupeSizesPreserve(expandAndNormalizeSizes(raw));
 }
 
 function sizesFromProductRoot(product) {
   if (!product || typeof product !== "object") return [];
   const raw = product.sizes || product.available_sizes || product.size_options;
   if (!Array.isArray(raw)) return [];
-  return dedupeSizesPreserve(raw.map(normalizeSizeToken).filter(Boolean));
+  return dedupeSizesPreserve(expandAndNormalizeSizes(raw));
 }
 
 function unionSizesFromAllColourEntries(list) {
@@ -69,40 +126,39 @@ function extractSizesFromDetailsAndDescription(productData) {
   });
   const detailString = sizeDetail?.detail || "";
 
-  let headerSizes = String(detailString)
-    .split("\n")[0]
-    .split(/[|,;:]/)
-    .map((s) => s.trim())
-    .filter(Boolean);
+  if (detailString) {
+    let rawTokens = String(detailString)
+      .split("\n")[0]
+      .split(/[|,;:]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
 
-  if (headerSizes.length === 1 && headerSizes[0].includes(",")) {
-    headerSizes = headerSizes[0].split(",").map((s) => s.trim()).filter(Boolean);
-  }
+    if (rawTokens.length === 1 && rawTokens[0].includes(",")) {
+      rawTokens = rawTokens[0].split(",").map((s) => s.trim()).filter(Boolean);
+    }
 
-  if (headerSizes.length > 0) {
-    return dedupeSizesPreserve(headerSizes);
+    if (rawTokens.length > 0) {
+      // Expand ranges like "S - 5XL" into individual sizes
+      const expanded = rawTokens.flatMap(expandSizeRangeToken);
+      return dedupeSizesPreserve(expanded);
+    }
   }
 
   const description = productData?.product?.description || "";
-  const sizesMatch = description.match(/Sizes:\s*([^\n]+)/i);
+  const sizesMatch = description.match(/Sizes?:\s*([^\n]+)/i);
   if (!sizesMatch) return [];
 
   const sizesString = sizesMatch[1].trim();
-  if (sizesString.includes(" - ")) {
-    const [start, end] = sizesString.split(" - ").map((s) => s.trim());
-    const startIndex = SIZE_ORDER.indexOf(start);
-    const endIndex = SIZE_ORDER.indexOf(end);
-    if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
-      return SIZE_ORDER.slice(startIndex, endIndex + 1);
-    }
-    return dedupeSizesPreserve([sizesString]);
-  }
+  // Try as a range first (handles "S - 5XL" directly)
+  const rangeExpanded = expandSizeRangeToken(sizesString);
+  if (rangeExpanded.length > 1) return dedupeSizesPreserve(rangeExpanded);
 
   return dedupeSizesPreserve(
     sizesString
       .split(/[|,;:]/)
       .map((s) => s.trim())
-      .filter(Boolean),
+      .filter(Boolean)
+      .flatMap(expandSizeRangeToken),
   );
 }
 
@@ -146,7 +202,7 @@ function resolveImageUrl(image) {
   );
 }
 
-function normalizedImageList(singleProduct) {
+export function normalizedImageList(singleProduct) {
   const product = singleProduct?.product || {};
   const primary = Array.isArray(product?.images)
     ? product.images.map(resolveImageUrl).filter(Boolean)
@@ -275,7 +331,7 @@ export function mapSingleProductToWorkwearModel(singleProduct, v1categories = []
     id: productId,
     slug,
     name: product.name || overview.name || "Product",
-    productCode: product.code || overview.sku_number || String(productId),
+    productCode: overview.sku_number || String(productId),
     primaryImage: { imageUrl: images[0] || "" },
     availableColors: colors,
     priceTiers: tiers,
@@ -319,7 +375,6 @@ export function mapSingleProductToWorkwearModel(singleProduct, v1categories = []
 const CLOTHING_PDP_SIZE_LINE_CAP = 999_999;
 
 export function buildColorVariants(singleProduct, selectedColorId, sizes, _stockTotal = null) {
-  const product = singleProduct?.product || {};
   const productId = singleProduct?.meta?.id || "";
   const colors = colorList(singleProduct);
   const images = normalizedImageList(singleProduct);
@@ -332,7 +387,7 @@ export function buildColorVariants(singleProduct, selectedColorId, sizes, _stock
   const sizesWithStock = sizes.map((name, idx) => ({
     size: { id: idx + 1, name: String(name) },
     variantId: `${productId}-${colorEntry?.id || "c0"}-${name}`,
-    sku: singleProduct?.overview?.sku_number || product.code || String(productId),
+    sku: singleProduct?.overview?.sku_number || String(productId),
     priceAdjustment: 0,
     stock: CLOTHING_PDP_SIZE_LINE_CAP,
     stockQty: CLOTHING_PDP_SIZE_LINE_CAP,

@@ -24,7 +24,11 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
   const navigate = useNavigate();
 
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
-  const discountPct = product.discountInfo?.discount || 0;
+  const discountMode = product.discountInfo?.discountMode || "PERCENTAGE";
+  const discountAmount = Number(product.discountInfo?.discountAmount || 0);
+  const derivedDiscount = Number(product.discountInfo?.discount || 0);
+  // Use the admin-set clean value; fall back to rounded derived % only if no stored amount
+  const discountPct = discountAmount > 0 ? discountAmount : Math.round(derivedDiscount);
   const isGlobalDiscount = product.discountInfo?.isGlobal || false;
   const finalPrice = Number(product?.pricingSummary?.finalMinPrice) || getProductPrice(product, product.meta.id);
   const strikePrice = Number(product?.pricingSummary?.marginAdjustedMinPrice) || null;
@@ -173,7 +177,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
         {discountPct > 0 && (
           <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 z-20 flex flex-col gap-1">
             <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs font-bold text-white bg-primary rounded-full whitespace-nowrap">
-              {discountPct}% OFF
+              {discountMode === "FLAT" ? `A$${discountPct} OFF` : `${discountPct}% OFF`}
             </span>
             {isGlobalDiscount && (
               <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs font-bold text-white bg-orange-500 rounded-full whitespace-nowrap">
