@@ -1125,6 +1125,10 @@ const ProductDetails = () => {
   };
 
   const handleBuySample = async () => {
+    if (unitPrice <= 0) {
+      toast.error("Pricing not available for this product.");
+      return;
+    }
     let customizationFileData = null;
     if (selectedAdminCustomization && customizationFile) {
       try {
@@ -1653,9 +1657,9 @@ const ProductDetails = () => {
                   <button
                     type="button"
                     onClick={handleBuySample}
-                    disabled={isSampleLowStock}
+                    disabled={isSampleLowStock || unitPrice <= 0}
                     className={`flex items-center justify-center gap-2 h-10 text-xs font-bold rounded-xl transition-all shadow-sm ${
-                      isSampleLowStock
+                      (isSampleLowStock || unitPrice <= 0)
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "text-white bg-primary hover:bg-primary/90 hover:shadow-md active:scale-[0.98]"
                     }`}

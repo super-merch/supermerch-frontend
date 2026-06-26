@@ -287,7 +287,8 @@ export default function ProductInfo({
                             <button
                                 type="button"
                                 onClick={onBuySample}
-                                className="px-2.5 sm:px-3 h-8 sm:h-9 text-[10px] sm:text-xs font-bold text-white bg-[#009688] rounded-lg hover:bg-[#00796B] transition-all whitespace-nowrap"
+                                disabled={basePrice === 0}
+                                className="px-2.5 sm:px-3 h-8 sm:h-9 text-[10px] sm:text-xs font-bold text-white bg-[#009688] rounded-lg hover:bg-[#00796B] transition-all whitespace-nowrap disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed"
                                 style={{ fontFamily: "Inter, sans-serif" }}
                             >
                                 BUY 1 SAMPLE

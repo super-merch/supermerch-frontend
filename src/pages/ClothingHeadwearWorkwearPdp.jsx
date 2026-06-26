@@ -707,6 +707,10 @@ export default function ClothingHeadwearWorkwearPdp() {
     }
     const adminPayload = await buildAdminCustomizationPayload();
     const unit = getEstimatedUnitPrice(1);
+    if (unit <= 0) {
+      toast.error("Pricing not available for this product.");
+      return;
+    }
     const deliveryDate = (() => {
       const d = new Date();
       d.setDate(d.getDate() + 14);

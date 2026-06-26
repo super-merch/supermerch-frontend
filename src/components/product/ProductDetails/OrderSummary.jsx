@@ -35,6 +35,10 @@ const OrderSummary = ({
   const navigate = useNavigate();
 
   const handleBuySample = async () => {
+    if (perUnitWithMargin <= 0) {
+      toast.error("Pricing not available for this product.");
+      return;
+    }
     // Convert customizationFile to base64 for Redux serialization
     let customizationFileData = null;
     if (selectedAdminCustomization && customizationFile) {
@@ -174,11 +178,15 @@ const OrderSummary = ({
               <button className="text-sm">Get Express Quote</button>
             </div>
             <div
-              onClick={handleBuySample}
-              className="flex items-center justify-center gap-2 py-2 mt-2 text-white cursor-pointer bg-primary hover:bg-primary/80 transition-all duration-300 rounded-sm"
+              onClick={perUnitWithMargin <= 0 ? null : handleBuySample}
+              className={`flex items-center justify-center gap-2 py-2 mt-2 text-white rounded-sm transition-all duration-300 ${
+                perUnitWithMargin <= 0
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "cursor-pointer bg-primary hover:bg-primary/80"
+              }`}
             >
-              <img src="/buy2.png" alt="" />
-              <button className="text-sm">BUY 1 SAMPLE</button>
+              <img src="/buy2.png" alt="" className={perUnitWithMargin <= 0 ? "opacity-30" : ""} />
+              <button className="text-sm" disabled={perUnitWithMargin <= 0}>BUY 1 SAMPLE</button>
             </div>
           </div>
 
