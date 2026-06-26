@@ -3,7 +3,7 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useContext } from "react";
 import { ProductsContext } from "../../context/ProductsContext";
 
-const Breadcrumb = () => {
+const Breadcrumb = ({ customItems }) => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const {
@@ -73,6 +73,62 @@ const Breadcrumb = () => {
       setActiveFilterCategory(null);
     }
   };
+
+  if (customItems && customItems.length > 0) {
+    return (
+      <div className="Mycontainer">
+        {/* Mobile Layout */}
+        <div className="lg:hidden px-0 md:py-8 py-4">
+          <div className="flex flex-wrap items-center gap-1 text-smallHeader text-xs">
+            {/* Home */}
+            <Link
+              to="/"
+              className="flex items-center gap-1 hover:text-smallHeader-dark transition-colors"
+            >
+              <p className="truncate">Home</p>/
+            </Link>
+            {customItems.map((item, index) => (
+              <React.Fragment key={index}>
+                {item.path && item.path !== "#" ? (
+                  <Link
+                    to={item.path}
+                    className="hover:underline hover:text-smallHeader-dark transition-colors truncate"
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span className="text-gray-600 truncate">{item.label}</span>
+                )}
+                {index < customItems.length - 1 && "/"}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2 text-smallHeader py-2 text-lg">
+            {/* Home */}
+            <Link to="/" className="flex items-center gap-1">
+              <p>Home</p>/
+            </Link>
+            {customItems.map((item, index) => (
+              <React.Fragment key={index}>
+                {item.path && item.path !== "#" ? (
+                  <Link to={item.path} className="hover:underline">
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span>{item.label}</span>
+                )}
+                {index < customItems.length - 1 && "/"}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="Mycontainer">

@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { 
-  LoadingOverlay, 
-  Breadcrumb 
-} from '../../components/Common';
+import { LoadingOverlay } from '../../components/Common';
+import Breadcrumb from '../../components/shared/Breadcrumb';
 import RouteSeo from '../../components/Common/RouteSeo';
 import Cards from '../../components/shop/Cards';
+import ShopOurBestSellers from '../../components/Home/ProducsTabs/ShopOurBestSellers';
 
 const CollectionDetailPage = () => {
   const { slug } = useParams();
@@ -56,43 +55,23 @@ const CollectionDetailPage = () => {
   if (!collection) return null;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-100 min-h-screen">
       <RouteSeo 
         title={`${collection.name} | SuperMerch`} 
         description={collection.shortDescription || `Browse products in our ${collection.name} collection.`}
       />
       
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Breadcrumb 
-            items={[
-              { label: 'Collections', path: '#' }, // Non-navigable
-              { label: collection.name, path: `/collections/${collection.slug}` }
-            ]} 
-          />
-          
-          <div className="mt-8 md:flex md:items-center md:justify-between">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold leading-7 text-gray-900 sm:text-4xl sm:truncate tracking-tight">
-                {collection.name}
-              </h1>
-              {collection.shortDescription && (
-                <p className="mt-2 text-lg text-gray-500 max-w-3xl">
-                  {collection.shortDescription}
-                </p>
-              )}
-              <div className="mt-4 flex items-center gap-2">
-                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-primary/10 text-primary">
-                  {totalCount} Products
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Breadcrumb 
+        customItems={[
+          { label: 'Collections', path: '#' },
+          { label: collection.name, path: `/collections/${collection.slug}` }
+        ]} 
+      />
 
-      <div className="py-6">
-        <Cards category="collection" />
+      <Cards category="collection" />
+
+      <div className="mt-10 bg-primary/10 py-10">
+        <ShopOurBestSellers />
       </div>
     </div>
   );
