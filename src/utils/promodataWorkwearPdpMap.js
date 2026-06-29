@@ -221,9 +221,68 @@ export function normalizedImageList(singleProduct) {
   return Array.from(new Set([...primary, ...fallback, ...colorImages, ...(heroImage ? [heroImage] : [])]));
 }
 
-function buildPriceTiers(singleProduct) {
+/**
+ * Normalize a colour name / price-group description for matching.
+ * PromoData encodes the colour inside `base_price.description`, e.g.
+ * "Black/White/Silver, all sizes". We strip the size scope and collapse
+ * whitespace/case so it can be compared against a colour row `name`.
+ */
+function normalizeColorKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/,?\s*all sizes\s*$/i, "")
+    .replace(/\s+/g, "")
+    .trim();
+}
+
+/**
+ * Find the price group whose base_price matches the given colour name.
+ *
+ * CRITICAL: price groups are NOT in the same order as colours.list, and each
+ * colour can have a different price. Matching MUST be done on the description,
+ * never by array index. Falls back to the cheapest group (honest "from" price)
+ * when no colour is selected or no description matches.
+ */
+export function findPriceGroupForColor(singleProduct, colorName) {
   const priceGroups = singleProduct?.product?.prices?.price_groups || [];
-  const base = priceGroups.find((g) => g?.base_price)?.base_price;
+  const withBase = priceGroups.filter((g) => g?.base_price);
+  if (!withBase.length) return null;
+
+  if (colorName) {
+    const target = normalizeColorKey(colorName);
+    if (target) {
+      const exact = withBase.find(
+        (g) => normalizeColorKey(g.base_price.description) === target,
+      );
+      if (exact) return exact;
+      const partial = withBase.find((g) => {
+        const desc = normalizeColorKey(g.base_price.description);
+        return desc && (desc.includes(target) || target.includes(desc));
+      });
+      if (partial) return partial;
+    }
+  }
+
+  // No colour / no match → cheapest group so the displayed "from" price is real.
+  return withBase.reduce((cheapest, g) => {
+    const lowest = (breaks) =>
+      Math.min(...(breaks || []).map((b) => Number(b.price) || Infinity), Infinity);
+    return lowest(g.base_price.price_breaks) <
+      lowest(cheapest.base_price.price_breaks)
+      ? g
+      : cheapest;
+  }, withBase[0]);
+}
+
+/** Price breaks for the selected colour (or cheapest group as fallback). */
+export function getBasePriceBreaksForColor(singleProduct, colorName) {
+  const group = findPriceGroupForColor(singleProduct, colorName);
+  return group?.base_price?.price_breaks || [];
+}
+
+export function buildPriceTiers(singleProduct, colorName) {
+  const group = findPriceGroupForColor(singleProduct, colorName);
+  const base = group?.base_price;
   const breaks = [...(base?.price_breaks || [])].sort((a, b) => a.qty - b.qty);
   if (!breaks.length) {
     return [{ minQuantity: 1, maxQuantity: null, unitPrice: 0 }];
@@ -400,9 +459,9 @@ export function buildColorVariants(singleProduct, selectedColorId, sizes, _stock
   };
 }
 
-export function getDefaultPrintMethod(singleProduct) {
-  const priceGroups = singleProduct?.product?.prices?.price_groups || [];
-  const basePriceData = priceGroups.find((group) => group?.base_price)?.base_price;
+export function getDefaultPrintMethod(singleProduct, colorName) {
+  const group = findPriceGroupForColor(singleProduct, colorName);
+  const basePriceData = group?.base_price;
   if (!basePriceData) return null;
   return {
     ...basePriceData,

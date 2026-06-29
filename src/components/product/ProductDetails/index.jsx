@@ -9,7 +9,10 @@ import {
 } from "@/utils/utils";
 import { getCleanArtworkName, isNonArtworkAddition } from "@/utils/productUtils";
 import { getArtworkSource } from "@/utils/categoryMeta";
-import { extractSizesFromProduct as extractSizesFromPromodata } from "@/utils/promodataWorkwearPdpMap";
+import {
+  extractSizesFromProduct as extractSizesFromPromodata,
+  findPriceGroupForColor,
+} from "@/utils/promodataWorkwearPdpMap";
 import { parseLeadTime, calculateEstimatedDelivery } from "@/utils/deliveryCalculations";
 import axios, { all } from "axios";
 import { CheckCheck } from "lucide-react";
@@ -370,7 +373,13 @@ const ProductDetails = () => {
 
   // const [currentPrice, setCurrentPrice] = useState(0);
   const priceGroups = product?.prices?.price_groups || [];
-  const basePrice = priceGroups.find((group) => group?.base_price) || {};
+  // PromoData prices vary per colour and price groups are NOT index-aligned
+  // with colours.list — match the group via base_price.description.
+  // `selectedColor` in this component is the colour NAME.
+  const basePrice =
+    findPriceGroupForColor(single_product, selectedColor) ||
+    priceGroups.find((group) => group?.base_price) ||
+    {};
   const priceBreaks = basePrice.base_price?.price_breaks || [];
   const originalPrice =
     priceBreaks.length > 0 && priceBreaks[0]?.price !== undefined
@@ -600,6 +609,19 @@ const ProductDetails = () => {
       }
     }
   }, [priceGroups, product?.prices?.addons, single_product]);
+
+  // Keep the base (Undecorated) price method in sync with the selected colour.
+  // PromoData prices differ per colour, so the base group must follow the swatch
+  // rather than staying pinned to the first/cheapest group.
+  useEffect(() => {
+    setSelectedPrintMethod((prev) => {
+      if (!prev || prev.type !== "base") return prev;
+      const matched = findPriceGroupForColor(single_product, selectedColor)?.base_price;
+      if (!matched) return prev;
+      if (matched.key === prev.key) return prev;
+      return { ...matched, type: "base" };
+    });
+  }, [selectedColor, single_product]);
 
   useEffect(() => {
     if (product) {
@@ -1045,8 +1067,7 @@ const ProductDetails = () => {
       addToCart({
         id: productId,
         name: product.name,
-        basePrices:
-          priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
+        basePrices: priceBreaks,
         image: normalizedImages[0] || "",
         price: (() => {
           const baseProductPrice = getPriceForQuantity(currentQuantity);
@@ -1159,8 +1180,7 @@ const ProductDetails = () => {
         id: productId,
         name: product.name,
         image: normalizedImages[0] || "",
-        basePrices:
-          priceGroups.find((g) => g.base_price)?.base_price?.price_breaks || [],
+        basePrices: priceBreaks,
         price: unitPrice,
         discountPct,
         clearanceInfo: single_product?.clearanceInfo || null,

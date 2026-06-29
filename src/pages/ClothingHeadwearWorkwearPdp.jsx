@@ -26,8 +26,11 @@ import { resolveAddLogoLaterFromCustomizationData } from "@/utils/addLogoLater";
 import { getArtworkSource } from "@/utils/categoryMeta";
 import {
   buildColorVariants,
+  buildPriceTiers,
   extractSizesForSelectedColor,
   extractSizesFromProduct,
+  findPriceGroupForColor,
+  getBasePriceBreaksForColor,
   getDefaultPrintMethod,
   getPriceForQuantity,
   mapSingleProductToWorkwearModel,
@@ -127,13 +130,25 @@ export default function ClothingHeadwearWorkwearPdp() {
     [promodataProduct?.prices?.price_groups],
   );
 
+  // Name of the currently selected colour — used to pick the matching price
+  // group (PromoData prices vary per colour and groups are NOT index-aligned).
+  const selectedColorName =
+    workwearProduct?.availableColors?.find((c) => c.id === selectedColor)?.name || "";
+
+  // Price tiers for the SELECTED colour. Falls back to the cheapest group's
+  // tiers when nothing is selected so the "from" price stays honest.
+  const colorPriceTiers = useMemo(
+    () => (singleProduct ? buildPriceTiers(singleProduct, selectedColorName) : []),
+    [singleProduct, selectedColorName],
+  );
+
   useEffect(() => {
     if (!singleProduct) {
       setAvailablePriceGroups([]);
       return;
     }
     if (priceGroups.length > 0 || (promodataProduct?.prices?.addons || []).length > 0) {
-      const basePriceData = priceGroups.find((group) => group?.base_price)?.base_price;
+      const basePriceData = findPriceGroupForColor(singleProduct, selectedColorName)?.base_price;
       const baseGroup = basePriceData
         ? {
             ...basePriceData,
@@ -169,7 +184,7 @@ export default function ClothingHeadwearWorkwearPdp() {
     } else {
       setAvailablePriceGroups([]);
     }
-  }, [singleProduct, priceGroups, promodataProduct?.prices?.addons]);
+  }, [singleProduct, priceGroups, promodataProduct?.prices?.addons, selectedColorName]);
 
   const sizes = useMemo(() => {
     if (!singleProduct) return [];
@@ -178,8 +193,8 @@ export default function ClothingHeadwearWorkwearPdp() {
   }, [singleProduct, selectedColor]);
 
   const selectedPrintMethod = useMemo(
-    () => (singleProduct ? getDefaultPrintMethod(singleProduct) : null),
-    [singleProduct],
+    () => (singleProduct ? getDefaultPrintMethod(singleProduct, selectedColorName) : null),
+    [singleProduct, selectedColorName],
   );
 
   const pricingSummary = singleProduct?.pricingSummary || null;
@@ -334,9 +349,6 @@ export default function ClothingHeadwearWorkwearPdp() {
     };
   }, [colorVariants?.sizesWithStock, sizeQuantities]);
 
-  const selectedColorName =
-    workwearProduct?.availableColors?.find((c) => c.id === selectedColor)?.name || "";
-
   const adminPositionTotalForOne = useMemo(() => {
     if (adminCustomizationState?.flow !== "workwear") return 0;
     const positions = adminCustomizationState?.positionsDetail || [];
@@ -345,9 +357,7 @@ export default function ClothingHeadwearWorkwearPdp() {
 
   const getEstimatedUnitPrice = useCallback(
     (quantity = 1) => {
-      const baseBreaks =
-        singleProduct?.product?.prices?.price_groups?.find((g) => g.base_price)?.base_price
-          ?.price_breaks || [];
+      const baseBreaks = getBasePriceBreaksForColor(singleProduct, selectedColorName);
       if (!baseBreaks.length) return 0;
       const baseProductPrice = getPriceForQuantity(quantity, baseBreaks);
       const sortedPrintBreaks = [...(selectedPrintMethod?.price_breaks || baseBreaks)].sort(
@@ -365,7 +375,7 @@ export default function ClothingHeadwearWorkwearPdp() {
           : Number(baseProductPrice) + Number(selectedBreak?.price || 0);
       return methodUnit + variantAdjustment + Number(adminPositionTotalForOne || 0);
     },
-    [singleProduct, selectedPrintMethod, quoteSelection.variant?.priceAdjustment, adminPositionTotalForOne],
+    [singleProduct, selectedColorName, selectedPrintMethod, quoteSelection.variant?.priceAdjustment, adminPositionTotalForOne],
   );
 
   const selectedAdminCustomizationForQuote = useMemo(() => {
@@ -579,9 +589,7 @@ export default function ClothingHeadwearWorkwearPdp() {
   const handleAddToCart = async () => {
     if (!singleProduct || !workwearProduct || !colorVariants) return;
 
-    const baseBreaks =
-      singleProduct?.product?.prices?.price_groups?.find((g) => g.base_price)?.base_price
-        ?.price_breaks || [];
+    const baseBreaks = getBasePriceBreaksForColor(singleProduct, selectedColorName);
 
     if (!baseBreaks.length) {
       toast.error("Pricing not available for this product.");
@@ -733,9 +741,7 @@ export default function ClothingHeadwearWorkwearPdp() {
         id: productId,
         name: singleProduct?.product?.name || workwearProduct.name,
         image: imageUrl,
-        basePrices:
-          singleProduct?.product?.prices?.price_groups?.find((g) => g.base_price)?.base_price
-            ?.price_breaks || [],
+        basePrices: getBasePriceBreaksForColor(singleProduct, selectedColorName),
         price: unit,
         totalPrice: unit,
         discountPct,
@@ -774,7 +780,7 @@ export default function ClothingHeadwearWorkwearPdp() {
 
   const productForInfo = {
     ...workwearProduct,
-    priceTiers: workwearProduct.priceTiers,
+    priceTiers: colorPriceTiers.length ? colorPriceTiers : workwearProduct.priceTiers,
     colors: workwearProduct.availableColors,
     badge: workwearProduct.isNew ? "New" : workwearProduct.isClearance ? "Sale" : workwearProduct.isFeatured ? "Featured" : null,
     rating: workwearProduct.rating || 0,
@@ -873,7 +879,7 @@ export default function ClothingHeadwearWorkwearPdp() {
           selectedColor={selectedColor}
           colorVariants={colorVariants}
           sizeQuantities={sizeQuantities}
-          pricingTiers={workwearProduct.priceTiers || []}
+          pricingTiers={colorPriceTiers.length ? colorPriceTiers : workwearProduct.priceTiers || []}
           onAddToCart={handleAddToCart}
           addingToCart={addingToCart}
         />
@@ -901,7 +907,7 @@ export default function ClothingHeadwearWorkwearPdp() {
           isOpen={showPricingModal}
           onClose={() => setShowPricingModal(false)}
           productName={workwearProduct.name}
-          priceTiers={workwearProduct.priceTiers || []}
+          priceTiers={colorPriceTiers.length ? colorPriceTiers : workwearProduct.priceTiers || []}
         />
         {showQuoteForm?.state && (
           <QuoteFormModal
