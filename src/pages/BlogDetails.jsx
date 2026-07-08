@@ -39,7 +39,9 @@ const BlogDetails = () => {
       if (e.key === "ArrowRight")
         setLightboxIndex((i) => (i + 1) % galleryImages.length);
       if (e.key === "ArrowLeft")
-        setLightboxIndex((i) => (i - 1 + galleryImages.length) % galleryImages.length);
+        setLightboxIndex(
+          (i) => (i - 1 + galleryImages.length) % galleryImages.length,
+        );
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -51,7 +53,9 @@ const BlogDetails = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <h3 className="text-lg font-semibold text-gray-900">Loading blog post...</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Loading blog post...
+          </h3>
         </div>
       </div>
     );
@@ -62,20 +66,23 @@ const BlogDetails = () => {
     blogData.images?.length > 0
       ? blogData.images
       : blogData.image
-      ? [blogData.image]
-      : [];
+        ? [blogData.image]
+        : [];
 
   const thumbnailImage = galleryImages[0] || "";
   const extraImages = galleryImages.slice(1);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 bb">
       <SeoHelmet
         entityType="blog"
         entityId={id}
         fallback={{
-          title: blogData?.title ? `${blogData.title} - SuperMerch Blog` : "SuperMerch Blog",
-          description: blogData?.metaDescription || blogData?.content?.substring(0, 160),
+          title: blogData?.title
+            ? `${blogData.title} - SuperMerch Blog`
+            : "SuperMerch Blog",
+          description:
+            blogData?.metaDescription || blogData?.content?.substring(0, 160),
         }}
       />
 
@@ -87,7 +94,10 @@ const BlogDetails = () => {
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <FaCalendarAlt className="w-4 h-4" />
                 <span>
-                  {new Date(blogData?.createdAt).toLocaleDateString(undefined, options)}
+                  {new Date(blogData?.createdAt).toLocaleDateString(
+                    undefined,
+                    options,
+                  )}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -135,7 +145,9 @@ const BlogDetails = () => {
           {/* Additional images grid */}
           {extraImages.length > 0 && (
             <div className="px-8 lg:px-12 mb-8">
-              <h3 className="text-base font-semibold text-gray-700 mb-3">More Images</h3>
+              <h3 className="text-base font-semibold text-gray-700 mb-3">
+                More Images
+              </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {extraImages.map((src, i) => (
                   <div
@@ -185,8 +197,12 @@ const BlogDetails = () => {
       {/* Related Articles */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Related Articles</h2>
-          <p className="text-lg text-gray-600">Discover more insights and tips</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Related Articles
+          </h2>
+          <p className="text-lg text-gray-600">
+            Discover more insights and tips
+          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogs?.slice(0, 3).map((blog, index) => (
@@ -215,7 +231,9 @@ const BlogDetails = () => {
               className="absolute left-4 text-white hover:text-gray-300 transition-colors z-10 p-2"
               onClick={(e) => {
                 e.stopPropagation();
-                setLightboxIndex((i) => (i - 1 + galleryImages.length) % galleryImages.length);
+                setLightboxIndex(
+                  (i) => (i - 1 + galleryImages.length) % galleryImages.length,
+                );
               }}
             >
               <FaChevronLeft className="w-8 h-8" />
