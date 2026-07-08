@@ -29,7 +29,7 @@ import {
   setMaxPrice,
   setMinPrice,
 } from "../../redux/slices/filterSlice";
-import { LuX, LuXCircle } from "react-icons/lu";
+import { LuX } from "react-icons/lu";
 import LogoutModal from "../Common/LogoutModal";
 
 const resolveNavGroup = (category) => {
