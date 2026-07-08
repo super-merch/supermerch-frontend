@@ -403,14 +403,18 @@ const handleReOrder = async () => {
       ...selectedOrder,
       products: editableProducts,
       paymentStatus: "Paid",
+      // Coupons are not re-applied on re-orders — the Stripe session is
+      // created without one, so the server must not recompute a discount.
+      coupon: null,
+      couponCode: null,
+      stripeSessionId: null,
     };
 
     localStorage.setItem("pendingCheckoutData", JSON.stringify(checkoutData));
 
-    // TODO: UNCOMMENT STRIPE BLOCK BELOW WHEN STRIPE API KEY IS READY (Re-order flow)
-    // const stripe = await loadStripe(
-    //   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
-    // );
+    const stripe = await loadStripe(
+      import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
+    );
     const body = {
       products: editableProducts.map((p) => ({
         id: p.id,
@@ -432,38 +436,20 @@ const handleReOrder = async () => {
       gstPercent: selectedOrder.gstPercent || 10,
     };
 
-    // const resp = await axios.post(
-    //   `${backendUrl}/api/create-checkout-session`,
-    //   body,
-    // );
-    // const session = await resp.data;
-    // if (!session.id) {
-    //   setReOrderLoading(false);
-    //   localStorage.removeItem("pendingCheckoutData");
-    //   return toast.error(
-    //     "Failed to create payment session. Please try again."
-    //   );
-    // }
-    // setReOrderLoading(false);
-    // await stripe.redirectToCheckout({ sessionId: session.id });
-
-    // TEMP: Bypass Stripe in Re-order — place order directly as paid (same as normal checkout bypass)
-    await axios.post(
-      `${backendUrl}/api/checkout/checkout`,
-      { ...checkoutData, stripeSessionId: "dev-bypass-" + Date.now() },
-      { headers: { token } },
+    const resp = await axios.post(
+      `${backendUrl}/api/create-checkout-session`,
+      body,
     );
-
-    localStorage.removeItem("pendingCheckoutData");
-    toast.success("Order placed successfully!");
-    try {
-      if (typeof loadUserOrder === "function") {
-        await loadUserOrder();
-      }
-    } catch (refreshErr) {
-      console.warn("Order placed, but failed to refresh orders:", refreshErr?.message || refreshErr);
+    const session = await resp.data;
+    if (!session.id) {
+      setReOrderLoading(false);
+      localStorage.removeItem("pendingCheckoutData");
+      return toast.error(
+        "Failed to create payment session. Please try again."
+      );
     }
-    navigate("/", { replace: true });
+    setReOrderLoading(false);
+    await stripe.redirectToCheckout({ sessionId: session.id });
   } catch (err) {
     console.error("Re-order failed:", err.response?.data || err.message);
     toast.error("Re-order failed. Try again.")

@@ -587,45 +587,41 @@ const Checkout = () => {
         },
       );
 
-      // TODO: UNCOMMENT STRIPE BLOCK BELOW WHEN STRIPE API KEY IS READY
-      // const stripe = await loadStripe(
-      //   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
-      // );
-      // const body = {
-      //   products: items,
-      //   gst: gstAmount,
-      //   shipping: shippingCharges,
-      //   setupFee: setupFee,
-      //   coupon: appliedCoupon
-      //     ? {
-      //         code: appliedCoupon.coupen,
-      //         discount: couponDiscount,
-      //         discountAmount: couponDiscountAmount,
-      //       }
-      //     : null,
-      //   gstPercent: gstCharges,
-      // };
-      //
-      // const resp = await axios.post(
-      //   `${backendUrl}/api/create-checkout-session`,
-      //   body,
-      // );
-      // const session = await resp.data;
-      //
-      // if (!session.id) {
-      //   setLoading(false);
-      //   localStorage.removeItem("pendingCheckoutData");
-      //   return toast.error(
-      //     "Failed to create payment session. Please try again.",
-      //   );
-      // }
-      // setLoading(false);
-      // await stripe.redirectToCheckout({
-      //   sessionId: session.id,
-      // });
+      const stripe = await loadStripe(
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
+      );
+      const body = {
+        products: items,
+        gst: gstAmount,
+        shipping: shippingCharges,
+        setupFee: setupFee,
+        coupon: appliedCoupon
+          ? {
+              code: appliedCoupon.coupen,
+              discount: couponDiscount,
+              discountAmount: couponDiscountAmount,
+            }
+          : null,
+        gstPercent: gstCharges,
+      };
 
-      // TEMP: Bypass Stripe — directly place order as paid
-      await handlePaymentSuccess("dev-bypass-" + Date.now());
+      const resp = await axios.post(
+        `${backendUrl}/api/create-checkout-session`,
+        body,
+      );
+      const session = await resp.data;
+
+      if (!session.id) {
+        setLoading(false);
+        localStorage.removeItem("pendingCheckoutData");
+        return toast.error(
+          "Failed to create payment session. Please try again.",
+        );
+      }
+      setLoading(false);
+      await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
     } catch (error) {
       setLoading(false);
       console.error("Payment Failed:", error.response?.data || error.message);
