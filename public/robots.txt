@@ -10,4 +10,4 @@ Disallow: /my-account
 Disallow: /success
 Disallow: /cancel
 
-Sitemap: https://supermerch.com.au/sitemap.xml
+Sitemap: https://www.supermerch.com.au/sitemap.xml
