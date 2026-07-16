@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import SeoHelmet from "./SeoHelmet";
 
-const SITE_URL = "https://supermerch.com.au";
+const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
 
 const makeFallback = ({ title, description, keywords, path, ogType = "website" }) => ({
