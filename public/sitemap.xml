@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://supermerch.com.au/</loc>
+    <loc>https://www.supermerch.com.au/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/shop</loc>
+    <loc>https://www.supermerch.com.au/shop</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/promotional</loc>
+    <loc>https://www.supermerch.com.au/promotional</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/sales</loc>
+    <loc>https://www.supermerch.com.au/sales</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/australia-made</loc>
+    <loc>https://www.supermerch.com.au/australia-made</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/all-blogs</loc>
+    <loc>https://www.supermerch.com.au/all-blogs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/about</loc>
+    <loc>https://www.supermerch.com.au/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/contact</loc>
+    <loc>https://www.supermerch.com.au/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/faqs</loc>
+    <loc>https://www.supermerch.com.au/faqs</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/privacy</loc>
+    <loc>https://www.supermerch.com.au/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/terms</loc>
+    <loc>https://www.supermerch.com.au/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/refund-policy</loc>
+    <loc>https://www.supermerch.com.au/refund-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://supermerch.com.au/artwork-policy</loc>
+    <loc>https://www.supermerch.com.au/artwork-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
