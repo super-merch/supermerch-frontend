@@ -147,12 +147,15 @@ const RouteSeo = () => {
     "/track-order": {
       entityType: "cmsPage",
       entityId: "track-order",
-      fallback: makeFallback({
-        title: "Track Order | Super Merch Australia",
-        description: "Track your Super Merch order status and delivery updates.",
-        keywords: "track order super merch",
-        path: "/track-order",
-      }),
+      fallback: {
+        ...makeFallback({
+          title: "Track Order | Super Merch Australia",
+          description: "Track your Super Merch order status and delivery updates.",
+          keywords: "track order super merch",
+          path: "/track-order",
+        }),
+        robots: "noindex, nofollow",
+      },
     },
     "/category": {
       entityType: "category",
