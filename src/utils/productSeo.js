@@ -75,14 +75,7 @@ export const getProductSeoImages = (data) => {
 
 const getLowestPrice = (data) => {
   const summaryPrice = Number(data?.pricingSummary?.finalMinPrice);
-  if (Number.isFinite(summaryPrice) && summaryPrice > 0) return summaryPrice;
-
-  const groups = data?.product?.prices?.price_groups;
-  const prices = (Array.isArray(groups) ? groups : []).flatMap((group) =>
-    (group?.base_price?.price_breaks || []).map((entry) => Number(entry?.price)),
-  );
-  const valid = prices.filter((price) => Number.isFinite(price) && price > 0);
-  return valid.length ? Math.min(...valid) : null;
+  return Number.isFinite(summaryPrice) && summaryPrice > 0 ? summaryPrice : null;
 };
 
 const getAvailability = (data) => {
