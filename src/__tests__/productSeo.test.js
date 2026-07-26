@@ -45,7 +45,7 @@ describe("buildProductSeo", () => {
     expect(result.structuredData[0]).toMatchObject({
       "@type": "Product",
       name: "Ocean Bottle",
-      sku: "42",
+      sku: "BOT-42",
       offers: { "@type": "Offer", price: "6.25", priceCurrency: "AUD" },
     });
     expect(result.structuredData[1]["@type"]).toBe("BreadcrumbList");
