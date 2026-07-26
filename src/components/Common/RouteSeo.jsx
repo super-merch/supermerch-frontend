@@ -4,11 +4,18 @@ import SeoHelmet from "./SeoHelmet";
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
 
-const titleFromSlug = (slug) =>
-  decodeURIComponent(slug || "")
+const titleFromSlug = (slug) => {
+  let value = String(slug || "");
+  try {
+    value = decodeURIComponent(value);
+  } catch {
+    // Keep the raw path segment when a malformed escape sequence is supplied.
+  }
+  return value
     .replace(/[-_]+/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
     .trim();
+};
 
 const makeFallback = ({ title, description, keywords, path, ogType = "website" }) => ({
   title,
