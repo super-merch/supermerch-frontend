@@ -579,10 +579,7 @@ const Cards = ({ category = "" }) => {
         ? normalizedCategory
         : null;
 
-    const encodedRef = productId != null ? btoa(String(productId)) : null;
-    const targetUrl = encodedRef
-      ? `${toProductUrl(name)}?ref=${encodeURIComponent(encodedRef)}`
-      : toProductUrl(name);
+    const targetUrl = toProductUrl(name, productId);
 
     // Navigate using slug URL + stable ref, passing browsing context for PDP type.
     navigate(targetUrl, {
