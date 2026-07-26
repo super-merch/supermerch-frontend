@@ -20,13 +20,43 @@ const RouteSeo = () => {
   const pathname = location.pathname || "/";
 
   if (
-    pathname.startsWith("/product/") ||
     pathname.startsWith("/blogs/") ||
     pathname.startsWith("/page/") ||
     pathname === "/about" ||
     pathname === "/shop"
   ) {
     return null;
+  }
+
+  // Product detail pages render no SEO of their own, so without this branch
+  // every product URL inherits the homepage title and canonical. The
+  // slug-derived copy is a floor, not a ceiling: as soon as a seo-meta record
+  // exists for entityType "product", the stored values take over.
+  if (pathname.startsWith("/product/")) {
+    const slug = pathname.replace("/product/", "").split("/")[0].split("?")[0];
+    const readable = slug
+      .split("-")
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+    return (
+      <SeoHelmet
+        entityType="product"
+        entityId={slug}
+        fallback={makeFallback({
+          title: readable
+            ? `${readable} | Super Merch Australia`
+            : "Promotional Products | Super Merch Australia",
+          description: readable
+            ? `${readable} from Super Merch Australia. Custom branded with your logo, with bulk pricing and Australia wide delivery.`
+            : "Custom branded promotional products from Super Merch Australia.",
+          keywords: "promotional products, branded merchandise, custom printed",
+          path: pathname,
+          ogType: "product",
+        })}
+      />
+    );
   }
 
   if (pathname.startsWith("/quote/respond/")) {
