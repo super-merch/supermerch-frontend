@@ -61,7 +61,7 @@ const FavouritePage = () => {
       .replace(/(^-|-$)/g, "");
 
   const handleViewProduct = (productId, name) => {
-    navigate(toProductUrl(name));
+    navigate(toProductUrl(name, productId));
   };
 
   const handleRemoveFavourite = (product) => {

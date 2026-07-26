@@ -1,7 +1,24 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/"}
-    ]
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap-index"
+    },
+    {
+      "source": "/sitemaps/products-:page.xml",
+      "destination": "/api/product-sitemap?page=:page"
+    },
+    {
+      "source": "/product/:slug/:productId",
+      "destination": "/api/product-page?slug=:slug&id=:productId"
+    },
+    {
+      "source": "/product/:slug",
+      "destination": "/api/product-page?slug=:slug"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }

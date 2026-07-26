@@ -56,17 +56,19 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
     } else {
       // Navigate using the stored slug/original name, not the display name
       const pid = product?.meta?.id;
-      const base = toProductUrl(
-        product?.slug || product?.overview?.originalName || product?.overview?.name
+      navigate(
+        toProductUrl(
+          product?.slug || product?.overview?.originalName || product?.overview?.name,
+          pid,
+        ),
       );
-      const ref = pid ? `?ref=${encodeURIComponent(btoa(String(pid)))}` : "";
-      navigate(base + ref);
     }
   };
 
   const productId = product?.meta?.id;
   const slug = toProductUrl(
-    product?.slug || product?.overview?.originalName || product?.overview?.name
+    product?.slug || product?.overview?.originalName || product?.overview?.name,
+    productId,
   );
   const productPrice =
     product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]
@@ -191,16 +193,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
       {/* Product Details */}
       <div className="flex-1 flex flex-col p-2 overflow-hidden min-h-0">
         <Link
-                to={
-                  (() => {
-                    try {
-                      const pid = product?.meta?.id;
-                      return pid ? `${slug}?ref=${encodeURIComponent(btoa(String(pid)))}` : slug;
-                    } catch (e) {
-                      return slug;
-                    }
-                  })()
-                }
+          to={slug}
                 onClick={(e) => e.stopPropagation()}
                 className="flex-1 flex flex-col min-w-0 w-full h-full"
               >

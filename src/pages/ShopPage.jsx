@@ -3,7 +3,6 @@ import Breadcrumb from "../components/shared/Breadcrumb";
 import Cards from "../components/shop/Cards";
 import ShopOurBestSellers from "@/components/Home/ProducsTabs/ShopOurBestSellers";
 import CategoryGrid from "../components/shop/CategoryGrid";
-import SeoHelmet from "../components/Common/SeoHelmet";
 import banner from "@/assets/summer.jpg";
 const GeneralShopPage = () => {
   return (
@@ -22,14 +21,6 @@ const GeneralShopPage = () => {
 const ShopPage = ({ category, general }) => {
   return (
     <div className="bg-gray-100">
-      <SeoHelmet
-        entityType="category"
-        entityId={category || "shop"}
-        fallback={{
-          title: category ? `${category} - SuperMerch Australia` : "Shop - SuperMerch Australia",
-          description: "Browse premium promotional products and custom merchandise.",
-        }}
-      />
       {general ? (
         <GeneralShopPage />
       ) : (

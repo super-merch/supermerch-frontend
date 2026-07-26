@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingOverlay } from '../../components/Common';
 import Breadcrumb from '../../components/shared/Breadcrumb';
-import RouteSeo from '../../components/Common/RouteSeo';
+import SeoHelmet from '../../components/Common/SeoHelmet';
 import Cards from '../../components/shop/Cards';
 import ShopOurBestSellers from '../../components/Home/ProducsTabs/ShopOurBestSellers';
 
@@ -56,9 +56,17 @@ const CollectionDetailPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <RouteSeo 
-        title={`${collection.name} | SuperMerch`} 
-        description={collection.shortDescription || `Browse products in our ${collection.name} collection.`}
+      <SeoHelmet
+        entityType="category"
+        entityId={`collection-${slug}`}
+        fallback={{
+          title: `${collection.name} | Super Merch Australia`,
+          description: collection.shortDescription || `Browse products in our ${collection.name} collection.`,
+          canonicalUrl: `https://www.supermerch.com.au/collections/${encodeURIComponent(slug)}`,
+          ogImage: 'https://www.supermerch.com.au/logo-teal.png',
+          ogImageAlt: `${collection.name} collection | Super Merch Australia`,
+          robots: 'index, follow',
+        }}
       />
       
       <Breadcrumb 
