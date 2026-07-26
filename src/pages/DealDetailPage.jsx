@@ -10,6 +10,7 @@ import { findNearestColor, toProductUrl } from '@/utils/utils';
 import { addToCart } from '@/redux/slices/cartSlice';
 import DealCustomizationModal from '@/components/deals/DealCustomizationModal';
 import LoadingOverlay from '@/components/Common/LoadingOverlay';
+import SeoHelmet from '@/components/Common/SeoHelmet';
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
 const roundToTwo = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
@@ -766,13 +767,25 @@ const DealDetailPage = () => {
 
   if (error || !deal) {
     return (
-      <div className="Mycontainer py-10 text-center">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Deal</h2>
-        <p className="text-gray-600 mb-6">{error || 'Deal not found'}</p>
-        <button onClick={() => navigate('/deals')} className="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90">
-          Back to Deals
-        </button>
-      </div>
+      <>
+        <SeoHelmet
+          entityType="deal"
+          entityId={slug}
+          fallback={{
+            title: 'Deal Not Found | Super Merch Australia',
+            description: 'This deal is unavailable. Browse current promotional product deals from Super Merch Australia.',
+            canonicalUrl: `https://www.supermerch.com.au/deals/${encodeURIComponent(slug || '')}`,
+            robots: 'noindex, follow',
+          }}
+        />
+        <div className="Mycontainer py-10 text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Deal</h2>
+          <p className="text-gray-600 mb-6">{error || 'Deal not found'}</p>
+          <button onClick={() => navigate('/deals')} className="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90">
+            Back to Deals
+          </button>
+        </div>
+      </>
     );
   }
 
@@ -794,8 +807,28 @@ const DealDetailPage = () => {
   const isDealFulfilled = isComplete;
   const isActionDisabled = !isDealFulfilled || !isInStock;
 
+  const dealDescription = String(deal.description || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
+  const canonicalUrl = `https://www.supermerch.com.au/deals/${encodeURIComponent(slug)}`;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <SeoHelmet
+        entityType="deal"
+        entityId={deal.id || deal._id || slug}
+        fallback={{
+          title: `${deal.title} Deal | Super Merch Australia`,
+          description: dealDescription || `Explore the ${deal.title} promotional product deal from Super Merch Australia.`,
+          canonicalUrl,
+          ogImage: getImageUrl(deal.bannerImage),
+          ogImageAlt: deal.title,
+          robots: 'index, follow',
+        }}
+      />
+      <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b">
         <div className="Mycontainer py-4">
           <button onClick={() => navigate('/deals')} className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
@@ -1255,7 +1288,8 @@ const DealDetailPage = () => {
           initialCustomizations={slotCustomizations}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 };
 
