@@ -31,7 +31,8 @@ const ProductCard = ({
     product?.product?.prices?.price_groups?.[0]?.base_price?.price_breaks?.[0]
       ?.qty || 1;
   const slug = toProductUrl(
-    product?.slug || product?.overview?.originalName || product?.overview?.name
+    product?.slug || product?.overview?.originalName || product?.overview?.name,
+    productId,
   );
   const dispatch = useDispatch();
   const onAddFavourite = () => {
