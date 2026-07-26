@@ -42,6 +42,8 @@ describe("buildProductSeo", () => {
     );
     expect(result.fallback.robots).toBe("index, follow");
     expect(result.imageAlt).toBe("Ocean Bottle – Drink Bottles");
+    expect(result.fallback.ogImage).toBe("https://images.example.test/bottle.jpg");
+    expect(result.fallback.ogImageAlt).toBe("Ocean Bottle – Drink Bottles");
     expect(result.structuredData[0]).toMatchObject({
       "@type": "Product",
       name: "Ocean Bottle",
@@ -60,6 +62,8 @@ describe("buildProductSeo", () => {
 
     expect(result.fallback.robots).toBe("noindex, follow");
     expect(result.fallback.title).toContain("mystery item");
+    expect(result.fallback.ogImage).toBe("https://www.supermerch.com.au/logo-teal.png");
+    expect(result.fallback.ogImageAlt).toBe("Super Merch Australia logo");
     expect(result.structuredData).toEqual([]);
   });
 
