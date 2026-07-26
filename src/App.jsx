@@ -100,6 +100,7 @@ const App = () => {
         <RouteTransition>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/product/:id/:productId" element={<ProductPageResolver />} />
             <Route path="/product/:id" element={<ProductPageResolver />} />
             {/* Product details page */}
             {/* Akash */}
