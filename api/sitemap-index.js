@@ -14,8 +14,16 @@ export default async function handler(req, res) {
     const payload = await response.json();
     const totalPages = Math.max(
       1,
-      Number(payload.total_pages) ||
-        Math.ceil(Number(payload.item_count || payload.pagination?.totalCount || 0) / PAGE_SIZE),
+      Number(payload.total_pages || payload.totalPages) ||
+        Math.ceil(
+          Number(
+            payload.item_count ||
+              payload.totalCount ||
+              payload.total_count ||
+              payload.pagination?.totalCount ||
+              0,
+          ) / PAGE_SIZE,
+        ),
     );
 
     const productMaps = Array.from(
