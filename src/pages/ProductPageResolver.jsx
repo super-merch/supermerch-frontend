@@ -17,7 +17,7 @@ const normalizeNavGroup = (value) => {
 };
 
 const ProductPageResolver = () => {
-  const { id } = useParams();
+  const { id, productId: pathProductId } = useParams();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { backendUrl } = useContext(AppContext);
@@ -37,13 +37,15 @@ const ProductPageResolver = () => {
   const encodedRef = searchParams.get("ref");
   const decodedRefId = decodeRefId(encodedRef);
   const stateProductId = location.state?.productId;
-  const resolvedIdentifier = decodedRefId
-    ? String(decodedRefId)
-    : stateProductId
-      ? String(stateProductId)
-      : id
-        ? String(id)
-        : null;
+  const resolvedIdentifier = pathProductId
+    ? String(pathProductId)
+    : decodedRefId
+      ? String(decodedRefId)
+      : stateProductId
+        ? String(stateProductId)
+        : id
+          ? String(id)
+          : null;
 
   const browseNavGroup =
     normalizeNavGroup(location.state?.browseNavGroup) ||
