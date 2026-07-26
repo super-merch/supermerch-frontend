@@ -12,7 +12,6 @@ Disallow: /cancel
 Disallow: /favourites
 Disallow: /upload-artwork
 Disallow: /quote/respond/
-Disallow: /search
 Disallow: /track-order
 
 Sitemap: https://www.supermerch.com.au/sitemap.xml
