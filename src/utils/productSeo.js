@@ -5,6 +5,38 @@ const DEFAULT_DESCRIPTION =
 const firstText = (...values) =>
   values.find((value) => typeof value === "string" && value.trim())?.trim() || "";
 
+const isTrue = (value) => value === true || String(value).toLowerCase() === "true";
+
+const CATEGORY_ROUTES = {
+  clothing: "/Clothing",
+  headwear: "/Headwear",
+  promotional: "/promotional",
+};
+
+export const getProductCategoryBreadcrumb = (data, categories = []) => {
+  const groupId = String(
+    data?.product?.categorisation?.promodata_product_type?.type_group_id || "",
+  ).trim();
+  if (!groupId || !Array.isArray(categories)) return null;
+
+  const exact = categories.find((entry) => String(entry?.id || "") === groupId);
+  const category =
+    (exact?.navGroup ? exact : null) ||
+    categories.find(
+      (entry) =>
+        Array.isArray(entry?.allowedTypeGroupIds) &&
+        entry.allowedTypeGroupIds.map(String).includes(groupId),
+    );
+  const navGroup = String(category?.navGroup || "").toLowerCase().trim();
+  const path = CATEGORY_ROUTES[navGroup];
+  if (!path) return null;
+
+  return {
+    name: firstText(category?.name, navGroup[0].toUpperCase() + navGroup.slice(1)),
+    url: `${SITE_URL}${path}`,
+  };
+};
+
 export const cleanSeoText = (value) =>
   String(value || "")
     .replace(/<[^>]*>/g, " ")
@@ -60,12 +92,15 @@ const getAvailability = (data) => {
     data?.product?.stockQty,
     data?.product?.totalStock,
   ];
-  const explicit = values.map(Number).find(Number.isFinite);
+  const explicit = values
+    .filter((value) => value !== null && value !== undefined && value !== "")
+    .map(Number)
+    .find(Number.isFinite);
   if (explicit === undefined) return null;
   return explicit > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
 };
 
-export const buildProductSeo = ({ data, pathname, slug }) => {
+export const buildProductSeo = ({ data, pathname, slug, categoryBreadcrumb = null }) => {
   const product = data?.product || {};
   const overview = data?.overview || {};
   const name = firstText(product.name, overview.name, overview.originalName);
@@ -79,9 +114,16 @@ export const buildProductSeo = ({ data, pathname, slug }) => {
     product.categorisation?.product_type?.type_name,
     product.categorisation?.supplier_category,
   );
-  const brand = firstText(product.brand?.name, overview.brand, overview.supplier);
+  const brand = firstText(
+    typeof product.supplier_brand === "string"
+      ? product.supplier_brand
+      : product.supplier_brand?.name,
+    product.brand?.name,
+    overview.brand,
+  );
   const canonicalUrl = `${SITE_URL}${pathname || `/product/${slug || ""}`}`;
   const hasProductIdentity = Boolean(data && name && productId);
+  const isDiscontinued = isTrue(data?.meta?.discontinued) || isTrue(product.discontinued);
   const displayName = name || cleanSeoText(String(slug || "").replace(/-/g, " ")) || "Promotional Product";
   const metaDescription = (description || `${displayName}. ${DEFAULT_DESCRIPTION}`).slice(0, 160);
 
@@ -97,7 +139,7 @@ export const buildProductSeo = ({ data, pathname, slug }) => {
     url: canonicalUrl,
   };
   const price = getLowestPrice(data);
-  if (price) {
+  if (price && !isDiscontinued) {
     productSchema.offers = {
       "@type": "Offer",
       url: canonicalUrl,
@@ -111,7 +153,14 @@ export const buildProductSeo = ({ data, pathname, slug }) => {
     { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
     { "@type": "ListItem", position: 2, name: "Shop", item: `${SITE_URL}/shop` },
   ];
-  if (category) breadcrumbs.push({ "@type": "ListItem", position: 3, name: category });
+  if (categoryBreadcrumb?.name && categoryBreadcrumb?.url) {
+    breadcrumbs.push({
+      "@type": "ListItem",
+      position: 3,
+      name: categoryBreadcrumb.name,
+      item: categoryBreadcrumb.url,
+    });
+  }
   breadcrumbs.push({
     "@type": "ListItem",
     position: breadcrumbs.length + 1,
@@ -129,7 +178,7 @@ export const buildProductSeo = ({ data, pathname, slug }) => {
       ogImage: images[0] || "",
       ogType: "product",
       siteName: "Super Merch",
-      robots: hasProductIdentity ? "index, follow" : "noindex, follow",
+      robots: hasProductIdentity && !isDiscontinued ? "index, follow" : "noindex, follow",
     },
     structuredData: hasProductIdentity
       ? [

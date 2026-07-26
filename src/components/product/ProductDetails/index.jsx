@@ -629,8 +629,6 @@ const ProductDetails = () => {
     }
   }, [product, normalizedImages]);
 
-  // SEO meta is now handled by <SeoHelmet> in JSX — falls back to product name/description
-
   // Keyboard event listeners for Shift + A
   useEffect(() => {
     const handleKeyDown = (e) => {

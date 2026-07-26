@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildProductSeo, cleanSeoText } from "@/utils/productSeo";
+import {
+  buildProductSeo,
+  cleanSeoText,
+  getProductCategoryBreadcrumb,
+} from "@/utils/productSeo";
 
 const completeProduct = {
   meta: { id: 42 },
@@ -67,6 +71,95 @@ describe("buildProductSeo", () => {
     });
 
     expect(result.structuredData[0].offers).toBeUndefined();
+  });
+
+  it("noindexes discontinued products and omits their Offer", () => {
+    const result = buildProductSeo({
+      data: { ...completeProduct, meta: { ...completeProduct.meta, discontinued: "true" } },
+      pathname: "/product/ocean-bottle",
+      slug: "ocean-bottle",
+    });
+
+    expect(result.fallback.robots).toBe("noindex, follow");
+    expect(result.structuredData[0].offers).toBeUndefined();
+  });
+
+  it("uses supplier_brand as Brand and never substitutes the supplier", () => {
+    const branded = buildProductSeo({
+      data: {
+        ...completeProduct,
+        product: { ...completeProduct.product, supplier_brand: "CamelBak" },
+      },
+      pathname: "/product/ocean-bottle",
+      slug: "ocean-bottle",
+    });
+    const supplierOnly = buildProductSeo({
+      data: completeProduct,
+      pathname: "/product/ocean-bottle",
+      slug: "ocean-bottle",
+    });
+
+    expect(branded.structuredData[0].brand).toEqual({
+      "@type": "Brand",
+      name: "CamelBak",
+    });
+    expect(supplierOnly.structuredData[0].brand).toBeUndefined();
+  });
+
+  it.each([
+    ["clothing", "/Clothing"],
+    ["headwear", "/Headwear"],
+  ])("adds a crawlable %s breadcrumb URL for clothing/headwear products", (navGroup, path) => {
+    const data = {
+      ...completeProduct,
+      product: {
+        ...completeProduct.product,
+        categorisation: {
+          promodata_product_type: {
+            type_group_id: "GROUP-1",
+            type_name: navGroup === "clothing" ? "Polo Shirts" : "Caps",
+          },
+        },
+      },
+    };
+    const categoryBreadcrumb = getProductCategoryBreadcrumb(data, [
+      { id: "GROUP-1", name: navGroup === "clothing" ? "Clothing" : "Headwear", navGroup },
+    ]);
+    const result = buildProductSeo({
+      data,
+      pathname: "/product/ocean-bottle",
+      slug: "ocean-bottle",
+      categoryBreadcrumb,
+    });
+    const items = result.structuredData[1].itemListElement;
+
+    expect(categoryBreadcrumb.url).toBe(`https://www.supermerch.com.au${path}`);
+    expect(items.map((item) => item.name)).toEqual([
+      "Home",
+      "Shop",
+      navGroup === "clothing" ? "Clothing" : "Headwear",
+      "Ocean Bottle",
+    ]);
+    expect(items[2].item).toBe(`https://www.supermerch.com.au${path}`);
+  });
+
+  it("omits a category crumb when category metadata has no crawlable route", () => {
+    const categoryBreadcrumb = getProductCategoryBreadcrumb(completeProduct, [
+      { id: "unknown", name: "Unknown", navGroup: "other" },
+    ]);
+    const result = buildProductSeo({
+      data: completeProduct,
+      pathname: "/product/ocean-bottle",
+      slug: "ocean-bottle",
+      categoryBreadcrumb,
+    });
+
+    expect(categoryBreadcrumb).toBeNull();
+    expect(result.structuredData[1].itemListElement.map((item) => item.name)).toEqual([
+      "Home",
+      "Shop",
+      "Ocean Bottle",
+    ]);
   });
 });
 
