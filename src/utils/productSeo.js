@@ -109,6 +109,7 @@ export const buildProductSeo = ({ data, pathname, slug, categoryBreadcrumb = nul
   );
   const images = getProductSeoImages(data);
   const productId = firstText(String(data?.meta?.id || ""), overview.sku_number, product.code);
+  const sku = firstText(overview.sku_number, product.code);
   const category = firstText(
     product.categorisation?.promodata_product_type?.type_name,
     product.categorisation?.product_type?.type_name,
@@ -133,7 +134,7 @@ export const buildProductSeo = ({ data, pathname, slug, categoryBreadcrumb = nul
     name: displayName,
     description: description || metaDescription,
     ...(images.length ? { image: images } : {}),
-    ...(productId ? { sku: productId } : {}),
+    ...(sku ? { sku } : {}),
     ...(brand ? { brand: { "@type": "Brand", name: brand } } : {}),
     ...(category ? { category } : {}),
     url: canonicalUrl,
