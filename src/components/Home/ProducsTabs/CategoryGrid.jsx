@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/Common";
-import { slugify } from "@/utils/utils";
+import { toProductUrl } from "@/utils/utils";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -37,9 +37,7 @@ const CategoryGrid = ({ activeTab }) => {
   }, [favouriteItems]);
 
   const handleViewProduct = (productId, name) => {
-    const encodedId = btoa(productId);
-    const _slug = slugify(name);
-    navigate(`/product/${encodeURIComponent(_slug)}?ref=${encodedId}`);
+    navigate(toProductUrl(name, productId));
   };
   let ignore = false;
 
