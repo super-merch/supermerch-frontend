@@ -193,16 +193,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
       {/* Product Details */}
       <div className="flex-1 flex flex-col p-2 overflow-hidden min-h-0">
         <Link
-                to={
-                  (() => {
-                    try {
-                      const pid = product?.meta?.id;
-                      return pid ? `${slug}?ref=${encodeURIComponent(btoa(String(pid)))}` : slug;
-                    } catch (e) {
-                      return slug;
-                    }
-                  })()
-                }
+          to={slug}
                 onClick={(e) => e.stopPropagation()}
                 className="flex-1 flex flex-col min-w-0 w-full h-full"
               >
