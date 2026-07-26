@@ -4,19 +4,6 @@ import SeoHelmet from "./SeoHelmet";
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
 
-const titleFromSlug = (slug) => {
-  let value = String(slug || "");
-  try {
-    value = decodeURIComponent(value);
-  } catch {
-    // Keep the raw path segment when a malformed escape sequence is supplied.
-  }
-  return value
-    .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase())
-    .trim();
-};
-
 const makeFallback = ({ title, description, keywords, path, ogType = "website" }) => ({
   title,
   description,
@@ -36,33 +23,11 @@ const RouteSeo = () => {
   if (
     pathname.startsWith("/product/") ||
     pathname.startsWith("/blogs/") ||
-    pathname.startsWith("/page/")
+    pathname.startsWith("/page/") ||
+    pathname.startsWith("/deals/") ||
+    pathname.startsWith("/collections/")
   ) {
     return null;
-  }
-
-  if (pathname.startsWith("/deals/") || pathname.startsWith("/collections/")) {
-    const slug = pathname.split("/").filter(Boolean).pop();
-    const label = titleFromSlug(slug);
-    const isDeal = pathname.startsWith("/deals/");
-    return (
-      <SeoHelmet
-        entityType="category"
-        entityId={`${isDeal ? "deal" : "collection"}-${slug}`}
-        fallback={makeFallback({
-          title: isDeal
-            ? `${label} Deal | Super Merch Australia`
-            : `${label} Collection | Super Merch Australia`,
-          description: isDeal
-            ? `Explore the ${label} promotional product deal from Super Merch Australia.`
-            : `Browse the ${label} promotional product collection from Super Merch Australia.`,
-          keywords: isDeal
-            ? `${label.toLowerCase()} deal, promotional product offers`
-            : `${label.toLowerCase()} collection, promotional products`,
-          path: pathname,
-        })}
-      />
-    );
   }
 
   if (pathname.startsWith("/quote/respond/")) {
@@ -459,21 +424,8 @@ const RouteSeo = () => {
     );
   }
 
-  return (
-    <SeoHelmet
-      entityType="cmsPage"
-      entityId="default"
-      fallback={{
-        ...makeFallback({
-          title: "Page Not Found | Super Merch Australia",
-          description: "The requested page could not be found.",
-          keywords: "",
-          path: pathname,
-        }),
-        robots: "noindex, nofollow",
-      }}
-    />
-  );
+  // The catch-all route renders NotFound, which is the sole 404 SEO owner.
+  return null;
 };
 
 export default RouteSeo;
