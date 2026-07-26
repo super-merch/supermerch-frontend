@@ -128,8 +128,9 @@ export const buildProductSeo = ({ data, pathname, slug, categoryBreadcrumb = nul
   const isDiscontinued = isTrue(data?.meta?.discontinued) || isTrue(product.discontinued);
   const displayName = name || cleanSeoText(String(slug || "").replace(/-/g, " ")) || "Promotional Product";
   const imageAlt = `${displayName}${category ? ` – ${category}` : " promotional product"}`;
+  const canonicalSlug = slugifyPath(firstText(product.slug, overview.slug, displayName));
   const canonicalPath = productId
-    ? `/product/${slugifyPath(displayName)}/${encodeURIComponent(productId)}`
+    ? `/product/${canonicalSlug}/${encodeURIComponent(productId)}`
     : pathname || `/product/${slug || ""}`;
   const canonicalUrl = `${SITE_URL}${canonicalPath}`;
   const metaDescription = (description || `${displayName}. ${DEFAULT_DESCRIPTION}`).slice(0, 160);
