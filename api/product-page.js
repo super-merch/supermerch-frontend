@@ -80,6 +80,22 @@ const getIdentifier = (query) => {
   }
 };
 
+const getSeoOverride = async (entityId) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/api/seo-meta/by-entity/product/${encodeURIComponent(
+        String(entityId),
+      )}`,
+    );
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.success && payload?.data ? payload.data : null;
+  } catch {
+    // SEO overrides are optional. Product-derived metadata remains the safe fallback.
+    return null;
+  }
+};
+
 const getShell = async (req) => {
   const host = req.headers["x-forwarded-host"] || req.headers.host;
   const protocol = host?.includes("localhost") ? "http" : "https";
@@ -197,10 +213,22 @@ export default async function handler(req, res) {
     return;
   }
 
-  const title = `${name} | Custom Branded | Super Merch Australia`;
-  const metaDescription =
+  const generatedTitle = `${name} | Custom Branded | Super Merch Australia`;
+  const generatedDescription =
     description ||
     `${name}. Custom branded promotional products from Super Merch Australia.`;
+  const seoOverride = await getSeoOverride(productId);
+  const title = cleanText(seoOverride?.metaTitle) || generatedTitle;
+  const metaDescription =
+    cleanText(seoOverride?.metaDescription).slice(0, 160) ||
+    generatedDescription;
+  const keywords = cleanText(seoOverride?.keywords);
+  const socialTitle = cleanText(seoOverride?.ogTitle) || title;
+  const socialDescription =
+    cleanText(seoOverride?.ogDescription).slice(0, 200) || metaDescription;
+  const socialImage = cleanText(seoOverride?.ogImage) || image;
+  const socialImageAlt =
+    socialImage === image ? imageAlt : `${name} promotional product`;
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -235,19 +263,20 @@ export default async function handler(req, res) {
   const tags = `
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(metaDescription)}">
+${keywords ? `<meta name="keywords" content="${escapeHtml(keywords)}">` : ""}
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${canonical}">
-<meta property="og:title" content="${escapeHtml(title)}">
-<meta property="og:description" content="${escapeHtml(metaDescription)}">
-<meta property="og:image" content="${escapeHtml(image)}">
-<meta property="og:image:alt" content="${escapeHtml(imageAlt)}">
+<meta property="og:title" content="${escapeHtml(socialTitle)}">
+<meta property="og:description" content="${escapeHtml(socialDescription)}">
+<meta property="og:image" content="${escapeHtml(socialImage)}">
+<meta property="og:image:alt" content="${escapeHtml(socialImageAlt)}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="product">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${escapeHtml(title)}">
-<meta name="twitter:description" content="${escapeHtml(metaDescription)}">
-<meta name="twitter:image" content="${escapeHtml(image)}">
-<meta name="twitter:image:alt" content="${escapeHtml(imageAlt)}">
+<meta name="twitter:title" content="${escapeHtml(socialTitle)}">
+<meta name="twitter:description" content="${escapeHtml(socialDescription)}">
+<meta name="twitter:image" content="${escapeHtml(socialImage)}">
+<meta name="twitter:image:alt" content="${escapeHtml(socialImageAlt)}">
 <meta name="twitter:url" content="${canonical}">
 <script type="application/ld+json">${escapeJson(productSchema)}</script>
 <script type="application/ld+json">${escapeJson(breadcrumbSchema)}</script>`;
