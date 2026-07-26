@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import PropTypes from "prop-types";
 import useSeoMeta from "../../hooks/useSeoMeta";
 
 const SITE_URL = "https://www.supermerch.com.au";
@@ -98,7 +99,13 @@ const setCanonical = (href) => {
  *
  * Props are unchanged, so no call site needs editing.
  */
-const SeoHelmet = ({ entityType, entityId, fallback = {} }) => {
+const SeoHelmet = ({
+  entityType,
+  entityId,
+  fallback = {},
+  structuredData = [],
+  forceCanonicalUrl,
+}) => {
   const { seoData } = useSeoMeta(entityType, entityId);
 
   const title = seoData?.metaTitle || fallback.title || "";
@@ -107,11 +114,12 @@ const SeoHelmet = ({ entityType, entityId, fallback = {} }) => {
   const ogTitle = seoData?.ogTitle || title;
   const ogDescription = seoData?.ogDescription || description;
   const ogImage = seoData?.ogImage || fallback.ogImage || "";
+  const ogImageAlt = seoData?.ogImageAlt || fallback.ogImageAlt || "";
   const ogType = fallback.ogType || "website";
   const siteName = fallback.siteName || "Super Merch";
   const robots = fallback.robots || "index, follow";
   const canonical = toCanonicalUrl(
-    seoData?.canonicalUrl || fallback.canonicalUrl
+    forceCanonicalUrl || seoData?.canonicalUrl || fallback.canonicalUrl
   );
 
   useEffect(() => {
@@ -126,6 +134,7 @@ const SeoHelmet = ({ entityType, entityId, fallback = {} }) => {
     setMeta("property", "og:title", ogTitle);
     setMeta("property", "og:description", ogDescription);
     setMeta("property", "og:image", ogImage);
+    setMeta("property", "og:image:alt", ogImageAlt);
     setMeta("property", "og:url", canonical);
     setMeta("property", "og:type", ogType);
     setMeta("property", "og:site_name", siteName);
@@ -134,7 +143,21 @@ const SeoHelmet = ({ entityType, entityId, fallback = {} }) => {
     setMeta("name", "twitter:title", ogTitle);
     setMeta("name", "twitter:description", ogDescription);
     setMeta("name", "twitter:image", ogImage);
+    setMeta("name", "twitter:image:alt", ogImageAlt);
     setMeta("name", "twitter:url", canonical);
+
+    document.head.querySelectorAll('script[data-sm-seo-jsonld="true"]').forEach((node) => node.remove());
+    structuredData.filter(Boolean).forEach((value) => {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.dataset.smSeoJsonld = "true";
+      script.textContent = JSON.stringify(value).replace(/</g, "\\u003c");
+      document.head.appendChild(script);
+    });
+
+    return () => {
+      document.head.querySelectorAll('script[data-sm-seo-jsonld="true"]').forEach((node) => node.remove());
+    };
   }, [
     title,
     description,
@@ -144,11 +167,21 @@ const SeoHelmet = ({ entityType, entityId, fallback = {} }) => {
     ogTitle,
     ogDescription,
     ogImage,
+    ogImageAlt,
     ogType,
     siteName,
+    structuredData,
   ]);
 
   return null;
+};
+
+SeoHelmet.propTypes = {
+  entityType: PropTypes.string,
+  entityId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  fallback: PropTypes.object,
+  structuredData: PropTypes.arrayOf(PropTypes.object),
+  forceCanonicalUrl: PropTypes.string,
 };
 
 export default SeoHelmet;

@@ -24,6 +24,9 @@ export default function useSeoMeta(entityType, entityId) {
     }
 
     let cancelled = false;
+    // Do not briefly apply the previous entity's manual overrides while the
+    // newly resolved product ID is loading.
+    setSeoData(null);
     setLoading(true);
 
     axios

@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 
-import SeoHelmet from "@/components/Common/SeoHelmet";
 import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
 import ProductGallery from "@/components/clothingHeadwearPdp/ProductGallery";
 import ProductInfo from "@/components/clothingHeadwearPdp/ProductInfo";
@@ -798,15 +797,6 @@ export default function ClothingHeadwearWorkwearPdp() {
 
   return (
     <>
-      <SeoHelmet
-        entityType="product"
-        entityId={productId}
-        fallback={{
-          title: `${workwearProduct.name} | Super Merch`,
-          description: singleProduct?.product?.description_plain || workwearProduct.name,
-          ogImage: workwearProduct.primaryImage?.imageUrl,
-        }}
-      />
       <div className="py-2 sm:py-4 md:py-6 bg-gradient-to-b from-[#F8FAFC] via-white to-[#F8FAFC] min-h-screen">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.9fr] gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-8">
