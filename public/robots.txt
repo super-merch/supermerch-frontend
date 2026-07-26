@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Block utility/account flows from indexing
+# Block private, transactional, search, and user-specific routes
 Disallow: /checkout
 Disallow: /cart
 Disallow: /login
@@ -9,5 +9,10 @@ Disallow: /signup
 Disallow: /my-account
 Disallow: /success
 Disallow: /cancel
+Disallow: /favourites
+Disallow: /upload-artwork
+Disallow: /quote/respond/
+Disallow: /search
+Disallow: /track-order
 
 Sitemap: https://www.supermerch.com.au/sitemap.xml
