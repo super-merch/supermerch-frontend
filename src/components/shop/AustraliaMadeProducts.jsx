@@ -348,7 +348,7 @@ const AustraliaMadeProducts = ({ category = "" }) => {
     const returnUrl = `${location.pathname}?${currentParams.toString()}`;
 
     navigate(
-      toProductUrl(name),
+      toProductUrl(name, productId),
       {
         state: { productId, returnUrl },
       }
