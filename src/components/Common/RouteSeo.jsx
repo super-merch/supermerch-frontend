@@ -10,6 +10,7 @@ const makeFallback = ({ title, description, keywords, path, ogType = "website" }
   keywords,
   canonicalUrl: `${SITE_URL}${path}`,
   ogImage: DEFAULT_IMAGE,
+  ogImageAlt: "Super Merch Australia logo",
   ogType,
   siteName: "Super Merch",
   robots: "index, follow",
@@ -22,9 +23,7 @@ const RouteSeo = () => {
   if (
     pathname.startsWith("/product/") ||
     pathname.startsWith("/blogs/") ||
-    pathname.startsWith("/page/") ||
-    pathname === "/about" ||
-    pathname === "/shop"
+    pathname.startsWith("/page/")
   ) {
     return null;
   }
@@ -338,16 +337,73 @@ const RouteSeo = () => {
   ];
 
   if (dynamicCategoryPaths.includes(pathname)) {
+    const categorySeo = {
+      "/promotional": {
+        title: "Promotional Products Australia | Super Merch",
+        description: "Browse custom promotional products and branded merchandise for Australian businesses, events, teams, and campaigns.",
+        keywords: "promotional products australia, branded merchandise, custom promotional items",
+      },
+      "/hot-deals": {
+        title: "Promotional Product Deals | Super Merch Australia",
+        description: "Explore current promotional merchandise deals and value offers from Super Merch Australia.",
+        keywords: "promotional product deals, branded merchandise specials",
+      },
+      "/Clothing": {
+        title: "Custom Branded Clothing Australia | Super Merch",
+        description: "Shop custom branded polos, shirts, jackets, workwear, and apparel for Australian teams and businesses.",
+        keywords: "custom clothing australia, branded apparel, embroidered workwear",
+      },
+      "/Headwear": {
+        title: "Custom Branded Headwear Australia | Super Merch",
+        description: "Browse custom caps, hats, beanies, and branded headwear for Australian organisations and events.",
+        keywords: "custom caps australia, branded hats, promotional headwear",
+      },
+      "/return-gifts": {
+        title: "Custom Return Gifts Australia | Super Merch",
+        description: "Discover practical custom return gifts and branded giveaways for celebrations, events, and organisations.",
+        keywords: "return gifts australia, custom giveaways, branded gifts",
+      },
+      "/24hr-production": {
+        title: "24-Hour Promotional Products Australia | Super Merch",
+        description: "Browse promotional products available with rapid production options for urgent Australian orders.",
+        keywords: "24 hour promotional products, urgent branded merchandise",
+      },
+      "/deals": {
+        title: "Deals and Offers | Super Merch Australia",
+        description: "View current Super Merch deals on custom promotional products and branded merchandise.",
+        keywords: "promotional merchandise deals, super merch offers",
+      },
+      "/australia-made": {
+        title: "Australian-Made Promotional Products | Super Merch",
+        description: "Shop Australian-made promotional products and locally produced branded merchandise.",
+        keywords: "australian made promotional products, local branded merchandise",
+      },
+      "/clearance": {
+        title: "Promotional Product Clearance | Super Merch Australia",
+        description: "Browse clearance promotional products and branded merchandise while stocks last.",
+        keywords: "promotional products clearance, merchandise sale",
+      },
+      "/search": {
+        title: "Search Products | Super Merch Australia",
+        description: "Search the Super Merch promotional product catalogue.",
+        keywords: "search promotional products",
+      },
+    }[pathname];
+
+    const filteredOrSearch = pathname === "/search" || Boolean(location.search);
     return (
       <SeoHelmet
         entityType="category"
         entityId={pathname.replace(/^\//, "")}
-        fallback={makeFallback({
-          title: "Shop Promotional Products | Super Merch Australia",
-          description: "Explore category-focused promotional products and branded merchandise.",
-          keywords: "promotional products categories, branded merchandise",
-          path: pathname,
-        })}
+        fallback={{
+          ...makeFallback({
+            title: categorySeo.title,
+            description: categorySeo.description,
+            keywords: categorySeo.keywords,
+            path: pathname,
+          }),
+          robots: filteredOrSearch ? "noindex, follow" : "index, follow",
+        }}
       />
     );
   }
@@ -367,12 +423,15 @@ const RouteSeo = () => {
     <SeoHelmet
       entityType="cmsPage"
       entityId="default"
-      fallback={makeFallback({
-        title: "Super Merch Australia",
-        description: "Premium promotional products and custom merchandise.",
-        keywords: "super merch australia, promotional products",
-        path: pathname,
-      })}
+      fallback={{
+        ...makeFallback({
+          title: "Page Not Found | Super Merch Australia",
+          description: "The requested page could not be found.",
+          keywords: "",
+          path: pathname,
+        }),
+        robots: "noindex, nofollow",
+      }}
     />
   );
 };
