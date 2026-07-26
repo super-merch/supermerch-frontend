@@ -114,6 +114,7 @@ const SeoHelmet = ({
   const ogTitle = seoData?.ogTitle || title;
   const ogDescription = seoData?.ogDescription || description;
   const ogImage = seoData?.ogImage || fallback.ogImage || "";
+  const ogImageAlt = seoData?.ogImageAlt || fallback.ogImageAlt || "";
   const ogType = fallback.ogType || "website";
   const siteName = fallback.siteName || "Super Merch";
   const robots = fallback.robots || "index, follow";
@@ -133,6 +134,7 @@ const SeoHelmet = ({
     setMeta("property", "og:title", ogTitle);
     setMeta("property", "og:description", ogDescription);
     setMeta("property", "og:image", ogImage);
+    setMeta("property", "og:image:alt", ogImageAlt);
     setMeta("property", "og:url", canonical);
     setMeta("property", "og:type", ogType);
     setMeta("property", "og:site_name", siteName);
@@ -141,6 +143,7 @@ const SeoHelmet = ({
     setMeta("name", "twitter:title", ogTitle);
     setMeta("name", "twitter:description", ogDescription);
     setMeta("name", "twitter:image", ogImage);
+    setMeta("name", "twitter:image:alt", ogImageAlt);
     setMeta("name", "twitter:url", canonical);
 
     document.head.querySelectorAll('script[data-sm-seo-jsonld="true"]').forEach((node) => node.remove());
@@ -164,6 +167,7 @@ const SeoHelmet = ({
     ogTitle,
     ogDescription,
     ogImage,
+    ogImageAlt,
     ogType,
     siteName,
     structuredData,
