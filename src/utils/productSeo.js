@@ -1,6 +1,8 @@
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_DESCRIPTION =
   "Custom branded promotional products from Super Merch Australia, with bulk pricing and Australia-wide delivery.";
+const DEFAULT_SOCIAL_IMAGE = `${SITE_URL}/logo-teal.png`;
+const DEFAULT_SOCIAL_IMAGE_ALT = "Super Merch Australia logo";
 
 const firstText = (...values) =>
   values.find((value) => typeof value === "string" && value.trim())?.trim() || "";
@@ -126,6 +128,7 @@ export const buildProductSeo = ({ data, pathname, slug, categoryBreadcrumb = nul
   const hasProductIdentity = Boolean(data && name && productId);
   const isDiscontinued = isTrue(data?.meta?.discontinued) || isTrue(product.discontinued);
   const displayName = name || cleanSeoText(String(slug || "").replace(/-/g, " ")) || "Promotional Product";
+  const imageAlt = `${displayName}${category ? ` – ${category}` : " promotional product"}`;
   const metaDescription = (description || `${displayName}. ${DEFAULT_DESCRIPTION}`).slice(0, 160);
 
   const productSchema = {
@@ -171,12 +174,13 @@ export const buildProductSeo = ({ data, pathname, slug, categoryBreadcrumb = nul
 
   return {
     entityId: productId || slug,
-    imageAlt: `${displayName}${category ? ` – ${category}` : " promotional product"}`,
+    imageAlt,
     fallback: {
       title: `${displayName} | Custom Branded | Super Merch Australia`,
       description: metaDescription,
       canonicalUrl,
-      ogImage: images[0] || "",
+      ogImage: images[0] || DEFAULT_SOCIAL_IMAGE,
+      ogImageAlt: images[0] ? imageAlt : DEFAULT_SOCIAL_IMAGE_ALT,
       ogType: "product",
       siteName: "Super Merch",
       robots: hasProductIdentity && !isDiscontinued ? "index, follow" : "noindex, follow",
