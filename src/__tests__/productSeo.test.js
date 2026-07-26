@@ -39,7 +39,7 @@ describe("buildProductSeo", () => {
     expect(result.fallback.title).toContain("Ocean Bottle");
     expect(result.fallback.description).toBe("Reusable & insulated bottle.");
     expect(result.fallback.canonicalUrl).toBe(
-      "https://www.supermerch.com.au/product/ocean-bottle",
+      "https://www.supermerch.com.au/product/ocean-bottle/42",
     );
     expect(result.fallback.robots).toBe("index, follow");
     expect(result.imageAlt).toBe("Ocean Bottle – Drink Bottles");
