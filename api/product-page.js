@@ -34,6 +34,16 @@ const escapeJson = (value) =>
 const isTrue = (value) =>
   value === true || String(value).toLowerCase() === "true";
 
+const fetchWithTimeout = async (url, options = {}, timeoutMs = 5000) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 const imageUrl = (image) => {
   if (typeof image === "string") return image.trim();
   return cleanText(
@@ -94,7 +104,7 @@ const getIdentifier = (query) => {
 
 const getSeoOverride = async (entityId) => {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${BACKEND_URL}/api/seo-meta/by-entity/product/${encodeURIComponent(
         String(entityId),
       )}`,
@@ -111,7 +121,7 @@ const getSeoOverride = async (entityId) => {
 const getShell = async (req) => {
   const host = req.headers["x-forwarded-host"] || req.headers.host;
   const protocol = host?.includes("localhost") ? "http" : "https";
-  const response = await fetch(`${protocol}://${host}/`, {
+  const response = await fetchWithTimeout(`${protocol}://${host}/`, {
     headers: { "x-seo-shell-request": "1" },
   });
   if (!response.ok) throw new Error(`Application shell returned ${response.status}`);
@@ -162,7 +172,7 @@ export default async function handler(req, res) {
 
   let product;
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${BACKEND_URL}/api/single-product/${encodeURIComponent(identifier)}`,
     );
     if (response.status === 404) {
@@ -196,7 +206,8 @@ export default async function handler(req, res) {
   const productId =
     product?.meta?.id ?? overview.sku_number ?? details.code ?? identifier;
   const sku = overview.sku_number || details.code || "";
-  const canonical = `${SITE_URL}/product/${slugify(name)}/${encodeURIComponent(
+  const canonicalSlug = slugify(details.slug || overview.slug || name);
+  const canonical = `${SITE_URL}/product/${canonicalSlug}/${encodeURIComponent(
     String(productId),
   )}`;
   const image =
