@@ -37,15 +37,9 @@ export const slugify = (s) =>
 export const toProductUrl = (productName, id) => {
   if (!productName) return "/";
   const base = `/product/${slugify(productName)}`;
-  try {
-    if (id !== undefined && id !== null && String(id).trim() !== "") {
-      return `${base}?ref=${encodeURIComponent(btoa(String(id)))}`;
-    }
-  } catch (e) {
-    // btoa may fail in some environments; fall back to base URL
-    return base;
-  }
-  return base;
+  const normalizedId =
+    id !== undefined && id !== null ? String(id).trim() : "";
+  return normalizedId ? `${base}/${encodeURIComponent(normalizedId)}` : base;
 };
 
 export const findNearestColor = (colorName) => {
