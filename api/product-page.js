@@ -34,6 +34,17 @@ const escapeJson = (value) =>
 const isTrue = (value) =>
   value === true || String(value).toLowerCase() === "true";
 
+const imageUrl = (image) => {
+  if (typeof image === "string") return image.trim();
+  return cleanText(
+    image?.url ||
+      image?.original ||
+      image?.large_square ||
+      image?.medium_square ||
+      image?.small_square,
+  );
+};
+
 const removeMeta = (html, key) => {
   const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return html.replace(
@@ -72,11 +83,12 @@ const getIdentifier = (query) => {
   if (query.id !== undefined && String(query.id).trim()) {
     return String(query.id).trim();
   }
-  if (!query.ref) return "";
+  const slug = query.slug ? String(query.slug).trim() : "";
+  if (!query.ref) return slug;
   try {
-    return Buffer.from(String(query.ref), "base64").toString("utf8").trim();
+    return Buffer.from(String(query.ref), "base64").toString("utf8").trim() || slug;
   } catch {
-    return "";
+    return slug;
   }
 };
 
@@ -188,10 +200,13 @@ export default async function handler(req, res) {
     String(productId),
   )}`;
   const image =
-    overview.hero_image ||
-    details.images?.[0] ||
-    details.image_data?.[0]?.original ||
-    DEFAULT_IMAGE;
+    [
+      overview.hero_image,
+      ...(Array.isArray(details.images) ? details.images : []),
+      ...(Array.isArray(details.image_data) ? details.image_data : []),
+    ]
+      .map(imageUrl)
+      .find(Boolean) || DEFAULT_IMAGE;
   const imageAlt =
     image === DEFAULT_IMAGE
       ? "Super Merch Australia logo"
