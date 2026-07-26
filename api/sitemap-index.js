@@ -9,6 +9,7 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(
       `${BACKEND_URL}/api/client-products?page=1&limit=${PAGE_SIZE}&filter=true`,
+      { signal: AbortSignal.timeout(8000) },
     );
     if (!response.ok) throw new Error(`Product API returned ${response.status}`);
     const payload = await response.json();
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
         `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${SITE_URL}/sitemap-static.xml</loc></sitemap>\n${productMaps}\n</sitemapindex>`,
       ),
     );
-  } catch (error) {
+  } catch {
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
     res.status(503).send(xml(`<error>Sitemap temporarily unavailable</error>`));
   }
