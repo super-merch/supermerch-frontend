@@ -4,6 +4,12 @@ import SeoHelmet from "./SeoHelmet";
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
 
+const titleFromSlug = (slug) =>
+  decodeURIComponent(slug || "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .trim();
+
 const makeFallback = ({ title, description, keywords, path, ogType = "website" }) => ({
   title,
   description,
@@ -26,6 +32,30 @@ const RouteSeo = () => {
     pathname.startsWith("/page/")
   ) {
     return null;
+  }
+
+  if (pathname.startsWith("/deals/") || pathname.startsWith("/collections/")) {
+    const slug = pathname.split("/").filter(Boolean).pop();
+    const label = titleFromSlug(slug);
+    const isDeal = pathname.startsWith("/deals/");
+    return (
+      <SeoHelmet
+        entityType="category"
+        entityId={`${isDeal ? "deal" : "collection"}-${slug}`}
+        fallback={makeFallback({
+          title: isDeal
+            ? `${label} Deal | Super Merch Australia`
+            : `${label} Collection | Super Merch Australia`,
+          description: isDeal
+            ? `Explore the ${label} promotional product deal from Super Merch Australia.`
+            : `Browse the ${label} promotional product collection from Super Merch Australia.`,
+          keywords: isDeal
+            ? `${label.toLowerCase()} deal, promotional product offers`
+            : `${label.toLowerCase()} collection, promotional products`,
+          path: pathname,
+        })}
+      />
+    );
   }
 
   if (pathname.startsWith("/quote/respond/")) {
