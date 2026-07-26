@@ -8,6 +8,7 @@ import { ProductsContext } from "@/context/ProductsContext";
 import { getCategoryMetaForNavGroup } from "@/utils/categoryMeta";
 import { ProductPrefetchContext } from "@/context/ProductPrefetchContext";
 import LoadingOverlay from "@/components/Common/LoadingOverlay";
+import ProductSeo from "@/components/product/ProductSeo";
 
 const CLOTHING_HEADWEAR_NAV_GROUPS = new Set(["clothing", "headwear"]);
 const normalizeNavGroup = (value) => {
@@ -112,21 +113,27 @@ const ProductPageResolver = () => {
 
   if (isChecking) {
     return (
-      <LoadingOverlay
-        title="Loading product"
-        subtitle="Checking category and loading product details…"
-        variant="product"
-        showBrand={true}
-      />
+      <>
+        <ProductSeo product={null} />
+        <LoadingOverlay
+          title="Loading product"
+          subtitle="Checking category and loading product details…"
+          variant="product"
+          showBrand={true}
+        />
+      </>
     );
   }
 
-  return isClothingOrHeadwear ? (
+  return (
     <ProductPrefetchContext.Provider value={prefetchValue}>
-      <ClothingHeadwearProductPage />
+      <ProductSeo product={singleProduct} />
+      {isClothingOrHeadwear ? (
+        <ClothingHeadwearProductPage />
+      ) : (
+        <ProducPage product={singleProduct} />
+      )}
     </ProductPrefetchContext.Provider>
-  ) : (
-    <ProducPage />
   );
 };
 

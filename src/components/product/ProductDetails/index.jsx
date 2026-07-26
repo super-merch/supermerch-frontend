@@ -1,6 +1,5 @@
 import LoadingOverlay from "@/components/Common/LoadingOverlay";
 import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
-import SeoHelmet from "@/components/Common/SeoHelmet";
 import {
   getProductPrice,
   isProductCategory,
@@ -1279,14 +1278,6 @@ const ProductDetails = () => {
 
   const mainContent = (
     <>
-      <SeoHelmet
-        entityType="product"
-        entityId={productId}
-        fallback={{
-          title: product?.name ? `${product.name} - SuperMerch Australia` : "SuperMerch Australia",
-          description: product?.description?.substring(0, 160) || "Premium promotional products and custom merchandise",
-        }}
-      />
       {/* Add to cart notification bar */}
       <AnimatePresence>
         {showAddToCartNotification && (
@@ -1344,7 +1335,7 @@ const ProductDetails = () => {
                       <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                         <img
                           src={activeImage || normalizedImages[0] || noimage}
-                          alt={product?.name}
+                          alt={`${product?.name || "Promotional product"} selected configuration`}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -1526,7 +1517,7 @@ const ProductDetails = () => {
                 >
                   <img
                     src={item}
-                    alt={`${product?.name} ${index + 1}`}
+                    alt={`${product?.name || "Promotional product"} product view ${index + 1}`}
                     className="w-full object-contain"
                   />
                 </div>
@@ -1560,7 +1551,7 @@ const ProductDetails = () => {
                 >
                   <img
                     src={item}
-                    alt={`Thumbnail ${index}`}
+                    alt={`${product?.name || "Promotional product"} thumbnail view ${index + 1}`}
                     className="w-full h-full object-cover bg-gray-50"
                   />
                 </button>
@@ -1586,7 +1577,7 @@ const ProductDetails = () => {
             >
               <img
                 src={activeImage}
-                alt={product?.name}
+                alt={`${product?.name || "Promotional product"} main product view`}
                 className="w-full max-h-[600px] max-w-full object-contain transition-transform duration-300 ease-out group-hover:scale-150"
               />
             </div>

@@ -467,7 +467,7 @@ export default function ProductGallery({
                                             >
                                                 <img
                                                     src={image}
-                                                    alt={`View ${index + 1}`}
+                                                    alt={`${productName || "Promotional product"} thumbnail view ${index + 1}`}
                                                     className="h-full w-full object-contain p-0.5"
                                                 />
                                             </button>

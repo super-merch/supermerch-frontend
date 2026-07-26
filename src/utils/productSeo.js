@@ -1,0 +1,141 @@
+const SITE_URL = "https://www.supermerch.com.au";
+const DEFAULT_DESCRIPTION =
+  "Custom branded promotional products from Super Merch Australia, with bulk pricing and Australia-wide delivery.";
+
+const firstText = (...values) =>
+  values.find((value) => typeof value === "string" && value.trim())?.trim() || "";
+
+export const cleanSeoText = (value) =>
+  String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const imageUrl = (image) => {
+  if (typeof image === "string") return image.trim();
+  return firstText(
+    image?.url,
+    image?.original,
+    image?.large_square,
+    image?.medium_square,
+    image?.small_square,
+  );
+};
+
+export const getProductSeoImages = (data) => {
+  const product = data?.product || {};
+  const candidates = [
+    data?.overview?.hero_image,
+    ...(Array.isArray(product.images) ? product.images : []),
+    ...(Array.isArray(product.image_data) ? product.image_data : []),
+    ...(Array.isArray(product.colours?.list)
+      ? product.colours.list.map((colour) => colour?.image)
+      : []),
+  ];
+  return [...new Set(candidates.map(imageUrl).filter(Boolean))];
+};
+
+const getLowestPrice = (data) => {
+  const summaryPrice = Number(data?.pricingSummary?.finalMinPrice);
+  if (Number.isFinite(summaryPrice) && summaryPrice > 0) return summaryPrice;
+
+  const groups = data?.product?.prices?.price_groups;
+  const prices = (Array.isArray(groups) ? groups : []).flatMap((group) =>
+    (group?.base_price?.price_breaks || []).map((entry) => Number(entry?.price)),
+  );
+  const valid = prices.filter((price) => Number.isFinite(price) && price > 0);
+  return valid.length ? Math.min(...valid) : null;
+};
+
+const getAvailability = (data) => {
+  const values = [
+    data?.stock,
+    data?.stockQty,
+    data?.totalStock,
+    data?.product?.stock,
+    data?.product?.stockQty,
+    data?.product?.totalStock,
+  ];
+  const explicit = values.map(Number).find(Number.isFinite);
+  if (explicit === undefined) return null;
+  return explicit > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+};
+
+export const buildProductSeo = ({ data, pathname, slug }) => {
+  const product = data?.product || {};
+  const overview = data?.overview || {};
+  const name = firstText(product.name, overview.name, overview.originalName);
+  const description = cleanSeoText(
+    firstText(product.description, overview.description, product.short_description),
+  );
+  const images = getProductSeoImages(data);
+  const productId = firstText(String(data?.meta?.id || ""), overview.sku_number, product.code);
+  const category = firstText(
+    product.categorisation?.promodata_product_type?.type_name,
+    product.categorisation?.product_type?.type_name,
+    product.categorisation?.supplier_category,
+  );
+  const brand = firstText(product.brand?.name, overview.brand, overview.supplier);
+  const canonicalUrl = `${SITE_URL}${pathname || `/product/${slug || ""}`}`;
+  const hasProductIdentity = Boolean(data && name && productId);
+  const displayName = name || cleanSeoText(String(slug || "").replace(/-/g, " ")) || "Promotional Product";
+  const metaDescription = (description || `${displayName}. ${DEFAULT_DESCRIPTION}`).slice(0, 160);
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: displayName,
+    description: description || metaDescription,
+    ...(images.length ? { image: images } : {}),
+    ...(productId ? { sku: productId } : {}),
+    ...(brand ? { brand: { "@type": "Brand", name: brand } } : {}),
+    ...(category ? { category } : {}),
+    url: canonicalUrl,
+  };
+  const price = getLowestPrice(data);
+  if (price) {
+    productSchema.offers = {
+      "@type": "Offer",
+      url: canonicalUrl,
+      priceCurrency: "AUD",
+      price: price.toFixed(2),
+      ...(getAvailability(data) ? { availability: getAvailability(data) } : {}),
+    };
+  }
+
+  const breadcrumbs = [
+    { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+    { "@type": "ListItem", position: 2, name: "Shop", item: `${SITE_URL}/shop` },
+  ];
+  if (category) breadcrumbs.push({ "@type": "ListItem", position: 3, name: category });
+  breadcrumbs.push({
+    "@type": "ListItem",
+    position: breadcrumbs.length + 1,
+    name: displayName,
+    item: canonicalUrl,
+  });
+
+  return {
+    entityId: productId || slug,
+    imageAlt: `${displayName}${category ? ` – ${category}` : " promotional product"}`,
+    fallback: {
+      title: `${displayName} | Custom Branded | Super Merch Australia`,
+      description: metaDescription,
+      canonicalUrl,
+      ogImage: images[0] || "",
+      ogType: "product",
+      siteName: "Super Merch",
+      robots: hasProductIdentity ? "index, follow" : "noindex, follow",
+    },
+    structuredData: hasProductIdentity
+      ? [
+          productSchema,
+          { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: breadcrumbs },
+        ]
+      : [],
+  };
+};
