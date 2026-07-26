@@ -56,17 +56,19 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
     } else {
       // Navigate using the stored slug/original name, not the display name
       const pid = product?.meta?.id;
-      const base = toProductUrl(
-        product?.slug || product?.overview?.originalName || product?.overview?.name
+      navigate(
+        toProductUrl(
+          product?.slug || product?.overview?.originalName || product?.overview?.name,
+          pid,
+        ),
       );
-      const ref = pid ? `?ref=${encodeURIComponent(btoa(String(pid)))}` : "";
-      navigate(base + ref);
     }
   };
 
   const productId = product?.meta?.id;
   const slug = toProductUrl(
-    product?.slug || product?.overview?.originalName || product?.overview?.name
+    product?.slug || product?.overview?.originalName || product?.overview?.name,
+    productId,
   );
   const productPrice =
     product?.product?.prices?.price_groups[0]?.base_price?.price_breaks[0]
