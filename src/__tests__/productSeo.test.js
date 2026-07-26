@@ -7,6 +7,7 @@ import {
 
 const completeProduct = {
   meta: { id: 42 },
+  pricingSummary: { finalMinPrice: 6.25 },
   overview: {
     hero_image: "https://images.example.test/bottle.jpg",
     supplier: "Acme",
@@ -67,9 +68,33 @@ describe("buildProductSeo", () => {
     expect(result.structuredData).toEqual([]);
   });
 
-  it("does not invent an Offer when Promodata has no valid price", () => {
+  it("does not invent an Offer when Promodata has no authoritative price", () => {
     const result = buildProductSeo({
-      data: { ...completeProduct, product: { ...completeProduct.product, prices: null } },
+      data: { ...completeProduct, pricingSummary: null },
+      pathname: "/product/ocean-bottle",
+      slug: "ocean-bottle",
+    });
+
+    expect(result.structuredData[0].offers).toBeUndefined();
+  });
+
+  it("does not publish undecorated base pricing as an Offer", () => {
+    const result = buildProductSeo({
+      data: {
+        ...completeProduct,
+        pricingSummary: null,
+        product: {
+          ...completeProduct.product,
+          prices: {
+            price_groups: [
+              {
+                base_price: { price_breaks: [{ price: "6.25" }] },
+                additions: [{ price_breaks: [{ price: "2.50" }] }],
+              },
+            ],
+          },
+        },
+      },
       pathname: "/product/ocean-bottle",
       slug: "ocean-bottle",
     });
