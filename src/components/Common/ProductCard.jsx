@@ -30,7 +30,10 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
   // Use the admin-set clean value; fall back to rounded derived % only if no stored amount
   const discountPct = discountAmount > 0 ? discountAmount : Math.round(derivedDiscount);
   const isGlobalDiscount = product.discountInfo?.isGlobal || false;
-  const finalPrice = Number(product?.pricingSummary?.finalMinPrice) || getProductPrice(product, product.meta.id);
+  const summaryFinalPrice = Number(product?.pricingSummary?.finalMinPrice);
+  const finalPrice = Number.isFinite(summaryFinalPrice)
+    ? summaryFinalPrice
+    : getProductPrice(product, product.meta.id);
   const strikePrice = Number(product?.pricingSummary?.marginAdjustedMinPrice) || null;
   const handleRemoveFavourite = (product) => {
     toast.success("Product removed from favourites");
