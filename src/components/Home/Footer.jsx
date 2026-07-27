@@ -1,19 +1,12 @@
-import { IoMail } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import amex from "../../assets/amex.png";
 import apple from "../../assets/apple.png";
-import colors from "../../assets/colors.png";
-import discover from "../../assets/discover.png";
-import facebook from "../../assets/facebook.png";
 import gpay from "../../assets/gpay.png";
-import insta from "../../assets/insta.png";
-import pay from "../../assets/pay.png";
 import paypal from "../../assets/paypal.png";
 import supermerch from "../../assets/supermerch.png";
 import visa from "../../assets/visa.png";
 import PopUps from "./PopUps";
-import { FaFacebookF, FaInstagram, FaMailchimp } from "react-icons/fa6";
+import { FaFacebookF, FaInstagram } from "react-icons/fa6";
 import { FaMailBulk } from "react-icons/fa";
 
 const Footer = () => {
@@ -221,8 +214,12 @@ const Footer = () => {
               </div>
               <div>
                 <p className="text-white/80 text-sm">Business Hours</p>
-                <p className="text-white text-sm">Mon–Fri: 7am–6pm CST</p>
-                <p className="text-white text-sm">Sat: 8am–5pm CST</p>
+                <p className="text-white text-sm">
+                  Mon–Fri: 7am–6pm (Sydney time)
+                </p>
+                <p className="text-white text-sm">
+                  Sat: 8am–5pm (Sydney time)
+                </p>
               </div>
             </div>
           </div>
