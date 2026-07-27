@@ -71,6 +71,8 @@ const RouteSeo = () => {
     "/shop": {
       entityType: "category",
       entityId: shopSeo.entityId,
+      canonicalUrlWhenSeoMissing:
+        shopSeo.entityId === "shop" ? undefined : `${SITE_URL}/shop`,
       fallback: makeFallback({
         title: "Shop Promotional Products | Super Merch Australia",
         description: "Browse branded promotional products, custom merchandise, and business giveaways.",
@@ -422,6 +424,7 @@ const RouteSeo = () => {
         entityType={seo.entityType}
         entityId={seo.entityId}
         fallback={seo.fallback}
+        canonicalUrlWhenSeoMissing={seo.canonicalUrlWhenSeoMissing}
       />
     );
   }
