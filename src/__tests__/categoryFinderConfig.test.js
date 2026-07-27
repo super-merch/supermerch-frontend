@@ -41,6 +41,7 @@ describe("categoryFinderConfig", () => {
     const ids = config.questions.map((question) => question.id);
 
     expect(new Set(ids).size).toBe(ids.length);
+    expect(ids.slice(0, 2)).toEqual(["moq", "budget"]);
     config.questions.forEach((question) => {
       expect(question.options.length).toBeGreaterThan(0);
       expect(["query", "attribute", "price"]).toContain(question.type);

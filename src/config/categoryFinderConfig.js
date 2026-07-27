@@ -124,6 +124,7 @@ export const CATEGORY_FINDER_CONFIG = {
     submitLabel: "Show my matches",
     questions: [
       ORDER_QUANTITY_QUESTION,
+      BUDGET_QUESTION,
       {
         id: "capacity",
         label: "Capacity",
@@ -154,7 +155,6 @@ export const CATEGORY_FINDER_CONFIG = {
         ],
       },
       COLOUR_QUESTION,
-      BUDGET_QUESTION,
     ],
   },
 };
@@ -186,9 +186,9 @@ export const getCategoryFinderConfig = (
     emptySubmitLabel: `View all ${labelLower}`,
     questions: [
       ORDER_QUANTITY_QUESTION,
+      BUDGET_QUESTION,
       ...attributeQuestions,
       COLOUR_QUESTION,
-      BUDGET_QUESTION,
     ],
   };
 };
