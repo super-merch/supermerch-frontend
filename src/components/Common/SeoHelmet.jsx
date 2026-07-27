@@ -65,8 +65,9 @@ const SeoHelmet = ({
   fallback = {},
   structuredData = [],
   forceCanonicalUrl,
+  canonicalUrlWhenSeoMissing,
 }) => {
-  const { seoData } = useSeoMeta(entityType, entityId);
+  const { seoData, resolved } = useSeoMeta(entityType, entityId);
 
   const title = seoData?.metaTitle || fallback.title || "";
   const description = seoData?.metaDescription || fallback.description || "";
@@ -79,7 +80,10 @@ const SeoHelmet = ({
   const siteName = fallback.siteName || "Super Merch";
   const robots = fallback.robots || "index, follow";
   const canonical = toCanonicalUrl(
-    forceCanonicalUrl || seoData?.canonicalUrl || fallback.canonicalUrl
+    forceCanonicalUrl ||
+      seoData?.canonicalUrl ||
+      (resolved && !seoData ? canonicalUrlWhenSeoMissing : "") ||
+      fallback.canonicalUrl
   );
 
   useEffect(() => {
@@ -142,6 +146,7 @@ SeoHelmet.propTypes = {
   fallback: PropTypes.object,
   structuredData: PropTypes.arrayOf(PropTypes.object),
   forceCanonicalUrl: PropTypes.string,
+  canonicalUrlWhenSeoMissing: PropTypes.string,
 };
 
 export default SeoHelmet;
