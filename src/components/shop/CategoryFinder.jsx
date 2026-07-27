@@ -49,6 +49,11 @@ const CategoryFinder = ({ productTypeId }) => {
   if (!config) return null;
 
   const selectedCount = Object.values(selections).filter(Boolean).length;
+  const questionPriority = { moq: 0, budget: 1 };
+  const orderedQuestions = [...config.questions].sort(
+    (left, right) =>
+      (questionPriority[left.id] ?? 2) - (questionPriority[right.id] ?? 2)
+  );
 
   const applyFinder = () => {
     const next = new URLSearchParams(searchParams);
@@ -137,7 +142,7 @@ const CategoryFinder = ({ productTypeId }) => {
 
         <div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            {config.questions.map((question) => (
+            {orderedQuestions.map((question) => (
               <label key={question.id} className="block">
                 <span className="mb-1.5 block text-xs font-semibold text-gray-700">
                   {question.label}
