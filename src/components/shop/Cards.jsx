@@ -597,7 +597,15 @@ const Cards = ({ category = "" }) => {
         </div>
 
         <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-0">
-          <CategoryFinder productTypeId={urlCategoryParam} />
+          <CategoryFinder
+            attributes={isProductsLoading ? [] : getProducts?.attributes}
+            categoryLabel={
+              searchParams.get("subCategory") ||
+              searchParams.get("categoryName") ||
+              ""
+            }
+            productTypeId={urlCategoryParam}
+          />
           <div className="lg:hidden">
             <div className="flex items-center justify-between w-full mb-4">
               <button
