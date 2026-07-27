@@ -74,5 +74,31 @@ describe("SEO page handler", () => {
       '<link rel="canonical" href="https://www.supermerch.com.au/shop?category=wooden-pens">',
     );
   });
-});
 
+  it("canonicalises an unknown category to the general shop", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response("<html><head><title>Fallback</title></head><body></body></html>"),
+      )
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: {
+          path: "/shop",
+          category: "does-not-exist-xyz",
+        },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain(
+      '<link rel="canonical" href="https://www.supermerch.com.au/shop">',
+    );
+  });
+});
