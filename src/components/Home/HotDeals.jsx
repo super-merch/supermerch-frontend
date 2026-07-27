@@ -70,8 +70,19 @@ const HotDeals = () => {
             (() => {
               if (deals.length === 0) {
                 return (
-                  <div className="flex items-center justify-center h-32">
-                    <p className="text-gray-500">No deals available</p>
+                  <div className="flex h-full flex-col items-center justify-center rounded-lg bg-blue-50 p-5 text-center">
+                    <p className="font-semibold text-gray-800">
+                      Explore promotional merchandise
+                    </p>
+                    <p className="mt-2 text-sm text-gray-600">
+                      Browse products with clear pricing and branding options.
+                    </p>
+                    <Link
+                      to="/shop"
+                      className="mt-4 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90"
+                    >
+                      Shop all products
+                    </Link>
                   </div>
                 );
               }
