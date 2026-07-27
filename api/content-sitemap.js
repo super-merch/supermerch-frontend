@@ -64,6 +64,15 @@ const lastModified = (value) => {
     : `<lastmod>${escapeXml(date.toISOString())}</lastmod>`;
 };
 
+const wordCount = (value) => {
+  const text = String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text ? text.split(/\s+/).length : 0;
+};
+
 export default async function handler(_req, res) {
   const [collectionPayload, blogPayload, dealPayload] = await Promise.all([
     fetchJson(`${BACKEND_URL}/api/public/collections`),
@@ -93,7 +102,14 @@ export default async function handler(_req, res) {
   const blogs = normaliseRows(blogPayload, ["data", "blogs"]);
   for (const blog of blogs) {
     const identifier = blog?._id || blog?.id;
-    if (!identifier || blog?.isActive === false || blog?.status === "draft") continue;
+    if (
+      !identifier ||
+      blog?.isActive === false ||
+      blog?.status === "draft" ||
+      wordCount(blog?.content) < 300
+    ) {
+      continue;
+    }
     entries.push({
       path: `/blogs/${encodeURIComponent(identifier)}`,
       updatedAt: blog.updatedAt || blog.publishedAt,
