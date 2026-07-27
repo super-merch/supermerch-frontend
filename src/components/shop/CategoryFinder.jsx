@@ -29,10 +29,14 @@ const readSelections = (config, searchParams) => {
   }, {});
 };
 
-const CategoryFinder = ({ productTypeId }) => {
+const CategoryFinder = ({ attributes = [], categoryLabel = "", productTypeId }) => {
   const config = useMemo(
-    () => getCategoryFinderConfig(productTypeId),
-    [productTypeId]
+    () =>
+      getCategoryFinderConfig(productTypeId, {
+        attributes,
+        categoryLabel,
+      }),
+    [attributes, categoryLabel, productTypeId]
   );
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParamsKey = searchParams.toString();
@@ -167,7 +171,7 @@ const CategoryFinder = ({ productTypeId }) => {
             <p className="text-xs text-gray-500">
               {selectedCount
                 ? `${selectedCount} preference${selectedCount === 1 ? "" : "s"} selected`
-                : "Choose one or more preferences, or continue with all bottles."}
+                : "Choose one or more preferences, or continue with all products."}
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
               {selectedCount > 0 && (
@@ -186,7 +190,9 @@ const CategoryFinder = ({ productTypeId }) => {
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
               >
                 <Search className="h-4 w-4" />
-                {selectedCount ? config.submitLabel : "View all bottles"}
+                {selectedCount
+                  ? config.submitLabel
+                  : config.emptySubmitLabel || "View all bottles"}
               </button>
             </div>
           </div>
@@ -197,6 +203,13 @@ const CategoryFinder = ({ productTypeId }) => {
 };
 
 CategoryFinder.propTypes = {
+  attributes: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      values: PropTypes.arrayOf(PropTypes.string),
+    })
+  ),
+  categoryLabel: PropTypes.string,
   productTypeId: PropTypes.string,
 };
 
