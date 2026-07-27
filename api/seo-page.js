@@ -40,6 +40,11 @@ const cleanText = (value) =>
     .replace(/\s+/g, " ")
     .trim();
 
+const wordCount = (value) => {
+  const text = cleanText(value);
+  return text ? text.split(/\s+/).length : 0;
+};
+
 const escapeHtml = (value) =>
   String(value || "")
     .replace(/&/g, "&amp;")
@@ -139,6 +144,7 @@ const resolvePage = async (path, category) => {
       image:
         cleanText(blog.ogImage || blog.image?.url || blog.image || blog.images?.[0]?.url) ||
         DEFAULT_IMAGE,
+      robots: wordCount(blog.content) >= 300 ? "index, follow" : "noindex, follow",
     };
   }
 
@@ -248,7 +254,9 @@ export default async function handler(req, res) {
     cleanText(override?.ogDescription).slice(0, 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
   const canonicalPath =
-    path === "/shop" && category && !override ? "/shop" : page.canonicalPath;
+    path === "/shop" && category && !override
+      ? "/shop"
+      : page.canonicalPath || path;
   const fallbackCanonical = `${SITE_URL}${
     canonicalPath === "/"
       ? "/"
@@ -283,9 +291,60 @@ export default async function handler(req, res) {
     }
   })();
 
+  const structuredData = [];
+  if (path === "/") {
+    structuredData.push({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "Super Merch",
+      url: `${SITE_URL}/`,
+      logo: DEFAULT_IMAGE,
+      email: "Info@supermerch.com.au",
+      telephone: "+61466468528",
+      areaServed: "AU",
+    });
+  }
+
+  if (path === "/faqs") {
+    try {
+      const faqPayload = await fetchJson(`${BACKEND_URL}/api/faqs/active`);
+      const faqs = Array.isArray(faqPayload?.data) ? faqPayload.data : [];
+      const mainEntity = faqs
+        .filter((item) => cleanText(item?.question) && cleanText(item?.answer))
+        .map((item) => ({
+          "@type": "Question",
+          name: cleanText(item.question),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: cleanText(item.answer),
+          },
+        }));
+      if (mainEntity.length > 0) {
+        structuredData.push({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity,
+        });
+      }
+    } catch {
+      // FAQ content still renders client-side; omit schema if the source is down.
+    }
+  }
+
+  const jsonLdTags = structuredData
+    .map(
+      (value) =>
+        `<script type="application/ld+json" data-sm-seo-jsonld="true">${JSON.stringify(value).replace(
+          /</g,
+          "\\u003c",
+        )}</script>`,
+    )
+    .join("\n");
+
   const tags = `<title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="${escapeHtml(page.robots || "index, follow")}">
 <link rel="canonical" href="${escapeHtml(canonical)}">
 <meta property="og:title" content="${escapeHtml(socialTitle)}">
 <meta property="og:description" content="${escapeHtml(socialDescription)}">
@@ -298,7 +357,8 @@ export default async function handler(req, res) {
 <meta name="twitter:description" content="${escapeHtml(socialDescription)}">
 <meta name="twitter:image" content="${escapeHtml(socialImage)}">
 <meta name="twitter:image:alt" content="${escapeHtml(title)}">
-<meta name="twitter:url" content="${escapeHtml(canonical)}">`;
+<meta name="twitter:url" content="${escapeHtml(canonical)}">
+${jsonLdTags}`;
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");

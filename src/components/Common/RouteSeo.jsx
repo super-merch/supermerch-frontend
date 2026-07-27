@@ -4,6 +4,17 @@ import { getShopSeoContext } from "../../utils/shopSeo";
 
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
+const ORGANIZATION_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
+  name: "Super Merch",
+  url: `${SITE_URL}/`,
+  logo: DEFAULT_IMAGE,
+  email: "Info@supermerch.com.au",
+  telephone: "+61466468528",
+  areaServed: "AU",
+};
 
 const makeFallback = ({ title, description, keywords, path, ogType = "website" }) => ({
   title,
@@ -55,6 +66,7 @@ const RouteSeo = () => {
       <SeoHelmet
         entityType="cmsPage"
         entityId="home"
+        structuredData={[ORGANIZATION_SCHEMA]}
         fallback={makeFallback({
           title: "Super Merch Australia | Promotional Products & Custom Merchandise",
           description:

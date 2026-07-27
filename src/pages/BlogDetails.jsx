@@ -1,5 +1,5 @@
 import DOMPurify from "dompurify";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SeoHelmet from "@/components/Common/SeoHelmet";
 import { useParams } from "react-router-dom";
 import {
@@ -18,6 +18,14 @@ const BlogDetails = () => {
   const { blogs, options, fetchBlogs } = useContext(BlogContext);
   const [blogData, setBlogData] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const plainContent = String(blogData?.content || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const contentWordCount = plainContent
+    ? plainContent.split(/\s+/).length
+    : 0;
 
   useEffect(() => {
     if (!blogs?.length) {
@@ -83,6 +91,8 @@ const BlogDetails = () => {
             : "SuperMerch Blog",
           description:
             blogData?.metaDescription || blogData?.content?.substring(0, 160),
+          robots:
+            contentWordCount >= 300 ? "index, follow" : "noindex, follow",
         }}
       />
 

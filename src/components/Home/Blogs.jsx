@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { FaArrowRight, FaCalendarAlt, FaEye } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -19,7 +19,9 @@ const Blogs = () => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blogs?.length]);
 
-  // Function to inject images into content
+  // Do not publish an empty placeholder as homepage content. The all-blogs
+  // route remains available while editors prepare substantive articles.
+  if (!blogs?.length) return null;
 
   return (
     <section className="bg-white">
@@ -63,27 +65,11 @@ const Blogs = () => {
               },
             }}
           >
-            {blogs?.length > 0 ? (
-              blogs?.map((blog, index) => (
+            {blogs.map((blog, index) => (
                 <SwiperSlide key={blog._id || index} className="my-10">
                   <BlogCard key={index} blog={blog} options={options} />
                 </SwiperSlide>
-              ))
-            ) : (
-              <div className="col-span-full flex justify-center py-16">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FaEye className="w-8 h-8 text-secondary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-secondary mb-2">
-                    No blogs available
-                  </h3>
-                  <p className="text-secondary/70">
-                    Check back later for the latest blog posts.
-                  </p>
-                </div>
-              </div>
-            )}
+              ))}
           </Swiper>
 
           {/* Navigation Buttons */}

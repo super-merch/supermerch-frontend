@@ -1,26 +1,60 @@
-import React from "react";
 import {
   FaHeart,
   FaCogs,
   FaHandshake,
-  FaAward,
   FaCheckCircle,
+  FaTruck,
+  FaTags,
 } from "react-icons/fa";
 import useCmsData from "../../hooks/useCmsData";
 
-const ICON_MAP = { FaHeart, FaCogs, FaHandshake, FaAward, FaCheckCircle };
+const ICON_MAP = {
+  FaHeart,
+  FaCogs,
+  FaHandshake,
+  FaCheckCircle,
+  FaTruck,
+  FaTags,
+};
+
+const FALLBACK_FEATURES = [
+  {
+    title: "Merchandise for Every Brief",
+    description:
+      "Choose from promotional products, uniforms, workwear, corporate gifts, signage and awards for Australian organisations.",
+    imageUrl: "/about1.png",
+    icon: FaTags,
+    color: "from-teal-500 to-emerald-600",
+  },
+  {
+    title: "Flexible Turnaround Options",
+    description:
+      "Select express products for urgent campaigns or use longer lead times when value and customisation are the priority.",
+    imageUrl: "/about2.png",
+    icon: FaTruck,
+    color: "from-blue-500 to-cyan-600",
+  },
+  {
+    title: "Practical Branding Support",
+    description:
+      "Our team helps with product selection, artwork, decoration methods and delivery so your merchandise suits its intended use.",
+    imageUrl: "/about3.png",
+    icon: FaHandshake,
+    color: "from-violet-500 to-purple-600",
+  },
+];
 
 const Feature = () => {
   const { data: cmsData } = useCmsData("/api/general-cms/by-slug/about-features");
   const cmsFeat = cmsData?.points?.features;
-  const cmsAch = cmsData?.points?.nikeCertification?.achievements;
-
-  const features = (Array.isArray(cmsFeat) ? cmsFeat : []).map((f) => ({
+  const featureSource =
+    Array.isArray(cmsFeat) && cmsFeat.length > 0
+      ? cmsFeat
+      : FALLBACK_FEATURES;
+  const features = featureSource.map((f) => ({
     ...f,
     icon: typeof f.icon === "string" ? (ICON_MAP[f.icon] || FaHeart) : f.icon,
   }));
-
-  const achievements = Array.isArray(cmsAch) ? cmsAch : [];
 
   return (
     <section className="py-16 lg:py-20 bg-gradient-to-br from-gray-50 to-white">
@@ -89,82 +123,26 @@ const Feature = () => {
             );
           })}
         </div>
-        {features.length === 0 ? (
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8 lg:gap-12 mb-20 animate-pulse">
-            <div className="h-80 rounded-2xl bg-slate-200"></div>
-            <div className="h-80 rounded-2xl bg-slate-200"></div>
-            <div className="h-80 rounded-2xl bg-slate-200"></div>
-          </div>
-        ) : null}
-
-        {/* Nike Certification Section */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
-              <FaAward className="w-4 h-4" />
-              Quality Certification
-            </div>
-
-            <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
-              Nike rates our decoration quality{" "}
-              <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                3 million swooshes!
-              </span>
-            </h3>
-
-            <div className="space-y-4">
-              <p className="text-gray-600 leading-relaxed">
-                Our decoration operations are one of a select few certified by
-                Nike to reproduce its iconic "swoosh" trademark. Each year, they
-                trust us to swoosh over 3 million pieces of retail collegiate
-                apparel.
-              </p>
-
-              <p className="text-gray-600 leading-relaxed">
-                Brands of all sizes get the same meticulous quality when their
-                merchandise comes from our 500,000 square foot decoration and
-                distribution center in Orange City, IA. It runs on 100%
-                renewable energy and was awarded a silver medal for
-                sustainability by EcoVadis.
-              </p>
-            </div>
-
-            {/* Achievements List */}
-            <div className="grid grid-cols-2 gap-3 pt-4">
-              {achievements.map((achievement, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <FaCheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm font-medium text-gray-700">
-                    {achievement}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {achievements.length === 0 ? (
-              <div className="grid grid-cols-2 gap-3 pt-4 animate-pulse">
-                <div className="h-4 rounded bg-slate-200"></div>
-                <div className="h-4 rounded bg-slate-200"></div>
-                <div className="h-4 rounded bg-slate-200"></div>
-                <div className="h-4 rounded bg-slate-200"></div>
+        <div className="max-w-4xl mx-auto rounded-2xl bg-primary px-8 py-10 text-white">
+          <h3 className="text-3xl lg:text-4xl font-bold mb-4">
+            Local support, nationwide delivery
+          </h3>
+          <p className="text-lg text-white/90 leading-relaxed">
+            Super Merch works with Australian businesses, clubs, schools and
+            community organisations to source and brand merchandise for
+            campaigns, events, teams and everyday operations.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4 pt-8">
+            {[
+              "Clear tier pricing",
+              "Express options on selected products",
+              "Artwork and branding guidance",
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-2">
+                <FaCheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                <span className="font-medium">{item}</span>
               </div>
-            ) : null}
-          </div>
-
-          {/* Image */}
-          <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src="/about4.png"
-                alt="Nike Certification Facility"
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            </div>
-
-            {/* Floating Badge */}
-            <div className="absolute -top-4 -right-4 bg-white rounded-full p-4 shadow-lg border border-gray-100">
-              <FaAward className="w-8 h-8 text-yellow-500" />
-            </div>
+            ))}
           </div>
         </div>
       </div>
