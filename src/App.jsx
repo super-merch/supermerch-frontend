@@ -1,54 +1,55 @@
-import { useContext } from "react";
+import { lazy, Suspense, useContext } from "react";
 import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
 import RouteTransition from "./components/Common/RouteTransition";
 import Home from "./pages/Home/Home";
 import ProductPageResolver from "./pages/ProductPageResolver";
 import Footer from "./components/Home/Footer";
-import CategoryPage from "./pages/CategoryPage";
-import ShopPage from "./pages/ShopPage";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ContactPage from "./pages/ContactPage";
-import Cart from "./pages/Cart";
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import CheckoutPage from "./pages/CheckoutPage";
-import AboutPage from "./pages/AboutPage";
+import { useLocation } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
-import Sidebar from "./userAdmin/Sidebar";
 import { ToastContainer } from "react-toastify";
-import BlogDetails from "./pages/BlogDetails";
-import FavouritePage from "./pages/FavouritePage";
 import { HelmetProvider } from "react-helmet-async";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Success from "./pages/Success";
-import Cancel from "./pages/Cancel";
-import AllBlogs from "./pages/AllBlogs";
-import FAQs from "./pages/FAQs";
-import ArtWorkPolicy from "./pages/ArtWorkPolicy";
-import RefundPolicy from "./pages/RefundPolicy";
-import ClearancePage from "./pages/CLearance";
-import PMSColorChart from "./pages/PMS";
-import HelpCenter from "./pages/HelpCenter";
-import MailOffer from "./pages/MailOffer";
-import TrackOrder from "./pages/TrackOrder";
-import CmsPage from "./pages/CmsPage";
-import UploadArtwork from "./pages/UploadArtwork";
-import Terms from "./pages/Terms";
-import QuoteResponse from "./pages/QuoteResponse";
 import ChatWidget from "./components/Chat/ChatWidget";
-import AustraliaMade from "./pages/AustraliaMade";
-import NotFound from "./pages/NotFound";
 import SitePopups from "./components/Home/SitePopups";
 import RouteSeo from "./components/Common/RouteSeo";
-import DealsPage from "./pages/DealsPage";
-import DealDetailPage from "./pages/DealDetailPage";
-import CollectionDetailPage from "./pages/Collections/CollectionDetailPage";
+
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
+const ShopPage = lazy(() => import("./pages/ShopPage"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const Cart = lazy(() => import("./pages/Cart"));
+const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const Sidebar = lazy(() => import("./userAdmin/Sidebar"));
+const BlogDetails = lazy(() => import("./pages/BlogDetails"));
+const FavouritePage = lazy(() => import("./pages/FavouritePage"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const Success = lazy(() => import("./pages/Success"));
+const Cancel = lazy(() => import("./pages/Cancel"));
+const AllBlogs = lazy(() => import("./pages/AllBlogs"));
+const FAQs = lazy(() => import("./pages/FAQs"));
+const ArtWorkPolicy = lazy(() => import("./pages/ArtWorkPolicy"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const ClearancePage = lazy(() => import("./pages/CLearance"));
+const PMSColorChart = lazy(() => import("./pages/PMS"));
+const HelpCenter = lazy(() => import("./pages/HelpCenter"));
+const MailOffer = lazy(() => import("./pages/MailOffer"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder"));
+const CmsPage = lazy(() => import("./pages/CmsPage"));
+const UploadArtwork = lazy(() => import("./pages/UploadArtwork"));
+const Terms = lazy(() => import("./pages/Terms"));
+const QuoteResponse = lazy(() => import("./pages/QuoteResponse"));
+const AustraliaMade = lazy(() => import("./pages/AustraliaMade"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const DealsPage = lazy(() => import("./pages/DealsPage"));
+const DealDetailPage = lazy(() => import("./pages/DealDetailPage"));
+const CollectionDetailPage = lazy(
+  () => import("./pages/Collections/CollectionDetailPage"),
+);
 
 export const ScrollToTop = () => {
-  const { pathname } = useLocation();
-
   // useEffect(() => {
   //   window.scrollTo(0, 0);
   // }, [pathname]);
@@ -59,7 +60,6 @@ export const ScrollToTop = () => {
 const App = () => {
   const { token } = useContext(AuthContext);
   const location = useLocation();
-  const navigate = useNavigate();
 
   // When navigating away from /my-account, immediately restore body state.
   // Sidebar locks body.overflow="hidden" and hides footer; AnimatePresence mode="wait"
@@ -98,7 +98,12 @@ const App = () => {
       <HelmetProvider>
         <RouteSeo />
         <RouteTransition>
-          <Routes>
+          <Suspense
+            fallback={
+              <div className="min-h-[50vh]" aria-label="Loading page" />
+            }
+          >
+            <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/product/:id/:productId" element={<ProductPageResolver />} />
             <Route path="/product/:id" element={<ProductPageResolver />} />
@@ -164,7 +169,8 @@ const App = () => {
             {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}
             {/* Catch-all route for 404 - must be last */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </Suspense>
         </RouteTransition>
       </HelmetProvider>
       {/* <Sidebar /> */}
