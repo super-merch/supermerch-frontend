@@ -101,4 +101,61 @@ describe("SEO page handler", () => {
       '<link rel="canonical" href="https://www.supermerch.com.au/shop">',
     );
   });
+
+  it("adds organisation structured data to the homepage", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response("<html><head><title>Fallback</title></head><body></body></html>"),
+      )
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: { path: "/" },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain('data-sm-seo-jsonld="true"');
+    expect(res.result.body).toContain('"@type":"Organization"');
+    expect(res.result.body).toContain('"areaServed":"AU"');
+  });
+
+  it("noindexes thin blog posts", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response("<html><head><title>Fallback</title></head><body></body></html>"),
+      )
+      .mockResolvedValueOnce(
+        response({
+          data: {
+            _id: "thin-post",
+            title: "Short update",
+            content: "<p>Only a few words.</p>",
+          },
+        }),
+      )
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: { path: "/blogs/thin-post" },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain(
+      '<meta name="robots" content="noindex, follow">',
+    );
+  });
 });
