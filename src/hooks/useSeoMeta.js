@@ -9,6 +9,7 @@ const seoCache = new Map();
 export default function useSeoMeta(entityType, entityId) {
   const [seoData, setSeoData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [resolved, setResolved] = useState(false);
 
   useEffect(() => {
     if (!backendUrl || !entityType || !entityId) return;
@@ -20,6 +21,7 @@ export default function useSeoMeta(entityType, entityId) {
 
     if (seoCache.has(cacheKey)) {
       setSeoData(seoCache.get(cacheKey));
+      setResolved(true);
       return;
     }
 
@@ -27,6 +29,7 @@ export default function useSeoMeta(entityType, entityId) {
     // Do not briefly apply the previous entity's manual overrides while the
     // newly resolved product ID is loading.
     setSeoData(null);
+    setResolved(false);
     setLoading(true);
 
     axios
@@ -35,13 +38,18 @@ export default function useSeoMeta(entityType, entityId) {
         if (!cancelled && res.data?.success && res.data?.data) {
           seoCache.set(cacheKey, res.data.data);
           setSeoData(res.data.data);
+        } else if (!cancelled) {
+          seoCache.set(cacheKey, null);
         }
       })
       .catch(() => {
         // Graceful fallback — no SEO data is fine
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setResolved(true);
+        }
       });
 
     return () => {
@@ -49,5 +57,5 @@ export default function useSeoMeta(entityType, entityId) {
     };
   }, [entityType, entityId]);
 
-  return { seoData, loading };
+  return { seoData, loading, resolved };
 }
