@@ -76,6 +76,8 @@ export default async function handler(req, res) {
     console.error(`Failed to build product sitemap page ${page}:`, error);
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
     res.setHeader("Cache-Control", "no-store");
-    res.status(503).send("Sitemap temporarily unavailable");
+    res.status(503).send(
+      `<?xml version="1.0" encoding="UTF-8"?>\n<error>Sitemap temporarily unavailable</error>`,
+    );
   }
 }
