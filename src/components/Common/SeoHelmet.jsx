@@ -1,47 +1,7 @@
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 import useSeoMeta from "../../hooks/useSeoMeta";
-
-const SITE_URL = "https://www.supermerch.com.au";
-
-/**
- * Force every canonical / og:url onto the one canonical host.
- *
- * The site is served from www.supermerch.com.au and the apex domain only
- * redirects to it. A canonical pointing at the apex tells Google to index a
- * URL that redirects, which is what caused the July 2026 indexing failure.
- * Many seo-meta records still store apex URLs, so we normalise here rather
- * than trusting the stored value.
- */
-const toCanonicalUrl = (value, pathname) => {
-  const path =
-    pathname ||
-    (typeof window !== "undefined" ? window.location.pathname : "/");
-
-  let url =
-    value && String(value).trim() ? String(value).trim() : `${SITE_URL}${path}`;
-
-  // Make relative values absolute.
-  if (url.startsWith("/")) url = `${SITE_URL}${url}`;
-
-  try {
-    const parsed = new URL(url);
-    parsed.protocol = "https:";
-    if (parsed.hostname === "supermerch.com.au") {
-      parsed.hostname = "www.supermerch.com.au";
-    }
-    // Canonicals should be clean: no query string, no fragment.
-    parsed.search = "";
-    parsed.hash = "";
-    // Strip a trailing slash except on the root.
-    if (parsed.pathname.length > 1 && parsed.pathname.endsWith("/")) {
-      parsed.pathname = parsed.pathname.replace(/\/+$/, "");
-    }
-    return parsed.toString();
-  } catch {
-    return `${SITE_URL}${path}`;
-  }
-};
+import { toCanonicalUrl } from "../../utils/canonicalUrl";
 
 /**
  * Create or update a meta tag.

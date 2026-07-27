@@ -361,8 +361,8 @@ ${keywords ? `<meta name="keywords" content="${escapeHtml(keywords)}">` : ""}
 <meta name="twitter:image" content="${escapeHtml(socialImage)}">
 <meta name="twitter:image:alt" content="${escapeHtml(socialImageAlt)}">
 <meta name="twitter:url" content="${canonical}">
-<script type="application/ld+json">${escapeJson(productSchema)}</script>
-<script type="application/ld+json">${escapeJson(breadcrumbSchema)}</script>`;
+<script type="application/ld+json" data-sm-seo-jsonld="true">${escapeJson(productSchema)}</script>
+<script type="application/ld+json" data-sm-seo-jsonld="true">${escapeJson(breadcrumbSchema)}</script>`;
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");

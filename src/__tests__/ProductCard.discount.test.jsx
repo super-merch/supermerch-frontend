@@ -1,12 +1,15 @@
+// @vitest-environment jsdom
+
 /**
  * Integration Test: Product Card Discount Display
  * Tests that discounts from backend are correctly displayed on product cards
  */
 
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { afterEach, describe, it, expect, beforeEach } from 'vitest';
 import ProductCard from '../components/Common/ProductCard';
 import { store } from '../redux/store';
 
@@ -42,8 +45,18 @@ const createMockProduct = (discountInfo = null) => ({
     }
   },
   productTags: [],
-  discountInfo: discountInfo
+  discountInfo: discountInfo,
+  pricingSummary:
+    Number(discountInfo?.discount) > 0
+      ? {
+          finalMinPrice:
+            10 * (1 - Math.min(Number(discountInfo.discount), 100) / 100),
+          marginAdjustedMinPrice: 10,
+        }
+      : undefined,
 });
+
+afterEach(cleanup);
 
 describe('ProductCard Discount Display', () => {
   const renderProductCard = (product) => {

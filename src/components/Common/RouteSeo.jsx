@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import SeoHelmet from "./SeoHelmet";
+import { getShopSeoContext } from "../../utils/shopSeo";
 
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
@@ -19,6 +20,7 @@ const makeFallback = ({ title, description, keywords, path, ogType = "website" }
 const RouteSeo = () => {
   const location = useLocation();
   const pathname = location.pathname || "/";
+  const shopSeo = getShopSeoContext(location.search);
 
   if (
     pathname.startsWith("/product/") ||
@@ -68,12 +70,12 @@ const RouteSeo = () => {
   const staticSeoMap = {
     "/shop": {
       entityType: "category",
-      entityId: "shop",
+      entityId: shopSeo.entityId,
       fallback: makeFallback({
         title: "Shop Promotional Products | Super Merch Australia",
         description: "Browse branded promotional products, custom merchandise, and business giveaways.",
         keywords: "shop promotional products, branded merchandise australia, business giveaways",
-        path: "/shop",
+        path: shopSeo.canonicalPath,
       }),
     },
     "/about": {

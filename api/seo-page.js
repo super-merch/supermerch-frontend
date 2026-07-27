@@ -66,10 +66,20 @@ const fetchSeoOverride = async (entityType, entityId) => {
   }
 };
 
-const resolvePage = async (path) => {
+const resolvePage = async (path, category) => {
   if (STATIC_PAGES[path]) {
     const [entityType, entityId, title, description] = STATIC_PAGES[path];
-    return { entityType, entityId, title, description, image: DEFAULT_IMAGE };
+    return {
+      entityType,
+      entityId: path === "/shop" && category ? category : entityId,
+      title,
+      description,
+      image: DEFAULT_IMAGE,
+      canonicalPath:
+        path === "/shop" && category
+          ? `/shop?category=${encodeURIComponent(category)}`
+          : path,
+    };
   }
 
   const collectionMatch = path.match(/^\/collections\/([^/]+)$/);
@@ -192,6 +202,8 @@ const injectHead = (html, tags) => {
 export default async function handler(req, res) {
   const rawPath = String(req.query.path || "/");
   const path = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
+  const category =
+    path === "/shop" ? String(req.query.category || "").trim() : "";
 
   let shell;
   try {
@@ -210,7 +222,7 @@ export default async function handler(req, res) {
 
   let page;
   try {
-    page = await resolvePage(path);
+    page = await resolvePage(path, category);
   } catch {
     res.setHeader("Retry-After", "300");
     res.status(503).send("Page data temporarily unavailable");
@@ -235,7 +247,39 @@ export default async function handler(req, res) {
   const socialDescription =
     cleanText(override?.ogDescription).slice(0, 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
-  const canonical = `${SITE_URL}${path === "/" ? "/" : path.replace(/\/+$/, "")}`;
+  const fallbackCanonical = `${SITE_URL}${
+    page.canonicalPath === "/"
+      ? "/"
+      : page.canonicalPath.replace(/\/+$/, "")
+  }`;
+  const canonical = (() => {
+    try {
+      const parsed = new URL(
+        cleanText(override?.canonicalUrl) || fallbackCanonical,
+        SITE_URL,
+      );
+      parsed.protocol = "https:";
+      if (parsed.hostname === "supermerch.com.au") {
+        parsed.hostname = "www.supermerch.com.au";
+      }
+      [...parsed.searchParams.keys()].forEach((key) => {
+        const normalizedKey = key.toLowerCase();
+        if (
+          ["page", "sort", "view", "gclid", "fbclid"].includes(normalizedKey) ||
+          normalizedKey.startsWith("utm_")
+        ) {
+          parsed.searchParams.delete(key);
+        }
+      });
+      parsed.hash = "";
+      if (parsed.pathname.length > 1 && parsed.pathname.endsWith("/")) {
+        parsed.pathname = parsed.pathname.replace(/\/+$/, "");
+      }
+      return parsed.toString();
+    } catch {
+      return fallbackCanonical;
+    }
+  })();
 
   const tags = `<title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">

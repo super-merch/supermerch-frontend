@@ -8,7 +8,8 @@ export const getProductPrice = (product, id,isClothing) => {
 
   const priceGroups = product?.product?.prices?.price_groups || [];
   const basePrice = priceGroups.find((group) => group?.base_price) || {};
-  const additionalPrice = priceGroups.find((group) => group?.additions.length>0) || {};
+  const additionalPrice =
+    priceGroups.find((group) => group?.additions?.length > 0) || {};
   const firstPrintPrice = additionalPrice?.additions?.[0]?.price_breaks
   const priceBreaks = basePrice.base_price?.price_breaks || [];
   const prices = priceBreaks
