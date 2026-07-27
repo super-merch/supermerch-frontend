@@ -1,5 +1,6 @@
 import { setMaxPrice, setMinPrice, setMoq } from "@/redux/slices/filterSlice";
-import { slugify, toProductUrl } from "@/utils/utils";
+import { toProductUrl } from "@/utils/utils";
+import PropTypes from "prop-types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +13,7 @@ import EmptyState from "../Common/EmptyState";
 import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
+import CategoryFinder from "./CategoryFinder";
 const Cards = ({ category = "" }) => {
 
   const location = useLocation();
@@ -595,6 +597,7 @@ const Cards = ({ category = "" }) => {
         </div>
 
         <div className="flex-1 w-full lg:mt-0 md:mt-4 mt-0">
+          <CategoryFinder productTypeId={urlCategoryParam} />
           <div className="lg:hidden">
             <div className="flex items-center justify-between w-full mb-4">
               <button
@@ -848,6 +851,10 @@ const Cards = ({ category = "" }) => {
       </div>
     </>
   );
+};
+
+Cards.propTypes = {
+  category: PropTypes.string,
 };
 
 export default Cards;
