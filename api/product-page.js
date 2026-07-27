@@ -55,6 +55,49 @@ const imageUrl = (image) => {
   );
 };
 
+const detailValue = (details, names) => {
+  const accepted = new Set(names.map((name) => name.toLowerCase()));
+  return cleanText(
+    (Array.isArray(details) ? details : []).find((item) =>
+      accepted.has(cleanText(item?.name).toLowerCase()),
+    )?.detail,
+  );
+};
+
+const productAttributes = (details) => {
+  const categorisation = details.categorisation || {};
+  const category = cleanText(
+    categorisation?.promodata_product_type?.type_name ||
+      categorisation?.product_type?.type_name ||
+      categorisation?.supplier_category,
+  );
+  const material =
+    detailValue(details.details, ["Material", "Materials"]) ||
+    cleanText(
+      (categorisation.promodata_attributes || [])
+        .find((value) => /^material\s*:/i.test(String(value)))
+        ?.replace(/^material\s*:/i, ""),
+    );
+  const color = cleanText(
+    (details.colours?.list || [])
+      .flatMap((item) => item?.colours || item?.name || [])
+      .filter(Boolean)
+      .slice(0, 8)
+      .join(", "),
+  );
+  return {
+    category,
+    material,
+    color,
+    capacity: detailValue(details.details, ["Capacity", "Volume"]),
+    branding: detailValue(details.details, [
+      "Branding Options",
+      "Decoration Options",
+      "Branding",
+    ]),
+  };
+};
+
 const removeMeta = (html, key) => {
   const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return html.replace(
@@ -231,6 +274,7 @@ export default async function handler(req, res) {
     "";
   const discontinued =
     isTrue(product?.meta?.discontinued) || isTrue(details.discontinued);
+  const attributes = productAttributes(details);
 
   if (discontinued) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -242,7 +286,16 @@ export default async function handler(req, res) {
   const generatedTitle = `${name} | Custom Branded | Super Merch Australia`;
   const generatedDescription =
     description ||
-    `${name}. Custom branded promotional products from Super Merch Australia.`;
+    [
+      name,
+      attributes.category ? `Custom branded ${attributes.category.toLowerCase()}` : "Custom branded promotional product",
+      attributes.material ? `made from ${attributes.material}` : "",
+      attributes.capacity ? `with ${attributes.capacity} capacity` : "",
+      "from Super Merch Australia.",
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .slice(0, 160);
   const seoOverride = await getSeoOverride(productId);
   const title = cleanText(seoOverride?.metaTitle) || generatedTitle;
   const metaDescription =
@@ -264,6 +317,10 @@ export default async function handler(req, res) {
     image: image === DEFAULT_IMAGE ? undefined : [image],
     sku: sku || undefined,
     brand: brand ? { "@type": "Brand", name: brand } : undefined,
+    category: attributes.category || undefined,
+    material: attributes.material || undefined,
+    color: attributes.color || undefined,
+    mpn: details.code || undefined,
     url: canonical,
   };
   const price = Number(product?.pricingSummary?.finalMinPrice);
