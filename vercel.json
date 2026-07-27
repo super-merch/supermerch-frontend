@@ -5,6 +5,12 @@
     },
     "api/product-sitemap.js": {
       "maxDuration": 60
+    },
+    "api/content-sitemap.js": {
+      "maxDuration": 60
+    },
+    "api/seo-page.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -17,12 +23,36 @@
       "destination": "/api/product-sitemap?page=:page"
     },
     {
+      "source": "/sitemap-static.xml",
+      "destination": "/api/content-sitemap"
+    },
+    {
       "source": "/product/:slug/:productId",
       "destination": "/api/product-page?slug=:slug&id=:productId"
     },
     {
       "source": "/product/:slug",
       "destination": "/api/product-page?slug=:slug"
+    },
+    {
+      "source": "/collections/:slug",
+      "destination": "/api/seo-page?path=/collections/:slug"
+    },
+    {
+      "source": "/deals/:slug",
+      "destination": "/api/seo-page?path=/deals/:slug"
+    },
+    {
+      "source": "/blogs/:id",
+      "destination": "/api/seo-page?path=/blogs/:id"
+    },
+    {
+      "source": "/page/:slug",
+      "destination": "/api/seo-page?path=/page/:slug"
+    },
+    {
+      "source": "/:path(home|shop|promotional|Clothing|Headwear|australia-made|24hr-production|return-gifts|deals|hot-deals|clearance|category|all-blogs|about|contact|faqs|artwork-policy|refund-policy|privacy|terms|help-center|pms)",
+      "destination": "/api/seo-page?path=/:path"
     },
     {
       "source": "/(.*)",
