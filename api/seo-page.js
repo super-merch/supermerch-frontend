@@ -254,7 +254,9 @@ export default async function handler(req, res) {
     cleanText(override?.ogDescription).slice(0, 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
   const canonicalPath =
-    path === "/shop" && category && !override ? "/shop" : page.canonicalPath;
+    path === "/shop" && category && !override
+      ? "/shop"
+      : page.canonicalPath || path;
   const fallbackCanonical = `${SITE_URL}${
     canonicalPath === "/"
       ? "/"
