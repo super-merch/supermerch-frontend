@@ -37,6 +37,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { flattenHierarchy } from "./lib/hierarchy.mjs";
 import { validateSnapshot } from "./lib/schema.mjs";
+import { dedupeProductsById } from "./lib/dedupe.mjs";
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
@@ -119,19 +120,11 @@ async function fetchLeafStats(leaf) {
     return resp.data || [];
   });
 
-  // Dedupe by product id in case of any page-boundary overlap (defensive --
-  // shouldn't normally happen with correct pagination, but sample integrity
-  // matters here).
-  const seenProductIds = new Set();
-  const sampleProducts = [];
-  for (const page of pageResults) {
-    for (const product of page) {
-      const id = product?.meta?.id;
-      if (id != null && seenProductIds.has(id)) continue;
-      if (id != null) seenProductIds.add(id);
-      sampleProducts.push(product);
-    }
-  }
+  // Dedupe by catalogue-record identity in case of any page-boundary overlap
+  // (defensive -- shouldn't normally happen with correct pagination, but
+  // sample integrity matters here). See dedupeProductsById for why `_id`
+  // takes priority over `meta.id`.
+  const sampleProducts = dedupeProductsById(pageResults.flat());
   const sampleSize = sampleProducts.length; // ACTUAL count returned, not the requested limit*pages
 
   // Per-product dedup: a product listing "Material: Steel" twice must not

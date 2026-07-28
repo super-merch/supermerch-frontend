@@ -91,22 +91,22 @@ describe("CategoryFinder accessibility", () => {
 
     // Starts expanded (no filter params in the URL) -- the expanded-state
     // toggle should already report aria-expanded="true".
-    const hideButton = screen.getByRole("button", { name: /hide my answers/i });
-    expect(hideButton).toHaveAttribute("aria-expanded", "true");
-    const controlsId = hideButton.getAttribute("aria-controls");
+    const cancelButton = screen.getByRole("button", { name: /cancel editing/i });
+    expect(cancelButton).toHaveAttribute("aria-expanded", "true");
+    const controlsId = cancelButton.getAttribute("aria-controls");
     expect(controlsId).toBeTruthy();
     expect(document.getElementById(controlsId)).not.toBeNull();
 
-    fireEvent.click(hideButton);
+    fireEvent.click(cancelButton);
 
     const editButton = screen.getByRole("button", { name: /edit my answers/i });
     expect(editButton).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("button", { name: /hide my answers/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /cancel editing/i })).not.toBeInTheDocument();
 
     fireEvent.click(editButton);
 
-    const hideButtonAgain = screen.getByRole("button", { name: /hide my answers/i });
-    expect(hideButtonAgain).toHaveAttribute("aria-expanded", "true");
+    const cancelButtonAgain = screen.getByRole("button", { name: /cancel editing/i });
+    expect(cancelButtonAgain).toHaveAttribute("aria-expanded", "true");
   });
 
   it("the collapsed summary region is an accessible live status region", () => {
