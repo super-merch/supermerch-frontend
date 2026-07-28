@@ -1,9 +1,21 @@
 import { CATEGORY_FINDER_MANIFEST } from "./generated/categoryFinderManifest";
+import { QUANTITY_OPTIONS } from "./quantityOptions";
 
 // Thin adapter over the generated manifest -- CategoryFinder.jsx doesn't know the
 // manifest exists, it just calls getCategoryFinderConfig(productTypeId) and gets
 // back the {eyebrow, title, description, submitLabel, itemNamePlural, questions}
 // shape it's always consumed. Excluded/missing entries return null, same as before.
+//
+// The moq question's `options` are swapped for the canonical QUANTITY_OPTIONS
+// array here, at the point of use, rather than trusting the generated
+// manifest's embedded copy to stay in sync -- a JSON-serialized manifest file
+// can't "import" a shared reference, so this is the actual single-source-of-
+// truth enforcement point (see quantityOptionsSharedSource.test.js).
+const withCanonicalQuantityOptions = (questions) =>
+  questions.map((question) =>
+    question.id === "moq" ? { ...question, options: QUANTITY_OPTIONS } : question
+  );
+
 export const getCategoryFinderConfig = (productTypeId) => {
   const entry = CATEGORY_FINDER_MANIFEST[productTypeId];
   if (!entry || entry.finderMode === "excluded" || entry.questions.length === 0) {
@@ -15,7 +27,7 @@ export const getCategoryFinderConfig = (productTypeId) => {
     description: entry.finderDescription,
     submitLabel: "Show my matches",
     itemNamePlural: entry.itemNamePlural,
-    questions: entry.questions,
+    questions: withCanonicalQuantityOptions(entry.questions),
   };
 };
 

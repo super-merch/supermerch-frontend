@@ -12,4 +12,5 @@ export const RECONCILIATION = {
   inherited: 0,
   generic: 0,
   excluded: 0,
+  totalParentEntries: 27,
 };

@@ -1,7 +1,7 @@
 import { getCategoryFinderConfig } from "@/config/categoryFinderConfig";
 import { Pencil, Search, SlidersHorizontal, X } from "lucide-react";
 import PropTypes from "prop-types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const getAttributeSelections = (searchParams) => {
@@ -49,16 +49,49 @@ const CategoryFinder = ({ productTypeId }) => {
       : false
   );
 
+  // Unique per rendered instance (not a fixed string like "category-finder-*")
+  // so IDs never collide if more than one Finder ever renders on a page.
+  const instanceId = useId();
+  const panelId = `${instanceId}-panel`;
+  const editButtonRef = useRef(null);
+  const firstSelectRef = useRef(null);
+  const wasCollapsedRef = useRef(collapsed);
+  // Effects always run once after the initial mount too, not just on
+  // dependency changes -- without this guard, the "reset on config change"
+  // effect below would unconditionally collapse=false itself on first mount,
+  // discarding the useState initializer's "start collapsed if the URL
+  // already has params" result on every single page load, every time.
+  const isInitialConfigEffectRef = useRef(true);
+
   useEffect(() => {
     if (config) {
       setSelections(readSelections(config, new URLSearchParams(searchParamsKey)));
     }
   }, [config, searchParamsKey]);
 
-  // A different category's Finder (new config identity) starts fresh/expanded.
+  // A different category's Finder (new config identity) starts fresh/expanded
+  // -- but only on an ACTUAL change after mount, not on the initial mount
+  // itself (see isInitialConfigEffectRef above).
   useEffect(() => {
+    if (isInitialConfigEffectRef.current) {
+      isInitialConfigEffectRef.current = false;
+      return;
+    }
     setCollapsed(false);
   }, [config]);
+
+  // Move focus to whatever becomes interactive after a collapse/expand
+  // transition, instead of letting it fall back to <body> when the
+  // previously-focused button disappears from the DOM.
+  useEffect(() => {
+    if (wasCollapsedRef.current === collapsed) return;
+    wasCollapsedRef.current = collapsed;
+    if (collapsed) {
+      editButtonRef.current?.focus();
+    } else {
+      firstSelectRef.current?.focus();
+    }
+  }, [collapsed]);
 
   if (!config) return null;
 
@@ -172,11 +205,8 @@ const CategoryFinder = ({ productTypeId }) => {
         </div>
 
         {collapsed ? (
-          <div
-            className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-            aria-live="polite"
-          >
-            <p className="text-sm text-gray-700">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-700" role="status" aria-live="polite">
               {summaryText ? (
                 <>
                   <span className="font-semibold text-gray-900">Your picks: </span>
@@ -188,9 +218,11 @@ const CategoryFinder = ({ productTypeId }) => {
               {" "}Adjust anything below, or edit your answers here.
             </p>
             <button
+              ref={editButtonRef}
               type="button"
               onClick={() => setCollapsed(false)}
-              aria-expanded={false}
+              aria-expanded={!collapsed}
+              aria-controls={panelId}
               className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
             >
               <Pencil className="h-4 w-4" />
@@ -198,10 +230,10 @@ const CategoryFinder = ({ productTypeId }) => {
             </button>
           </div>
         ) : (
-          <div>
+          <div id={panelId}>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-              {orderedQuestions.map((question) => {
-                const inputId = `category-finder-${question.id}`;
+              {orderedQuestions.map((question, index) => {
+                const inputId = `${instanceId}-${question.id}`;
                 return (
                   <label key={question.id} className="block" htmlFor={inputId}>
                     <span className="mb-1.5 block text-xs font-semibold text-gray-700">
@@ -209,6 +241,7 @@ const CategoryFinder = ({ productTypeId }) => {
                     </span>
                     <select
                       id={inputId}
+                      ref={index === 0 ? firstSelectRef : undefined}
                       aria-label={question.label}
                       value={selections[question.id] || ""}
                       onChange={(event) =>
@@ -251,7 +284,6 @@ const CategoryFinder = ({ productTypeId }) => {
                 <button
                   type="button"
                   onClick={applyFinder}
-                  aria-expanded={true}
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
                 >
                   <Search className="h-4 w-4" />

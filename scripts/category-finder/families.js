@@ -9,15 +9,13 @@
 // against real category data from the discovery audit, not assumed from group
 // membership alone.
 
-export const QUANTITY_OPTIONS = [
-  { label: "1–24", value: "24" },
-  { label: "25–49", value: "49" },
-  { label: "50–99", value: "99" },
-  { label: "100–249", value: "249" },
-  { label: "250–499", value: "499" },
-  { label: "500+", value: "500" },
-];
-export const ANY_QUANTITY_LABEL = "Any quantity";
+// Single source of truth: src/config/quantityOptions.js. That file is plain,
+// dependency-free ESM (no JSX, no React import) specifically so it can be
+// imported unmodified from both the browser bundle (CategoryFinder.jsx,
+// MOQFilter.jsx) and these Node generator scripts -- duplicating the array
+// here would let the Finder and sidebar wording silently drift apart.
+import { QUANTITY_OPTIONS, ANY_QUANTITY_LABEL } from "../../src/config/quantityOptions.js";
+export { QUANTITY_OPTIONS, ANY_QUANTITY_LABEL };
 
 export const sharedQuantityQuestion = () => ({
   id: "moq",
