@@ -58,6 +58,7 @@ import ClothingGenderToggle from "./ClothingGenderToggle";
 import CollapsibleSection from "./CollapsibleSection";
 import ColorFilter from "./ColorFilter";
 import MOQFilter from "./MOQFilter";
+import { QUANTITY_OPTIONS } from "../../config/quantityOptions";
 
 
 
@@ -116,9 +117,13 @@ const UnifiedSidebar = ({
 
     const moq = searchParams.get("moq");
     if (moq) {
+      // Same wording as the Finder's order-quantity question and the sidebar's own
+      // Minimum Quantity control (src/config/quantityOptions.js) — this applied-
+      // filter chip must read identically to whichever control set the value.
+      const matchedOption = QUANTITY_OPTIONS.find((option) => option.value === moq);
       filters.push({
         type: "moq",
-        label: `MOQ: ${moq} or less`,
+        label: `Order quantity: ${matchedOption?.label || moq}`,
         value: moq,
         params: ["moq"],
       });

@@ -2,18 +2,19 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { setMoq } from "../../redux/slices/filterSlice";
+import { QUANTITY_OPTIONS, ANY_QUANTITY_LABEL } from "../../config/quantityOptions";
 
 const MOQFilter = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { moq } = useSelector((state) => state.filters);
 
+  // Same option list/wording as the guided Finder's order-quantity question
+  // (src/config/quantityOptions.js) — a value picked in one place must read
+  // identically in the other.
   const moqOptions = [
-    { label: "All Quantities", value: null },
-    { label: "50 or less", value: "50" },
-    { label: "100 or less", value: "100" },
-    { label: "250 or less", value: "250" },
-    { label: "500 or less", value: "500" },
+    { label: ANY_QUANTITY_LABEL, value: null },
+    ...QUANTITY_OPTIONS,
   ];
 
   const handleMoqChange = (value) => {

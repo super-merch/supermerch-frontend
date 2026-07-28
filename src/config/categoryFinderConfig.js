@@ -1,3 +1,5 @@
+import { QUANTITY_OPTIONS, ANY_QUANTITY_LABEL } from "./quantityOptions";
+
 export const CATEGORY_FINDER_CONFIG = {
   "PE-02": {
     eyebrow: "Bottle Finder",
@@ -9,17 +11,10 @@ export const CATEGORY_FINDER_CONFIG = {
       {
         id: "moq",
         label: "Order quantity",
-        placeholder: "Any quantity",
+        placeholder: ANY_QUANTITY_LABEL,
         type: "query",
         queryParam: "moq",
-        options: [
-          { label: "1–24", value: "24" },
-          { label: "25–49", value: "49" },
-          { label: "50–99", value: "99" },
-          { label: "100–249", value: "249" },
-          { label: "250–499", value: "499" },
-          { label: "500+", value: "500" },
-        ],
+        options: QUANTITY_OPTIONS,
       },
       {
         id: "capacity",

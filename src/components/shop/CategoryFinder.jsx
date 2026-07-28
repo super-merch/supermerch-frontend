@@ -1,5 +1,5 @@
 import { getCategoryFinderConfig } from "@/config/categoryFinderConfig";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Pencil, Search, SlidersHorizontal, X } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -39,12 +39,26 @@ const CategoryFinder = ({ productTypeId }) => {
   const [selections, setSelections] = useState(() =>
     config ? readSelections(config, searchParams) : {}
   );
+  // Collapsed once the customer has already answered (either by submitting the
+  // Finder this visit, or by arriving with the same params already in the URL,
+  // e.g. a bookmarked/shared link) — the sidebar already reflects the same
+  // selections, so re-showing the full question grid would just be asking again.
+  const [collapsed, setCollapsed] = useState(() =>
+    config
+      ? Object.values(readSelections(config, searchParams)).some(Boolean)
+      : false
+  );
 
   useEffect(() => {
     if (config) {
       setSelections(readSelections(config, new URLSearchParams(searchParamsKey)));
     }
   }, [config, searchParamsKey]);
+
+  // A different category's Finder (new config identity) starts fresh/expanded.
+  useEffect(() => {
+    setCollapsed(false);
+  }, [config]);
 
   if (!config) return null;
 
@@ -54,6 +68,16 @@ const CategoryFinder = ({ productTypeId }) => {
     (left, right) =>
       (questionPriority[left.id] ?? 2) - (questionPriority[right.id] ?? 2)
   );
+
+  const summaryText = orderedQuestions
+    .map((question) => {
+      const value = selections[question.id];
+      if (!value) return null;
+      const matchedOption = question.options.find((option) => option.value === value);
+      return `${question.label}: ${matchedOption?.label || value}`;
+    })
+    .filter(Boolean)
+    .join(" · ");
 
   const applyFinder = () => {
     const next = new URLSearchParams(searchParams);
@@ -90,6 +114,7 @@ const CategoryFinder = ({ productTypeId }) => {
     next.set("page", "1");
     next.delete("scrollTo");
     setSearchParams(next);
+    setCollapsed(true);
   };
 
   const clearFinder = () => {
@@ -122,6 +147,7 @@ const CategoryFinder = ({ productTypeId }) => {
     next.delete("scrollTo");
     setSelections(readSelections(config, new URLSearchParams()));
     setSearchParams(next);
+    setCollapsed(false);
   };
 
   return (
@@ -140,62 +166,86 @@ const CategoryFinder = ({ productTypeId }) => {
           </p>
         </div>
 
-        <div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            {orderedQuestions.map((question) => (
-              <label key={question.id} className="block">
-                <span className="mb-1.5 block text-xs font-semibold text-gray-700">
-                  {question.label}
-                </span>
-                <select
-                  value={selections[question.id] || ""}
-                  onChange={(event) =>
-                    setSelections((current) => ({
-                      ...current,
-                      [question.id]: event.target.value,
-                    }))
-                  }
-                  className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                >
-                  <option value="">{question.placeholder}</option>
-                  {question.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
-          </div>
-
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-gray-500">
-              {selectedCount
-                ? `${selectedCount} preference${selectedCount === 1 ? "" : "s"} selected`
-                : "Choose one or more preferences, or continue with all bottles."}
+        {collapsed ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-700">
+              {summaryText ? (
+                <>
+                  <span className="font-semibold text-gray-900">Your picks: </span>
+                  {summaryText}
+                </>
+              ) : (
+                "Showing all bottles."
+              )}
+              {" "}Adjust anything below, or edit your answers here.
             </p>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              {selectedCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setCollapsed(false)}
+              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit my answers
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+              {orderedQuestions.map((question) => (
+                <label key={question.id} className="block">
+                  <span className="mb-1.5 block text-xs font-semibold text-gray-700">
+                    {question.label}
+                  </span>
+                  <select
+                    value={selections[question.id] || ""}
+                    onChange={(event) =>
+                      setSelections((current) => ({
+                        ...current,
+                        [question.id]: event.target.value,
+                      }))
+                    }
+                    className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                  >
+                    <option value="">{question.placeholder}</option>
+                    {question.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-gray-500">
+                {selectedCount
+                  ? `${selectedCount} preference${selectedCount === 1 ? "" : "s"} selected`
+                  : "Choose one or more preferences, or continue with all bottles."}
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                {selectedCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearFinder}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                  >
+                    <X className="h-4 w-4" />
+                    Clear
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={clearFinder}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                  onClick={applyFinder}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
                 >
-                  <X className="h-4 w-4" />
-                  Clear
+                  <Search className="h-4 w-4" />
+                  {selectedCount ? config.submitLabel : "View all bottles"}
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={applyFinder}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
-              >
-                <Search className="h-4 w-4" />
-                {selectedCount ? config.submitLabel : "View all bottles"}
-              </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
