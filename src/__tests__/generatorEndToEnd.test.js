@@ -3,6 +3,10 @@ import { generateManifestCore } from "../../scripts/category-finder/lib/generate
 import { SchemaError } from "../../scripts/category-finder/lib/schema.mjs";
 import { ReconciliationError } from "../../scripts/category-finder/lib/reconcile.mjs";
 
+function round1(n, d) {
+  return d > 0 ? Math.round((n / d) * 1000) / 10 : 0;
+}
+
 const authoritative = {
   leaves: [
     { id: "PE-02", name: "Drink Bottles", parentId: "PE", parentName: "Drinkware" },
@@ -12,20 +16,48 @@ const authoritative = {
   parents: [{ id: "PE", name: "Drinkware" }],
 };
 
+function genderFitAttr() {
+  return {
+    name: "Gender Fit",
+    sampleSize: 250,
+    taggedProductCount: 200,
+    valueOccurrenceCount: 200,
+    populatedPct: round1(200, 250),
+    distinctValues: 3,
+    topValueProductCount: 100,
+    topShare: round1(100, 200),
+    values: [
+      { value: "Mens", productCount: 100 },
+      { value: "Ladies", productCount: 80 },
+      { value: "Kids", productCount: 20 },
+    ],
+  };
+}
+
 function completeSnapshot() {
   return {
     fetchedAt: "2026-01-01T00:00:00.000Z",
     leaves: [
-      { leafId: "PE-02", leafName: "Drink Bottles", parentId: "PE", parentName: "Drinkware", productCount: 500, attributes: [], colourPopulatedPct: 0 },
+      {
+        leafId: "PE-02",
+        leafName: "Drink Bottles",
+        parentId: "PE",
+        parentName: "Drinkware",
+        productCount: 500,
+        auditMode: "sampled_estimate",
+        sampleSize: 100,
+        attributes: [],
+        colourPopulatedPct: 0,
+      },
       {
         leafId: "PU-01",
         leafName: "T-Shirts",
         parentId: "PU",
         parentName: "Shirts",
         productCount: 300,
-        attributes: [
-          { name: "Gender Fit", distinctValues: 3, totalTagged: 200, topShare: 50, values: [{ value: "Mens", count: 100 }, { value: "Ladies", count: 80 }, { value: "Kids", count: 20 }] },
-        ],
+        auditMode: "sampled_estimate",
+        sampleSize: 250,
+        attributes: [genderFitAttr()],
         colourPopulatedPct: 0,
       },
       { leafId: "MISC-01", leafName: "Misc Headwear", parentId: "MISC-01", parentName: "Misc Headwear", productCount: 0 },
@@ -39,6 +71,7 @@ const deps = {
   leafOverrides: {
     "PE-02": {
       filterMappingsValidated: true,
+      runtimeEnabled: true,
       questions: [{ id: "moq", label: "Order quantity", type: "query", queryParam: "moq", options: [{ label: "1–24", value: "24" }] }],
     },
   },
@@ -50,7 +83,10 @@ describe("generateManifestCore: happy path", () => {
     expect(Object.keys(leafManifest).sort()).toEqual(["MISC-01", "PE-02", "PU-01"]);
     expect(leafManifest["PE-02"].finderMode).toBe("curated");
     expect(leafManifest["PE-02"].filterMappingsValidated).toBe(true);
+    expect(leafManifest["PE-02"].runtimeEnabled).toBe(true);
     expect(leafManifest["PU-01"].finderMode).toBe("inherited");
+    expect(leafManifest["PU-01"].filterMappingsValidated).toBe(false);
+    expect(leafManifest["PU-01"].runtimeEnabled).toBe(false);
     expect(leafManifest["MISC-01"].finderMode).toBe("excluded");
     expect(reconciliation.curated + reconciliation.inherited + reconciliation.generic + reconciliation.excluded).toBe(3);
   });
@@ -74,7 +110,7 @@ describe("generateManifestCore: failure modes", () => {
 
   it("fails when a leaf's attribute schema is malformed (e.g. inconsistent per-value counts)", () => {
     const malformed = completeSnapshot();
-    malformed.leaves[1].attributes[0].totalTagged = 999999; // no longer matches sum of per-value counts
+    malformed.leaves[1].attributes[0].valueOccurrenceCount = 999999; // no longer matches sum of per-value productCounts
     expect(() => generateManifestCore(malformed, authoritative, deps)).toThrow(SchemaError);
   });
 
@@ -82,5 +118,36 @@ describe("generateManifestCore: failure modes", () => {
     const malformed = completeSnapshot();
     delete malformed.leaves[0].attributes;
     expect(() => generateManifestCore(malformed, authoritative, deps)).toThrow(SchemaError);
+  });
+
+  it("fails -- rather than silently overwriting -- when every authoritative ID is present but one snapshot leafId is duplicated", () => {
+    // This is the exact failure mode object-keying by leafId can never catch
+    // after the fact: the snapshot technically "covers" all 3 authoritative
+    // leaves by ID-set membership, but PU-01's real record is duplicated in
+    // place of MISC-01's, so MISC-01 would silently vanish from a naively
+    // keyed manifest instead of generation failing loudly.
+    const duplicated = completeSnapshot();
+    duplicated.leaves[2] = { ...duplicated.leaves[1] }; // MISC-01 slot overwritten with a second PU-01 record
+    expect(() => generateManifestCore(duplicated, authoritative, deps)).toThrow(SchemaError);
+    expect(() => generateManifestCore(duplicated, authoritative, deps)).toThrow(/Duplicate leafId "PU-01"/);
+  });
+});
+
+describe("generateManifestCore: authoritative-inventory self-consistency", () => {
+  it("fails before touching the snapshot at all when the authoritative inventory itself has a duplicate leaf ID", () => {
+    const badAuthoritative = {
+      leaves: [...authoritative.leaves, { id: "PE-02", name: "Drink Bottles (dup)", parentId: "PE", parentName: "Drinkware" }],
+      parents: authoritative.parents,
+    };
+    expect(() => generateManifestCore(completeSnapshot(), badAuthoritative, deps)).toThrow(ReconciliationError);
+    expect(() => generateManifestCore(completeSnapshot(), badAuthoritative, deps)).toThrow(/Duplicate leaf ID "PE-02"/);
+  });
+
+  it("fails when a leaf ID and a parent ID collide", () => {
+    const badAuthoritative = {
+      leaves: authoritative.leaves,
+      parents: [...authoritative.parents, { id: "PE-02", name: "Drink Bottles as a parent page too" }],
+    };
+    expect(() => generateManifestCore(completeSnapshot(), badAuthoritative, deps)).toThrow(/BOTH a leaf and a parent/);
   });
 });

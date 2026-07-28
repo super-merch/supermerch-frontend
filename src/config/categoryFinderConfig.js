@@ -16,9 +16,23 @@ const withCanonicalQuantityOptions = (questions) =>
     question.id === "moq" ? { ...question, options: QUANTITY_OPTIONS } : question
   );
 
+// Two-gate runtime enablement, both required:
+//   - filterMappingsValidated: the category's API parameters/options have
+//     actually been verified (URL params produce the intended request, the
+//     request succeeds, results are relevant) -- the generator can never set
+//     this true on its own (see classify.mjs), only a hand-verified override.
+//   - runtimeEnabled: a separate, explicit business decision that this
+//     category is approved for customers to see, independent of whether it's
+//     technically correct. A category can be fully validated and still held
+//     back deliberately; this flag is never inferred from the other one.
+// A generated (non-override) entry defaults both to false, so PR2 adding 296
+// more classified-but-unverified categories can never make any of them
+// render in production until each is explicitly promoted on both axes.
+const isRuntimeReady = (entry) => entry.filterMappingsValidated === true && entry.runtimeEnabled === true;
+
 export const getCategoryFinderConfig = (productTypeId) => {
   const entry = CATEGORY_FINDER_MANIFEST[productTypeId];
-  if (!entry || entry.finderMode === "excluded" || entry.questions.length === 0) {
+  if (!entry || entry.finderMode === "excluded" || entry.questions.length === 0 || !isRuntimeReady(entry)) {
     return null;
   }
   return {

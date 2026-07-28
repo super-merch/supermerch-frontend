@@ -15,6 +15,51 @@ class ReconciliationError extends Error {
 }
 
 /**
+ * Validates the authoritative inventory ITSELF, before it's used as the
+ * source of truth for anything else. A Set built from an array with
+ * duplicate IDs silently collapses them, so checks that only compare Sets
+ * against each other (like reconcileLeaves below) can never detect a
+ * duplicate that already existed inside the authoritative file -- this has
+ * to run first, against the raw arrays.
+ * @param {{leaves: Array<{id}>, parents: Array<{id}>}} authoritative
+ * @throws {ReconciliationError}
+ */
+export function validateAuthoritativeInventory(authoritative) {
+  const problems = [];
+
+  const leafSeen = new Map();
+  (authoritative.leaves || []).forEach((leaf, index) => {
+    if (leafSeen.has(leaf.id)) {
+      problems.push(`Duplicate leaf ID "${leaf.id}" in authoritative-category-ids.json at indices ${leafSeen.get(leaf.id)} and ${index}.`);
+    } else {
+      leafSeen.set(leaf.id, index);
+    }
+  });
+
+  const parentSeen = new Map();
+  (authoritative.parents || []).forEach((parent, index) => {
+    if (parentSeen.has(parent.id)) {
+      problems.push(`Duplicate parent ID "${parent.id}" in authoritative-category-ids.json at indices ${parentSeen.get(parent.id)} and ${index}.`);
+    } else {
+      parentSeen.set(parent.id, index);
+    }
+  });
+
+  const leafIds = new Set(leafSeen.keys());
+  const parentIds = new Set(parentSeen.keys());
+  const collisions = [...leafIds].filter((id) => parentIds.has(id));
+  if (collisions.length > 0) {
+    problems.push(
+      `ID(s) appear as BOTH a leaf and a parent/group page, which is not a documented exception (a "main-itself" leaf's own id equaling its own parentId is fine; appearing in the separate parents list is not): ${collisions.join(", ")}`
+    );
+  }
+
+  if (problems.length > 0) {
+    throw new ReconciliationError(`authoritative-category-ids.json is internally inconsistent:\n- ${problems.join("\n- ")}`);
+  }
+}
+
+/**
  * @param {Record<string, {finderMode: string}>} manifest - keyed by categoryId
  * @param {{leaves: Array<{id, name}>, parents: Array<{id, name}>}} authoritative
  * @param {Array<{id, name}>} [generatedParents] - parent-page manifest entries, if reconciling those too

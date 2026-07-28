@@ -28,6 +28,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     finderMode: "curated",
     proposedFamily: null,
     filterMappingsValidated: true,
+    runtimeEnabled: true,
     exclusionReason: null,
     dataQualityNotes: ["Hand-authored existing Bottle Finder config -- unchanged."],
     questions: [

@@ -18,13 +18,17 @@ export const THRESHOLDS = {
 };
 
 /**
- * @param {{totalTagged:number, topShare:number, distinctValues:number}|null} attribute
- * @param {number} productCount
+ * Coverage is judged against how many SAMPLED products were actually
+ * inspected (`sampleSize`), never the leaf's full category product count --
+ * a 100-product sample from a 3,000-product category is not "3%
+ * populated" just because 100/3000 is small; it's "92% populated within the
+ * sample" if 92 of those 100 products had the attribute.
+ * @param {{taggedProductCount:number, sampleSize:number, topShare:number, distinctValues:number}|null} attribute
  * @returns {boolean}
  */
-export function isAttributeUsable(attribute, productCount) {
-  if (!attribute || productCount <= 0) return false;
-  const coverage = attribute.totalTagged / productCount;
+export function isAttributeUsable(attribute) {
+  if (!attribute || !attribute.sampleSize) return false;
+  const coverage = attribute.taggedProductCount / attribute.sampleSize;
   return (
     coverage >= THRESHOLDS.MIN_ATTRIBUTE_COVERAGE &&
     attribute.topShare < THRESHOLDS.MAX_SINGLE_VALUE_SHARE &&

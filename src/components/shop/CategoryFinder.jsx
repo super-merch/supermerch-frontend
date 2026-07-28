@@ -1,5 +1,5 @@
 import { getCategoryFinderConfig } from "@/config/categoryFinderConfig";
-import { Pencil, Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronUp, Pencil, Search, SlidersHorizontal, X } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -231,6 +231,23 @@ const CategoryFinder = ({ productTypeId }) => {
           </div>
         ) : (
           <div id={panelId}>
+            <div className="mb-3 flex justify-end">
+              {/* A disclosure control must exist in BOTH states for aria-expanded
+                  to ever be observably true -- "Edit my answers" (below, collapsed
+                  branch) is the only other element carrying aria-expanded, and it
+                  never renders while expanded, so without this button no control
+                  anywhere in the tree would ever show aria-expanded="true". */}
+              <button
+                type="button"
+                onClick={() => setCollapsed(true)}
+                aria-expanded={!collapsed}
+                aria-controls={panelId}
+                className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 text-xs font-semibold text-gray-700 transition hover:bg-gray-50"
+              >
+                <ChevronUp className="h-3.5 w-3.5" />
+                Hide my answers
+              </button>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
               {orderedQuestions.map((question, index) => {
                 const inputId = `${instanceId}-${question.id}`;

@@ -6,7 +6,7 @@
 
 import { validateSnapshot } from "./schema.mjs";
 import { classifyLeaf } from "./classify.mjs";
-import { reconcileLeaves, reconcileParents } from "./reconcile.mjs";
+import { reconcileLeaves, reconcileParents, validateAuthoritativeInventory } from "./reconcile.mjs";
 
 function buildManifestEntry(leaf, result) {
   return {
@@ -22,6 +22,7 @@ function buildManifestEntry(leaf, result) {
     finderMode: result.finderMode,
     proposedFamily: result.proposedFamily,
     filterMappingsValidated: result.filterMappingsValidated,
+    runtimeEnabled: result.runtimeEnabled,
     exclusionReason: result.finderMode === "excluded" ? result.notes[0] : null,
     dataQualityNotes: result.notes,
     questions: result.questions,
@@ -36,7 +37,8 @@ function buildManifestEntry(leaf, result) {
  * @throws {SchemaError | ReconciliationError | HierarchyError}
  */
 export function generateManifestCore(snapshot, authoritative, { families, leafFamilyMap, leafOverrides }) {
-  validateSnapshot(snapshot); // throws SchemaError on any invalid/missing field
+  validateAuthoritativeInventory(authoritative); // duplicate leaf/parent IDs, leaf-vs-parent collisions
+  validateSnapshot(snapshot); // throws SchemaError on any invalid/missing field, including duplicate leafIds
 
   const leafManifest = {};
   for (const leaf of snapshot.leaves) {
@@ -54,6 +56,7 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
       finderMode: "excluded",
       proposedFamily: null,
       filterMappingsValidated: false,
+      runtimeEnabled: false,
       exclusionReason: "Parent-page aggregate audit not yet wired into fetch-catalogue-snapshot.mjs -- classified as excluded until real data is available (PR2).",
       dataQualityNotes: [],
       questions: [],

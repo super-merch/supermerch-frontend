@@ -27,31 +27,37 @@ describe("CategoryFinder accessibility", () => {
     expect(screen.getByLabelText("Colour")).toBeInTheDocument();
   });
 
-  it("generates unique element IDs across two simultaneously rendered instances", () => {
+  it("generates unique element IDs across two GENUINELY SIMULTANEOUS instances in the same tree", () => {
+    // Both instances mounted together in one render/one tree -- not
+    // render-cleanup-render, which never actually proves two instances can
+    // coexist without colliding (React could reuse the same useId() counter
+    // state across successive mounts of the same tree position and this
+    // would still incorrectly pass).
     render(
       <MemoryRouter initialEntries={["/"]}>
         <div>
-          <CategoryFinder productTypeId="PE-02" />
+          <div data-testid="instance-a">
+            <CategoryFinder productTypeId="PE-02" />
+          </div>
+          <div data-testid="instance-b">
+            <CategoryFinder productTypeId="PE-02" />
+          </div>
         </div>
       </MemoryRouter>
     );
-    const firstQuantitySelect = screen.getByLabelText("Order quantity");
-    const firstId = firstQuantitySelect.id;
 
-    cleanup();
+    const instanceA = screen.getByTestId("instance-a");
+    const instanceB = screen.getByTestId("instance-b");
+    const firstQuantitySelect = within(instanceA).getByLabelText("Order quantity");
+    const secondQuantitySelect = within(instanceB).getByLabelText("Order quantity");
 
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <div>
-          <CategoryFinder productTypeId="PE-02" />
-        </div>
-      </MemoryRouter>
-    );
-    const secondQuantitySelect = screen.getByLabelText("Order quantity");
-    // useId() produces a fresh, unique ID per component instance/render tree
-    // -- this would collide every time under the old `category-finder-${id}`
-    // scheme since question.id ("moq") is identical across every instance.
-    expect(secondQuantitySelect.id).not.toBe(firstId);
+    expect(firstQuantitySelect.id).not.toBe(secondQuantitySelect.id);
+
+    // Each instance operates independently -- changing one's selection must
+    // not affect the other's.
+    fireEvent.change(firstQuantitySelect, { target: { value: "99" } });
+    expect(firstQuantitySelect.value).toBe("99");
+    expect(secondQuantitySelect.value).toBe("");
   });
 
   it("collapsed view: Edit my answers has correct static aria-expanded/aria-controls pointing at a real element", () => {
@@ -75,6 +81,32 @@ describe("CategoryFinder accessibility", () => {
     // Focus management: the first question's select should receive focus once
     // the panel expands, rather than focus being lost to <body>.
     expect(document.activeElement).toBe(screen.getByLabelText("Order quantity"));
+  });
+
+  it("a disclosure control reflects aria-expanded accurately in BOTH states, not only the collapsed one", () => {
+    // Regression guard: "Edit my answers" only ever renders in the collapsed
+    // branch, so on its own it can never be observed with aria-expanded set
+    // to "true" -- there must be a second, expanded-state control that does.
+    renderFinder();
+
+    // Starts expanded (no filter params in the URL) -- the expanded-state
+    // toggle should already report aria-expanded="true".
+    const hideButton = screen.getByRole("button", { name: /hide my answers/i });
+    expect(hideButton).toHaveAttribute("aria-expanded", "true");
+    const controlsId = hideButton.getAttribute("aria-controls");
+    expect(controlsId).toBeTruthy();
+    expect(document.getElementById(controlsId)).not.toBeNull();
+
+    fireEvent.click(hideButton);
+
+    const editButton = screen.getByRole("button", { name: /edit my answers/i });
+    expect(editButton).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("button", { name: /hide my answers/i })).not.toBeInTheDocument();
+
+    fireEvent.click(editButton);
+
+    const hideButtonAgain = screen.getByRole("button", { name: /hide my answers/i });
+    expect(hideButtonAgain).toHaveAttribute("aria-expanded", "true");
   });
 
   it("the collapsed summary region is an accessible live status region", () => {
