@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "start": "vite preview --host 0.0.0.0",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "category-finder:fetch": "node scripts/category-finder/fetch-catalogue-snapshot.mjs",
+    "category-finder:generate": "node scripts/category-finder/generate-manifest.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

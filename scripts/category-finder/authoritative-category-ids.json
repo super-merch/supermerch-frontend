@@ -1,0 +1,1900 @@
+{
+  "fetchedAt": "2026-07-28T00:00:00.000Z",
+  "source": "https://api.supermerch.com.au/api/v1-categories, recursively expanded and cross-referenced against the live desktop/mobile menu during PR1 discovery",
+  "leafCount": 297,
+  "parentCount": 27,
+  "leaves": [
+    {
+      "id": "PB-03",
+      "name": "Dress Shorts",
+      "parentId": "PB",
+      "parentName": "Bottoms"
+    },
+    {
+      "id": "PB-04",
+      "name": "Dresses",
+      "parentId": "PB",
+      "parentName": "Bottoms"
+    },
+    {
+      "id": "PB-05",
+      "name": "Leggings",
+      "parentId": "PB",
+      "parentName": "Bottoms"
+    },
+    {
+      "id": "PB-06",
+      "name": "Misc Bottoms",
+      "parentId": "PB",
+      "parentName": "Bottoms"
+    },
+    {
+      "id": "PB-07",
+      "name": "Skirts",
+      "parentId": "PB",
+      "parentName": "Bottoms"
+    },
+    {
+      "id": "PK-01",
+      "name": "Bandannas",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-02",
+      "name": "Beanies",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-03",
+      "name": "Brim & Bucket Hats",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-04",
+      "name": "Caps",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-05",
+      "name": "Headbands",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-06",
+      "name": "Misc Headwear",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-07",
+      "name": "Straw Hats",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-08",
+      "name": "Trucker Caps",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PK-09",
+      "name": "Visors",
+      "parentId": "PK",
+      "parentName": "Headwear"
+    },
+    {
+      "id": "PU",
+      "name": "Shirts",
+      "parentId": "PU",
+      "parentName": "Shirts"
+    },
+    {
+      "id": "PV-07",
+      "name": "Sports Shorts",
+      "parentId": "PV",
+      "parentName": "Sports Uniforms"
+    },
+    {
+      "id": "PW",
+      "name": "Uniforms",
+      "parentId": "PW",
+      "parentName": "Uniforms"
+    },
+    {
+      "id": "PW-01",
+      "name": "Chefwear",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-04",
+      "name": "Work Jackets",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-06",
+      "name": "Work Pants",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-08",
+      "name": "Work Polo Shirts",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PB-02",
+      "name": "Chefs Pants",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-09",
+      "name": "Work Shirts",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-10",
+      "name": "Work Shorts",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-14",
+      "name": "Work Vests",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PW-10",
+      "name": "Tunics",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-07",
+      "name": "Work Polar Fleece",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-13",
+      "name": "Work T-Shirts",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-01",
+      "name": "Aprons",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PW-04",
+      "name": "Roughalls & Overalls",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-11",
+      "name": "Work Singlets",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PN-03",
+      "name": "Chefs Jackets",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-03",
+      "name": "Work Hoodies",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-12",
+      "name": "Work Socks",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-02",
+      "name": "Misc Workwear",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PX-05",
+      "name": "Work Jumpers",
+      "parentId": "PX",
+      "parentName": "Workwear"
+    },
+    {
+      "id": "PY-03",
+      "name": "Grey-Lead Pencils",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-04",
+      "name": "Highlighters",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-06",
+      "name": "Metal Pens",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-10",
+      "name": "Pencil Sharpeners",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-01",
+      "name": "Coloured Pencils",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-02",
+      "name": "Erasers",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-05",
+      "name": "Markers",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-11",
+      "name": "Plastic Pens",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-09",
+      "name": "Pen Packaging",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-12",
+      "name": "Stylus Pens",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-07",
+      "name": "Misc Writing",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-08",
+      "name": "Other Pens",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PY-13",
+      "name": "Wooden Pens",
+      "parentId": "PY",
+      "parentName": "Writing"
+    },
+    {
+      "id": "PA-03",
+      "name": "Cooler Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-07",
+      "name": "Laptop Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-09",
+      "name": "Lunch Bags/Lunch Boxes",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-11",
+      "name": "Paper Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-12",
+      "name": "Reusable Grocery Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-15",
+      "name": "Tote Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-16",
+      "name": "Wallets & Purses",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-14",
+      "name": "Toiletry Bags & Accessories",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-05",
+      "name": "Dry Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-06",
+      "name": "Duffle Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-08",
+      "name": "Luggage Tags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-13",
+      "name": "Satchels",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-10",
+      "name": "Misc Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-17",
+      "name": "Wheeled Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-04",
+      "name": "Drawstring Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-01",
+      "name": "Backpacks",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PA-02",
+      "name": "Bum Bags",
+      "parentId": "PA",
+      "parentName": "Bags"
+    },
+    {
+      "id": "PW-05",
+      "name": "Safety Wear",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PW-09",
+      "name": "Scrubs",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PW-06",
+      "name": "Salon & Spa",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PW-08",
+      "name": "Scrub Tops",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PW-03",
+      "name": "Misc Uniforms",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PW-07",
+      "name": "Scrub Bottoms",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PW-02",
+      "name": "Lab Coats",
+      "parentId": "69ef233551b1f59dd0adc782",
+      "parentName": "Hospitality Wears"
+    },
+    {
+      "id": "PE-01",
+      "name": "Coffee Mugs",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-02",
+      "name": "Drink Bottles",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-05",
+      "name": "Misc Drinkware",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-06",
+      "name": "Plastic Cups & Tumblers",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-07",
+      "name": "Protein Shakers",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-08",
+      "name": "Reusable Coffee Cups",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-09",
+      "name": "Stubby Holders",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-10",
+      "name": "Thermoses",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-03",
+      "name": "Drinking Straws",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-11",
+      "name": "Travel Mugs",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PE-04",
+      "name": "Flasks",
+      "parentId": "PE",
+      "parentName": "Drinkware"
+    },
+    {
+      "id": "PV-03",
+      "name": "Jerseys",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PB-09",
+      "name": "Sports Shorts",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-09",
+      "name": "Sports Socks",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-02",
+      "name": "Crop Tops",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-04",
+      "name": "Misc Sports Uniforms",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-08",
+      "name": "Sports Skirts",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-05",
+      "name": "Sports Dresses",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-06",
+      "name": "Sports Jumpers",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-01",
+      "name": "Bibs",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PV-10",
+      "name": "Sports Vest",
+      "parentId": "69ef235c51b1f59dd0adc7af",
+      "parentName": "Sportswear"
+    },
+    {
+      "id": "PF-01",
+      "name": "Awards & Trophies",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-07",
+      "name": "Event Wristbands",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-09",
+      "name": "Lanyards",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-12",
+      "name": "Misc Events",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-08",
+      "name": "Flags & Bunting",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-13",
+      "name": "Name Badges",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-15",
+      "name": "Silicon Wristbands",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-04",
+      "name": "Balloons",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-10",
+      "name": "Lapel Pins",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-03",
+      "name": "Badge Reels",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-05",
+      "name": "Banners",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-06",
+      "name": "Button Badges",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-11",
+      "name": "Marquees",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-02",
+      "name": "Badge Holders",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-14",
+      "name": "Signs",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PF-16",
+      "name": "Table Covers",
+      "parentId": "PF",
+      "parentName": "Exhibitions & Events"
+    },
+    {
+      "id": "PU-01",
+      "name": "Business Shirts",
+      "parentId": "69ef236e51b1f59dd0adc7e4",
+      "parentName": "Shirts & Tee"
+    },
+    {
+      "id": "PU-02",
+      "name": "Misc Shirts",
+      "parentId": "69ef236e51b1f59dd0adc7e4",
+      "parentName": "Shirts & Tee"
+    },
+    {
+      "id": "PU-05",
+      "name": "T-Shirts",
+      "parentId": "69ef236e51b1f59dd0adc7e4",
+      "parentName": "Shirts & Tee"
+    },
+    {
+      "id": "PU-03",
+      "name": "Polo Shirts",
+      "parentId": "69ef236e51b1f59dd0adc7e4",
+      "parentName": "Shirts & Tee"
+    },
+    {
+      "id": "PU-04",
+      "name": "Singlets",
+      "parentId": "69ef236e51b1f59dd0adc7e4",
+      "parentName": "Shirts & Tee"
+    },
+    {
+      "id": "PM-04",
+      "name": "Candles",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-05",
+      "name": "Cheese Boards & Knives",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-10",
+      "name": "Money Boxes",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-14",
+      "name": "Tea & Coffee Accessories",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-01",
+      "name": "Bar Mats",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-11",
+      "name": "Pet Accessories",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-12",
+      "name": "Photo Frames",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-15",
+      "name": "Tea Towels",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-06",
+      "name": "Chopping Boards",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-07",
+      "name": "Coasters",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-09",
+      "name": "Misc Homeware",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-13",
+      "name": "Picture Frames",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-08",
+      "name": "Cutlery Sets",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-16",
+      "name": "Watches",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-03",
+      "name": "Bottle Coolers",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PM-17",
+      "name": "Hampers",
+      "parentId": "PM",
+      "parentName": "Home & Living"
+    },
+    {
+      "id": "PB-01",
+      "name": "Cargo Pants",
+      "parentId": "69ef238e51b1f59dd0adc819",
+      "parentName": "Pants & Bottoms"
+    },
+    {
+      "id": "PB-08",
+      "name": "Slacks",
+      "parentId": "69ef238e51b1f59dd0adc819",
+      "parentName": "Pants & Bottoms"
+    },
+    {
+      "id": "PB-10",
+      "name": "Track Pants",
+      "parentId": "69ef238e51b1f59dd0adc819",
+      "parentName": "Pants & Bottoms"
+    },
+    {
+      "id": "PN-01",
+      "name": "Blazers & Suit Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-02",
+      "name": "Cardigans",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-05",
+      "name": "Polar Fleece Jacket",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-08",
+      "name": "Rain Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-07",
+      "name": "Puffer Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-09",
+      "name": "Soft Shell Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-10",
+      "name": "Track Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-11",
+      "name": "Trench Coats",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-04",
+      "name": "Misc Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-06",
+      "name": "Ponchos",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PN-12",
+      "name": "Varsity Jackets",
+      "parentId": "PN",
+      "parentName": "Jackets"
+    },
+    {
+      "id": "PT-01",
+      "name": "Business Cards",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-07",
+      "name": "Magnets",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-08",
+      "name": "Misc Print",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-13",
+      "name": "Sticky Notes & Flags",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-02",
+      "name": "Combo Pads",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-04",
+      "name": "Magnet Calendars",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-06",
+      "name": "Magnetic To-Do Lists",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-09",
+      "name": "Packaging",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-05",
+      "name": "Magnetic Photo Frames",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-10",
+      "name": "Pads & Planners",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-11",
+      "name": "Ribbons",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-14",
+      "name": "Wall Calendars",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-03",
+      "name": "Desk Calendars",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PT-12",
+      "name": "Stickers",
+      "parentId": "PT",
+      "parentName": "Print"
+    },
+    {
+      "id": "PO-01",
+      "name": "Hoodies",
+      "parentId": "PO",
+      "parentName": "Jumpers"
+    },
+    {
+      "id": "PO-02",
+      "name": "Knitted Jumpers",
+      "parentId": "PO",
+      "parentName": "Jumpers"
+    },
+    {
+      "id": "PO-03",
+      "name": "Misc Jumpers",
+      "parentId": "PO",
+      "parentName": "Jumpers"
+    },
+    {
+      "id": "PO-05",
+      "name": "Sweaters",
+      "parentId": "PO",
+      "parentName": "Jumpers"
+    },
+    {
+      "id": "PO-06",
+      "name": "Vests",
+      "parentId": "PO",
+      "parentName": "Jumpers"
+    },
+    {
+      "id": "PO-04",
+      "name": "Polar Fleece Jumpers",
+      "parentId": "PO",
+      "parentName": "Jumpers"
+    },
+    {
+      "id": "PS-04",
+      "name": "Cleaning Cloths",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-06",
+      "name": "Flashdrives",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-08",
+      "name": "Misc Tech",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-12",
+      "name": "Speakers",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-17",
+      "name": "Wireless Chargers",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-05",
+      "name": "Earbuds",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-11",
+      "name": "Powerbanks",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-13",
+      "name": "Tablet Covers",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-16",
+      "name": "USB Hubs",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-07",
+      "name": "Headphones",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-10",
+      "name": "Phone Wallets",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-14",
+      "name": "Travel Adapters",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-15",
+      "name": "USB Car Chargers",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-01",
+      "name": "Cable Tidies",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-02",
+      "name": "Car Phone Holders",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-03",
+      "name": "Charging Cables",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PS-09",
+      "name": "Phone Stands",
+      "parentId": "PS",
+      "parentName": "Phone & Technology"
+    },
+    {
+      "id": "PG-01",
+      "name": "Boots",
+      "parentId": "PG",
+      "parentName": "Footwear"
+    },
+    {
+      "id": "PG-03",
+      "name": "Socks",
+      "parentId": "PG",
+      "parentName": "Footwear"
+    },
+    {
+      "id": "PG-02",
+      "name": "Misc Footwear",
+      "parentId": "PG",
+      "parentName": "Footwear"
+    },
+    {
+      "id": "PG-04",
+      "name": "Thongs",
+      "parentId": "PG",
+      "parentName": "Footwear"
+    },
+    {
+      "id": "PQ-03",
+      "name": "Blankets",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-04",
+      "name": "Bottled Water",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-05",
+      "name": "Chairs",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-07",
+      "name": "Gym Towels",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-15",
+      "name": "Sunglasses & Accessories",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-18",
+      "name": "Umbrellas",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-02",
+      "name": "Beach Umbrellas",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PM-02",
+      "name": "Blankets",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-06",
+      "name": "Cooling Towels",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-09",
+      "name": "Misc Outdoors",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-16",
+      "name": "Sunshades",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-10",
+      "name": "Picnic Rugs",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-12",
+      "name": "Seeds",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-01",
+      "name": "BBQ Sets",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-13",
+      "name": "Sports Balls",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-11",
+      "name": "Picnic Sets",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-14",
+      "name": "Sports Gear",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-08",
+      "name": "Ice Buckets",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-17",
+      "name": "Tables",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PQ-19",
+      "name": "Wine & Beer",
+      "parentId": "PQ",
+      "parentName": "Leisure & Outdoors"
+    },
+    {
+      "id": "PC-04",
+      "name": "Misc Clothing Accessories",
+      "parentId": "PC",
+      "parentName": "Clothing Accessories"
+    },
+    {
+      "id": "PC-05",
+      "name": "Scarves",
+      "parentId": "PC",
+      "parentName": "Clothing Accessories"
+    },
+    {
+      "id": "PC-06",
+      "name": "Ties",
+      "parentId": "PC",
+      "parentName": "Clothing Accessories"
+    },
+    {
+      "id": "PC-02",
+      "name": "Cufflinks",
+      "parentId": "PC",
+      "parentName": "Clothing Accessories"
+    },
+    {
+      "id": "PC-03",
+      "name": "Gloves",
+      "parentId": "PC",
+      "parentName": "Clothing Accessories"
+    },
+    {
+      "id": "PC-01",
+      "name": "Belts",
+      "parentId": "PC",
+      "parentName": "Clothing Accessories"
+    },
+    {
+      "id": "PD-07",
+      "name": "Jelly Beans",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-11",
+      "name": "Misc Confectionery",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-12",
+      "name": "Mixed Lollies",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-13",
+      "name": "Nuts & Savoury",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-14",
+      "name": "Popcorn",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-03",
+      "name": "Choc Beans",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-04",
+      "name": "Chocolates",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-16",
+      "name": "Sugar Free Lollies",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-02",
+      "name": "Chewy Fruits",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-06",
+      "name": "Jelly Babies",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-08",
+      "name": "Lollipops",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-01",
+      "name": "Biscuits & Cookies",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-10",
+      "name": "Mints",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-05",
+      "name": "Gummi Lollies",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-15",
+      "name": "Snakes",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PD-09",
+      "name": "Lozenges",
+      "parentId": "PD",
+      "parentName": "Confectionery"
+    },
+    {
+      "id": "PH-01",
+      "name": "Frisbees & Throwing Toys",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-03",
+      "name": "Jigsaws",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-04",
+      "name": "Misc Fun & Games",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-10",
+      "name": "Stress Balls",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-06",
+      "name": "Novelty Items",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-11",
+      "name": "Stress Fruit & Vegetables",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-14",
+      "name": "Yo Yos",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-07",
+      "name": "Plush Toys",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-12",
+      "name": "Stress Keyrings",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-08",
+      "name": "Puzzles",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-13",
+      "name": "Stress Transport",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-02",
+      "name": "Games",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-09",
+      "name": "Stress Animals",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PH-05",
+      "name": "Misc Stress Shapes",
+      "parentId": "PH",
+      "parentName": "Fun & Games"
+    },
+    {
+      "id": "PI-01",
+      "name": "Beer Glasses",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PI-04",
+      "name": "Glass Tumblers",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PI-05",
+      "name": "Misc Glassware",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PI-07",
+      "name": "Wine Glasses",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PI-02",
+      "name": "Beer Mugs",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PI-03",
+      "name": "Cocktail Glasses",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PI-06",
+      "name": "Shot Glasses",
+      "parentId": "PI",
+      "parentName": "Glassware"
+    },
+    {
+      "id": "PJ-02",
+      "name": "Golf Balls",
+      "parentId": "PJ",
+      "parentName": "Golf"
+    },
+    {
+      "id": "PJ-04",
+      "name": "Golf Towels",
+      "parentId": "PJ",
+      "parentName": "Golf"
+    },
+    {
+      "id": "PJ-03",
+      "name": "Golf Tees",
+      "parentId": "PJ",
+      "parentName": "Golf"
+    },
+    {
+      "id": "PJ-05",
+      "name": "Golf Umbrellas",
+      "parentId": "PJ",
+      "parentName": "Golf"
+    },
+    {
+      "id": "PJ-01",
+      "name": "Ball Markers",
+      "parentId": "PJ",
+      "parentName": "Golf"
+    },
+    {
+      "id": "PJ-06",
+      "name": "Misc Golf",
+      "parentId": "PJ",
+      "parentName": "Golf"
+    },
+    {
+      "id": "PP-04",
+      "name": "Keyrings",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-05",
+      "name": "Misc Tools",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-07",
+      "name": "Tool Sets",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-01",
+      "name": "Bottle Opener Keyrings",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-06",
+      "name": "Tape Measures",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-08",
+      "name": "Torches",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-03",
+      "name": "Carabiners",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PP-02",
+      "name": "Bottle Openers",
+      "parentId": "PP",
+      "parentName": "Keyrings & Tools"
+    },
+    {
+      "id": "PL-01",
+      "name": "Bath Towels",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-03",
+      "name": "First Aid Kits",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-07",
+      "name": "Lip Balms",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-08",
+      "name": "Misc Health & Personal",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-04",
+      "name": "Hair, Nails & Beauty",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-05",
+      "name": "Hand Sanitisers",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-06",
+      "name": "Hand Towels",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-02",
+      "name": "Face Masks",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-10",
+      "name": "Temporary Tattoos",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PL-09",
+      "name": "Sunscreens",
+      "parentId": "PL",
+      "parentName": "Health & Personal"
+    },
+    {
+      "id": "PR-01",
+      "name": "Business Card Holders",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-10",
+      "name": "Mouse Mats",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-12",
+      "name": "Notepads",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-02",
+      "name": "Calculators",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-04",
+      "name": "Counter Mats",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-11",
+      "name": "Notebooks",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-05",
+      "name": "Diaries",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-06",
+      "name": "Floor Mats",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-08",
+      "name": "Letter Openers",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-03",
+      "name": "Compendiums & Portfolios",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-13",
+      "name": "Pencil Cases",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-15",
+      "name": "Sticky Notes & Flags",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-09",
+      "name": "Misc Office",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-14",
+      "name": "Rulers",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "PR-07",
+      "name": "Gift Sets",
+      "parentId": "PR",
+      "parentName": "Office & Business"
+    },
+    {
+      "id": "69ef254951b1f59dd0adc96c",
+      "name": "Visors",
+      "parentId": "69ef254951b1f59dd0adc96c",
+      "parentName": "Visors"
+    },
+    {
+      "id": "69ef249151b1f59dd0adc8e8",
+      "name": "Headbands",
+      "parentId": "69ef249151b1f59dd0adc8e8",
+      "parentName": "Headbands"
+    },
+    {
+      "id": "69ef24c451b1f59dd0adc909",
+      "name": "Misc Headwear",
+      "parentId": "69ef24c451b1f59dd0adc909",
+      "parentName": "Misc Headwear"
+    },
+    {
+      "id": "69ef24dc51b1f59dd0adc92a",
+      "name": "Straw Hats",
+      "parentId": "69ef24dc51b1f59dd0adc92a",
+      "parentName": "Straw Hats"
+    },
+    {
+      "id": "69ef243e51b1f59dd0adc892",
+      "name": "Brim & Bucket Hats",
+      "parentId": "69ef243e51b1f59dd0adc892",
+      "parentName": "Brim & Bucket Hats"
+    },
+    {
+      "id": "69ef244d51b1f59dd0adc8b3",
+      "name": "Caps",
+      "parentId": "69ef244d51b1f59dd0adc8b3",
+      "parentName": "Caps"
+    },
+    {
+      "id": "69ef240e51b1f59dd0adc871",
+      "name": "Beanies",
+      "parentId": "69ef240e51b1f59dd0adc871",
+      "parentName": "Beanies"
+    },
+    {
+      "id": "69ef253551b1f59dd0adc94b",
+      "name": "Trucker Caps",
+      "parentId": "69ef253551b1f59dd0adc94b",
+      "parentName": "Trucker Caps"
+    },
+    {
+      "id": "69ef23fa51b1f59dd0adc850",
+      "name": "Bandannas",
+      "parentId": "69ef23fa51b1f59dd0adc850",
+      "parentName": "Bandannas"
+    }
+  ],
+  "parents": [
+    {
+      "id": "PB",
+      "name": "Bottoms"
+    },
+    {
+      "id": "PK",
+      "name": "Headwear"
+    },
+    {
+      "id": "PV",
+      "name": "Sports Uniforms"
+    },
+    {
+      "id": "PX",
+      "name": "Workwear"
+    },
+    {
+      "id": "PY",
+      "name": "Writing"
+    },
+    {
+      "id": "PA",
+      "name": "Bags"
+    },
+    {
+      "id": "69ef233551b1f59dd0adc782",
+      "name": "Hospitality Wears"
+    },
+    {
+      "id": "PE",
+      "name": "Drinkware"
+    },
+    {
+      "id": "69ef235c51b1f59dd0adc7af",
+      "name": "Sportswear"
+    },
+    {
+      "id": "PF",
+      "name": "Exhibitions & Events"
+    },
+    {
+      "id": "69ef236e51b1f59dd0adc7e4",
+      "name": "Shirts & Tee"
+    },
+    {
+      "id": "PM",
+      "name": "Home & Living"
+    },
+    {
+      "id": "69ef238e51b1f59dd0adc819",
+      "name": "Pants & Bottoms"
+    },
+    {
+      "id": "PN",
+      "name": "Jackets"
+    },
+    {
+      "id": "PT",
+      "name": "Print"
+    },
+    {
+      "id": "PO",
+      "name": "Jumpers"
+    },
+    {
+      "id": "PS",
+      "name": "Phone & Technology"
+    },
+    {
+      "id": "PG",
+      "name": "Footwear"
+    },
+    {
+      "id": "PQ",
+      "name": "Leisure & Outdoors"
+    },
+    {
+      "id": "PC",
+      "name": "Clothing Accessories"
+    },
+    {
+      "id": "PD",
+      "name": "Confectionery"
+    },
+    {
+      "id": "PH",
+      "name": "Fun & Games"
+    },
+    {
+      "id": "PI",
+      "name": "Glassware"
+    },
+    {
+      "id": "PJ",
+      "name": "Golf"
+    },
+    {
+      "id": "PP",
+      "name": "Keyrings & Tools"
+    },
+    {
+      "id": "PL",
+      "name": "Health & Personal"
+    },
+    {
+      "id": "PR",
+      "name": "Office & Business"
+    }
+  ]
+}

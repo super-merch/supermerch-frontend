@@ -85,3 +85,9 @@ pnpm-lock.yaml
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+# Category Finder generator: raw, transient per-value-count catalogue audit --
+# never committed (see scripts/category-finder/fetch-catalogue-snapshot.mjs).
+# Only the compact, aggregate outputs (categoryFinderManifest.js,
+# parentGroupManifest.js, reconciliation.js, authoritative-category-ids.json)
+# are committed.
+scripts/category-finder/.snapshot/
