@@ -126,6 +126,18 @@ export function validateLeafSnapshot(leaf) {
     return;
   }
 
+  if (leaf.fetchFailed === true) {
+    // Every stratified sample fetch failed against a category that reports a
+    // positive productCount -- this is a live-audit failure, not evidence of
+    // zero/unusable data, and must never be silently treated as either.
+    // classify.mjs excludes it with fetchFailureReason so it reads as
+    // "needs re-audit," not "no products here."
+    if (typeof leaf.fetchFailureReason !== "string" || !leaf.fetchFailureReason) {
+      throw new SchemaError(`${context}: "fetchFailed" is true but "fetchFailureReason" is missing/invalid.`);
+    }
+    return;
+  }
+
   if (!AUDIT_MODES.includes(leaf.auditMode)) {
     throw new SchemaError(`${context}: "auditMode" must be one of ${JSON.stringify(AUDIT_MODES)}, got ${JSON.stringify(leaf.auditMode)}.`);
   }

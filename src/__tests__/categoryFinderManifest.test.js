@@ -47,10 +47,26 @@ describe.each(entries)("categoryFinderManifest entry: $categoryId", (entry) => {
     expect(entry.filterMappingsValidated).toBe(false);
   });
 
-  it("non-excluded entries have a validated, well-formed question set", () => {
+  it("filterMappingsValidated/runtimeEnabled are never true for an excluded entry, and runtimeEnabled is never true without filterMappingsValidated (the two gates are independent, but this combination would be meaningless)", () => {
+    if (entry.finderMode === "excluded") {
+      expect(entry.filterMappingsValidated).toBe(false);
+      expect(entry.runtimeEnabled).toBe(false);
+      return;
+    }
+    if (entry.runtimeEnabled) {
+      expect(entry.filterMappingsValidated).toBe(true);
+    }
+  });
+
+  it("non-excluded entries have a well-formed question set, regardless of verification/runtime-enablement status", () => {
+    // Structural correctness (real options, no empty dropdowns, correct
+    // ordering) is guaranteed by the generator for EVERY classified entry --
+    // filterMappingsValidated/runtimeEnabled are a separate, independently-set
+    // axis (live API verification, then business approval) and must never be
+    // asserted true here just because an entry was classified curated/
+    // inherited/generic. See categoryFinderConfig.test.js for gate-logic tests.
     if (entry.finderMode === "excluded") return;
     expect(entry.exclusionReason).toBeNull();
-    expect(entry.filterMappingsValidated).toBe(true);
     expect(entry.questions.length).toBeGreaterThan(0);
 
     const ids = entry.questions.map((q) => q.id);

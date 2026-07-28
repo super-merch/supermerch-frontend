@@ -87,6 +87,15 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
       filterMappingsValidated: override.filterMappingsValidated === true,
       runtimeEnabled: override.runtimeEnabled === true,
       notes: ["Hand-authored override."],
+      // Optional copy overrides -- a fully hand-curated leaf (e.g. PE-02)
+      // needs its exact eyebrow/title/description/itemNamePlural preserved
+      // too, not just its questions. undefined here means buildManifestEntry
+      // falls back to the generic leafName-derived copy, so existing
+      // overrides that only set questions/gates are unaffected.
+      itemNamePlural: override.itemNamePlural,
+      finderEyebrow: override.finderEyebrow,
+      finderTitle: override.finderTitle,
+      finderDescription: override.finderDescription,
     };
   }
 
@@ -98,6 +107,20 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
       filterMappingsValidated: false,
       runtimeEnabled: false,
       notes: [leaf.exclusionReason || "Zero products match this category's filter rules."],
+    };
+  }
+
+  if (leaf.fetchFailed === true) {
+    // A live-audit failure, not zero/unusable data -- excluded with a
+    // distinct reason so it reads as "needs re-audit" rather than "no
+    // products here" (see fetch-catalogue-snapshot.mjs).
+    return {
+      finderMode: "excluded",
+      proposedFamily: null,
+      questions: [],
+      filterMappingsValidated: false,
+      runtimeEnabled: false,
+      notes: [leaf.fetchFailureReason || "Live catalogue audit failed for this category -- needs re-audit."],
     };
   }
 

@@ -83,6 +83,18 @@ describe("classifyLeaf: exclusion", () => {
     expect(result.runtimeEnabled).toBe(false);
     expect(result.notes[0]).toMatch(/productMatchRules empty/);
   });
+
+  it("excludes a fetchFailed leaf with its failure reason, distinct from a zero-product exclusion", () => {
+    const result = classifyLeaf(
+      { leafId: "PU", leafName: "Shirts", productCount: 2200, fetchFailed: true, fetchFailureReason: "All 5 stratified page fetches failed." },
+      { families: {}, leafFamilyMap: {}, leafOverrides: {} }
+    );
+    expect(result.finderMode).toBe("excluded");
+    expect(result.questions).toHaveLength(0);
+    expect(result.filterMappingsValidated).toBe(false);
+    expect(result.runtimeEnabled).toBe(false);
+    expect(result.notes[0]).toMatch(/stratified page fetches failed/);
+  });
 });
 
 describe("classifyLeaf: coverage judged against the sample, not the full category (the core bug fix)", () => {

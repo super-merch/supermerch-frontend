@@ -38,6 +38,7 @@ import { fileURLToPath } from "url";
 import { flattenHierarchy } from "./lib/hierarchy.mjs";
 import { validateSnapshot } from "./lib/schema.mjs";
 import { dedupeProductsById } from "./lib/dedupe.mjs";
+import { mapWithConcurrency } from "./lib/concurrency.mjs";
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
@@ -63,19 +64,6 @@ async function fetchJsonWithRetry(url) {
     }
   }
   throw lastError;
-}
-
-async function mapWithConcurrency(items, limit, fn) {
-  const results = new Array(items.length);
-  let next = 0;
-  async function worker() {
-    while (next < items.length) {
-      const i = next++;
-      results[i] = await fn(items[i], i);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
-  return results;
 }
 
 function round1(numerator, denominator) {
@@ -112,13 +100,28 @@ async function fetchLeafStats(leaf) {
 
   const totalPages = Math.max(1, Math.ceil(productCount / PER_PAGE_LIMIT));
   const strataPages = pickStrataPages(totalPages);
-  const isCompleteAudit = strataPages.length === totalPages;
 
+  // Some deep page/skip values trigger a backend 500 on large categories (a
+  // known Mongo sort/skip limitation, same class of issue as the earlier
+  // Phone & Technology investigation) -- a single bad stratum must not abort
+  // the whole 297-leaf batch. Each page is fetched independently; a page that
+  // still fails after fetchJsonWithRetry's own retries contributes nothing to
+  // the sample rather than throwing, and forces auditMode to
+  // "sampled_estimate" (never claim a complete/exact count when part of the
+  // intended sample is missing, even if every OTHER stratum succeeded).
+  let anyPageFailed = false;
   const pageResults = await mapWithConcurrency(strataPages, CONCURRENCY, async (page) => {
     const url = `${API_BASE}/api/client-products?product_type_ids=${encodeURIComponent(leaf.id)}&limit=${PER_PAGE_LIMIT}&page=${page}`;
-    const resp = await fetchJsonWithRetry(url);
-    return resp.data || [];
+    try {
+      const resp = await fetchJsonWithRetry(url);
+      return resp.data || [];
+    } catch (err) {
+      console.error(`  ! stratum fetch failed for ${leaf.id} page ${page}: ${err.message} -- continuing with remaining strata`);
+      anyPageFailed = true;
+      return [];
+    }
   });
+  const isCompleteAudit = !anyPageFailed && strataPages.length === totalPages;
 
   // Dedupe by catalogue-record identity in case of any page-boundary overlap
   // (defensive -- shouldn't normally happen with correct pagination, but
@@ -126,6 +129,24 @@ async function fetchLeafStats(leaf) {
   // takes priority over `meta.id`.
   const sampleProducts = dedupeProductsById(pageResults.flat());
   const sampleSize = sampleProducts.length; // ACTUAL count returned, not the requested limit*pages
+
+  if (sampleSize === 0) {
+    // Every stratum failed (or the category is genuinely all unparseable
+    // records) -- there is no real sample to build attribute/colour stats
+    // from. Report this honestly as a fetch failure rather than fabricating
+    // a sampleSize of 0 against a known-positive productCount (which the
+    // schema would otherwise accept as "genuinely nothing populated").
+    return {
+      leafId: leaf.id,
+      leafName: leaf.name,
+      parentId: leaf.parentId,
+      parentName: leaf.parentName,
+      navGroup: leaf.navGroup,
+      productCount,
+      fetchFailed: true,
+      fetchFailureReason: `All ${strataPages.length} stratified page fetches failed for a category reporting ${productCount} products -- needs re-audit, not evidence of zero data.`,
+    };
+  }
 
   // Per-product dedup: a product listing "Material: Steel" twice must not
   // count twice, and a product with BOTH "Material: Steel" and

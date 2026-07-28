@@ -14,10 +14,12 @@ function buildManifestEntry(leaf, result) {
     categoryName: leaf.leafName,
     parentCategoryId: leaf.parentId,
     parentCategoryName: leaf.parentName,
-    itemNamePlural: leaf.leafName.toLowerCase(),
-    finderEyebrow: "Find it faster",
-    finderTitle: `Find the right ${leaf.leafName.toLowerCase()} in under 30 seconds`,
-    finderDescription: "Choose what matters most and we'll narrow the range.",
+    // A hand-authored override (e.g. PE-02) may supply its own exact copy --
+    // fall back to the generic leafName-derived copy only when it doesn't.
+    itemNamePlural: result.itemNamePlural ?? leaf.leafName.toLowerCase(),
+    finderEyebrow: result.finderEyebrow ?? "Find it faster",
+    finderTitle: result.finderTitle ?? `Find the right ${leaf.leafName.toLowerCase()} in under 30 seconds`,
+    finderDescription: result.finderDescription ?? "Choose what matters most and we'll narrow the range.",
     menuLinked: ["promotional", "clothing", "headwear"].includes(String(leaf.navGroup || "").toLowerCase()),
     finderMode: result.finderMode,
     proposedFamily: result.proposedFamily,
@@ -57,7 +59,7 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
       proposedFamily: null,
       filterMappingsValidated: false,
       runtimeEnabled: false,
-      exclusionReason: "Parent-page aggregate audit not yet wired into fetch-catalogue-snapshot.mjs -- classified as excluded until real data is available (PR2).",
+      exclusionReason: "Parent/group aggregate pages are out of scope for this rollout -- fetch-catalogue-snapshot.mjs only audits leaf categories. A parent-page Finder would need its own aggregate-audit approach and is a separate, not-yet-scoped piece of work.",
       dataQualityNotes: [],
       questions: [],
     };
