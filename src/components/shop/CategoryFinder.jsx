@@ -63,7 +63,12 @@ const CategoryFinder = ({ productTypeId }) => {
   if (!config) return null;
 
   const selectedCount = Object.values(selections).filter(Boolean).length;
-  const questionPriority = { moq: 0, budget: 1 };
+  // Deterministic order regardless of how a config lists its questions: quantity,
+  // then budget, then up to two category-specific attributes (natural array order),
+  // then colour last. Explicit colour priority means colour reliably sorts last
+  // even for a config with zero or three attribute questions, not just by
+  // coincidence of array position.
+  const questionPriority = { moq: 0, budget: 1, colour: 98 };
   const orderedQuestions = [...config.questions].sort(
     (left, right) =>
       (questionPriority[left.id] ?? 2) - (questionPriority[right.id] ?? 2)
@@ -167,7 +172,10 @@ const CategoryFinder = ({ productTypeId }) => {
         </div>
 
         {collapsed ? (
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div
+            className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            aria-live="polite"
+          >
             <p className="text-sm text-gray-700">
               {summaryText ? (
                 <>
@@ -175,13 +183,14 @@ const CategoryFinder = ({ productTypeId }) => {
                   {summaryText}
                 </>
               ) : (
-                "Showing all bottles."
+                `Showing all ${config.itemNamePlural}.`
               )}
               {" "}Adjust anything below, or edit your answers here.
             </p>
             <button
               type="button"
               onClick={() => setCollapsed(false)}
+              aria-expanded={false}
               className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
             >
               <Pencil className="h-4 w-4" />
@@ -191,37 +200,42 @@ const CategoryFinder = ({ productTypeId }) => {
         ) : (
           <div>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-              {orderedQuestions.map((question) => (
-                <label key={question.id} className="block">
-                  <span className="mb-1.5 block text-xs font-semibold text-gray-700">
-                    {question.label}
-                  </span>
-                  <select
-                    value={selections[question.id] || ""}
-                    onChange={(event) =>
-                      setSelections((current) => ({
-                        ...current,
-                        [question.id]: event.target.value,
-                      }))
-                    }
-                    className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                  >
-                    <option value="">{question.placeholder}</option>
-                    {question.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ))}
+              {orderedQuestions.map((question) => {
+                const inputId = `category-finder-${question.id}`;
+                return (
+                  <label key={question.id} className="block" htmlFor={inputId}>
+                    <span className="mb-1.5 block text-xs font-semibold text-gray-700">
+                      {question.label}
+                    </span>
+                    <select
+                      id={inputId}
+                      aria-label={question.label}
+                      value={selections[question.id] || ""}
+                      onChange={(event) =>
+                        setSelections((current) => ({
+                          ...current,
+                          [question.id]: event.target.value,
+                        }))
+                      }
+                      className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                    >
+                      <option value="">{question.placeholder}</option>
+                      {question.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
+              })}
             </div>
 
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-gray-500">
                 {selectedCount
                   ? `${selectedCount} preference${selectedCount === 1 ? "" : "s"} selected`
-                  : "Choose one or more preferences, or continue with all bottles."}
+                  : `Choose one or more preferences, or continue with all ${config.itemNamePlural}.`}
               </p>
               <div className="flex flex-col gap-2 sm:flex-row">
                 {selectedCount > 0 && (
@@ -237,10 +251,11 @@ const CategoryFinder = ({ productTypeId }) => {
                 <button
                   type="button"
                   onClick={applyFinder}
+                  aria-expanded={true}
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
                 >
                   <Search className="h-4 w-4" />
-                  {selectedCount ? config.submitLabel : "View all bottles"}
+                  {selectedCount ? config.submitLabel : `View all ${config.itemNamePlural}`}
                 </button>
               </div>
             </div>
