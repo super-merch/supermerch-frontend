@@ -8,18 +8,28 @@ import { validateSnapshot } from "./schema.mjs";
 import { classifyLeaf } from "./classify.mjs";
 import { reconcileLeaves, reconcileParents, validateAuthoritativeInventory } from "./reconcile.mjs";
 
+// Shared copy-field derivation for BOTH leaf and parent entries --
+// getCategoryFinderConfig() (the runtime adapter both manifests are read
+// through) needs finderEyebrow/finderTitle/finderDescription/itemNamePlural
+// on every entry it might resolve, leaf or parent alike. A hand-authored
+// override (e.g. PE-02) may supply its own exact copy -- fall back to the
+// generic name-derived copy only when it doesn't.
+function buildCopyFields(name, result) {
+  return {
+    itemNamePlural: result.itemNamePlural ?? name.toLowerCase(),
+    finderEyebrow: result.finderEyebrow ?? "Find it faster",
+    finderTitle: result.finderTitle ?? `Find the right ${name.toLowerCase()} in under 30 seconds`,
+    finderDescription: result.finderDescription ?? "Choose what matters most and we'll narrow the range.",
+  };
+}
+
 function buildManifestEntry(leaf, result) {
   return {
     categoryId: leaf.leafId,
     categoryName: leaf.leafName,
     parentCategoryId: leaf.parentId,
     parentCategoryName: leaf.parentName,
-    // A hand-authored override (e.g. PE-02) may supply its own exact copy --
-    // fall back to the generic leafName-derived copy only when it doesn't.
-    itemNamePlural: result.itemNamePlural ?? leaf.leafName.toLowerCase(),
-    finderEyebrow: result.finderEyebrow ?? "Find it faster",
-    finderTitle: result.finderTitle ?? `Find the right ${leaf.leafName.toLowerCase()} in under 30 seconds`,
-    finderDescription: result.finderDescription ?? "Choose what matters most and we'll narrow the range.",
+    ...buildCopyFields(leaf.leafName, result),
     menuLinked: ["promotional", "clothing", "headwear"].includes(String(leaf.navGroup || "").toLowerCase()),
     finderMode: result.finderMode,
     proposedFamily: result.proposedFamily,
@@ -68,6 +78,7 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
       parentManifest[parent.id] = {
         categoryId: parent.id,
         categoryName: parent.name,
+        ...buildCopyFields(parent.name, {}),
         finderMode: "excluded",
         proposedFamily: null,
         filterMappingsValidated: false,
@@ -82,6 +93,7 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
     parentManifest[parent.id] = {
       categoryId: parent.id,
       categoryName: parent.name,
+      ...buildCopyFields(parent.name, result),
       finderMode: result.finderMode,
       proposedFamily: result.proposedFamily,
       filterMappingsValidated: result.filterMappingsValidated,
