@@ -60,7 +60,7 @@ import { useProductLayout } from "@/context/ProductLayoutContext";
 
 const ProductDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
-  const { id: routeIdentifier } = useParams();
+  const { id: routeIdentifier, productId: pathProductId } = useParams();
   const [searchParams] = useSearchParams();
   const encodedId = searchParams.get("ref");
   const location = useLocation();
@@ -74,14 +74,17 @@ const ProductDetails = () => {
     }
   };
   const decodedRefId = decodeRefId(encodedId);
-  // Prefer stable product id from `ref`/state when present; fall back to slug route identifier.
-  const id = decodedRefId
-    ? String(decodedRefId)
-    : stateProductId
-      ? String(stateProductId)
-      : routeIdentifier
-        ? String(routeIdentifier)
-        : null;
+  // Prefer the numeric productId from /product/:slug/:productId (matches ProductPageResolver's
+  // resolvedIdentifier); routeIdentifier is only the slug on that route, not a usable id.
+  const id = pathProductId
+    ? String(pathProductId)
+    : decodedRefId
+      ? String(decodedRefId)
+      : stateProductId
+        ? String(stateProductId)
+        : routeIdentifier
+          ? String(routeIdentifier)
+          : null;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { favouriteItems } = useSelector((state) => state.favouriteProducts);
