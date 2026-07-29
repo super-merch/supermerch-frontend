@@ -116,7 +116,11 @@ function pickStrataPages(totalPages) {
   return [...pages].sort((a, b) => a - b);
 }
 
-async function fetchLeafStats(leaf) {
+// Exported (not just used internally by main()) so a targeted re-fetch of a
+// small subset of leaves -- e.g. after a derivation-logic change that only
+// affects a couple of leaves -- doesn't require re-running the ENTIRE
+// 297+27 category live audit. See patch-snapshot-leaves.mjs.
+export async function fetchLeafStats(leaf) {
   const countUrl = `${API_BASE}/api/client-products?product_type_ids=${encodeURIComponent(leaf.id)}&limit=1&page=1`;
   const countResp = await fetchJsonWithRetry(countUrl);
   const productCount = countResp.item_count ?? countResp.pagination?.totalCount ?? 0;
