@@ -180,6 +180,7 @@ const ProductsContextProvider = ({ children }) => {
             data.total_count ||
             data.totalCount ||
             data.item_count ||
+            data.pagination?.totalCount ||
             data.meta?.total ||
             0
         );

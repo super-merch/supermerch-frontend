@@ -195,9 +195,25 @@ const Cards = ({ category = "" }) => {
               nextParams.set("limit", currentLimit.toString());
               return nextParams;
             });
-            const totalPages = pageData.total_pages || pageData.totalPages || 0;
+            const totalPages =
+              pageData.total_pages ||
+              pageData.totalPages ||
+              pageData.pagination?.totalPages ||
+              0;
             if (totalPages && nextPage >= totalPages) {
               setHasMoreProducts(false);
+            } else {
+              const totalCount =
+                pageData.item_count ||
+                pageData.totalCount ||
+                pageData.total_count ||
+                pageData.pagination?.totalCount ||
+                0;
+              if (totalCount > 0) {
+                setHasMoreProducts(
+                  accumulatedProducts.length + fresh.length < totalCount
+                );
+              }
             }
             return;
           }
@@ -222,6 +238,7 @@ const Cards = ({ category = "" }) => {
           data.item_count ||
           data.totalCount ||
           data.total_count ||
+          data.pagination?.totalCount ||
           data.meta?.total ||
           data.data.length;
         setHasMoreProducts(data.data.length < totalCount);
@@ -499,12 +516,16 @@ const Cards = ({ category = "" }) => {
         getProducts.item_count ||
         getProducts.totalCount ||
         getProducts.total_count ||
+        getProducts.pagination?.totalCount ||
         0;
       if (totalCount > 0) {
         setHasMoreProducts(getProducts.data.length < totalCount);
       } else {
         const totalPages =
-          getProducts.total_pages || getProducts.totalPages || 0;
+          getProducts.total_pages ||
+          getProducts.totalPages ||
+          getProducts.pagination?.totalPages ||
+          0;
         setHasMoreProducts(totalPages > 1 && getProducts.data.length > 0);
       }
     } else if (
@@ -667,6 +688,8 @@ const Cards = ({ category = "" }) => {
                   {!isProductsLoading &&
                     (getProducts?.item_count ||
                       getProducts?.totalCount ||
+                      getProducts?.total_count ||
+                      getProducts?.pagination?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
@@ -691,6 +714,8 @@ const Cards = ({ category = "" }) => {
                   {!isProductsLoading &&
                     (getProducts?.item_count ||
                       getProducts?.totalCount ||
+                      getProducts?.total_count ||
+                      getProducts?.pagination?.totalCount ||
                       accumulatedProducts.length ||
                       0)}
                 </span>
@@ -824,6 +849,7 @@ const Cards = ({ category = "" }) => {
                         {getProducts?.item_count ||
                           getProducts?.totalCount ||
                           getProducts?.total_count ||
+                          getProducts?.pagination?.totalCount ||
                           accumulatedProducts.length}
                       </span>{" "}
                       products
