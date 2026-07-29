@@ -6,7 +6,7 @@ export default function Terms() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/api/policies/by-type/terms")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/policies/by-type/terms`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         return res.json();

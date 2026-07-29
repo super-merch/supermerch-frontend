@@ -6,7 +6,7 @@ const RefundPolicy = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/api/policies/by-type/refund")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/policies/by-type/refund`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         return res.json();
