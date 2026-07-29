@@ -57,6 +57,15 @@ describe("buildAttributeOptions", () => {
     const options = buildAttributeOptions(attr("X", [{ value: "Supplier Code", productCount: 5 }, { value: "Real Value", productCount: 3 }]));
     expect(options.map((o) => o.value)).toEqual(["Real Value"]);
   });
+
+  it("merges case/whitespace duplicate raw values into one option instead of shipping a duplicate visible label", () => {
+    const options = buildAttributeOptions(attr("Material", [{ value: "Steel", productCount: 40 }, { value: "steel", productCount: 10 }, { value: "Plastic", productCount: 5 }]));
+    expect(options).toHaveLength(2);
+    const steel = options.find((o) => o.value === "Steel");
+    expect(steel).toBeDefined();
+    const labels = options.map((o) => o.label);
+    expect(new Set(labels).size).toBe(labels.length); // no duplicate visible labels
+  });
 });
 
 describe("buildColourOptions", () => {
@@ -71,6 +80,27 @@ describe("buildColourOptions", () => {
   it("returns real options sorted by productCount when usable", () => {
     const options = buildColourOptions({ colourPopulatedPct: 80, colourValues: [{ value: "White", productCount: 10 }, { value: "Black", productCount: 40 }] });
     expect(options).toEqual([{ label: "Black", value: "Black" }, { label: "White", value: "White" }]);
+  });
+
+  it("groups a large raw colour list into a short controlled family list instead of shipping every raw shade", () => {
+    const manyShades = [
+      { value: "Navy", productCount: 50 },
+      { value: "Royal Blue", productCount: 40 },
+      { value: "Sky Blue", productCount: 30 },
+      { value: "Black", productCount: 60 },
+      { value: "Charcoal", productCount: 20 },
+      { value: "Ecru", productCount: 5 },
+      { value: "Burgundy", productCount: 4 },
+    ];
+    const options = buildColourOptions({ colourPopulatedPct: 80, colourValues: manyShades });
+    expect(options.length).toBeLessThan(manyShades.length);
+    expect(options.map((o) => o.label)).toEqual(["Blue", "Black", "Grey / Silver", "Natural / Beige", "Red"]);
+  });
+
+  it("collapses case/whitespace colour duplicates before building options (no duplicate visible labels)", () => {
+    const options = buildColourOptions({ colourPopulatedPct: 80, colourValues: [{ value: "Natural", productCount: 10 }, { value: "natural", productCount: 4 }, { value: "Black", productCount: 5 }] });
+    const labels = options.map((o) => o.label);
+    expect(new Set(labels).size).toBe(labels.length);
   });
 });
 

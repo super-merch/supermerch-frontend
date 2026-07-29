@@ -54,15 +54,30 @@ const MIN_SURVIVING_OPTIONS = 2; // matches isAttributeUsable()'s MIN_DISTINCT_V
 // verify-filter-mappings.mjs.
 const OPTION_CHECK_CONCURRENCY = 6;
 
-// Fixed, representative moq/budget/combined checks -- not every one of the 6
-// moq buckets, because moq/budget are generic, sitewide filter mechanisms
-// (unlike attribute/colour options, whose individual VALUES are per-category
-// real data and can each be individually wrong). What varies per category
-// here is backend behavior (aggregation cost, price-tier presence), which
-// these fixed, representative values are enough to surface.
-const QUANTITY_CHECK_QTY = 50;
-const BUDGET_CHECK_RANGE = { minPrice: 5, maxPrice: 20 };
-const COMBINED_CHECK = { qty: 50, minPrice: 1, maxPrice: 15 };
+// Every one of the moq/budget dropdown's own bucket VALUES is tested
+// individually, the same per-option removal treatment as attribute/colour
+// options (see verifyQuantityOptions/verifyBudgetOptions below) -- a single
+// fixed representative value (the previous design: moq=50 only, $5-$20
+// only) missed that a category can genuinely work at some buckets and not
+// others (e.g. a high-minimum-order-quantity product only orderable at
+// qty>=500 would fail a moq=50-only check and lose the WHOLE quantity
+// question, even though every other bucket is fine). This was a real,
+// reported bug: several leaves lost budget or quantity entirely because the
+// one fixed bucket tested happened not to apply to them.
+const EXAMPLE_LIMIT = 3; // for reporting -- e.g. the Shirts Under-$5 review needs concrete qualifying examples, not just a pass/fail
+
+// One supplementary combined moq+budget check (using each question's
+// first-still-surviving bucket, once both have at least one) -- distinct
+// from the per-bucket checks above, this exists ONLY to catch a
+// combination-specific backend issue that neither filter alone would
+// surface (the historical PS/Phone & Technology precedent: price-range
+// aggregation cost that only appears once quantity filtering is ALSO
+// applied). If this fails, budget is demoted entirely (budget has
+// historically been the more fragile piece) rather than failing the
+// category outright.
+function firstSurvivingValue(options) {
+  return options.length > 0 ? options[0].value : null;
+}
 
 function isTestableQuestion(question) {
   return question.type === "attribute" || (question.type === "query" && question.queryParam === "colors");
@@ -117,15 +132,23 @@ function productPrice(product) {
 // "Orderable at quantity" has no single authoritative field this frontend
 // repo can see (pricing/MOQ enforcement lives in the backend) -- this checks
 // the customer-observable proxy: either the product's own min_qty doesn't
-// exceed the requested quantity, or at least one real price break kicks in
-// at or below it. Returns null (not a failure) when neither field is present
-// to check against, rather than guessing.
+// exceed the requested quantity, or at least one real price break in ANY
+// price group kicks in at or below it (the backend's own quantity-aware
+// price resolution already spans every price_groups entry, not just index
+// 0 -- see getAllV2Products.js's tier-price $let, "across ALL price_groups"
+// -- so this proxy must match that, not just check group 0, or it would
+// wrongly report a product unorderable when only a later price group
+// actually has the qualifying break). Returns null (not a failure) when
+// neither field is present to check against, rather than guessing.
 function productIsOrderableAtQuantity(product, qty) {
   const minQty = product?.overview?.min_qty;
   if (typeof minQty === "number" && minQty > 0 && minQty <= qty) return true;
-  const priceBreaks = product?.product?.prices?.price_groups?.[0]?.base_price?.price_breaks;
-  if (Array.isArray(priceBreaks) && priceBreaks.length > 0) {
-    return priceBreaks.some((pb) => typeof pb.qty === "number" && pb.qty <= qty);
+  const priceGroups = product?.product?.prices?.price_groups;
+  if (Array.isArray(priceGroups) && priceGroups.length > 0) {
+    const allBreaks = priceGroups.flatMap((group) => group?.base_price?.price_breaks || []);
+    if (allBreaks.length > 0) {
+      return allBreaks.some((pb) => typeof pb.qty === "number" && pb.qty <= qty);
+    }
   }
   if (typeof minQty === "number" && minQty > 0) return minQty <= qty;
   return null;
@@ -145,8 +168,17 @@ async function fetchFreshUnfilteredCount(categoryId, { fetchJson, apiBase }) {
 }
 
 async function checkAttributeOrColourOption(categoryId, question, value, freshUnfilteredCount, deps) {
+  // A colour option's value can be a comma-joined multi-value string (e.g. a
+  // colour-family option covering several raw shades). The backend does NOT
+  // split "colors[]" params on comma itself (unlike attribute_value, which
+  // it does split) -- the real page instead splits client-side before ever
+  // reaching the network (Cards.jsx: `urlColors.split(",")`) and sends one
+  // colors[] entry per raw value. This must replicate that exact shape, or
+  // it tests something the real page never actually sends.
   const extraParams =
-    question.type === "attribute" ? [["attribute_name", question.attributeName], ["attribute_value", value]] : [["colors[]", value]];
+    question.type === "attribute"
+      ? [["attribute_name", question.attributeName], ["attribute_value", value]]
+      : splitMultiValue(value).map((v) => ["colors[]", v]);
   const url = buildUrl(deps.apiBase, PARAMS_PRODUCTS_PATH, categoryId, extraParams);
   try {
     const resp = await deps.fetchJson(url);
@@ -195,16 +227,22 @@ async function runQuantityBudgetCheck(categoryId, extraParams, { checkQty, minPr
   try {
     const resp = await deps.fetchJson(url);
     if (!isValidListResponseShape(resp)) {
-      return { url, httpStatus: null, itemCount: null, passed: false, reason: "invalid response shape" };
+      return { url, httpStatus: null, itemCount: null, examples: [], passed: false, reason: "invalid response shape" };
     }
     const itemCount = extractItemCount(resp);
     if (itemCount <= 0) {
-      return { url, httpStatus: 200, itemCount, passed: false, reason: "zero results" };
+      return { url, httpStatus: 200, itemCount, examples: [], passed: false, reason: "zero results" };
     }
     const problems = [];
+    // Captured regardless of pass/fail -- concrete evidence for the kind of
+    // per-bucket business review this project has already needed (e.g. "does
+    // Shirts genuinely have products under $5, and at what quantity?"),
+    // without a second, separate pass over the same data.
+    const examples = [];
     for (const product of resp.data) {
       const id = product?.meta?.id ?? product?._id ?? "?";
       const price = productPrice(product);
+      if (examples.length < EXAMPLE_LIMIT) examples.push({ id, price, name: product?.overview?.name ?? product?.product?.name ?? null });
       if (price == null) {
         problems.push(`product ${id}: null computed price`);
         continue;
@@ -217,12 +255,63 @@ async function runQuantityBudgetCheck(categoryId, extraParams, { checkQty, minPr
       }
     }
     if (problems.length > 0) {
-      return { url, httpStatus: 200, itemCount, passed: false, reason: problems.join("; ") };
+      return { url, httpStatus: 200, itemCount, examples, passed: false, reason: problems.join("; ") };
     }
-    return { url, httpStatus: 200, itemCount, passed: true, reason: null };
+    return { url, httpStatus: 200, itemCount, examples, passed: true, reason: null };
   } catch (err) {
-    return { url, httpStatus: null, itemCount: null, passed: false, reason: `request failed: ${err.message}` };
+    return { url, httpStatus: null, itemCount: null, examples: [], passed: false, reason: `request failed: ${err.message}` };
   }
+}
+
+// Tests every one of the moq question's own bucket VALUES individually
+// (1-24, 25-49, ..., 500+), the same per-option removal treatment as
+// verifyTestableQuestion gives attribute/colour options -- a bucket that
+// doesn't apply to this category (e.g. no products orderable that low/high)
+// is removed on its own; the question survives if enough buckets remain.
+async function verifyQuantityOptions(categoryId, moqQuestion, deps) {
+  const optionResults = await mapWithConcurrency(moqQuestion.options, OPTION_CHECK_CONCURRENCY, async (option) => {
+    const checkQty = Number(option.value);
+    const result = await runQuantityBudgetCheck(categoryId, [["moq", option.value]], { checkQty }, deps);
+    return { ...result, value: option.value };
+  });
+  const survivingOptions = moqQuestion.options.filter((_, i) => optionResults[i].passed);
+  return {
+    id: "moq",
+    param: "moq",
+    options: optionResults,
+    survivingOptions,
+    removedOptions: optionResults.filter((r) => !r.passed).map((r) => ({ value: r.value, reason: r.reason })),
+    questionSurvives: survivingOptions.length >= MIN_SURVIVING_OPTIONS,
+  };
+}
+
+// Tests every one of the budget question's own bucket VALUES individually
+// (e.g. "Under $5", "$5-$10", ...) -- this is specifically what explains
+// (and fixes) leaves that were losing budget entirely under the old
+// single-fixed-range check: a category can have zero products in one bucket
+// (a real, honest finding -- e.g. Shirts genuinely may have nothing under
+// $5 at low order quantities) while still having perfectly good budget
+// coverage in every other bucket.
+async function verifyBudgetOptions(categoryId, budgetQuestion, deps) {
+  const optionResults = await mapWithConcurrency(budgetQuestion.options, OPTION_CHECK_CONCURRENCY, async (option) => {
+    const [minStr, maxStr] = option.value.split(":");
+    const minPrice = minStr ? Number(minStr) : null;
+    const maxPrice = maxStr ? Number(maxStr) : null;
+    const extraParams = [];
+    if (minPrice != null) extraParams.push(["min_price", String(minPrice)]);
+    if (maxPrice != null) extraParams.push(["max_price", String(maxPrice)]);
+    const result = await runQuantityBudgetCheck(categoryId, extraParams, { minPrice, maxPrice }, deps);
+    return { ...result, value: option.value };
+  });
+  const survivingOptions = budgetQuestion.options.filter((_, i) => optionResults[i].passed);
+  return {
+    id: "budget",
+    param: "min_price/max_price",
+    options: optionResults,
+    survivingOptions,
+    removedOptions: optionResults.filter((r) => !r.passed).map((r) => ({ value: r.value, reason: r.reason })),
+    questionSurvives: survivingOptions.length >= MIN_SURVIVING_OPTIONS,
+  };
 }
 
 async function checkClientProductsDiagnostic(entry, deps) {
@@ -257,31 +346,36 @@ export async function verifyLeafMappings(entry, deps) {
     questionReports.push(await verifyTestableQuestion(entry.categoryId, question, freshBaseline.itemCount, deps));
   }
 
-  const hasMoq = entry.questions.some((q) => q.id === "moq");
-  const hasBudget = entry.questions.some((q) => q.id === "budget");
-  const quantityCheck = hasMoq ? await runQuantityBudgetCheck(entry.categoryId, [["moq", String(QUANTITY_CHECK_QTY)]], { checkQty: QUANTITY_CHECK_QTY }, deps) : null;
-  const budgetCheck = hasBudget
-    ? await runQuantityBudgetCheck(entry.categoryId, [["min_price", String(BUDGET_CHECK_RANGE.minPrice)], ["max_price", String(BUDGET_CHECK_RANGE.maxPrice)]], BUDGET_CHECK_RANGE, deps)
-    : null;
-  const combinedCheck =
-    hasMoq && hasBudget
-      ? await runQuantityBudgetCheck(
-          entry.categoryId,
-          [["moq", String(COMBINED_CHECK.qty)], ["min_price", String(COMBINED_CHECK.minPrice)], ["max_price", String(COMBINED_CHECK.maxPrice)]],
-          COMBINED_CHECK,
-          deps
-        )
-      : null;
+  const moqQuestion = entry.questions.find((q) => q.id === "moq");
+  const budgetQuestion = entry.questions.find((q) => q.id === "budget");
+  const quantityCheck = moqQuestion ? await verifyQuantityOptions(entry.categoryId, moqQuestion, deps) : null;
+  const budgetCheck = budgetQuestion ? await verifyBudgetOptions(entry.categoryId, budgetQuestion, deps) : null;
 
-  let moqSurvives = hasMoq ? quantityCheck.passed : false;
-  let budgetSurvives = hasBudget ? budgetCheck.passed : false;
-  if (combinedCheck && !combinedCheck.passed) {
-    // Each alone passed, but combined didn't -- a combination-specific
-    // backend issue (e.g. the Phone & Technology precedent: price-range
-    // sort/aggregation cost). Budget is the historically fragile piece, so
-    // remove it first rather than discarding quantity too.
-    budgetSurvives = false;
+  // Supplementary combined check -- see the const declaration above for why
+  // this exists on top of (not instead of) the exhaustive per-bucket checks.
+  let survivingMoqOptions = quantityCheck ? quantityCheck.survivingOptions : [];
+  let survivingBudgetOptions = budgetCheck ? budgetCheck.survivingOptions : [];
+  let combinedCheck = null;
+  if (survivingMoqOptions.length > 0 && survivingBudgetOptions.length > 0) {
+    const qty = Number(firstSurvivingValue(survivingMoqOptions));
+    const [minStr, maxStr] = firstSurvivingValue(survivingBudgetOptions).split(":");
+    const minPrice = minStr ? Number(minStr) : null;
+    const maxPrice = maxStr ? Number(maxStr) : null;
+    const extraParams = [["moq", String(qty)]];
+    if (minPrice != null) extraParams.push(["min_price", String(minPrice)]);
+    if (maxPrice != null) extraParams.push(["max_price", String(maxPrice)]);
+    combinedCheck = await runQuantityBudgetCheck(entry.categoryId, extraParams, { checkQty: qty, minPrice, maxPrice }, deps);
+    if (!combinedCheck.passed) {
+      // Each bucket passed alone, but the combination didn't -- a
+      // combination-specific backend issue (the Phone & Technology
+      // precedent). Budget is the historically fragile piece, so remove it
+      // entirely rather than discarding quantity too.
+      survivingBudgetOptions = [];
+    }
   }
+
+  const moqSurvives = survivingMoqOptions.length >= MIN_SURVIVING_OPTIONS;
+  const budgetSurvives = survivingBudgetOptions.length >= MIN_SURVIVING_OPTIONS;
 
   const clientProductsDiagnostic = await checkClientProductsDiagnostic(entry, deps);
 
@@ -289,12 +383,12 @@ export async function verifyLeafMappings(entry, deps) {
   const removedQuestionIds = [];
   for (const question of entry.questions) {
     if (question.id === "moq") {
-      if (moqSurvives) survivingQuestions.push(question);
+      if (moqSurvives) survivingQuestions.push({ ...question, options: survivingMoqOptions });
       else removedQuestionIds.push("moq");
       continue;
     }
     if (question.id === "budget") {
-      if (budgetSurvives) survivingQuestions.push(question);
+      if (budgetSurvives) survivingQuestions.push({ ...question, options: survivingBudgetOptions });
       else removedQuestionIds.push("budget");
       continue;
     }

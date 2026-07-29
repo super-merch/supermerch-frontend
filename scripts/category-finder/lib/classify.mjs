@@ -4,6 +4,8 @@
 
 import { isAttributeUsable, isColourUsable, hasNoProducts } from "./exclusionRules.mjs";
 import { sharedQuantityQuestion, sharedBudgetQuestion, sharedColourQuestion } from "../families.js";
+import { dedupeValueStats } from "./valueDedup.mjs";
+import { buildColourFamilyOptions } from "./colourNormalization.mjs";
 
 const BLOCKED_ATTRIBUTE_NAMES = new Set([
   "supplier",
@@ -27,7 +29,11 @@ function questionIdFor(attributeName) {
 
 /**
  * Builds real, validated dropdown options from one attribute's per-value
- * stats. Each option's `value` is the exact raw string the backend's
+ * stats. Values are first deduped case/whitespace-insensitively (raw
+ * supplier data has casing variants of the same value -- e.g. "Steel" vs
+ * "steel " -- that would otherwise title-case down to identical duplicate
+ * VISIBLE labels; see valueDedup.mjs) before each surviving value's `value`
+ * is passed through verbatim as the exact raw string the backend's
  * attribute_value regex match expects -- never a cleaned-up label -- and
  * `label` is a light title-case cleanup for display only. Sorted by
  * per-value PRODUCT count (not raw value-occurrence count), and values that
@@ -36,24 +42,30 @@ function questionIdFor(attributeName) {
  * here.
  */
 export function buildAttributeOptions(attributeStat) {
-  return attributeStat.values
-    .filter((v) => v.productCount > 0)
+  const deduped = dedupeValueStats(attributeStat.values.filter((v) => v.productCount > 0));
+  return deduped
     .filter((v) => !BLOCKED_ATTRIBUTE_NAMES.has(v.value.trim().toLowerCase()))
-    .sort((a, b) => b.productCount - a.productCount)
     .map((v) => ({ label: toTitleCase(v.value), value: v.value }));
 }
 
 /**
- * Builds real colour options from a leaf's colourValues stats, if colour
- * passes the population threshold.
+ * Builds colour options from a leaf's colourValues stats, if colour passes
+ * the population threshold. Raw supplier colour vocabulary can run to
+ * hundreds of distinct shade names per leaf (case duplicates included) --
+ * buildColourFamilyOptions (see colourNormalization.mjs) both dedupes
+ * case/whitespace variants and groups the survivors into a short, controlled
+ * family list (Black, White, Blue, ...), so what ships is never the raw
+ * per-shade list. A family option's `value` is a comma-joined list of the
+ * leaf's own raw values in that family -- CategoryFinder.jsx puts it
+ * straight into one URL param, and Cards.jsx already splits any `colors`
+ * param on "," before building the colors[] array sent to the backend, so
+ * no component or backend change is needed to support this.
  */
 export function buildColourOptions(leaf) {
   if (!isColourUsable(leaf.colourPopulatedPct)) return null;
-  const values = (leaf.colourValues || []).filter((v) => v.productCount > 0);
-  if (values.length < 2) return null; // a single-colour "choice" isn't a real question
-  return values
-    .sort((a, b) => b.productCount - a.productCount)
-    .map((v) => ({ label: toTitleCase(v.value), value: v.value }));
+  const familyOptions = buildColourFamilyOptions(leaf.colourValues || []);
+  if (familyOptions.length < 2) return null; // a single-family "choice" isn't a real question
+  return familyOptions.map((f) => ({ label: f.label, value: f.value }));
 }
 
 function findAttr(attributes, name) {

@@ -46,8 +46,26 @@ const colourQuestion = {
   ],
 };
 
-const moqQuestion = { id: "moq", type: "query", queryParam: "moq", options: [] };
-const budgetQuestion = { id: "budget", type: "price", options: [] };
+// Two buckets each -- enough to exercise per-bucket survival (>= 2 needed to
+// keep the question) without every test having to mock all 6 real quantity
+// buckets or all 5 real budget buckets.
+const moqQuestion = {
+  id: "moq",
+  type: "query",
+  queryParam: "moq",
+  options: [
+    { label: "1–24", value: "24" },
+    { label: "50–99", value: "99" },
+  ],
+};
+const budgetQuestion = {
+  id: "budget",
+  type: "price",
+  options: [
+    { label: "Under $5", value: "0:5" },
+    { label: "$5–$10", value: "5:10" },
+  ],
+};
 
 function urlParams(url) {
   return new URL(url).searchParams;
@@ -145,57 +163,84 @@ describe("verifyLeafMappings: exhaustive per-option checking", () => {
   });
 });
 
-describe("verifyLeafMappings: quantity/budget/combined checks", () => {
-  it("passes quantity/budget/combined when prices are in range and orderable", async () => {
+describe("verifyLeafMappings: quantity/budget per-bucket checks", () => {
+  it("tests every quantity bucket and every budget bucket individually, keeping both questions when every bucket passes", async () => {
     const entry = leaf([moqQuestion, budgetQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
-      if (p.has("moq") && p.has("min_price")) return response(5, [product({ id: "c", price: 12, priceBreaks: [{ qty: 50, price: 12 }] })]);
-      if (p.has("moq")) return response(10, [product({ id: "a", price: 15, priceBreaks: [{ qty: 50, price: 15 }] })]);
-      if (p.has("min_price")) return response(8, [product({ id: "b", price: 15 })]);
+      // priceBreaks qty:1 and price:5 both satisfy every one of this fixture's buckets (24, 99, "0:5", "5:10") --
+      // this test is about the per-bucket PLUMBING (every bucket gets its own request, survivors are kept), not
+      // about deliberately varying pass/fail per bucket (see the next tests for that).
+      if (p.has("moq") && p.has("min_price")) return response(5, [product({ id: "c", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]); // combined check
+      if (p.has("moq")) return response(10, [product({ id: "a", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      if (p.has("min_price")) return response(8, [product({ id: "b", price: 5 })]);
       return response(100); // baseline
     };
     const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
-    expect(result.quantityCheck.passed).toBe(true);
-    expect(result.budgetCheck.passed).toBe(true);
+    expect(result.quantityCheck.options).toHaveLength(2); // both buckets tested individually
+    expect(result.quantityCheck.questionSurvives).toBe(true);
+    expect(result.budgetCheck.options).toHaveLength(2);
+    expect(result.budgetCheck.questionSurvives).toBe(true);
     expect(result.combinedQuantityBudgetCheck.passed).toBe(true);
     expect(result.survivingQuestions.map((q) => q.id).sort()).toEqual(["budget", "moq"]);
+    // each surviving question keeps only the buckets that actually passed
+    expect(result.survivingQuestions.find((q) => q.id === "moq").options).toHaveLength(2);
   });
 
-  it("removes the budget question when a product's computed price is outside the requested range", async () => {
+  it("removes only the one budget bucket that fails, keeping the budget question when the other bucket still passes", async () => {
     const entry = leaf([moqQuestion, budgetQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
-      if (p.has("moq") && p.has("min_price")) return response(5, [product({ id: "c", price: 999 })]);
-      if (p.has("moq")) return response(10, [product({ id: "a", price: 15 })]);
-      if (p.has("min_price")) return response(8, [product({ id: "b", price: 999 })]); // out of the $5-$20 range
+      if (p.has("moq") && p.has("min_price")) return response(3, [product({ id: "c", price: 4, priceBreaks: [{ qty: 24, price: 4 }] })]);
+      if (p.has("moq")) return response(10, [product({ id: "a", price: 4, priceBreaks: [{ qty: 24, price: 4 }] })]);
+      if (p.get("max_price") === "5") return response(0); // "Under $5" bucket: genuinely nothing that cheap
+      if (p.has("min_price")) return response(8, [product({ id: "b", price: 7 })]); // "$5-$10" bucket: fine
       return response(100);
     };
     const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
-    expect(result.budgetCheck.passed).toBe(false);
-    expect(result.budgetCheck.reason).toMatch(/above requested max/);
+    expect(result.budgetCheck.survivingOptions.map((o) => o.value)).toEqual(["5:10"]);
+    // only 1 bucket survives (< MIN_SURVIVING_OPTIONS of 2) -- the whole budget question is removed, but for an
+    // honest, bucket-specific reason recorded per-option, not a single fixed representative-value failure.
+    expect(result.budgetCheck.questionSurvives).toBe(false);
     expect(result.removedQuestionIds).toContain("budget");
     expect(result.survivingQuestions.map((q) => q.id)).toEqual(["moq"]);
   });
 
-  it("removes budget (not moq) when the combined check fails even though each alone passed -- the PS/Phone & Technology precedent", async () => {
+  it("a high-minimum-order-quantity category loses only its low-quantity bucket, not the whole moq question, once at least 2 buckets still pass", async () => {
+    const threeOptionMoq = { ...moqQuestion, options: [...moqQuestion.options, { label: "500+", value: "500" }] };
+    const entry = leaf([threeOptionMoq]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      const moq = p.get("moq");
+      if (moq === "24") return response(0); // nothing orderable that low
+      if (moq) return response(10, [product({ id: "a", price: 4, priceBreaks: [{ qty: Number(moq), price: 4 }] })]);
+      return response(100);
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    expect(result.quantityCheck.removedOptions).toEqual([{ value: "24", reason: "zero results" }]);
+    expect(result.quantityCheck.survivingOptions.map((o) => o.value).sort()).toEqual(["500", "99"]);
+    expect(result.quantityCheck.questionSurvives).toBe(true);
+    expect(result.survivingQuestions.find((q) => q.id === "moq")).toBeDefined();
+  });
+
+  it("removes budget (not moq) when the combined check fails even though every individual bucket passed -- the PS/Phone & Technology precedent", async () => {
     const entry = leaf([moqQuestion, budgetQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
       if (p.has("moq") && p.has("min_price")) throw new Error("HTTP 500 for combined request");
-      if (p.has("moq")) return response(10, [product({ id: "a", price: 15 })]);
-      if (p.has("min_price")) return response(8, [product({ id: "b", price: 15 })]);
+      if (p.has("moq")) return response(10, [product({ id: "a", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      if (p.has("min_price")) return response(8, [product({ id: "b", price: 5 })]);
       return response(100);
     };
     const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
-    expect(result.quantityCheck.passed).toBe(true);
-    expect(result.budgetCheck.passed).toBe(true);
+    expect(result.quantityCheck.questionSurvives).toBe(true);
+    expect(result.budgetCheck.questionSurvives).toBe(true);
     expect(result.combinedQuantityBudgetCheck.passed).toBe(false);
     expect(result.removedQuestionIds).toContain("budget");
     expect(result.survivingQuestions.map((q) => q.id)).toEqual(["moq"]);
   });
 
-  it("flags a null computed price as a failure", async () => {
+  it("flags a null computed price as a bucket failure", async () => {
     const entry = leaf([budgetQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
@@ -203,8 +248,25 @@ describe("verifyLeafMappings: quantity/budget/combined checks", () => {
       return response(50);
     };
     const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
-    expect(result.budgetCheck.passed).toBe(false);
-    expect(result.budgetCheck.reason).toMatch(/null computed price/);
+    expect(result.budgetCheck.questionSurvives).toBe(false);
+    expect(result.budgetCheck.options.every((o) => o.reason === "product x: null computed price")).toBe(true);
+  });
+
+  it("captures up to 3 concrete example products per bucket for business review reporting (e.g. the Shirts Under-$5 review)", async () => {
+    const entry = leaf([budgetQuestion]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.get("max_price") === "5") {
+        return response(4, [product({ id: "a", price: 3 }), product({ id: "b", price: 4 }), product({ id: "c", price: 2 }), product({ id: "d", price: 4.5 })]);
+      }
+      if (p.has("min_price")) return response(8, [product({ id: "e", price: 7 })]);
+      return response(100);
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    const underFive = result.budgetCheck.options.find((o) => o.value === "0:5");
+    expect(underFive.itemCount).toBe(4);
+    expect(underFive.examples).toHaveLength(3); // capped even though 4 products were returned
+    expect(underFive.examples[0]).toMatchObject({ id: "a", price: 3 });
   });
 });
 
@@ -229,12 +291,43 @@ describe("verifyLeafMappings: overall leaf outcome", () => {
     expect(result.passed).toBe(false);
   });
 
+  it("checks orderable-at-quantity across ALL price groups, not just the first, matching the backend's own multi-group tier pricing", async () => {
+    // The backend's real quantity-aware price resolution already spans
+    // every price_groups entry (getAllV2Products.js), not just index 0 -- a
+    // product whose ONLY qualifying price break lives in its second price
+    // group must still pass this check, not be wrongly reported unorderable.
+    const productWithBreakInSecondGroupOnly = {
+      _id: "p1",
+      meta: { id: "p1" },
+      overview: {},
+      product: {
+        categorisation: { promodata_attributes: [] },
+        colours: { list: [] },
+        prices: {
+          price_groups: [
+            { base_price: { price_breaks: [{ qty: 1000, price: 20 }] } }, // group 0: never qualifies for this fixture's test buckets (24, 99)
+            { base_price: { price_breaks: [{ qty: 1, price: 18 }] } }, // group 1: qualifies at both 24 and 99
+          ],
+        },
+      },
+      pricingSummary: { finalMinPrice: 18 },
+    };
+    const entry = leaf([moqQuestion]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.has("moq")) return response(5, [productWithBreakInSecondGroupOnly]);
+      return response(50);
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    expect(result.quantityCheck.questionSurvives).toBe(true);
+  });
+
   it("records a client-products diagnostic result without letting it affect passed/failed", async () => {
     const entry = leaf([moqQuestion]);
     const fetchJson = async (url) => {
       if (url.includes("/api/client-products")) throw new Error("client-products is down");
       const p = urlParams(url);
-      if (p.has("moq")) return response(5, [product({ id: "a", price: 15, priceBreaks: [{ qty: 50, price: 15 }] })]);
+      if (p.has("moq")) return response(5, [product({ id: "a", price: 15, priceBreaks: [{ qty: 24, price: 15 }, { qty: 99, price: 15 }] })]);
       return response(50);
     };
     const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
