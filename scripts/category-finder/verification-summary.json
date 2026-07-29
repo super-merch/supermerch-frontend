@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-29T08:13:22.030Z",
+  "generatedAt": "2026-07-29T10:56:27.419Z",
   "summary": {
     "totalLeafEntries": 297,
-    "technicallyValidated": 286,
-    "validationFailed": 4,
+    "technicallyValidated": 279,
+    "validationFailed": 11,
     "neverYetVerified": 0,
     "curatedOverrides": 1,
     "excluded": 6
@@ -39,7 +39,7 @@
     },
     "PB-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:02.035Z",
+      "verifiedAt": "2026-07-29T10:35:23.462Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
@@ -63,14 +63,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 56,
-          "optionsSurviving": 55
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PB-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:02.037Z",
+      "verifiedAt": "2026-07-29T10:35:23.463Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
@@ -94,14 +94,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 67,
-          "optionsSurviving": 58
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PB-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:02.034Z",
+      "verifiedAt": "2026-07-29T10:35:23.462Z",
       "liveUnfilteredCount": 47,
       "survivingQuestionIds": [
         "moq",
@@ -124,24 +124,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 103,
-          "optionsSurviving": 89
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PB-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:28.560Z",
+      "verifiedAt": "2026-07-29T10:35:37.357Z",
       "liveUnfilteredCount": 36,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -155,14 +154,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 28,
-          "optionsSurviving": 24
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PK-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:40.065Z",
+      "verifiedAt": "2026-07-29T10:35:39.996Z",
       "liveUnfilteredCount": 31,
       "survivingQuestionIds": [
         "moq",
@@ -179,14 +178,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 109,
-          "optionsSurviving": 106
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PB-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:26.341Z",
+      "verifiedAt": "2026-07-29T10:35:37.126Z",
       "liveUnfilteredCount": 111,
       "survivingQuestionIds": [
         "moq",
@@ -209,14 +208,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 171,
-          "optionsSurviving": 149
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PK-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:21:43.590Z",
+      "verifiedAt": "2026-07-29T10:35:47.298Z",
       "liveUnfilteredCount": 345,
       "survivingQuestionIds": [
         "moq",
@@ -227,14 +226,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 220,
-          "optionsSurviving": 147
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PK-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:22:21.099Z",
+      "verifiedAt": "2026-07-29T10:35:52.715Z",
       "liveUnfilteredCount": 199,
       "survivingQuestionIds": [
         "moq",
@@ -251,22 +250,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 179,
-          "optionsSurviving": 124
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PK-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:23:08.482Z",
+      "verifiedAt": "2026-07-29T10:36:07.427Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "theme",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "theme",
@@ -275,14 +275,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 70,
-          "optionsSurviving": 63
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PK-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:22:26.460Z",
+      "verifiedAt": "2026-07-29T10:35:55.678Z",
       "liveUnfilteredCount": 1238,
       "survivingQuestionIds": [
         "moq",
@@ -293,22 +293,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 197,
-          "optionsSurviving": 103
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PK-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:23:37.841Z",
+      "verifiedAt": "2026-07-29T10:36:19.301Z",
       "liveUnfilteredCount": 56,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -317,22 +318,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 51,
-          "optionsSurviving": 33
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PK-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:23:33.696Z",
+      "verifiedAt": "2026-07-29T10:36:13.443Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -341,14 +343,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 63,
-          "optionsSurviving": 56
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PK-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:23:59.040Z",
+      "verifiedAt": "2026-07-29T10:36:26.434Z",
       "liveUnfilteredCount": 61,
       "survivingQuestionIds": [
         "moq",
@@ -359,24 +361,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 86,
-          "optionsSurviving": 58
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PV-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:24:57.354Z",
+      "verifiedAt": "2026-07-29T10:36:39.782Z",
       "liveUnfilteredCount": 35,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -390,14 +391,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 46,
-          "optionsSurviving": 27
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PU": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:23:59.096Z",
+      "verifiedAt": "2026-07-29T10:36:31.867Z",
       "liveUnfilteredCount": 2952,
       "survivingQuestionIds": [
         "moq",
@@ -420,14 +421,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 175,
-          "optionsSurviving": 136
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PW": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:25:36.097Z",
+      "verifiedAt": "2026-07-29T10:36:57.092Z",
       "liveUnfilteredCount": 575,
       "survivingQuestionIds": [
         "moq",
@@ -450,49 +451,49 @@
         },
         {
           "id": "colour",
-          "optionsTested": 98,
-          "optionsSurviving": 73
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PW-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:25:58.033Z",
+      "verifiedAt": "2026-07-29T10:37:01.500Z",
       "liveUnfilteredCount": 61,
       "survivingQuestionIds": [
         "moq",
         "budget",
+        "material",
         "gender_fit",
-        "sleeves",
         "colour"
       ],
       "removedQuestionIds": [],
       "questionOptionCounts": [
+        {
+          "id": "material",
+          "optionsTested": 9,
+          "optionsSurviving": 9
+        },
         {
           "id": "gender_fit",
           "optionsTested": 4,
           "optionsSurviving": 4
         },
         {
-          "id": "sleeves",
-          "optionsTested": 2,
-          "optionsSurviving": 2
-        },
-        {
           "id": "colour",
-          "optionsTested": 99,
-          "optionsSurviving": 94
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PX-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:26:23.591Z",
+      "verifiedAt": "2026-07-29T10:37:14.180Z",
       "liveUnfilteredCount": 114,
       "survivingQuestionIds": [
         "moq",
         "gender_fit",
-        "material",
+        "compliance",
         "colour"
       ],
       "removedQuestionIds": [
@@ -505,30 +506,29 @@
           "optionsSurviving": 3
         },
         {
-          "id": "material",
-          "optionsTested": 8,
-          "optionsSurviving": 8
+          "id": "compliance",
+          "optionsTested": 4,
+          "optionsSurviving": 4
         },
         {
           "id": "colour",
-          "optionsTested": 90,
-          "optionsSurviving": 48
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PX-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:26:37.202Z",
+      "verifiedAt": "2026-07-29T10:37:17.257Z",
       "liveUnfilteredCount": 101,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
-        "material",
+        "compliance",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -536,51 +536,50 @@
           "optionsSurviving": 3
         },
         {
-          "id": "material",
-          "optionsTested": 11,
-          "optionsSurviving": 11
+          "id": "compliance",
+          "optionsTested": 2,
+          "optionsSurviving": 2
         },
         {
           "id": "colour",
-          "optionsTested": 103,
-          "optionsSurviving": 65
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PB-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:27:16.598Z",
+      "verifiedAt": "2026-07-29T10:37:29.243Z",
       "liveUnfilteredCount": 31,
       "survivingQuestionIds": [
         "moq",
-        "gender_fit",
+        "budget",
         "material",
+        "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
-        {
-          "id": "gender_fit",
-          "optionsTested": 3,
-          "optionsSurviving": 3
-        },
         {
           "id": "material",
           "optionsTested": 6,
           "optionsSurviving": 6
         },
         {
+          "id": "gender_fit",
+          "optionsTested": 3,
+          "optionsSurviving": 3
+        },
+        {
           "id": "colour",
-          "optionsTested": 15,
-          "optionsSurviving": 11
+          "optionsTested": 4,
+          "optionsSurviving": 4
         }
       ]
     },
     "PK-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:23:46.239Z",
+      "verifiedAt": "2026-07-29T10:36:20.170Z",
       "liveUnfilteredCount": 233,
       "survivingQuestionIds": [
         "moq",
@@ -591,24 +590,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 519,
-          "optionsSurviving": 160
+          "optionsTested": 14,
+          "optionsSurviving": 11
         }
       ]
     },
     "PX-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:26:57.372Z",
+      "verifiedAt": "2026-07-29T10:37:27.533Z",
       "liveUnfilteredCount": 163,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
-        "sleeves",
+        "compliance",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -616,30 +614,29 @@
           "optionsSurviving": 3
         },
         {
-          "id": "sleeves",
-          "optionsTested": 2,
-          "optionsSurviving": 2
+          "id": "compliance",
+          "optionsTested": 3,
+          "optionsSurviving": 3
         },
         {
           "id": "colour",
-          "optionsTested": 115,
-          "optionsSurviving": 67
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PX-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:27:27.058Z",
+      "verifiedAt": "2026-07-29T10:37:31.619Z",
       "liveUnfilteredCount": 126,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
-        "sleeves",
+        "compliance",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -647,30 +644,29 @@
           "optionsSurviving": 3
         },
         {
-          "id": "sleeves",
-          "optionsTested": 2,
-          "optionsSurviving": 2
+          "id": "compliance",
+          "optionsTested": 3,
+          "optionsSurviving": 3
         },
         {
           "id": "colour",
-          "optionsTested": 59,
-          "optionsSurviving": 38
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PX-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:27:27.689Z",
+      "verifiedAt": "2026-07-29T10:37:38.143Z",
       "liveUnfilteredCount": 25,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -684,18 +680,19 @@
         },
         {
           "id": "colour",
-          "optionsTested": 56,
-          "optionsSurviving": 30
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PX-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:27:52.121Z",
+      "verifiedAt": "2026-07-29T10:37:50.513Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
         "gender_fit",
+        "compliance",
         "colour"
       ],
       "removedQuestionIds": [
@@ -708,21 +705,26 @@
           "optionsSurviving": 2
         },
         {
+          "id": "compliance",
+          "optionsTested": 2,
+          "optionsSurviving": 2
+        },
+        {
           "id": "colour",
-          "optionsTested": 38,
-          "optionsSurviving": 22
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PX-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:27:39.636Z",
+      "verifiedAt": "2026-07-29T10:37:44.103Z",
       "liveUnfilteredCount": 64,
       "survivingQuestionIds": [
         "moq",
         "budget",
         "gender_fit",
-        "material",
+        "compliance",
         "colour"
       ],
       "removedQuestionIds": [],
@@ -733,61 +735,59 @@
           "optionsSurviving": 4
         },
         {
-          "id": "material",
-          "optionsTested": 9,
-          "optionsSurviving": 9
-        },
-        {
-          "id": "colour",
-          "optionsTested": 94,
-          "optionsSurviving": 57
-        }
-      ]
-    },
-    "PW-10": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:27:50.832Z",
-      "liveUnfilteredCount": 105,
-      "survivingQuestionIds": [
-        "moq",
-        "gender_fit",
-        "sleeves",
-        "colour"
-      ],
-      "removedQuestionIds": [
-        "budget"
-      ],
-      "questionOptionCounts": [
-        {
-          "id": "gender_fit",
-          "optionsTested": 3,
-          "optionsSurviving": 3
-        },
-        {
-          "id": "sleeves",
+          "id": "compliance",
           "optionsTested": 4,
           "optionsSurviving": 4
         },
         {
           "id": "colour",
-          "optionsTested": 95,
-          "optionsSurviving": 89
+          "optionsTested": 13,
+          "optionsSurviving": 13
+        }
+      ]
+    },
+    "PW-10": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T10:37:44.802Z",
+      "liveUnfilteredCount": 105,
+      "survivingQuestionIds": [
+        "moq",
+        "budget",
+        "material",
+        "gender_fit",
+        "colour"
+      ],
+      "removedQuestionIds": [],
+      "questionOptionCounts": [
+        {
+          "id": "material",
+          "optionsTested": 8,
+          "optionsSurviving": 8
+        },
+        {
+          "id": "gender_fit",
+          "optionsTested": 3,
+          "optionsSurviving": 3
+        },
+        {
+          "id": "colour",
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PX-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:28:09.924Z",
+      "verifiedAt": "2026-07-29T10:37:57.765Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
-        "sleeves",
+        "compliance",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -795,20 +795,20 @@
           "optionsSurviving": 3
         },
         {
-          "id": "sleeves",
-          "optionsTested": 3,
-          "optionsSurviving": 3
+          "id": "compliance",
+          "optionsTested": 1,
+          "optionsSurviving": 1
         },
         {
           "id": "colour",
-          "optionsTested": 62,
-          "optionsSurviving": 44
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PX-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:28:36.510Z",
+      "verifiedAt": "2026-07-29T10:38:11.134Z",
       "liveUnfilteredCount": 6,
       "survivingQuestionIds": [
         "moq",
@@ -832,19 +832,19 @@
         },
         {
           "id": "colour",
-          "optionsTested": 22,
-          "optionsSurviving": 16
+          "optionsTested": 7,
+          "optionsSurviving": 5
         }
       ]
     },
     "PW-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:28:27.849Z",
+      "verifiedAt": "2026-07-29T10:38:01.810Z",
       "liveUnfilteredCount": 34,
       "survivingQuestionIds": [
         "moq",
-        "gender_fit",
         "material",
+        "gender_fit",
         "colour"
       ],
       "removedQuestionIds": [
@@ -852,25 +852,25 @@
       ],
       "questionOptionCounts": [
         {
-          "id": "gender_fit",
-          "optionsTested": 3,
-          "optionsSurviving": 3
-        },
-        {
           "id": "material",
           "optionsTested": 9,
           "optionsSurviving": 9
         },
         {
+          "id": "gender_fit",
+          "optionsTested": 3,
+          "optionsSurviving": 3
+        },
+        {
           "id": "colour",
-          "optionsTested": 52,
-          "optionsSurviving": 27
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PX-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:28:15.935Z",
+      "verifiedAt": "2026-07-29T10:38:01.064Z",
       "liveUnfilteredCount": 297,
       "survivingQuestionIds": [
         "moq",
@@ -893,19 +893,19 @@
         },
         {
           "id": "colour",
-          "optionsTested": 127,
-          "optionsSurviving": 105
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PN-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:28:48.858Z",
+      "verifiedAt": "2026-07-29T10:38:15.595Z",
       "liveUnfilteredCount": 109,
       "survivingQuestionIds": [
         "moq",
+        "material",
         "gender_fit",
-        "sleeves",
         "colour"
       ],
       "removedQuestionIds": [
@@ -913,33 +913,32 @@
       ],
       "questionOptionCounts": [
         {
+          "id": "material",
+          "optionsTested": 7,
+          "optionsSurviving": 7
+        },
+        {
           "id": "gender_fit",
           "optionsTested": 3,
           "optionsSurviving": 3
         },
         {
-          "id": "sleeves",
-          "optionsTested": 3,
-          "optionsSurviving": 3
-        },
-        {
           "id": "colour",
-          "optionsTested": 38,
-          "optionsSurviving": 36
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PX-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:06.755Z",
+      "verifiedAt": "2026-07-29T10:38:27.933Z",
       "liveUnfilteredCount": 7,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -950,7 +949,7 @@
     },
     "PX-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:28:50.830Z",
+      "verifiedAt": "2026-07-29T10:38:20.087Z",
       "liveUnfilteredCount": 43,
       "survivingQuestionIds": [
         "moq",
@@ -968,24 +967,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 71,
-          "optionsSurviving": 37
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PX-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:04.341Z",
+      "verifiedAt": "2026-07-29T10:38:21.744Z",
       "liveUnfilteredCount": 15,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -999,19 +997,19 @@
         },
         {
           "id": "colour",
-          "optionsTested": 29,
-          "optionsSurviving": 18
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PX-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:13.005Z",
+      "verifiedAt": "2026-07-29T10:38:31.568Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
         "gender_fit",
-        "material",
+        "compliance",
         "colour"
       ],
       "removedQuestionIds": [
@@ -1024,29 +1022,30 @@
           "optionsSurviving": 2
         },
         {
-          "id": "material",
-          "optionsTested": 7,
-          "optionsSurviving": 7
+          "id": "compliance",
+          "optionsTested": 2,
+          "optionsSurviving": 2
         },
         {
           "id": "colour",
-          "optionsTested": 58,
-          "optionsSurviving": 40
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PY-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:16.999Z",
+      "verifiedAt": "2026-07-29T10:38:32.501Z",
       "liveUnfilteredCount": 68,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1060,14 +1059,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 43,
-          "optionsSurviving": 36
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PY-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:18.258Z",
+      "verifiedAt": "2026-07-29T10:38:34.347Z",
       "liveUnfilteredCount": 70,
       "survivingQuestionIds": [
         "moq",
@@ -1084,14 +1083,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 70,
-          "optionsSurviving": 56
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PY-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:36.979Z",
+      "verifiedAt": "2026-07-29T10:38:44.816Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
@@ -1115,7 +1114,7 @@
     },
     "PY-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:46.221Z",
+      "verifiedAt": "2026-07-29T10:38:53.093Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
         "moq",
@@ -1133,23 +1132,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 14
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PY-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:45.689Z",
+      "verifiedAt": "2026-07-29T10:38:47.229Z",
       "liveUnfilteredCount": 64,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1163,14 +1163,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 42,
-          "optionsSurviving": 31
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PY-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:56.076Z",
+      "verifiedAt": "2026-07-29T10:39:01.005Z",
       "liveUnfilteredCount": 8,
       "survivingQuestionIds": [
         "moq",
@@ -1187,22 +1187,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 18,
-          "optionsSurviving": 17
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PY-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:29:36.655Z",
+      "verifiedAt": "2026-07-29T10:38:44.491Z",
       "liveUnfilteredCount": 417,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1211,22 +1212,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 89,
-          "optionsSurviving": 65
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PY-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:08.213Z",
+      "verifiedAt": "2026-07-29T10:39:03.192Z",
       "liveUnfilteredCount": 91,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1235,22 +1237,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 19,
-          "optionsSurviving": 16
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PY-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:21.896Z",
+      "verifiedAt": "2026-07-29T10:39:13.834Z",
       "liveUnfilteredCount": 100,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1259,14 +1262,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 48,
-          "optionsSurviving": 40
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PY-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:16.192Z",
+      "verifiedAt": "2026-07-29T10:39:11.867Z",
       "liveUnfilteredCount": 194,
       "survivingQuestionIds": [
         "moq",
@@ -1283,32 +1286,33 @@
         },
         {
           "id": "colour",
-          "optionsTested": 72,
-          "optionsSurviving": 55
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PY-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:07.201Z",
+      "verifiedAt": "2026-07-29T10:39:01.110Z",
       "liveUnfilteredCount": 559,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 102,
-          "optionsSurviving": 92
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PY-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:46.320Z",
+      "verifiedAt": "2026-07-29T10:39:25.925Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
@@ -1331,14 +1335,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 38,
-          "optionsSurviving": 33
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PA-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:46.680Z",
+      "verifiedAt": "2026-07-29T10:39:27.419Z",
       "liveUnfilteredCount": 404,
       "survivingQuestionIds": [
         "moq",
@@ -1349,23 +1353,24 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 95,
-          "optionsSurviving": 60
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PY-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:30:43.399Z",
+      "verifiedAt": "2026-07-29T10:39:13.921Z",
       "liveUnfilteredCount": 207,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1379,22 +1384,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 117,
-          "optionsSurviving": 87
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PA-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:33:44.877Z",
+      "verifiedAt": "2026-07-29T10:39:42.957Z",
       "liveUnfilteredCount": 157,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1403,22 +1409,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 38,
-          "optionsSurviving": 37
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PA-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:33:44.846Z",
+      "verifiedAt": "2026-07-29T10:39:38.888Z",
       "liveUnfilteredCount": 127,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1427,22 +1434,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 58,
-          "optionsSurviving": 49
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PA-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:33:44.843Z",
+      "verifiedAt": "2026-07-29T10:39:33.739Z",
       "liveUnfilteredCount": 250,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1451,22 +1459,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 63,
-          "optionsSurviving": 49
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PA-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:34:21.381Z",
+      "verifiedAt": "2026-07-29T10:39:55.949Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1475,22 +1484,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 43,
-          "optionsSurviving": 37
+          "optionsTested": 14,
+          "optionsSurviving": 13
         }
       ]
     },
     "PA-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:34:10.164Z",
+      "verifiedAt": "2026-07-29T10:39:47.765Z",
       "liveUnfilteredCount": 105,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1499,14 +1509,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 91,
-          "optionsSurviving": 87
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PA-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:34:16.254Z",
+      "verifiedAt": "2026-07-29T10:39:51.871Z",
       "liveUnfilteredCount": 608,
       "survivingQuestionIds": [
         "moq",
@@ -1529,40 +1539,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 80,
-          "optionsSurviving": 67
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PA-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:34:40.201Z",
+      "verifiedAt": "2026-07-29T10:40:05.831Z",
       "liveUnfilteredCount": 246,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 59,
-          "optionsSurviving": 55
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PA-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:34:46.770Z",
+      "verifiedAt": "2026-07-29T10:40:09.516Z",
       "liveUnfilteredCount": 43,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1571,14 +1583,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 46,
-          "optionsSurviving": 44
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PA-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:35:04.404Z",
+      "verifiedAt": "2026-07-29T10:40:18.375Z",
       "liveUnfilteredCount": 90,
       "survivingQuestionIds": [
         "moq",
@@ -1589,22 +1601,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 64,
-          "optionsSurviving": 50
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PA-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:35:08.058Z",
+      "verifiedAt": "2026-07-29T10:40:20.704Z",
       "liveUnfilteredCount": 48,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1613,22 +1626,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 64,
-          "optionsSurviving": 47
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PA-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:34:51.863Z",
+      "verifiedAt": "2026-07-29T10:40:11.529Z",
       "liveUnfilteredCount": 222,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1637,22 +1651,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 132,
-          "optionsSurviving": 69
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PA-17": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:35:33.900Z",
+      "verifiedAt": "2026-07-29T10:40:29.354Z",
       "liveUnfilteredCount": 68,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1661,14 +1676,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 38,
-          "optionsSurviving": 29
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PA-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:35:27.740Z",
+      "verifiedAt": "2026-07-29T10:40:28.471Z",
       "liveUnfilteredCount": 485,
       "survivingQuestionIds": [
         "moq",
@@ -1679,22 +1694,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 82,
-          "optionsSurviving": 70
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PA-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:35:40.537Z",
+      "verifiedAt": "2026-07-29T10:40:34.392Z",
       "liveUnfilteredCount": 252,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1703,14 +1719,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 98,
-          "optionsSurviving": 80
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PA-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:35:54.477Z",
+      "verifiedAt": "2026-07-29T10:40:41.402Z",
       "liveUnfilteredCount": 485,
       "survivingQuestionIds": [
         "moq",
@@ -1728,22 +1744,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 95,
-          "optionsSurviving": 53
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PA-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:04.285Z",
+      "verifiedAt": "2026-07-29T10:40:42.119Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1752,14 +1769,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 75,
-          "optionsSurviving": 54
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PW-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:34.526Z",
+      "verifiedAt": "2026-07-29T10:40:59.018Z",
       "liveUnfilteredCount": 4,
       "survivingQuestionIds": [
         "moq",
@@ -1783,23 +1800,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 23,
-          "optionsSurviving": 23
+          "optionsTested": 9,
+          "optionsSurviving": 8
         }
       ]
     },
     "69ef23fa51b1f59dd0adc850": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:21.532Z",
+      "verifiedAt": "2026-07-29T10:40:50.634Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "theme",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1813,14 +1831,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 93,
-          "optionsSurviving": 90
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PW-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:33.589Z",
+      "verifiedAt": "2026-07-29T10:40:57.909Z",
       "liveUnfilteredCount": 153,
       "survivingQuestionIds": [
         "moq",
@@ -1843,24 +1861,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 57,
-          "optionsSurviving": 38
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PW-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:47.980Z",
+      "verifiedAt": "2026-07-29T10:41:05.898Z",
       "liveUnfilteredCount": 7,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1874,24 +1891,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 17,
-          "optionsSurviving": 16
+          "optionsTested": 8,
+          "optionsSurviving": 7
         }
       ]
     },
     "PW-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:57.237Z",
+      "verifiedAt": "2026-07-29T10:41:10.675Z",
       "liveUnfilteredCount": 17,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1905,14 +1921,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 71,
-          "optionsSurviving": 69
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PW-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:58.636Z",
+      "verifiedAt": "2026-07-29T10:41:15.274Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
@@ -1936,14 +1952,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 89,
-          "optionsSurviving": 89
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PW-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:37:25.948Z",
+      "verifiedAt": "2026-07-29T10:41:24.975Z",
       "liveUnfilteredCount": 44,
       "survivingQuestionIds": [
         "moq",
@@ -1967,23 +1983,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 8,
-          "optionsSurviving": 8
+          "optionsTested": 6,
+          "optionsSurviving": 6
         }
       ]
     },
     "PE-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:37:34.344Z",
+      "verifiedAt": "2026-07-29T10:41:32.481Z",
       "liveUnfilteredCount": 351,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -1997,24 +2014,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 79,
-          "optionsSurviving": 63
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PW-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:36:51.522Z",
+      "verifiedAt": "2026-07-29T10:41:09.896Z",
       "liveUnfilteredCount": 108,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2028,14 +2044,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 223,
-          "optionsSurviving": 212
+          "optionsTested": 14,
+          "optionsSurviving": 13
         }
       ]
     },
     "69ef243e51b1f59dd0adc892": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:37:32.782Z",
+      "verifiedAt": "2026-07-29T10:41:29.112Z",
       "liveUnfilteredCount": 140,
       "survivingQuestionIds": [
         "moq",
@@ -2052,14 +2068,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 179,
-          "optionsSurviving": 128
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PE-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:38:17.518Z",
+      "verifiedAt": "2026-07-29T10:41:53.353Z",
       "liveUnfilteredCount": 18,
       "survivingQuestionIds": [
         "moq",
@@ -2082,22 +2098,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 28,
-          "optionsSurviving": 28
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PE-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:38:10.684Z",
+      "verifiedAt": "2026-07-29T10:41:39.805Z",
       "liveUnfilteredCount": 102,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2106,23 +2123,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 65,
-          "optionsSurviving": 62
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PE-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:38:12.733Z",
+      "verifiedAt": "2026-07-29T10:41:48.246Z",
       "liveUnfilteredCount": 158,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2136,22 +2154,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 99,
-          "optionsSurviving": 92
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PE-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:38:36.990Z",
+      "verifiedAt": "2026-07-29T10:42:05.708Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2160,14 +2179,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 61,
-          "optionsSurviving": 61
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PE-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:38:31.739Z",
+      "verifiedAt": "2026-07-29T10:42:03.369Z",
       "liveUnfilteredCount": 145,
       "survivingQuestionIds": [
         "moq",
@@ -2190,23 +2209,22 @@
         },
         {
           "id": "colour",
-          "optionsTested": 95,
-          "optionsSurviving": 88
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PE-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:38:51.559Z",
+      "verifiedAt": "2026-07-29T10:42:18.764Z",
       "liveUnfilteredCount": 50,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2215,23 +2233,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 48,
-          "optionsSurviving": 46
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PE-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:39:03.963Z",
+      "verifiedAt": "2026-07-29T10:42:19.355Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2245,23 +2264,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 76,
-          "optionsSurviving": 65
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PE-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:39:10.214Z",
+      "verifiedAt": "2026-07-29T10:42:19.607Z",
       "liveUnfilteredCount": 192,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2275,22 +2295,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 70,
-          "optionsSurviving": 66
+          "optionsTested": 15,
+          "optionsSurviving": 14
         }
       ]
     },
     "PE-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:39:11.759Z",
+      "verifiedAt": "2026-07-29T10:42:32.617Z",
       "liveUnfilteredCount": 120,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2299,24 +2320,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 69,
-          "optionsSurviving": 62
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PV-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:39:42.963Z",
+      "verifiedAt": "2026-07-29T10:42:45.594Z",
       "liveUnfilteredCount": 19,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "sport",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2330,24 +2350,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 66,
-          "optionsSurviving": 52
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PV-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:39:37.419Z",
+      "verifiedAt": "2026-07-29T10:42:34.459Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2361,14 +2380,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 150,
-          "optionsSurviving": 84
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PB-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:39:42.334Z",
+      "verifiedAt": "2026-07-29T10:42:39.068Z",
       "liveUnfilteredCount": 147,
       "survivingQuestionIds": [
         "moq",
@@ -2391,24 +2410,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 137,
-          "optionsSurviving": 108
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PV-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:10.608Z",
+      "verifiedAt": "2026-07-29T10:42:54.114Z",
       "liveUnfilteredCount": 17,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2422,19 +2440,18 @@
         },
         {
           "id": "colour",
-          "optionsTested": 73,
-          "optionsSurviving": 58
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PV-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:31.956Z",
+      "verifiedAt": "2026-07-29T10:42:58.349Z",
       "liveUnfilteredCount": 3,
       "survivingQuestionIds": [
         "moq",
-        "material",
-        "colour"
+        "material"
       ],
       "removedQuestionIds": [
         "budget"
@@ -2444,26 +2461,20 @@
           "id": "material",
           "optionsTested": 2,
           "optionsSurviving": 2
-        },
-        {
-          "id": "colour",
-          "optionsTested": 2,
-          "optionsSurviving": 2
         }
       ]
     },
     "PV-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:29.853Z",
+      "verifiedAt": "2026-07-29T10:42:55.063Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2472,14 +2483,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 32,
-          "optionsSurviving": 19
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PV-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:38.035Z",
+      "verifiedAt": "2026-07-29T10:43:04.067Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
@@ -2503,14 +2514,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 16,
-          "optionsSurviving": 13
+          "optionsTested": 4,
+          "optionsSurviving": 4
         }
       ]
     },
     "PV-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:38.294Z",
+      "verifiedAt": "2026-07-29T10:43:05.279Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
@@ -2534,14 +2545,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 22,
-          "optionsSurviving": 21
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PV-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:44.066Z",
+      "verifiedAt": "2026-07-29T10:43:07.815Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
         "moq",
@@ -2564,22 +2575,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 23
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PF-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:50.165Z",
+      "verifiedAt": "2026-07-29T10:43:15.412Z",
       "liveUnfilteredCount": 169,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2588,14 +2600,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 34,
-          "optionsSurviving": 26
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PF-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:41:00.382Z",
+      "verifiedAt": "2026-07-29T10:43:19.225Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
@@ -2612,14 +2624,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 74,
-          "optionsSurviving": 69
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "69ef240e51b1f59dd0adc871": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:40:48.443Z",
+      "verifiedAt": "2026-07-29T10:43:12.542Z",
       "liveUnfilteredCount": 299,
       "survivingQuestionIds": [
         "moq",
@@ -2630,14 +2642,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 220,
-          "optionsSurviving": 153
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PF-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:41:09.706Z",
+      "verifiedAt": "2026-07-29T10:43:22.499Z",
       "liveUnfilteredCount": 184,
       "survivingQuestionIds": [
         "moq",
@@ -2654,22 +2666,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 72,
-          "optionsSurviving": 69
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PF-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:41:39.129Z",
+      "verifiedAt": "2026-07-29T10:43:32.586Z",
       "liveUnfilteredCount": 59,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2678,22 +2691,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 24
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PF-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:41:33.275Z",
+      "verifiedAt": "2026-07-29T10:43:27.244Z",
       "liveUnfilteredCount": 204,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2702,22 +2716,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 56,
-          "optionsSurviving": 50
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PF-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:25.705Z",
+      "verifiedAt": "2026-07-29T10:43:35.897Z",
       "liveUnfilteredCount": 55,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2726,14 +2741,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 23,
-          "optionsSurviving": 23
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PF-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:25.708Z",
+      "verifiedAt": "2026-07-29T10:43:43.357Z",
       "liveUnfilteredCount": 7,
       "survivingQuestionIds": [
         "moq",
@@ -2745,14 +2760,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 33,
-          "optionsSurviving": 33
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PF-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:25.706Z",
+      "verifiedAt": "2026-07-29T10:43:39.922Z",
       "liveUnfilteredCount": 52,
       "survivingQuestionIds": [
         "moq",
@@ -2763,32 +2778,33 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 54,
-          "optionsSurviving": 46
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PF-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:39.939Z",
+      "verifiedAt": "2026-07-29T10:43:46.404Z",
       "liveUnfilteredCount": 24,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 23,
-          "optionsSurviving": 22
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PF-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:47.065Z",
+      "verifiedAt": "2026-07-29T10:43:52.412Z",
       "liveUnfilteredCount": 159,
       "survivingQuestionIds": [
         "moq",
@@ -2806,14 +2822,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 12
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PF-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:50.657Z",
+      "verifiedAt": "2026-07-29T10:43:54.588Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
@@ -2824,14 +2840,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 5,
-          "optionsSurviving": 5
+          "optionsTested": 2,
+          "optionsSurviving": 2
         }
       ]
     },
     "PF-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:55.734Z",
+      "verifiedAt": "2026-07-29T10:44:00.122Z",
       "liveUnfilteredCount": 40,
       "survivingQuestionIds": [
         "moq",
@@ -2843,14 +2859,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 11,
-          "optionsSurviving": 10
+          "optionsTested": 4,
+          "optionsSurviving": 4
         }
       ]
     },
     "PF-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:55.957Z",
+      "verifiedAt": "2026-07-29T10:44:00.318Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
         "moq",
@@ -2867,50 +2883,52 @@
         },
         {
           "id": "colour",
-          "optionsTested": 19,
-          "optionsSurviving": 18
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PF-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:42:40.824Z",
+      "verifiedAt": "2026-07-29T10:43:49.412Z",
       "liveUnfilteredCount": 30,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 80,
-          "optionsSurviving": 80
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PF-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:43:06.836Z",
+      "verifiedAt": "2026-07-29T10:44:08.352Z",
       "liveUnfilteredCount": 66,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 6,
-          "optionsSurviving": 6
+          "optionsTested": 2,
+          "optionsSurviving": 2
         }
       ]
     },
     "PF-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:43:03.308Z",
+      "verifiedAt": "2026-07-29T10:44:06.035Z",
       "liveUnfilteredCount": 105,
       "survivingQuestionIds": [
         "moq",
@@ -2922,24 +2940,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 16,
-          "optionsSurviving": 16
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PU-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:43:09.016Z",
+      "verifiedAt": "2026-07-29T10:44:13.391Z",
       "liveUnfilteredCount": 687,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2953,24 +2970,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 106,
-          "optionsSurviving": 52
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PU-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:43:12.965Z",
+      "verifiedAt": "2026-07-29T10:44:13.549Z",
       "liveUnfilteredCount": 113,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2984,14 +3000,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 217,
-          "optionsSurviving": 182
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PU-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:43:13.165Z",
+      "verifiedAt": "2026-07-29T10:44:14.165Z",
       "liveUnfilteredCount": 937,
       "survivingQuestionIds": [
         "moq",
@@ -3014,24 +3030,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 281,
-          "optionsSurviving": 236
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PU-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:44:07.344Z",
+      "verifiedAt": "2026-07-29T10:44:31.943Z",
       "liveUnfilteredCount": 1047,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3045,22 +3060,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 217,
-          "optionsSurviving": 141
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PM-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:46:05.121Z",
+      "verifiedAt": "2026-07-29T10:45:03.684Z",
       "liveUnfilteredCount": 110,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3069,14 +3085,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 50,
-          "optionsSurviving": 45
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PM-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:46:30.992Z",
+      "verifiedAt": "2026-07-29T10:45:03.856Z",
       "liveUnfilteredCount": 99,
       "survivingQuestionIds": [
         "moq",
@@ -3093,14 +3109,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 23,
-          "optionsSurviving": 13
+          "optionsTested": 7,
+          "optionsSurviving": 6
         }
       ]
     },
     "PU-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:45:11.050Z",
+      "verifiedAt": "2026-07-29T10:44:42.177Z",
       "liveUnfilteredCount": 168,
       "survivingQuestionIds": [
         "moq",
@@ -3123,23 +3139,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 250,
-          "optionsSurviving": 114
+          "optionsTested": 15,
+          "optionsSurviving": 13
         }
       ]
     },
     "PM-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:46:46.638Z",
+      "verifiedAt": "2026-07-29T10:45:08.304Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3153,14 +3170,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 27,
-          "optionsSurviving": 25
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "69ef244d51b1f59dd0adc8b3": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:45:42.823Z",
+      "verifiedAt": "2026-07-29T10:44:45.927Z",
       "liveUnfilteredCount": 1095,
       "survivingQuestionIds": [
         "moq",
@@ -3171,22 +3188,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 274,
-          "optionsSurviving": 105
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PM-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:05.200Z",
+      "verifiedAt": "2026-07-29T10:45:17.046Z",
       "liveUnfilteredCount": 16,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3195,22 +3213,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 17,
-          "optionsSurviving": 14
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PM-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:16.455Z",
+      "verifiedAt": "2026-07-29T10:45:26.870Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3219,22 +3238,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 13
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PM-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:00.506Z",
+      "verifiedAt": "2026-07-29T10:45:14.826Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3243,41 +3263,43 @@
         },
         {
           "id": "colour",
-          "optionsTested": 69,
-          "optionsSurviving": 54
+          "optionsTested": 15,
+          "optionsSurviving": 14
         }
       ]
     },
     "PM-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:07.191Z",
+      "verifiedAt": "2026-07-29T10:45:21.292Z",
       "liveUnfilteredCount": 119,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 75,
-          "optionsSurviving": 66
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PM-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:26.098Z",
+      "verifiedAt": "2026-07-29T10:45:28.932Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3291,22 +3313,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 11
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PM-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:28.304Z",
+      "verifiedAt": "2026-07-29T10:45:32.770Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3315,14 +3338,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 15,
-          "optionsSurviving": 14
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PM-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:37.799Z",
+      "verifiedAt": "2026-07-29T10:45:41.516Z",
       "liveUnfilteredCount": 9,
       "survivingQuestionIds": [
         "moq",
@@ -3340,59 +3363,62 @@
         },
         {
           "id": "colour",
-          "optionsTested": 4,
-          "optionsSurviving": 4
+          "optionsTested": 2,
+          "optionsSurviving": 2
         }
       ]
     },
     "PM-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:33.800Z",
+      "verifiedAt": "2026-07-29T10:45:35.602Z",
       "liveUnfilteredCount": 134,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 34,
-          "optionsSurviving": 31
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PM-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:35.742Z",
+      "verifiedAt": "2026-07-29T10:45:37.663Z",
       "liveUnfilteredCount": 422,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 54,
-          "optionsSurviving": 47
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PM-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:45.451Z",
+      "verifiedAt": "2026-07-29T10:45:45.452Z",
       "liveUnfilteredCount": 66,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3406,22 +3432,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 51,
-          "optionsSurviving": 49
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PM-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:49.746Z",
+      "verifiedAt": "2026-07-29T10:45:50.302Z",
       "liveUnfilteredCount": 74,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3430,26 +3457,25 @@
         },
         {
           "id": "colour",
-          "optionsTested": 50,
-          "optionsSurviving": 38
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PM-17": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:48:09.005Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:46:00.957Z",
       "liveUnfilteredCount": 45,
-      "survivingQuestionIds": [
-        "moq"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "budget",
+        "moq"
       ],
       "questionOptionCounts": []
     },
     "PM-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:47:57.410Z",
+      "verifiedAt": "2026-07-29T10:45:50.919Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
@@ -3466,24 +3492,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 42,
-          "optionsSurviving": 38
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PB-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:48:12.078Z",
+      "verifiedAt": "2026-07-29T10:46:04.276Z",
       "liveUnfilteredCount": 114,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3497,14 +3522,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 72,
-          "optionsSurviving": 69
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PB-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:48:11.882Z",
+      "verifiedAt": "2026-07-29T10:46:03.947Z",
       "liveUnfilteredCount": 125,
       "survivingQuestionIds": [
         "moq",
@@ -3528,22 +3553,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 96,
-          "optionsSurviving": 86
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "69ef249151b1f59dd0adc8e8": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:48:41.562Z",
+      "verifiedAt": "2026-07-29T10:46:19.516Z",
       "liveUnfilteredCount": 21,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "theme",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "theme",
@@ -3552,14 +3578,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 63,
-          "optionsSurviving": 56
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PN-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:48:49.969Z",
+      "verifiedAt": "2026-07-29T10:46:21.018Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
@@ -3583,24 +3609,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 29,
-          "optionsSurviving": 26
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PB-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:48:16.282Z",
+      "verifiedAt": "2026-07-29T10:46:05.770Z",
       "liveUnfilteredCount": 157,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3614,24 +3639,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 168,
-          "optionsSurviving": 138
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PN-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:48:59.681Z",
+      "verifiedAt": "2026-07-29T10:46:25.615Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3645,14 +3669,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 49,
-          "optionsSurviving": 43
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PN-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:49:05.842Z",
+      "verifiedAt": "2026-07-29T10:46:28.708Z",
       "liveUnfilteredCount": 112,
       "survivingQuestionIds": [
         "moq",
@@ -3675,24 +3699,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 142,
-          "optionsSurviving": 102
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PN-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:49:19.440Z",
+      "verifiedAt": "2026-07-29T10:46:37.264Z",
       "liveUnfilteredCount": 152,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3706,24 +3729,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 102,
-          "optionsSurviving": 60
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PN-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:49:17.754Z",
+      "verifiedAt": "2026-07-29T10:46:33.012Z",
       "liveUnfilteredCount": 176,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3737,43 +3759,34 @@
         },
         {
           "id": "colour",
-          "optionsTested": 162,
-          "optionsSurviving": 81
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PN-11": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:50:16.749Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:46:56.528Z",
       "liveUnfilteredCount": 1,
-      "survivingQuestionIds": [
-        "moq"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
         "budget",
-        "colour"
+        "moq"
       ],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 2,
-          "optionsSurviving": 0
-        }
-      ]
+      "questionOptionCounts": []
     },
     "PN-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:49:56.132Z",
+      "verifiedAt": "2026-07-29T10:46:47.451Z",
       "liveUnfilteredCount": 285,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3787,23 +3800,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 116,
-          "optionsSurviving": 71
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PN-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:50:41.776Z",
+      "verifiedAt": "2026-07-29T10:47:03.843Z",
       "liveUnfilteredCount": 24,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3817,24 +3831,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 15,
-          "optionsSurviving": 15
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PN-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:49:56.932Z",
+      "verifiedAt": "2026-07-29T10:46:50.977Z",
       "liveUnfilteredCount": 48,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3848,22 +3861,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 164,
-          "optionsSurviving": 70
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PT-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:50:57.876Z",
+      "verifiedAt": "2026-07-29T10:47:13.453Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3872,42 +3886,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 10,
-          "optionsSurviving": 8
+          "optionsTested": 3,
+          "optionsSurviving": 3
         }
       ]
     },
     "PT-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:51:06.009Z",
+      "verifiedAt": "2026-07-29T10:47:19.862Z",
       "liveUnfilteredCount": 90,
       "survivingQuestionIds": [
         "moq",
-        "budget",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 33,
-          "optionsSurviving": 30
-        }
-      ]
-    },
-    "PN-04": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:50:21.475Z",
-      "liveUnfilteredCount": 422,
-      "survivingQuestionIds": [
-        "moq",
-        "gender_fit",
-        "material",
         "colour"
       ],
       "removedQuestionIds": [
         "budget"
       ],
+      "questionOptionCounts": [
+        {
+          "id": "colour",
+          "optionsTested": 13,
+          "optionsSurviving": 13
+        }
+      ]
+    },
+    "PN-04": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T10:47:00.713Z",
+      "liveUnfilteredCount": 422,
+      "survivingQuestionIds": [
+        "moq",
+        "budget",
+        "gender_fit",
+        "material",
+        "colour"
+      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3921,24 +3935,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 167,
-          "optionsSurviving": 102
+          "optionsTested": 13,
+          "optionsSurviving": 12
         }
       ]
     },
     "PN-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:50:52.711Z",
+      "verifiedAt": "2026-07-29T10:47:10.603Z",
       "liveUnfilteredCount": 21,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3952,52 +3965,34 @@
         },
         {
           "id": "colour",
-          "optionsTested": 100,
-          "optionsSurviving": 57
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PT-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:05.257Z",
+      "verifiedAt": "2026-07-29T10:47:28.975Z",
       "liveUnfilteredCount": 91,
       "survivingQuestionIds": [
+        "moq",
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 3,
-          "optionsSurviving": 3
+          "optionsTested": 2,
+          "optionsSurviving": 2
         }
       ]
     },
     "PT-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:05.255Z",
+      "verifiedAt": "2026-07-29T10:47:24.336Z",
       "liveUnfilteredCount": 32,
-      "survivingQuestionIds": [
-        "moq",
-        "budget",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 20,
-          "optionsSurviving": 19
-        }
-      ]
-    },
-    "PT-04": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:52:11.318Z",
-      "liveUnfilteredCount": 4,
       "survivingQuestionIds": [
         "moq",
         "colour"
@@ -4008,32 +4003,44 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 6,
-          "optionsSurviving": 5
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
+    "PT-04": {
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:47:32.250Z",
+      "liveUnfilteredCount": 4,
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
+        "budget",
+        "moq"
+      ],
+      "questionOptionCounts": []
+    },
     "PT-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:15.405Z",
+      "verifiedAt": "2026-07-29T10:47:34.478Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 10,
+          "optionsTested": 8,
           "optionsSurviving": 8
         }
       ]
     },
     "PT-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:05.256Z",
+      "verifiedAt": "2026-07-29T10:47:25.511Z",
       "liveUnfilteredCount": 79,
       "survivingQuestionIds": [
         "moq",
@@ -4050,25 +4057,25 @@
         },
         {
           "id": "colour",
-          "optionsTested": 42,
-          "optionsSurviving": 35
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PT-05": {
       "passed": false,
-      "verifiedAt": "2026-07-29T07:52:22.414Z",
+      "verifiedAt": "2026-07-29T10:47:36.390Z",
       "liveUnfilteredCount": 8,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "moq",
-        "budget"
+        "budget",
+        "moq"
       ],
       "questionOptionCounts": []
     },
     "PT-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:16.710Z",
+      "verifiedAt": "2026-07-29T10:47:35.731Z",
       "liveUnfilteredCount": 136,
       "survivingQuestionIds": [
         "moq",
@@ -4085,59 +4092,61 @@
         },
         {
           "id": "colour",
-          "optionsTested": 40,
-          "optionsSurviving": 33
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PT-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:22.671Z",
+      "verifiedAt": "2026-07-29T10:47:40.305Z",
       "liveUnfilteredCount": 148,
       "survivingQuestionIds": [
         "moq",
-        "budget",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 25,
-          "optionsSurviving": 22
-        }
-      ]
-    },
-    "PT-14": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:52:33.288Z",
-      "liveUnfilteredCount": 6,
-      "survivingQuestionIds": [
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 6,
-          "optionsSurviving": 6
+          "optionsTested": 11,
+          "optionsSurviving": 11
+        }
+      ]
+    },
+    "PT-14": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T10:47:46.260Z",
+      "liveUnfilteredCount": 6,
+      "survivingQuestionIds": [
+        "moq",
+        "colour"
+      ],
+      "removedQuestionIds": [
+        "budget"
+      ],
+      "questionOptionCounts": [
+        {
+          "id": "colour",
+          "optionsTested": 4,
+          "optionsSurviving": 4
         }
       ]
     },
     "PT-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:33.647Z",
+      "verifiedAt": "2026-07-29T10:47:48.426Z",
       "liveUnfilteredCount": 25,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4146,33 +4155,32 @@
         },
         {
           "id": "colour",
-          "optionsTested": 17,
-          "optionsSurviving": 17
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PT-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:26.210Z",
+      "verifiedAt": "2026-07-29T10:47:41.102Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 47,
-          "optionsSurviving": 46
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PT-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:38.694Z",
+      "verifiedAt": "2026-07-29T10:47:51.909Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
@@ -4189,24 +4197,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 12,
-          "optionsSurviving": 12
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PO-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:43.383Z",
+      "verifiedAt": "2026-07-29T10:47:58.800Z",
       "liveUnfilteredCount": 28,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4220,24 +4227,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 28
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PO-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:47.471Z",
+      "verifiedAt": "2026-07-29T10:48:01.089Z",
       "liveUnfilteredCount": 93,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4251,24 +4257,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 272,
-          "optionsSurviving": 196
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PO-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:52:43.123Z",
+      "verifiedAt": "2026-07-29T10:47:52.036Z",
       "liveUnfilteredCount": 442,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4282,24 +4287,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 282,
-          "optionsSurviving": 172
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PO-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:53:03.177Z",
+      "verifiedAt": "2026-07-29T10:48:12.126Z",
       "liveUnfilteredCount": 157,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4313,14 +4317,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 302,
-          "optionsSurviving": 261
+          "optionsTested": 15,
+          "optionsSurviving": 14
         }
       ]
     },
     "PO-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:54:26.587Z",
+      "verifiedAt": "2026-07-29T10:48:25.164Z",
       "liveUnfilteredCount": 50,
       "survivingQuestionIds": [
         "moq",
@@ -4343,42 +4347,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 75,
-          "optionsSurviving": 50
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PS-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:55:01.832Z",
+      "verifiedAt": "2026-07-29T10:48:39.122Z",
       "liveUnfilteredCount": 69,
       "survivingQuestionIds": [
         "moq",
-        "budget",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 28,
-          "optionsSurviving": 23
-        }
-      ]
-    },
-    "PO-06": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T07:54:25.933Z",
-      "liveUnfilteredCount": 279,
-      "survivingQuestionIds": [
-        "moq",
-        "gender_fit",
-        "material",
         "colour"
       ],
       "removedQuestionIds": [
         "budget"
       ],
+      "questionOptionCounts": [
+        {
+          "id": "colour",
+          "optionsTested": 13,
+          "optionsSurviving": 13
+        }
+      ]
+    },
+    "PO-06": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T10:48:19.190Z",
+      "liveUnfilteredCount": 279,
+      "survivingQuestionIds": [
+        "moq",
+        "budget",
+        "gender_fit",
+        "material",
+        "colour"
+      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4392,14 +4396,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 129,
-          "optionsSurviving": 83
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PS-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:55:29.807Z",
+      "verifiedAt": "2026-07-29T10:48:50.737Z",
       "liveUnfilteredCount": 457,
       "survivingQuestionIds": [
         "moq",
@@ -4416,14 +4420,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 90,
-          "optionsSurviving": 79
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PS-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:55:25.119Z",
+      "verifiedAt": "2026-07-29T10:48:40.159Z",
       "liveUnfilteredCount": 458,
       "survivingQuestionIds": [
         "moq",
@@ -4446,14 +4450,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 90,
-          "optionsSurviving": 61
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "69ef24c451b1f59dd0adc909": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:54:50.159Z",
+      "verifiedAt": "2026-07-29T10:48:37.301Z",
       "liveUnfilteredCount": 2242,
       "survivingQuestionIds": [
         "moq",
@@ -4464,14 +4468,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 213,
-          "optionsSurviving": 117
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PS-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:56:25.958Z",
+      "verifiedAt": "2026-07-29T10:49:07.721Z",
       "liveUnfilteredCount": 168,
       "survivingQuestionIds": [
         "moq",
@@ -4495,23 +4499,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 38,
-          "optionsSurviving": 31
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PS-17": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:56:26.872Z",
+      "verifiedAt": "2026-07-29T10:49:07.959Z",
       "liveUnfilteredCount": 282,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4525,22 +4530,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 34,
-          "optionsSurviving": 23
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PS-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:56:50.927Z",
+      "verifiedAt": "2026-07-29T10:49:22.213Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4549,14 +4555,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 13,
-          "optionsSurviving": 8
+          "optionsTested": 9,
+          "optionsSurviving": 6
         }
       ]
     },
     "PS-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:56:47.739Z",
+      "verifiedAt": "2026-07-29T10:49:11.064Z",
       "liveUnfilteredCount": 116,
       "survivingQuestionIds": [
         "moq",
@@ -4573,22 +4579,22 @@
         },
         {
           "id": "colour",
-          "optionsTested": 37,
-          "optionsSurviving": 20
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PS-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:56:50.523Z",
+      "verifiedAt": "2026-07-29T10:49:21.459Z",
       "liveUnfilteredCount": 194,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
+        "budget",
         "capacity"
       ],
       "questionOptionCounts": [
@@ -4604,23 +4610,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 25
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PS-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:01.478Z",
+      "verifiedAt": "2026-07-29T10:49:23.040Z",
       "liveUnfilteredCount": 48,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4634,68 +4641,71 @@
         },
         {
           "id": "colour",
-          "optionsTested": 17,
-          "optionsSurviving": 14
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PS-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:04.595Z",
+      "verifiedAt": "2026-07-29T10:49:32.828Z",
       "liveUnfilteredCount": 36,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 20,
-          "optionsSurviving": 19
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PS-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:12.503Z",
+      "verifiedAt": "2026-07-29T10:49:34.224Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 12,
-          "optionsSurviving": 10
+          "optionsTested": 8,
+          "optionsSurviving": 7
         }
       ]
     },
     "PS-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:14.363Z",
+      "verifiedAt": "2026-07-29T10:49:41.084Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 11,
+          "optionsTested": 10,
           "optionsSurviving": 10
         }
       ]
     },
     "PS-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:19.380Z",
+      "verifiedAt": "2026-07-29T10:49:41.857Z",
       "liveUnfilteredCount": 19,
       "survivingQuestionIds": [
         "moq",
@@ -4712,14 +4722,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 16,
-          "optionsSurviving": 15
+          "optionsTested": 12,
+          "optionsSurviving": 11
         }
       ]
     },
     "PS-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:07.672Z",
+      "verifiedAt": "2026-07-29T10:49:33.865Z",
       "liveUnfilteredCount": 55,
       "survivingQuestionIds": [
         "moq",
@@ -4736,22 +4746,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 53,
-          "optionsSurviving": 49
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PS-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:21.413Z",
+      "verifiedAt": "2026-07-29T10:49:46.426Z",
       "liveUnfilteredCount": 68,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4760,41 +4771,41 @@
         },
         {
           "id": "colour",
-          "optionsTested": 36,
-          "optionsSurviving": 29
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PG-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:37.804Z",
+      "verifiedAt": "2026-07-29T10:49:58.456Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 10
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PS-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:29.165Z",
+      "verifiedAt": "2026-07-29T10:49:51.060Z",
       "liveUnfilteredCount": 143,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -4803,14 +4814,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 52,
-          "optionsSurviving": 36
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PS-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:28.899Z",
+      "verifiedAt": "2026-07-29T10:49:50.021Z",
       "liveUnfilteredCount": 193,
       "survivingQuestionIds": [
         "moq",
@@ -4827,14 +4838,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 73,
-          "optionsSurviving": 40
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PG-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:56.617Z",
+      "verifiedAt": "2026-07-29T10:50:07.361Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
@@ -4851,40 +4862,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 28,
-          "optionsSurviving": 24
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PG-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:50.026Z",
+      "verifiedAt": "2026-07-29T10:50:06.306Z",
       "liveUnfilteredCount": 46,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 70,
-          "optionsSurviving": 61
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PG-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:57:46.071Z",
+      "verifiedAt": "2026-07-29T10:50:05.137Z",
       "liveUnfilteredCount": 117,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4893,21 +4906,21 @@
         },
         {
           "id": "colour",
-          "optionsTested": 98,
-          "optionsSurviving": 81
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PQ-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:14.969Z",
+      "verifiedAt": "2026-07-29T10:50:18.017Z",
       "liveUnfilteredCount": 5,
       "survivingQuestionIds": [
+        "moq",
         "capacity",
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -4918,23 +4931,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 11,
-          "optionsSurviving": 8
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PQ-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:10.133Z",
+      "verifiedAt": "2026-07-29T10:50:17.231Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4948,22 +4962,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 57,
-          "optionsSurviving": 42
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PQ-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:20.006Z",
+      "verifiedAt": "2026-07-29T10:50:19.118Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4972,22 +4987,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 26
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PQ-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:22.015Z",
+      "verifiedAt": "2026-07-29T10:50:25.506Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4996,14 +5012,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 51,
-          "optionsSurviving": 43
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PQ-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:43.929Z",
+      "verifiedAt": "2026-07-29T10:50:38.525Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -5021,40 +5037,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 29,
-          "optionsSurviving": 26
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PQ-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:32.604Z",
+      "verifiedAt": "2026-07-29T10:50:29.539Z",
       "liveUnfilteredCount": 123,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 83,
-          "optionsSurviving": 64
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PQ-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:59:03.514Z",
+      "verifiedAt": "2026-07-29T10:50:46.329Z",
       "liveUnfilteredCount": 30,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5063,22 +5081,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 32,
-          "optionsSurviving": 30
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PQ-18": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:34.671Z",
+      "verifiedAt": "2026-07-29T10:50:30.652Z",
       "liveUnfilteredCount": 205,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5087,22 +5106,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 121,
-          "optionsSurviving": 94
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PM-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:58:57.785Z",
+      "verifiedAt": "2026-07-29T10:50:44.273Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5111,32 +5131,33 @@
         },
         {
           "id": "colour",
-          "optionsTested": 78,
-          "optionsSurviving": 63
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PQ-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T07:59:19.399Z",
+      "verifiedAt": "2026-07-29T10:50:49.406Z",
       "liveUnfilteredCount": 203,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 68,
-          "optionsSurviving": 58
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PQ-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:15.995Z",
+      "verifiedAt": "2026-07-29T10:51:03.731Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
@@ -5159,22 +5180,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 15,
-          "optionsSurviving": 14
+          "optionsTested": 5,
+          "optionsSurviving": 5
         }
       ]
     },
     "PQ-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:15.991Z",
+      "verifiedAt": "2026-07-29T10:50:58.588Z",
       "liveUnfilteredCount": 46,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5183,22 +5205,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 51,
-          "optionsSurviving": 42
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PQ-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:15.991Z",
+      "verifiedAt": "2026-07-29T10:50:58.015Z",
       "liveUnfilteredCount": 55,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5207,22 +5230,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 54,
-          "optionsSurviving": 46
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PQ-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:27.686Z",
+      "verifiedAt": "2026-07-29T10:51:12.115Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5231,14 +5255,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 22,
-          "optionsSurviving": 18
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PQ-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:38.384Z",
+      "verifiedAt": "2026-07-29T10:51:15.855Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
@@ -5256,22 +5280,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 26,
-          "optionsSurviving": 25
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PQ-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:39.960Z",
+      "verifiedAt": "2026-07-29T10:51:22.193Z",
       "liveUnfilteredCount": 43,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "sport",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "sport",
@@ -5280,22 +5305,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 35,
-          "optionsSurviving": 28
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PQ-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:37.768Z",
+      "verifiedAt": "2026-07-29T10:51:12.271Z",
       "liveUnfilteredCount": 74,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "sport",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "sport",
@@ -5304,33 +5330,34 @@
         },
         {
           "id": "colour",
-          "optionsTested": 43,
-          "optionsSurviving": 36
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PQ-19": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T08:00:56.646Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:51:33.336Z",
       "liveUnfilteredCount": 81,
-      "survivingQuestionIds": [
-        "moq",
-        "budget"
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
+        "budget",
+        "moq"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": []
     },
     "PQ-17": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:55.889Z",
+      "verifiedAt": "2026-07-29T10:51:26.968Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5339,14 +5366,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 13
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PQ-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:00:51.140Z",
+      "verifiedAt": "2026-07-29T10:51:24.795Z",
       "liveUnfilteredCount": 34,
       "survivingQuestionIds": [
         "moq",
@@ -5364,22 +5391,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 30
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "69ef24dc51b1f59dd0adc92a": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:01:00.253Z",
+      "verifiedAt": "2026-07-29T10:51:35.548Z",
       "liveUnfilteredCount": 37,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -5388,14 +5416,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 22,
-          "optionsSurviving": 22
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PC-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:01:05.688Z",
+      "verifiedAt": "2026-07-29T10:51:35.764Z",
       "liveUnfilteredCount": 134,
       "survivingQuestionIds": [
         "moq",
@@ -5406,26 +5434,25 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 107,
-          "optionsSurviving": 88
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PC-02": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T08:05:24.998Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:51:51.664Z",
       "liveUnfilteredCount": 1,
-      "survivingQuestionIds": [
-        "moq"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "budget",
+        "moq"
       ],
       "questionOptionCounts": []
     },
     "PC-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:01:22.070Z",
+      "verifiedAt": "2026-07-29T10:51:51.394Z",
       "liveUnfilteredCount": 25,
       "survivingQuestionIds": [
         "moq",
@@ -5442,14 +5469,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 89,
-          "optionsSurviving": 65
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PC-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:01:05.988Z",
+      "verifiedAt": "2026-07-29T10:51:37.825Z",
       "liveUnfilteredCount": 92,
       "survivingQuestionIds": [
         "moq",
@@ -5466,14 +5493,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 169,
-          "optionsSurviving": 119
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PC-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:05:33.758Z",
+      "verifiedAt": "2026-07-29T10:51:57.814Z",
       "liveUnfilteredCount": 19,
       "survivingQuestionIds": [
         "moq",
@@ -5496,14 +5523,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 25,
-          "optionsSurviving": 19
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PC-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:05:28.676Z",
+      "verifiedAt": "2026-07-29T10:51:55.601Z",
       "liveUnfilteredCount": 159,
       "survivingQuestionIds": [
         "moq",
@@ -5520,41 +5547,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 58,
-          "optionsSurviving": 39
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PD-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:05:46.649Z",
+      "verifiedAt": "2026-07-29T10:52:09.420Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
+        "moq",
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 6,
-          "optionsSurviving": 6
+          "optionsTested": 4,
+          "optionsSurviving": 4
         }
       ]
     },
     "PD-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:05:49.956Z",
+      "verifiedAt": "2026-07-29T10:52:09.697Z",
       "liveUnfilteredCount": 18,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -5563,14 +5591,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 24,
-          "optionsSurviving": 23
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PD-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:05:52.321Z",
+      "verifiedAt": "2026-07-29T10:52:16.552Z",
       "liveUnfilteredCount": 15,
       "survivingQuestionIds": [
         "moq",
@@ -5582,14 +5610,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 21,
-          "optionsSurviving": 18
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PD-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:05:44.076Z",
+      "verifiedAt": "2026-07-29T10:52:05.078Z",
       "liveUnfilteredCount": 52,
       "survivingQuestionIds": [
         "moq",
@@ -5600,20 +5628,20 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 56,
-          "optionsSurviving": 45
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PD-16": {
       "passed": false,
-      "verifiedAt": "2026-07-29T08:06:03.559Z",
+      "verifiedAt": "2026-07-29T10:52:19.158Z",
       "liveUnfilteredCount": 2,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "moq",
         "budget",
-        "colour"
+        "colour",
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -5624,15 +5652,14 @@
       ]
     },
     "PD-02": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T08:06:06.382Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:52:24.154Z",
       "liveUnfilteredCount": 2,
-      "survivingQuestionIds": [
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
         "moq",
-        "budget"
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -5644,7 +5671,7 @@
     },
     "PD-08": {
       "passed": false,
-      "verifiedAt": "2026-07-29T08:06:09.624Z",
+      "verifiedAt": "2026-07-29T10:52:24.432Z",
       "liveUnfilteredCount": 1,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5655,7 +5682,7 @@
     },
     "PD-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:01.740Z",
+      "verifiedAt": "2026-07-29T10:52:16.658Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -5667,32 +5694,33 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 27,
-          "optionsSurviving": 23
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PD-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:11.791Z",
+      "verifiedAt": "2026-07-29T10:52:25.920Z",
       "liveUnfilteredCount": 16,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 7,
-          "optionsSurviving": 7
+          "optionsTested": 6,
+          "optionsSurviving": 6
         }
       ]
     },
     "PD-15": {
       "passed": false,
-      "verifiedAt": "2026-07-29T08:06:15.842Z",
+      "verifiedAt": "2026-07-29T10:52:30.099Z",
       "liveUnfilteredCount": 2,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5703,26 +5731,26 @@
     },
     "PD-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:13.571Z",
+      "verifiedAt": "2026-07-29T10:52:27.468Z",
       "liveUnfilteredCount": 27,
       "survivingQuestionIds": [
+        "moq",
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 9,
-          "optionsSurviving": 6
+          "optionsTested": 5,
+          "optionsSurviving": 4
         }
       ]
     },
     "PH-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:23.805Z",
+      "verifiedAt": "2026-07-29T10:52:34.256Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
@@ -5739,14 +5767,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 11,
-          "optionsSurviving": 10
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PH-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:20.817Z",
+      "verifiedAt": "2026-07-29T10:52:33.119Z",
       "liveUnfilteredCount": 49,
       "survivingQuestionIds": [
         "moq",
@@ -5763,22 +5791,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 37,
-          "optionsSurviving": 34
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PH-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:34.002Z",
+      "verifiedAt": "2026-07-29T10:52:44.529Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5787,59 +5816,60 @@
         },
         {
           "id": "colour",
-          "optionsTested": 46,
-          "optionsSurviving": 32
+          "optionsTested": 14,
+          "optionsSurviving": 12
         }
       ]
     },
     "PH-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:41.272Z",
+      "verifiedAt": "2026-07-29T10:52:45.496Z",
       "liveUnfilteredCount": 69,
       "survivingQuestionIds": [
         "moq",
-        "budget",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 49,
-          "optionsSurviving": 41
-        }
-      ]
-    },
-    "PH-11": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T08:07:02.989Z",
-      "liveUnfilteredCount": 46,
-      "survivingQuestionIds": [
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 10,
-          "optionsSurviving": 8
+          "optionsTested": 13,
+          "optionsSurviving": 13
+        }
+      ]
+    },
+    "PH-11": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T10:52:56.112Z",
+      "liveUnfilteredCount": 46,
+      "survivingQuestionIds": [
+        "moq",
+        "budget",
+        "colour"
+      ],
+      "removedQuestionIds": [],
+      "questionOptionCounts": [
+        {
+          "id": "colour",
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PH-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:55.012Z",
+      "verifiedAt": "2026-07-29T10:52:45.739Z",
       "liveUnfilteredCount": 186,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5848,14 +5878,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 77,
-          "optionsSurviving": 54
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PH-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:07:10.837Z",
+      "verifiedAt": "2026-07-29T10:52:56.283Z",
       "liveUnfilteredCount": 18,
       "survivingQuestionIds": [
         "moq",
@@ -5872,14 +5902,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 30,
-          "optionsSurviving": 29
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PH-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:07:26.166Z",
+      "verifiedAt": "2026-07-29T10:53:05.225Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
@@ -5896,22 +5926,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 35,
-          "optionsSurviving": 32
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PH-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:07:42.672Z",
+      "verifiedAt": "2026-07-29T10:53:07.486Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5920,40 +5951,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 13
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PH-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:07:52.021Z",
+      "verifiedAt": "2026-07-29T10:53:16.584Z",
       "liveUnfilteredCount": 85,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 26,
-          "optionsSurviving": 21
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PH-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:07:25.602Z",
+      "verifiedAt": "2026-07-29T10:53:01.605Z",
       "liveUnfilteredCount": 142,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5962,14 +5995,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 124,
-          "optionsSurviving": 92
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "69ef253551b1f59dd0adc94b": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:06:19.806Z",
+      "verifiedAt": "2026-07-29T10:52:32.224Z",
       "liveUnfilteredCount": 89,
       "survivingQuestionIds": [
         "moq",
@@ -5980,104 +6013,101 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 567,
-          "optionsSurviving": 211
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PH-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:11.141Z",
+      "verifiedAt": "2026-07-29T10:53:21.598Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 19,
-          "optionsSurviving": 16
+          "optionsTested": 10,
+          "optionsSurviving": 10
         }
       ]
     },
     "PH-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:04.779Z",
+      "verifiedAt": "2026-07-29T10:53:17.180Z",
       "liveUnfilteredCount": 125,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 45,
-          "optionsSurviving": 40
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PI-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:21.276Z",
+      "verifiedAt": "2026-07-29T10:53:29.464Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
-        "budget",
-        "colour"
+        "budget"
       ],
       "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 2,
-          "optionsSurviving": 2
-        }
-      ]
+      "questionOptionCounts": []
     },
     "PH-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:12.782Z",
+      "verifiedAt": "2026-07-29T10:53:25.143Z",
       "liveUnfilteredCount": 155,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 46,
-          "optionsSurviving": 34
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PI-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:27.071Z",
+      "verifiedAt": "2026-07-29T10:53:34.306Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 30,
-          "optionsSurviving": 23
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PI-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:30.626Z",
+      "verifiedAt": "2026-07-29T10:53:36.682Z",
       "liveUnfilteredCount": 102,
       "survivingQuestionIds": [
         "moq",
@@ -6088,50 +6118,52 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 24,
-          "optionsSurviving": 22
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PI-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:41.326Z",
+      "verifiedAt": "2026-07-29T10:53:43.438Z",
       "liveUnfilteredCount": 10,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 7,
-          "optionsSurviving": 6
+          "optionsTested": 3,
+          "optionsSurviving": 3
         }
       ]
     },
     "PI-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:39.137Z",
+      "verifiedAt": "2026-07-29T10:53:42.349Z",
       "liveUnfilteredCount": 63,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 16,
-          "optionsSurviving": 16
+          "optionsTested": 9,
+          "optionsSurviving": 9
         }
       ]
     },
     "PI-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:47.357Z",
+      "verifiedAt": "2026-07-29T10:53:44.906Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
@@ -6143,14 +6175,14 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 11,
-          "optionsSurviving": 11
+          "optionsTested": 6,
+          "optionsSurviving": 6
         }
       ]
     },
     "69ef254951b1f59dd0adc96c": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:08:20.258Z",
+      "verifiedAt": "2026-07-29T10:53:28.470Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
@@ -6161,43 +6193,44 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 171,
-          "optionsSurviving": 83
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PJ-02": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T08:09:32.133Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T10:53:51.698Z",
       "liveUnfilteredCount": 57,
-      "survivingQuestionIds": [
-        "moq",
-        "budget"
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
+        "budget",
+        "moq"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": []
     },
     "PI-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:32.133Z",
+      "verifiedAt": "2026-07-29T10:53:51.604Z",
       "liveUnfilteredCount": 9,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 4,
-          "optionsSurviving": 4
+          "optionsTested": 3,
+          "optionsSurviving": 3
         }
       ]
     },
     "PJ-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:35.653Z",
+      "verifiedAt": "2026-07-29T10:53:55.414Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
         "moq",
@@ -6208,68 +6241,71 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 11,
-          "optionsSurviving": 9
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PJ-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:32.136Z",
+      "verifiedAt": "2026-07-29T10:53:52.180Z",
       "liveUnfilteredCount": 21,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 34,
-          "optionsSurviving": 34
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PJ-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:42.775Z",
+      "verifiedAt": "2026-07-29T10:54:00.497Z",
       "liveUnfilteredCount": 20,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 9,
-          "optionsSurviving": 8
+          "optionsTested": 5,
+          "optionsSurviving": 5
         }
       ]
     },
     "PJ-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:45.771Z",
+      "verifiedAt": "2026-07-29T10:54:04.093Z",
       "liveUnfilteredCount": 35,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 19,
-          "optionsSurviving": 15
+          "optionsTested": 7,
+          "optionsSurviving": 7
         }
       ]
     },
     "PJ-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:37.815Z",
+      "verifiedAt": "2026-07-29T10:53:57.818Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -6281,32 +6317,33 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 64,
-          "optionsSurviving": 45
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PP-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:49.446Z",
+      "verifiedAt": "2026-07-29T10:54:08.011Z",
       "liveUnfilteredCount": 402,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 34,
-          "optionsSurviving": 30
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PP-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:09:55.909Z",
+      "verifiedAt": "2026-07-29T10:54:08.720Z",
       "liveUnfilteredCount": 156,
       "survivingQuestionIds": [
         "moq",
@@ -6317,22 +6354,23 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 34,
-          "optionsSurviving": 30
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PP-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:01.379Z",
+      "verifiedAt": "2026-07-29T10:54:11.908Z",
       "liveUnfilteredCount": 96,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6341,22 +6379,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 37,
-          "optionsSurviving": 23
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PP-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:06.915Z",
+      "verifiedAt": "2026-07-29T10:54:19.645Z",
       "liveUnfilteredCount": 80,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6365,22 +6404,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 49,
-          "optionsSurviving": 45
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PP-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:11.760Z",
+      "verifiedAt": "2026-07-29T10:54:20.152Z",
       "liveUnfilteredCount": 67,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6389,22 +6429,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 40,
-          "optionsSurviving": 29
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PP-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:20.264Z",
+      "verifiedAt": "2026-07-29T10:54:25.112Z",
       "liveUnfilteredCount": 81,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6413,14 +6454,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 31,
-          "optionsSurviving": 24
+          "optionsTested": 12,
+          "optionsSurviving": 11
         }
       ]
     },
     "PP-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:27.487Z",
+      "verifiedAt": "2026-07-29T10:54:31.471Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
@@ -6437,22 +6478,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 28,
-          "optionsSurviving": 26
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PP-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:28.320Z",
+      "verifiedAt": "2026-07-29T10:54:32.720Z",
       "liveUnfilteredCount": 142,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6461,40 +6503,42 @@
         },
         {
           "id": "colour",
-          "optionsTested": 39,
-          "optionsSurviving": 35
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PL-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:41.454Z",
+      "verifiedAt": "2026-07-29T10:54:42.084Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 22,
-          "optionsSurviving": 20
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PL-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:35.284Z",
+      "verifiedAt": "2026-07-29T10:54:37.072Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -6503,14 +6547,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 71,
-          "optionsSurviving": 66
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PL-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:46.163Z",
+      "verifiedAt": "2026-07-29T10:54:45.847Z",
       "liveUnfilteredCount": 46,
       "survivingQuestionIds": [
         "moq",
@@ -6521,50 +6565,52 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 52,
-          "optionsSurviving": 50
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PL-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:00.787Z",
+      "verifiedAt": "2026-07-29T10:54:51.626Z",
       "liveUnfilteredCount": 161,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 43,
-          "optionsSurviving": 42
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PL-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:06.938Z",
+      "verifiedAt": "2026-07-29T10:54:57.923Z",
       "liveUnfilteredCount": 50,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 26,
-          "optionsSurviving": 22
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PL-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:10:51.630Z",
+      "verifiedAt": "2026-07-29T10:54:50.811Z",
       "liveUnfilteredCount": 347,
       "survivingQuestionIds": [
         "moq",
@@ -6575,69 +6621,71 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 77,
-          "optionsSurviving": 75
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PL-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:20.221Z",
+      "verifiedAt": "2026-07-29T10:55:09.140Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
+        "moq",
         "colour"
       ],
       "removedQuestionIds": [
-        "moq",
         "budget"
       ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 5,
-          "optionsSurviving": 5
+          "optionsTested": 2,
+          "optionsSurviving": 2
         }
       ]
     },
     "PL-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:19.030Z",
+      "verifiedAt": "2026-07-29T10:55:05.403Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 27,
-          "optionsSurviving": 25
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PL-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:25.628Z",
+      "verifiedAt": "2026-07-29T10:55:14.528Z",
       "liveUnfilteredCount": 15,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 4,
+          "optionsTested": 3,
           "optionsSurviving": 3
         }
       ]
     },
     "PL-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:18.517Z",
+      "verifiedAt": "2026-07-29T10:55:04.399Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -6654,23 +6702,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 36,
-          "optionsSurviving": 35
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PR-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:30.346Z",
+      "verifiedAt": "2026-07-29T10:55:14.779Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6684,41 +6733,43 @@
         },
         {
           "id": "colour",
-          "optionsTested": 22,
-          "optionsSurviving": 21
+          "optionsTested": 11,
+          "optionsSurviving": 11
         }
       ]
     },
     "PR-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:30.601Z",
+      "verifiedAt": "2026-07-29T10:55:15.544Z",
       "liveUnfilteredCount": 77,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 55,
-          "optionsSurviving": 40
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PR-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:43.603Z",
+      "verifiedAt": "2026-07-29T10:55:26.649Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6732,22 +6783,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 10,
-          "optionsSurviving": 8
+          "optionsTested": 8,
+          "optionsSurviving": 7
         }
       ]
     },
     "PR-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:33.255Z",
+      "verifiedAt": "2026-07-29T10:55:20.907Z",
       "liveUnfilteredCount": 403,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6756,22 +6808,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 46,
-          "optionsSurviving": 35
+          "optionsTested": 12,
+          "optionsSurviving": 12
         }
       ]
     },
     "PR-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:50.199Z",
+      "verifiedAt": "2026-07-29T10:55:26.768Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6780,23 +6833,24 @@
         },
         {
           "id": "colour",
-          "optionsTested": 9,
-          "optionsSurviving": 7
+          "optionsTested": 3,
+          "optionsSurviving": 3
         }
       ]
     },
     "PR-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:52.053Z",
+      "verifiedAt": "2026-07-29T10:55:38.376Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6810,14 +6864,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 12,
-          "optionsSurviving": 11
+          "optionsTested": 8,
+          "optionsSurviving": 8
         }
       ]
     },
     "PR-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:59.414Z",
+      "verifiedAt": "2026-07-29T10:55:40.821Z",
       "liveUnfilteredCount": 8,
       "survivingQuestionIds": [
         "moq",
@@ -6835,34 +6889,15 @@
         },
         {
           "id": "colour",
-          "optionsTested": 7,
-          "optionsSurviving": 7
+          "optionsTested": 5,
+          "optionsSurviving": 5
         }
       ]
     },
     "PR-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:12:02.439Z",
+      "verifiedAt": "2026-07-29T10:55:48.980Z",
       "liveUnfilteredCount": 13,
-      "survivingQuestionIds": [
-        "colour"
-      ],
-      "removedQuestionIds": [
-        "moq",
-        "budget"
-      ],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 12,
-          "optionsSurviving": 12
-        }
-      ]
-    },
-    "PR-03": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T08:12:08.841Z",
-      "liveUnfilteredCount": 112,
       "survivingQuestionIds": [
         "moq",
         "budget",
@@ -6872,14 +6907,33 @@
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 47,
-          "optionsSurviving": 42
+          "optionsTested": 9,
+          "optionsSurviving": 9
+        }
+      ]
+    },
+    "PR-03": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T10:55:49.080Z",
+      "liveUnfilteredCount": 112,
+      "survivingQuestionIds": [
+        "moq",
+        "colour"
+      ],
+      "removedQuestionIds": [
+        "budget"
+      ],
+      "questionOptionCounts": [
+        {
+          "id": "colour",
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PR-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:11:51.827Z",
+      "verifiedAt": "2026-07-29T10:55:38.281Z",
       "liveUnfilteredCount": 531,
       "survivingQuestionIds": [
         "moq",
@@ -6902,14 +6956,14 @@
         },
         {
           "id": "colour",
-          "optionsTested": 84,
-          "optionsSurviving": 61
+          "optionsTested": 16,
+          "optionsSurviving": 16
         }
       ]
     },
     "PR-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:12:11.969Z",
+      "verifiedAt": "2026-07-29T10:55:56.860Z",
       "liveUnfilteredCount": 74,
       "survivingQuestionIds": [
         "moq",
@@ -6926,41 +6980,43 @@
         },
         {
           "id": "colour",
-          "optionsTested": 62,
-          "optionsSurviving": 54
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PR-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:12:28.434Z",
+      "verifiedAt": "2026-07-29T10:55:59.680Z",
       "liveUnfilteredCount": 168,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
-          "optionsTested": 45,
-          "optionsSurviving": 38
+          "optionsTested": 14,
+          "optionsSurviving": 14
         }
       ]
     },
     "PR-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:12:28.193Z",
+      "verifiedAt": "2026-07-29T10:55:57.126Z",
       "liveUnfilteredCount": 60,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6974,22 +7030,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 45,
-          "optionsSurviving": 41
+          "optionsTested": 13,
+          "optionsSurviving": 13
         }
       ]
     },
     "PR-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:12:37.167Z",
+      "verifiedAt": "2026-07-29T10:56:11.290Z",
       "liveUnfilteredCount": 75,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6998,22 +7055,23 @@
         },
         {
           "id": "colour",
-          "optionsTested": 45,
-          "optionsSurviving": 41
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     },
     "PR-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T08:12:46.313Z",
+      "verifiedAt": "2026-07-29T10:56:11.557Z",
       "liveUnfilteredCount": 144,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -7022,8 +7080,8 @@
         },
         {
           "id": "colour",
-          "optionsTested": 106,
-          "optionsSurviving": 92
+          "optionsTested": 15,
+          "optionsSurviving": 15
         }
       ]
     }
