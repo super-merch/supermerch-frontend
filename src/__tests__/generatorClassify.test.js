@@ -353,3 +353,98 @@ describe("classifyLeaf: two-gate runtime enablement (filterMappingsValidated + r
     expect(result.notes.some((n) => /Audit mode/.test(n))).toBe(true);
   });
 });
+
+// Live-verification-caught bug fix: Coasters (PM-07) and Beanies (PK-02) must
+// build their Material/Fabric question from the real RAW Material stat,
+// grouped into clean buckets with REAL raw synonyms as each option's filter
+// value -- never the derived bucket LABEL, which always returned zero
+// results live. See classify.mjs's MATERIAL_FAMILY_LEAF_CONFIG.
+describe("classifyLeaf: material-family grouping (Beanies Fabric / Coasters Material)", () => {
+  // Mirrors the real observed PM-07 distribution documented in
+  // materialClassifiers.mjs: 25 raw distinct values -- deliberately more than
+  // MAX_DISTINCT_VALUES (12), proving the generic isAttributeUsable check is
+  // correctly bypassed for this leaf (grouping is what makes it usable).
+  const realisticCoasterMaterial = attr(
+    "Material",
+    [
+      { value: "Cork", productCount: 18 },
+      { value: "Bamboo", productCount: 12 },
+      { value: "Wood", productCount: 8 },
+      { value: "Wheat Straw", productCount: 3 },
+      { value: "Silicone", productCount: 6 },
+      { value: "Neoprene", productCount: 2 },
+      { value: "Acrylic", productCount: 5 },
+      { value: "PVC", productCount: 4 },
+      { value: "Polypropylene", productCount: 3 },
+      { value: "Synthetic", productCount: 2 },
+      { value: "Vinyl", productCount: 1 },
+      { value: "Stainless Steel", productCount: 4 },
+      { value: "Aluminium", productCount: 2 },
+      { value: "Metal", productCount: 1 },
+      { value: "Cardboard", productCount: 3 },
+      { value: "Paper", productCount: 2 },
+      { value: "Ceramic", productCount: 3 },
+      { value: "Glass", productCount: 2 },
+      { value: "Jute", productCount: 1 },
+      { value: "Cotton 100%", productCount: 1 },
+      { value: "Cotton Rich Blend", productCount: 1 },
+      { value: "Polyester 100%", productCount: 1 },
+      { value: "Polyester Rich Blend", productCount: 1 },
+      { value: "Leather", productCount: 1 },
+      { value: "rPET", productCount: 1 },
+    ],
+    { sampleSize: 94 }
+  );
+
+  it("Coasters (PM-07): builds a real grouped Coaster Material question from the raw Material stat despite it having 25 distinct raw values (above MAX_DISTINCT_VALUES)", () => {
+    expect(realisticCoasterMaterial.distinctValues).toBeGreaterThan(12); // sanity: this really would fail the generic isAttributeUsable check
+    const leaf = { leafId: "PM-07", parentId: "PM", productCount: 400, attributes: [realisticCoasterMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Coaster Material");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material"); // the real backend field, not the derived label
+    const cork = q.options.find((o) => o.label === "Cork");
+    expect(cork.value).toBe("Cork");
+    const bambooWood = q.options.find((o) => o.label === "Bamboo/Wood");
+    expect(bambooWood.value.split(",").sort()).toEqual(["Bamboo", "Wheat Straw", "Wood"].sort()); // real raw synonyms, not the bucket label
+  });
+
+  it("Coasters (PM-07): never offers the raw ungrouped Material attribute as a fallback alongside/instead of the grouped question", () => {
+    const leaf = { leafId: "PM-07", parentId: "PM", productCount: 400, attributes: [realisticCoasterMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.filter((q) => q.attributeName === "Material")).toHaveLength(1); // exactly the grouped one, never a second raw one
+  });
+
+  it("Beanies (PK-02): correctly excluded when raw Material coverage is below the population threshold (the real, honest 6% case)", () => {
+    const sparseMaterial = attr("Material", [{ value: "Acrylic", productCount: 6 }], { sampleSize: 100 });
+    const leaf = { leafId: "PK-02", parentId: "PK", productCount: 300, attributes: [sparseMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.some((q) => q.label === "Fabric")).toBe(false);
+    expect(result.notes.some((n) => /Fabric family-grouping considered but raw Material coverage/.test(n))).toBe(true);
+  });
+
+  it("Beanies (PK-02): ships a real Fabric question when raw Material coverage genuinely clears the threshold", () => {
+    const healthyMaterial = attr(
+      "Material",
+      [
+        { value: "Acrylic", productCount: 25 },
+        { value: "Cotton 100%", productCount: 15 },
+        { value: "Wool", productCount: 5 },
+        { value: "Cardboard", productCount: 8 }, // packaging noise -- must not appear as a Fabric option
+      ],
+      { sampleSize: 100 }
+    );
+    const leaf = { leafId: "PK-02", parentId: "PK", productCount: 300, attributes: [healthyMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Fabric");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+    expect(q.options.some((o) => o.label === "Cardboard")).toBe(false);
+  });
+
+  it("a leaf outside MATERIAL_FAMILY_LEAF_CONFIG with the same raw Material shape is treated as a normal generic attribute (no special grouping applied)", () => {
+    const leaf = { leafId: "PM-99", parentId: "PM", productCount: 400, attributes: [realisticCoasterMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.some((q) => q.label === "Coaster Material")).toBe(false); // no grouping label ever appears for an unmapped leaf
+  });
+});

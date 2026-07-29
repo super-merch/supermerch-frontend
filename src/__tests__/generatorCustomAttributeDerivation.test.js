@@ -24,25 +24,26 @@ describe("splitWorkwearCompliance", () => {
 });
 
 describe("applyCustomAttributeDerivation", () => {
-  it("Beanies (PK-02): replaces raw Material with derived Fabric, deleting the raw attribute entirely", () => {
+  // Beanies (PK-02) and Coasters (PM-07) are NO LONGER per-product derivations
+  // -- their Fabric/Coaster Material classification is a simple per-value
+  // grouping built directly from the leaf's real raw Material stat at
+  // generate-manifest time instead (see classify.mjs's
+  // MATERIAL_FAMILY_LEAF_CONFIG + materialClassifiers.mjs's
+  // buildMaterialFamilyOptions, and generatorClassify.test.js for coverage).
+  // Confirming here that this function leaves their raw Material completely
+  // untouched, exactly like any leaf with no per-product deriver.
+  it("Beanies (PK-02): raw Material is left completely untouched (classification happens at generate time, not here)", () => {
     const perProductValues = new Map([["Material", new Set(["Acrylic"])]]);
     applyCustomAttributeDerivation("PK-02", perProductValues);
-    expect(perProductValues.has("Material")).toBe(false);
-    expect(perProductValues.get("Fabric")).toEqual(new Set(["Acrylic"]));
-  });
-
-  it("Beanies (PK-02): a packaging-only Material value (Cardboard) is deleted with no Fabric derived", () => {
-    const perProductValues = new Map([["Material", new Set(["Cardboard"])]]);
-    applyCustomAttributeDerivation("PK-02", perProductValues);
-    expect(perProductValues.has("Material")).toBe(false);
+    expect(perProductValues.get("Material")).toEqual(new Set(["Acrylic"]));
     expect(perProductValues.has("Fabric")).toBe(false);
   });
 
-  it("Coasters (PM-07): replaces raw Material with derived Coaster Material", () => {
+  it("Coasters (PM-07): raw Material is left completely untouched (classification happens at generate time, not here)", () => {
     const perProductValues = new Map([["Material", new Set(["Cork"])]]);
     applyCustomAttributeDerivation("PM-07", perProductValues);
-    expect(perProductValues.has("Material")).toBe(false);
-    expect(perProductValues.get("Coaster Material")).toEqual(new Set(["Cork"]));
+    expect(perProductValues.get("Material")).toEqual(new Set(["Cork"]));
+    expect(perProductValues.has("Coaster Material")).toBe(false);
   });
 
   it("Metal Pens (PY-06): replaces raw Material with derived Primary Body Material", () => {

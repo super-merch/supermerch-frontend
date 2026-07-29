@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyBeanieFabric, classifyCoasterMaterial, classifyMetalPenMaterial } from "../../scripts/category-finder/lib/materialClassifiers.mjs";
+import { classifyBeanieFabric, classifyCoasterMaterial, classifyMetalPenMaterial, buildMaterialFamilyOptions } from "../../scripts/category-finder/lib/materialClassifiers.mjs";
 
 describe("classifyBeanieFabric", () => {
   it("classifies known real fabric keywords", () => {
@@ -93,5 +93,59 @@ describe("classifyMetalPenMaterial", () => {
 
   it("bamboo accent takes priority over other-accent when a product has both (documented, deterministic priority, not arbitrary)", () => {
     expect(classifyMetalPenMaterial(["Aluminium", "Bamboo", "Cork"])).toEqual({ classification: "Metal with Bamboo Accent", isGenuineMetal: true });
+  });
+});
+
+// Live-verification-caught bug fix: a derived bucket LABEL (e.g. "Bamboo/Wood")
+// is not itself a real backend field -- the filter must send the REAL raw
+// synonyms. buildMaterialFamilyOptions groups a leaf's real raw Material
+// value stats the same way buildColourFamilyOptions groups colour, so the
+// shipped option's `value` is a comma-joined list of real, backend-filterable
+// raw strings.
+describe("buildMaterialFamilyOptions", () => {
+  it("groups multiple raw synonyms into one bucket, with `value` as the comma-joined REAL raw values (not the bucket label)", () => {
+    const materialValues = [
+      { value: "Bamboo", productCount: 12 },
+      { value: "Wood", productCount: 8 },
+      { value: "Cork", productCount: 20 },
+    ];
+    const options = buildMaterialFamilyOptions(materialValues, classifyCoasterMaterial);
+    const bambooWood = options.find((o) => o.label === "Bamboo/Wood");
+    expect(bambooWood).toBeDefined();
+    expect(bambooWood.value).toBe("Bamboo,Wood"); // real raw synonyms, comma-joined -- NOT "Bamboo/Wood"
+    const cork = options.find((o) => o.label === "Cork");
+    expect(cork.value).toBe("Cork");
+  });
+
+  it("sorts buckets by total product count descending", () => {
+    const materialValues = [
+      { value: "Cork", productCount: 5 },
+      { value: "Bamboo", productCount: 30 },
+    ];
+    const options = buildMaterialFamilyOptions(materialValues, classifyCoasterMaterial);
+    expect(options.map((o) => o.label)).toEqual(["Bamboo/Wood", "Cork"]);
+  });
+
+  it("drops a raw value the classifier maps to null (e.g. Beanies' packaging-only Cardboard/Paper) -- never grouped under any bucket", () => {
+    const materialValues = [
+      { value: "Acrylic", productCount: 10 },
+      { value: "Cardboard", productCount: 40 }, // a packaging artifact, not a real fabric
+    ];
+    const options = buildMaterialFamilyOptions(materialValues, classifyBeanieFabric);
+    expect(options).toEqual([{ label: "Acrylic", value: "Acrylic" }]);
+  });
+
+  it("returns an empty array when every real raw value maps to null", () => {
+    const materialValues = [{ value: "Cardboard", productCount: 10 }];
+    expect(buildMaterialFamilyOptions(materialValues, classifyBeanieFabric)).toEqual([]);
+  });
+
+  it("dedupes case/whitespace variants of the same raw value before classifying (shares valueDedup.mjs with every other attribute)", () => {
+    const materialValues = [
+      { value: "cork", productCount: 3 },
+      { value: "Cork", productCount: 17 },
+    ];
+    const options = buildMaterialFamilyOptions(materialValues, classifyCoasterMaterial);
+    expect(options).toEqual([{ label: "Cork", value: "Cork" }]); // one bucket, one raw value, not two duplicate "Cork,cork" entries
   });
 });

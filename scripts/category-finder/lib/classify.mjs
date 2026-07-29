@@ -2,10 +2,11 @@
 // dependency-injected module so it can be unit-tested against fixtures
 // without needing a real snapshot file or network access.
 
-import { isAttributeUsable, isPresenceAttributeUsable, isColourUsable, hasNoProducts } from "./exclusionRules.mjs";
+import { isAttributeUsable, isPresenceAttributeUsable, isColourUsable, hasNoProducts, THRESHOLDS } from "./exclusionRules.mjs";
 import { sharedQuantityQuestion, sharedBudgetQuestion, sharedColourQuestion } from "../families.js";
 import { dedupeValueStats } from "./valueDedup.mjs";
 import { buildColourFamilyOptions } from "./colourNormalization.mjs";
+import { classifyBeanieFabric, classifyCoasterMaterial, buildMaterialFamilyOptions } from "./materialClassifiers.mjs";
 
 const BLOCKED_ATTRIBUTE_NAMES = new Set([
   "supplier",
@@ -46,6 +47,22 @@ const DERIVED_ATTRIBUTE_BACKEND_NAME = {
   "Primary Body Material": "Material",
   "Coaster Material": "Material",
   Fabric: "Material",
+};
+
+// Beanies (PK-02) and Coasters (PM-07): unlike Metal Pens' co-occurrence-
+// aware classification (which must stay a per-product derivation, see
+// customAttributeDerivation.mjs), these two classify a SINGLE raw Material
+// value independent of anything else on the product -- so the clean
+// customer-facing bucket can be built directly from the leaf's real, raw
+// "Material" stat at generate time (mirrors colourNormalization.mjs's
+// buildColourFamilyOptions exactly): each option's filter `value` becomes a
+// comma-joined list of the REAL raw synonyms that classify into that
+// bucket, not the bucket label itself, so the shipped filter can actually
+// narrow results (see BACKEND_BLOCKED_ATTRIBUTES.md's "Newly found" section
+// for why the bucket label alone always returned zero results live).
+const MATERIAL_FAMILY_LEAF_CONFIG = {
+  "PK-02": { classifier: classifyBeanieFabric, questionLabel: "Fabric" },
+  "PM-07": { classifier: classifyCoasterMaterial, questionLabel: "Coaster Material" },
 };
 
 /**
@@ -204,8 +221,37 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
   }
 
   if (chosenAttrs.length < 2) {
+    const materialFamilyConfig = MATERIAL_FAMILY_LEAF_CONFIG[leaf.leafId];
+    if (materialFamilyConfig) {
+      const materialStat = findAttr(leaf.attributes, "Material");
+      const coverage = materialStat ? materialStat.taggedProductCount / materialStat.sampleSize : 0;
+      // Population-only gate, evaluated on the RAW Material stat -- the
+      // generic isAttributeUsable's MAX_DISTINCT_VALUES rule would wrongly
+      // reject these leaves (Coasters alone has ~25 raw Material values),
+      // but that's exactly what the family grouping below exists to solve;
+      // "too many raw values" isn't a real usability problem once they're
+      // grouped into a handful of clean buckets, the same reasoning
+      // buildColourOptions already applies via its own separate threshold.
+      if (materialStat && coverage >= THRESHOLDS.MIN_ATTRIBUTE_COVERAGE) {
+        const familyOptions = buildMaterialFamilyOptions(materialStat.values, materialFamilyConfig.classifier);
+        if (familyOptions.length >= 2) {
+          chosenAttrs.push({ name: materialFamilyConfig.questionLabel, options: familyOptions });
+          notes.push(`Generic fallback (material-family grouping): selected "${materialFamilyConfig.questionLabel}" (${familyOptions.length} real grouped options from ${materialStat.distinctValues} raw Material values, ${materialStat.taggedProductCount}/${materialStat.sampleSize} sampled products tagged).`);
+        } else {
+          notes.push(`${materialFamilyConfig.questionLabel} family-grouping considered but produced fewer than 2 real options after grouping raw Material values -- not offered.`);
+        }
+      } else {
+        const pct = materialStat ? Math.round(coverage * 100) : 0;
+        notes.push(`${materialFamilyConfig.questionLabel} family-grouping considered but raw Material coverage (${pct}%) is below the ${Math.round(THRESHOLDS.MIN_ATTRIBUTE_COVERAGE * 100)}% threshold -- not offered.`);
+      }
+    }
+
     const candidates = (leaf.attributes || [])
-      .filter((a) => isAttributeUsable(a) && !chosenAttrs.some((c) => c.name === a.name))
+      // Raw "Material" is deliberately excluded from the generic path for
+      // these 2 leaves regardless of the family-grouping outcome above --
+      // they must only ever offer the clean grouped version, never the raw
+      // ~25-value dropdown as a fallback.
+      .filter((a) => isAttributeUsable(a) && !chosenAttrs.some((c) => c.name === a.name) && !(materialFamilyConfig && a.name === "Material"))
       .sort((a, b) => b.taggedProductCount - a.taggedProductCount);
     for (const candidate of candidates) {
       if (chosenAttrs.length >= 2) break;

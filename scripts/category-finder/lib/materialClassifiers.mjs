@@ -18,8 +18,52 @@
 // accent, not two separate materials) and returns the single controlled
 // value that product should be classified under, or null if none applies.
 
+import { dedupeValueStats } from "./valueDedup.mjs";
+
 function normalize(value) {
   return String(value).trim().toLowerCase();
+}
+
+/**
+ * Groups a leaf's REAL, raw "Material" value stats into a short, controlled
+ * family list, using the same per-value keyword classification as
+ * classifyBeanieFabric/classifyCoasterMaterial -- mirrors
+ * colourNormalization.mjs's buildColourFamilyOptions exactly, for the same
+ * reason: a derived classification LABEL (e.g. "Bamboo/Wood") is not a real
+ * backend field, but a comma-joined list of the REAL raw synonyms that
+ * classify into that bucket IS filterable (the backend already ORs
+ * comma-separated values under one attribute_name -- see
+ * getAllV2Products.js's groupedValues/$or construction).
+ *
+ * ONLY valid for classifiers that decide a bucket from ONE raw value in
+ * isolation (Beanies Fabric, Coasters Material) -- NOT for
+ * classifyMetalPenMaterial's compound buckets, which require co-occurrence
+ * of two raw tags on the SAME product and cannot be reconstructed from a
+ * per-value grouping (see BACKEND_BLOCKED_ATTRIBUTES.md for why).
+ *
+ * @param {Array<{value: string, productCount: number}>} materialValues - a
+ *   leaf's real, raw "Material" attribute stat's values (NOT pre-classified)
+ * @param {(values: string[]) => string|null} classifierFn - classifyBeanieFabric
+ *   or classifyCoasterMaterial, called with a single-element array per raw value
+ * @returns {Array<{label: string, value: string}>} sorted by product count
+ *   descending; `value` is a comma-joined list of the real raw synonyms that
+ *   fall into that bucket, ready to pass straight through as attribute_value
+ */
+export function buildMaterialFamilyOptions(materialValues, classifierFn) {
+  const deduped = dedupeValueStats((materialValues || []).filter((v) => v.productCount > 0));
+  const bucketRawValues = new Map(); // bucket label -> [{value, productCount}]
+  for (const entry of deduped) {
+    const bucket = classifierFn([entry.value]);
+    if (!bucket) continue; // e.g. Beanies' packaging-only values (Cardboard/Paper) -- never grouped under any bucket
+    if (!bucketRawValues.has(bucket)) bucketRawValues.set(bucket, []);
+    bucketRawValues.get(bucket).push(entry);
+  }
+  const options = [...bucketRawValues.entries()].map(([label, entries]) => ({
+    label,
+    value: entries.map((e) => e.value).join(","),
+    productCount: entries.reduce((sum, e) => sum + e.productCount, 0),
+  }));
+  return options.sort((a, b) => b.productCount - a.productCount).map(({ label, value }) => ({ label, value }));
 }
 
 // --- Beanies Fabric (PK-02) ---------------------------------------------

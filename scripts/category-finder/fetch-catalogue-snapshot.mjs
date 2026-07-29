@@ -43,13 +43,15 @@ import { fetchJsonWithRetry as fetchJsonWithRetryShared } from "./lib/httpRetry.
 import { applyCustomAttributeDerivation } from "./lib/customAttributeDerivation.mjs";
 
 // See lib/customAttributeDerivation.mjs for the actual per-leaf derivation
-// logic (Beanies Fabric, Coaster Material, Metal Pens primary body
-// material, Workwear Visibility/Compliance split) -- extracted there so
-// it's directly unit-testable against fixtures, not only exercisable via a
-// real network fetch. Custom-derived attribute names must be added to
-// ATTR_NAMES below too, or the generic per-product loop's
-// `if (!ATTR_NAMES.includes(name)) continue` guard would silently drop
-// them before they ever reach classify.mjs.
+// logic (Metal Pens primary body material, Workwear Visibility/Compliance
+// split) -- extracted there so it's directly unit-testable against
+// fixtures, not only exercisable via a real network fetch. Custom-derived
+// attribute names must be added to ATTR_NAMES below too, or the generic
+// per-product loop's `if (!ATTR_NAMES.includes(name)) continue` guard would
+// silently drop them before they ever reach classify.mjs. (Beanies
+// Fabric/Coasters Material are NOT per-product derivations -- they're built
+// from the real raw "Material" stat at generate-manifest time instead, see
+// classify.mjs's MATERIAL_FAMILY_LEAF_CONFIG.)
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
@@ -73,13 +75,12 @@ const ATTR_NAMES = [
   "Features",
   "Sleeves",
   "Compliance",
-  // Synthetic, per-product derived attributes (see CUSTOM_ATTRIBUTE_DERIVERS
-  // above) -- these never appear literally in a product's raw
-  // promodata_attributes; they're computed here from the real Material
-  // value(s) already tagged on that product, then folded into the exact
-  // same aggregation/usability pipeline as any other attribute name.
-  "Fabric",
-  "Coaster Material",
+  // Synthetic, per-product derived attributes (see
+  // lib/customAttributeDerivation.mjs) -- these never appear literally in a
+  // product's raw promodata_attributes; they're computed here from the real
+  // Material/Compliance value(s) already tagged on that product, then folded
+  // into the exact same aggregation/usability pipeline as any other
+  // attribute name.
   "Primary Body Material",
   "Visibility",
 ];

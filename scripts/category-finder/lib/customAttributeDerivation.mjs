@@ -4,19 +4,23 @@
 // real network fetch.
 //
 // Takes the full per-product {attributeName -> Set(values)} map (BEFORE
-// it's folded into the aggregate stats) and mutates it in place. Two
-// families of derivers:
-//   - the 3 Material reclassifications (Beanies Fabric, Coaster Material,
-//     Metal Pens primary body material) -- see materialClassifiers.mjs for
-//     exactly why these three, and not the other 6 owner-requested
-//     attributes, can work without a backend change.
+// it's folded into the aggregate stats) and mutates it in place. Only
+// derivations that genuinely need PER-PRODUCT context (multiple raw values
+// on the SAME product considered together) belong here:
+//   - Metal Pens primary body material -- co-occurrence-aware (a metal
+//     keyword AND a bamboo keyword on the same product means "bamboo
+//     accent", not two separate materials).
 //   - the Workwear Visibility/Compliance split (all 14 PX-* leaves).
 // Each deriver REPLACES the raw source attribute it reads (deleting it from
 // the map) with its clean derived value(s), so a customer is never shown
 // both the messy raw attribute and the clean derived one as two redundant
-// "what's it made of"/"is it compliant" questions side by side.
+// questions side by side.
+//
+// Beanies Fabric and Coasters Material are NOT here -- see the comment
+// inside applyCustomAttributeDerivation for why they moved to
+// classify.mjs/materialClassifiers.mjs instead.
 
-import { classifyBeanieFabric, classifyCoasterMaterial, classifyMetalPenMaterial } from "./materialClassifiers.mjs";
+import { classifyMetalPenMaterial } from "./materialClassifiers.mjs";
 
 function normalizeForCompare(v) {
   return String(v).trim().toLowerCase();
@@ -54,15 +58,21 @@ const WORKWEAR_PARENT_ID = "PX";
  * @param {Map<string, Set<string>>} perProductValues - mutated in place
  */
 export function applyCustomAttributeDerivation(leafId, perProductValues) {
-  if (leafId === "PK-02") {
-    const fabric = classifyBeanieFabric([...(perProductValues.get("Material") || [])]);
-    perProductValues.delete("Material");
-    if (fabric) perProductValues.set("Fabric", new Set([fabric]));
-  } else if (leafId === "PM-07") {
-    const material = classifyCoasterMaterial([...(perProductValues.get("Material") || [])]);
-    perProductValues.delete("Material");
-    if (material) perProductValues.set("Coaster Material", new Set([material]));
-  } else if (leafId === "PY-06") {
+  // Beanies (PK-02) and Coasters (PM-07) are DELIBERATELY not handled here
+  // any more -- their Fabric/Coaster Material classification is a simple
+  // per-VALUE grouping (each raw Material synonym maps to exactly one bucket
+  // independent of what else is on the product), so it's built at
+  // generate-manifest time instead, directly from the leaf's real raw
+  // Material stat (see classify.mjs's MATERIAL_FAMILY_LEAF_CONFIG +
+  // materialClassifiers.mjs's buildMaterialFamilyOptions). Doing it here,
+  // per-product, discarded which raw synonym produced the classification,
+  // which meant the shipped filter value was the derived bucket LABEL
+  // ("Bamboo/Wood") instead of a real backend-filterable raw value --
+  // confirmed live to always return zero results. Metal Pens' classification
+  // genuinely needs per-product co-occurrence (a metal keyword AND a bamboo
+  // keyword on the SAME product), which can't be reconstructed after the
+  // fact from per-value stats alone, so it stays here.
+  if (leafId === "PY-06") {
     const { classification } = classifyMetalPenMaterial([...(perProductValues.get("Material") || [])]);
     perProductValues.delete("Material");
     if (classification) perProductValues.set("Primary Body Material", new Set([classification]));
