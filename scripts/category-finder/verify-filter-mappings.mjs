@@ -236,7 +236,12 @@ async function main() {
         questions: [],
         filterMappingsValidated: false,
         runtimeEnabled: false,
-        dataQualityNotes: [...entry.dataQualityNotes, `Live verification FAILED at ${evidence.verifiedAt}: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json.`],
+        dataQualityNotes: [
+          ...entry.dataQualityNotes,
+          evidence.belowMinimumQuestions
+            ? `Live verification FAILED at ${evidence.verifiedAt}: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json.`
+            : `Live verification FAILED at ${evidence.verifiedAt}: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json.`,
+        ],
       };
     }
 

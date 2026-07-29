@@ -44,7 +44,15 @@ import { fetchJsonWithRetry as fetchJsonWithRetryShared } from "./lib/httpRetry.
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
 const RETRY_DELAYS_MS = [500, 1500, 4000];
-const ATTR_NAMES = ["Gender Fit", "Material", "Capacity", "Eco Factors", "Sport", "Theme", "Feature", "Features", "Sleeves"];
+// "Compliance" added after discovering the live API already carries a real,
+// structured certification tag (values seen: Hi-Vis, NSW Rail Compliant,
+// TTMC, VIC Rail Compliant, UPF Rated) -- this is exactly the authoritative
+// signal the Workwear Hi-Vis/Non-Hi-Vis requirement needs, decoupled from
+// colour (a fluoro-coloured garment with no Compliance:Hi-Vis tag must not
+// be inferred as compliant). No fuzzy name/description keyword classifier
+// was needed for this one; the data already exists, it just wasn't in this
+// allowlist.
+const ATTR_NAMES = ["Gender Fit", "Material", "Capacity", "Eco Factors", "Sport", "Theme", "Feature", "Features", "Sleeves", "Compliance"];
 const STRATA_COUNT = 5; // number of pages sampled, spread evenly across the category
 const PER_PAGE_LIMIT = 20; // per-page product count for each stratum (a plain list call, not send_attributes)
 
@@ -238,7 +246,28 @@ async function main() {
     return stats;
   });
 
-  const snapshot = { fetchedAt: new Date().toISOString(), apiBase: API_BASE, strataCount: STRATA_COUNT, perPageLimit: PER_PAGE_LIMIT, leaves: results };
+  // Parent/group aggregate pages (e.g. "PX" Workwear, covering all of
+  // PX-01..PX-14): confirmed live that BOTH /api/client-products and
+  // /api/params-products (the endpoint real Finder pages call) already
+  // return the correct aggregate across every child leaf when queried by the
+  // parent's own category ID directly (e.g. product_type_ids=PX summed
+  // exactly to the total of all its PX-* children in a live spot-check) --
+  // no separate aggregation logic is needed, fetchLeafStats already works
+  // unmodified since it only needs {id, name}.
+  console.log(`Auditing ${parents.length} parent/group pages the same way ...`);
+  const parentResults = await mapWithConcurrency(parents, CONCURRENCY, async (parent) => {
+    const stats = await fetchLeafStats({ id: parent.id, name: parent.name, parentId: parent.id, parentName: parent.name, navGroup: null });
+    return { ...stats, childCount: parent.childCount };
+  });
+
+  const snapshot = {
+    fetchedAt: new Date().toISOString(),
+    apiBase: API_BASE,
+    strataCount: STRATA_COUNT,
+    perPageLimit: PER_PAGE_LIMIT,
+    leaves: results,
+    parents: parentResults,
+  };
 
   validateSnapshot(snapshot); // fail loudly here, before writing anything, if the fetch produced anything malformed or a duplicate leafId
 

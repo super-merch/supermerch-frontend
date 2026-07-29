@@ -2,8 +2,8 @@
 export const RECONCILIATION = {
   "totalLeafEntries": 297,
   "curated": 1,
-  "inherited": 60,
-  "generic": 230,
+  "inherited": 55,
+  "generic": 235,
   "excluded": 6,
   "totalParentEntries": 27
 };

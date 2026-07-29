@@ -71,11 +71,56 @@ function urlParams(url) {
   return new URL(url).searchParams;
 }
 
-describe("verifyLeafMappings: exhaustive per-option checking", () => {
-  it("tests EVERY option (not just the top one), removes only the option that fails, and keeps the question when >=2 survive", async () => {
-    const entry = leaf([capacityQuestion]);
+describe("verifyLeafMappings: presence-mode single-value attribute question (e.g. Workwear Compliance:Hi-Vis)", () => {
+  const complianceQuestion = {
+    id: "compliance",
+    type: "attribute",
+    attributeName: "Compliance",
+    singleValueAllowed: true,
+    options: [{ label: "Hi-Vis", value: "Hi-Vis" }],
+  };
+
+  it("keeps a single-option presence question when the generator already marked it singleValueAllowed", async () => {
+    const entry = leaf([complianceQuestion, moqQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
+      if (p.has("moq")) return response(10, [product({ id: "m", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      if (!p.has("attribute_value")) return response(100); // baseline
+      return response(20, [product({ id: "a", attrs: ["Compliance: Hi-Vis"] })]);
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    const report = result.questions.find((q) => q.id === "compliance");
+    expect(report.survivingOptions).toHaveLength(1);
+    expect(report.questionSurvives).toBe(true); // 1 option is enough for a singleValueAllowed question
+    expect(result.survivingQuestions.some((q) => q.id === "compliance")).toBe(true);
+  });
+
+  it("still drops a normal (non-singleValueAllowed) question when only 1 option survives", async () => {
+    const entry = leaf([capacityQuestion, moqQuestion]); // capacityQuestion has 3 options, none marked singleValueAllowed
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.has("moq")) return response(10, [product({ id: "m", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      if (!p.has("attribute_value")) return response(100);
+      const value = p.get("attribute_value");
+      if (value === "500ml") return response(20, [product({ id: "a", attrs: ["Capacity: 500ml"] })]);
+      return response(0); // 750ml and 1L both fail -- only 1 of 3 survives
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    const report = result.questions.find((q) => q.id === "capacity");
+    expect(report.survivingOptions).toHaveLength(1);
+    expect(report.questionSurvives).toBe(false);
+  });
+});
+
+describe("verifyLeafMappings: exhaustive per-option checking", () => {
+  it("tests EVERY option (not just the top one), removes only the option that fails, and keeps the question when >=2 survive", async () => {
+    // Paired with moqQuestion so the leaf has 2 real surviving questions overall --
+    // this test is about per-option removal within ONE question, not the
+    // separate "at least 2 questions to ship" policy (see its own describe block).
+    const entry = leaf([capacityQuestion, moqQuestion]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.has("moq")) return response(10, [product({ id: "m", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
       if (!p.has("attribute_value")) return response(100); // baseline
       const value = p.get("attribute_value");
       if (value === "500ml") return response(40, [product({ id: "a", attrs: ["Capacity: 500ml"] })]);
@@ -203,14 +248,24 @@ describe("verifyLeafMappings: quantity/budget per-bucket checks", () => {
     // honest, bucket-specific reason recorded per-option, not a single fixed representative-value failure.
     expect(result.budgetCheck.questionSurvives).toBe(false);
     expect(result.removedQuestionIds).toContain("budget");
-    expect(result.survivingQuestions.map((q) => q.id)).toEqual(["moq"]);
+    // moq alone would have survived, but a single surviving question isn't
+    // enough to ship a real Finder (never ship a single-weak-question
+    // Finder) -- moq is demoted too, and the whole leaf fails.
+    expect(result.survivingQuestions).toEqual([]);
+    expect(result.removedQuestionIds).toContain("moq");
+    expect(result.belowMinimumQuestions).toBe(true);
+    expect(result.passed).toBe(false);
   });
 
   it("a high-minimum-order-quantity category loses only its low-quantity bucket, not the whole moq question, once at least 2 buckets still pass", async () => {
     const threeOptionMoq = { ...moqQuestion, options: [...moqQuestion.options, { label: "500+", value: "500" }] };
-    const entry = leaf([threeOptionMoq]);
+    // Paired with budgetQuestion (fully passing) so the leaf ships overall --
+    // this test is about per-bucket moq removal, not the separate "at least
+    // 2 questions to ship" policy.
+    const entry = leaf([threeOptionMoq, budgetQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
+      if (p.has("min_price")) return response(10, [product({ id: "b", price: 5 })]);
       const moq = p.get("moq");
       if (moq === "24") return response(0); // nothing orderable that low
       if (moq) return response(10, [product({ id: "a", price: 4, priceBreaks: [{ qty: Number(moq), price: 4 }] })]);
@@ -224,9 +279,16 @@ describe("verifyLeafMappings: quantity/budget per-bucket checks", () => {
   });
 
   it("removes budget (not moq) when the combined check fails even though every individual bucket passed -- the PS/Phone & Technology precedent", async () => {
-    const entry = leaf([moqQuestion, budgetQuestion]);
+    // Paired with capacityQuestion (fully passing) so moq+capacity still add
+    // up to 2 surviving questions after budget is demoted -- this test is
+    // about which question the combined-check failure demotes, not the
+    // separate "at least 2 questions to ship" policy.
+    const entry = leaf([moqQuestion, budgetQuestion, capacityQuestion]);
     const fetchJson = async (url) => {
       const p = urlParams(url);
+      if (!p.has("moq") && !p.has("min_price") && p.has("attribute_value")) {
+        return response(20, [product({ id: "cap", attrs: [`Capacity: ${p.get("attribute_value")}`] })]);
+      }
       if (p.has("moq") && p.has("min_price")) throw new Error("HTTP 500 for combined request");
       if (p.has("moq")) return response(10, [product({ id: "a", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
       if (p.has("min_price")) return response(8, [product({ id: "b", price: 5 })]);
@@ -237,7 +299,7 @@ describe("verifyLeafMappings: quantity/budget per-bucket checks", () => {
     expect(result.budgetCheck.questionSurvives).toBe(true);
     expect(result.combinedQuantityBudgetCheck.passed).toBe(false);
     expect(result.removedQuestionIds).toContain("budget");
-    expect(result.survivingQuestions.map((q) => q.id)).toEqual(["moq"]);
+    expect(result.survivingQuestions.map((q) => q.id).sort()).toEqual(["capacity", "moq"]);
   });
 
   it("flags a null computed price as a bucket failure", async () => {
@@ -267,6 +329,42 @@ describe("verifyLeafMappings: quantity/budget per-bucket checks", () => {
     expect(underFive.itemCount).toBe(4);
     expect(underFive.examples).toHaveLength(3); // capped even though 4 products were returned
     expect(underFive.examples[0]).toMatchObject({ id: "a", price: 3 });
+  });
+});
+
+describe("verifyLeafMappings: never ship a single-weak-question Finder", () => {
+  it("fails the whole leaf when only 1 question survives, even though that question itself is genuinely valid", async () => {
+    // moq alone passes every check on its own merits -- but a 1-question
+    // Finder (whether that's Colour alone, quantity alone, or one lone
+    // attribute) isn't the intended "quantity, budget, up to two
+    // attributes, colour last" experience, and shipping it silently would
+    // look identical to a fully-working Finder in the manifest.
+    const entry = leaf([moqQuestion]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.has("moq")) return response(10, [product({ id: "a", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      return response(50);
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    expect(result.quantityCheck.questionSurvives).toBe(true); // moq itself is fine in isolation
+    expect(result.survivingQuestions).toEqual([]); // but doesn't ship alone
+    expect(result.removedQuestionIds).toContain("moq");
+    expect(result.belowMinimumQuestions).toBe(true);
+    expect(result.passed).toBe(false);
+  });
+
+  it("ships normally once at least 2 questions survive", async () => {
+    const entry = leaf([moqQuestion, budgetQuestion]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.has("moq")) return response(10, [product({ id: "a", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      if (p.has("min_price")) return response(8, [product({ id: "b", price: 5 })]);
+      return response(100);
+    };
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    expect(result.survivingQuestions.map((q) => q.id).sort()).toEqual(["budget", "moq"]);
+    expect(result.belowMinimumQuestions).toBe(false);
+    expect(result.passed).toBe(true);
   });
 });
 
@@ -323,11 +421,13 @@ describe("verifyLeafMappings: overall leaf outcome", () => {
   });
 
   it("records a client-products diagnostic result without letting it affect passed/failed", async () => {
-    const entry = leaf([moqQuestion]);
+    const entry = leaf([moqQuestion, budgetQuestion]);
     const fetchJson = async (url) => {
       if (url.includes("/api/client-products")) throw new Error("client-products is down");
       const p = urlParams(url);
-      if (p.has("moq")) return response(5, [product({ id: "a", price: 15, priceBreaks: [{ qty: 24, price: 15 }, { qty: 99, price: 15 }] })]);
+      if (p.has("moq") && p.has("min_price")) return response(5, [product({ id: "c", price: 5, priceBreaks: [{ qty: 1, price: 5 }] })]);
+      if (p.has("moq")) return response(5, [product({ id: "a", price: 5, priceBreaks: [{ qty: 24, price: 5 }, { qty: 99, price: 5 }] })]);
+      if (p.has("min_price")) return response(8, [product({ id: "b", price: 5 })]);
       return response(50);
     };
     const result = await verifyLeafMappings(entry, { fetchJson, apiBase });

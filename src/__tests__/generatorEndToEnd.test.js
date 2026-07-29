@@ -92,6 +92,43 @@ describe("generateManifestCore: happy path", () => {
   });
 });
 
+describe("generateManifestCore: parent/group pages", () => {
+  it("stub-excludes a parent when the snapshot has no parent audit data at all (pre-parent-audit snapshot)", () => {
+    const { parentManifest } = generateManifestCore(completeSnapshot(), authoritative, deps);
+    expect(parentManifest["PE"].finderMode).toBe("excluded");
+    expect(parentManifest["PE"].exclusionReason).toMatch(/re-run fetch-catalogue-snapshot/);
+  });
+
+  it("classifies a parent for real once the snapshot carries its own audit data, the same as any leaf", () => {
+    const snapshot = completeSnapshot();
+    snapshot.parents = [
+      {
+        leafId: "PE",
+        leafName: "Drinkware",
+        parentId: "PE",
+        parentName: "Drinkware",
+        productCount: 1500,
+        auditMode: "sampled_estimate",
+        sampleSize: 250,
+        attributes: [genderFitAttr()],
+        colourPopulatedPct: 0,
+      },
+    ];
+    const { parentManifest } = generateManifestCore(snapshot, authoritative, deps);
+    expect(parentManifest["PE"].finderMode).toBe("generic");
+    expect(parentManifest["PE"].questions.some((q) => q.attributeName === "Gender Fit")).toBe(true);
+    expect(parentManifest["PE"].filterMappingsValidated).toBe(false); // still requires the separate live-verification pass, same as leaves
+  });
+
+  it("excludes a parent with zero products the same way a leaf would, when parent audit data exists", () => {
+    const snapshot = completeSnapshot();
+    snapshot.parents = [{ leafId: "PE", leafName: "Drinkware", parentId: "PE", parentName: "Drinkware", productCount: 0 }];
+    const { parentManifest } = generateManifestCore(snapshot, authoritative, deps);
+    expect(parentManifest["PE"].finderMode).toBe("excluded");
+    expect(parentManifest["PE"].exclusionReason).not.toMatch(/re-run fetch-catalogue-snapshot/); // a REAL exclusion reason, not the missing-data fallback
+  });
+});
+
 describe("generateManifestCore: determinism", () => {
   it("produces byte-identical output across two separate runs on the same input", () => {
     const run1 = generateManifestCore(completeSnapshot(), authoritative, deps);

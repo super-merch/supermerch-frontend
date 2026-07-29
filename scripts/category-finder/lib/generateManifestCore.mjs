@@ -50,18 +50,45 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
 
   const leafCounts = reconcileLeaves(leafManifest, authoritative); // throws ReconciliationError
 
+  // Parent/group aggregate pages (e.g. "PX" Workwear, covering all of its
+  // PX-* children): confirmed live that both /api/client-products and
+  // /api/params-products (the endpoint real Finder pages call) already
+  // return the correct aggregate when queried by the parent's own category
+  // ID directly, so fetch-catalogue-snapshot.mjs audits parents through the
+  // exact same fetchLeafStats used for leaves (see snapshot.parents). Once
+  // that data exists, parents get a REAL classification here, the same
+  // classifyLeaf every leaf gets -- not a blanket stub exclusion. A snapshot
+  // fetched before this existed (snapshot.parents missing) falls back to the
+  // previous stub behavior rather than crashing.
+  const parentStatsById = new Map((snapshot.parents || []).map((p) => [p.leafId, p]));
   const parentManifest = {};
   for (const parent of authoritative.parents) {
+    const stats = parentStatsById.get(parent.id);
+    if (!stats) {
+      parentManifest[parent.id] = {
+        categoryId: parent.id,
+        categoryName: parent.name,
+        finderMode: "excluded",
+        proposedFamily: null,
+        filterMappingsValidated: false,
+        runtimeEnabled: false,
+        exclusionReason: "No live audit data for this parent/group page yet -- re-run fetch-catalogue-snapshot.mjs (which now audits parents too) before generating.",
+        dataQualityNotes: [],
+        questions: [],
+      };
+      continue;
+    }
+    const result = classifyLeaf(stats, { families, leafFamilyMap: {}, leafOverrides: {} });
     parentManifest[parent.id] = {
       categoryId: parent.id,
       categoryName: parent.name,
-      finderMode: "excluded",
-      proposedFamily: null,
-      filterMappingsValidated: false,
-      runtimeEnabled: false,
-      exclusionReason: "Parent/group aggregate pages are out of scope for this rollout -- fetch-catalogue-snapshot.mjs only audits leaf categories. A parent-page Finder would need its own aggregate-audit approach and is a separate, not-yet-scoped piece of work.",
-      dataQualityNotes: [],
-      questions: [],
+      finderMode: result.finderMode,
+      proposedFamily: result.proposedFamily,
+      filterMappingsValidated: result.filterMappingsValidated,
+      runtimeEnabled: result.runtimeEnabled,
+      exclusionReason: result.finderMode === "excluded" ? result.notes[0] : null,
+      dataQualityNotes: result.notes,
+      questions: result.questions,
     };
   }
   reconcileParents(parentManifest, authoritative);

@@ -2,7 +2,7 @@
 // dependency-injected module so it can be unit-tested against fixtures
 // without needing a real snapshot file or network access.
 
-import { isAttributeUsable, isColourUsable, hasNoProducts } from "./exclusionRules.mjs";
+import { isAttributeUsable, isPresenceAttributeUsable, isColourUsable, hasNoProducts } from "./exclusionRules.mjs";
 import { sharedQuantityQuestion, sharedBudgetQuestion, sharedColourQuestion } from "../families.js";
 import { dedupeValueStats } from "./valueDedup.mjs";
 import { buildColourFamilyOptions } from "./colourNormalization.mjs";
@@ -158,10 +158,19 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
           notes.push(`Inherited ${familyKey}: ${family.requiredAttribute} passed usability check (${requiredStat.taggedProductCount}/${requiredStat.sampleSize} sampled products tagged) and produced ${options.length} real options.`);
 
           const optionalStat = findAttr(leaf.attributes, family.optionalAttribute);
-          if (chosenAttrs.length < 2 && isAttributeUsable(optionalStat)) {
+          const isPresenceMode = family.optionalAttributeMode === "presence";
+          const optionalUsable = isPresenceMode ? isPresenceAttributeUsable(optionalStat) : isAttributeUsable(optionalStat);
+          if (chosenAttrs.length < 2 && optionalUsable) {
             const optionalOptions = buildAttributeOptions(optionalStat);
-            if (optionalOptions.length >= 2) {
-              chosenAttrs.push({ name: family.optionalAttribute, options: optionalOptions });
+            // A presence attribute (e.g. "Hi-Vis") is meaningful with just 1
+            // real option -- selecting it narrows from the whole category
+            // down to the tagged subset; the unselected "Any" default
+            // already covers "don't care", so no paired negative value is
+            // needed the way a categorical attribute would need >=2 choices
+            // to be a real question.
+            const minOptions = isPresenceMode ? 1 : 2;
+            if (optionalOptions.length >= minOptions) {
+              chosenAttrs.push({ name: family.optionalAttribute, options: optionalOptions, singleValueAllowed: isPresenceMode && optionalOptions.length === 1 });
             }
           }
         } else {
@@ -190,8 +199,22 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
   const colourOptions = buildColourOptions(leaf);
 
   const questions = [sharedQuantityQuestion(), sharedBudgetQuestion()];
-  chosenAttrs.forEach(({ name, options }) => {
-    questions.push({ id: questionIdFor(name), label: name, placeholder: "Any", type: "attribute", attributeName: name, options });
+  chosenAttrs.forEach(({ name, options, singleValueAllowed }) => {
+    questions.push({
+      id: questionIdFor(name),
+      label: name,
+      placeholder: "Any",
+      type: "attribute",
+      attributeName: name,
+      options,
+      // Only ever true for a deliberately presence-mode family attribute
+      // (see FAMILIES' optionalAttributeMode) with exactly 1 real option --
+      // tells the live verifier (MIN_SURVIVING_OPTIONS normally requires >=2
+      // options to keep a question) that this ONE option is still a
+      // meaningful filter on its own, since the unselected "Any" state
+      // already covers the complement.
+      ...(singleValueAllowed ? { singleValueAllowed: true } : {}),
+    });
   });
   if (colourOptions) {
     questions.push(sharedColourQuestion(colourOptions));

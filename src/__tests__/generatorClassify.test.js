@@ -185,6 +185,62 @@ describe("classifyLeaf: question ordering and shape invariants", () => {
   });
 });
 
+describe("classifyLeaf: presence-mode family attribute (e.g. Workwear Compliance)", () => {
+  const PRESENCE_FAMILIES = {
+    workwear_compliance: { requiredAttribute: "Gender Fit", optionalAttribute: "Compliance", optionalAttributeMode: "presence", applicableGroups: ["PX"] },
+  };
+
+  function complianceAttr(values, sampleSize) {
+    const taggedProductCount = values.reduce((s, v) => s + v.productCount, 0);
+    return {
+      name: "Compliance",
+      sampleSize,
+      taggedProductCount,
+      valueOccurrenceCount: taggedProductCount,
+      populatedPct: round1(taggedProductCount, sampleSize),
+      distinctValues: values.length,
+      topValueProductCount: values[0].productCount,
+      topShare: round1(values[0].productCount, taggedProductCount),
+      values,
+    };
+  }
+
+  it("selects a presence attribute even when one value dominates >=90% of the tagged subset (the real Hi-Vis case)", () => {
+    const compliance = complianceAttr([{ value: "Hi-Vis", productCount: 55 }, { value: "UPF Rated", productCount: 4 }], 94);
+    const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, compliance], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_compliance" }, leafOverrides: {} });
+    const q = result.questions.find((x) => x.attributeName === "Compliance");
+    expect(q).toBeDefined();
+    expect(q.options.map((o) => o.value).sort()).toEqual(["Hi-Vis", "UPF Rated"].sort());
+  });
+
+  it("accepts a single-distinct-value presence attribute and marks the question singleValueAllowed", () => {
+    const compliance = complianceAttr([{ value: "Hi-Vis", productCount: 15 }], 32);
+    const leaf = { leafId: "PX-13", parentId: "PX", productCount: 32, attributes: [usableGenderFit, compliance], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-13": "workwear_compliance" }, leafOverrides: {} });
+    const q = result.questions.find((x) => x.attributeName === "Compliance");
+    expect(q).toBeDefined();
+    expect(q.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]);
+    expect(q.singleValueAllowed).toBe(true);
+  });
+
+  it("still rejects near-zero or near-total coverage even in presence mode", () => {
+    const sparseCompliance = complianceAttr([{ value: "Hi-Vis", productCount: 1 }], 25); // 4%, below MIN_PRESENCE_COVERAGE
+    const leaf = { leafId: "PX-10", parentId: "PX", productCount: 25, attributes: [usableGenderFit, sparseCompliance], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-10": "workwear_compliance" }, leafOverrides: {} });
+    expect(result.questions.find((x) => x.attributeName === "Compliance")).toBeUndefined();
+  });
+
+  it("does not mark singleValueAllowed for a regular (non-presence) categorical attribute with just 1 option", () => {
+    // A generic single-value attribute is excluded entirely by isAttributeUsable's
+    // MIN_DISTINCT_VALUES rule -- confirms presence mode is genuinely opt-in per family,
+    // not a global relaxation of the single-value rule.
+    const leaf = { leafId: "X-09", parentId: "X", productCount: 100, attributes: [attr("Material", [{ value: "Steel", productCount: 90 }])], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.some((q) => q.attributeName === "Material")).toBe(false);
+  });
+});
+
 describe("classifyLeaf: two-gate runtime enablement (filterMappingsValidated + runtimeEnabled)", () => {
   it("both gates are false for every generator-classified (non-override) entry, regardless of how good the data looks", () => {
     const leaf = { leafId: "X-04", parentId: "X", productCount: 100, attributes: [usableGenderFit], colourPopulatedPct: 0 };

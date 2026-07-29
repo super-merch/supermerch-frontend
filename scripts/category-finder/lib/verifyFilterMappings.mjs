@@ -212,13 +212,20 @@ async function verifyTestableQuestion(categoryId, question, freshUnfilteredCount
   );
   const survivingOptions = question.options.filter((_, i) => optionResults[i].passed);
   const removedOptions = optionResults.filter((r) => !r.passed).map((r) => ({ value: r.value, reason: r.reason }));
+  // A presence-mode attribute question (e.g. Workwear's Compliance:Hi-Vis,
+  // see classify.mjs) is explicitly marked as meaningful with just 1 real
+  // option -- the generator already made that call deliberately (a
+  // customer selecting "Hi-Vis" narrows from the whole category; the
+  // unselected "Any" default already covers the complement), so the live
+  // verifier must not re-impose the normal >=2-option minimum here.
+  const minOptionsToSurvive = question.singleValueAllowed ? 1 : MIN_SURVIVING_OPTIONS;
   return {
     id: question.id,
     param: question.type === "attribute" ? "attribute_name/attribute_value" : "colors[]",
     options: optionResults,
     survivingOptions,
     removedOptions,
-    questionSurvives: survivingOptions.length >= MIN_SURVIVING_OPTIONS,
+    questionSurvives: survivingOptions.length >= minOptionsToSurvive,
   };
 }
 
@@ -400,6 +407,19 @@ export async function verifyLeafMappings(entry, deps) {
     }
   }
 
+  // A single surviving question -- whether that's Colour alone, Order
+  // quantity alone, or one lone attribute -- isn't a real Finder: it doesn't
+  // meet the "quantity first, budget second, up to two attributes, colour
+  // last" experience this project is meant to deliver, and shipping it
+  // silently would look identical to a fully-working multi-question Finder
+  // in the manifest. Require at least 2 surviving questions to ship at all;
+  // a leaf that only manages 1 is disabled with an explicit reason instead
+  // (belowMinimumQuestions below), rather than silently shipping a
+  // single-weak-question Finder.
+  const MIN_SURVIVING_QUESTIONS_TO_SHIP = 2;
+  const belowMinimumQuestions = survivingQuestions.length > 0 && survivingQuestions.length < MIN_SURVIVING_QUESTIONS_TO_SHIP;
+  const passed = freshBaseline.ok && survivingQuestions.length >= MIN_SURVIVING_QUESTIONS_TO_SHIP;
+
   return {
     categoryId: entry.categoryId,
     verifiedAt,
@@ -410,8 +430,9 @@ export async function verifyLeafMappings(entry, deps) {
     budgetCheck,
     combinedQuantityBudgetCheck: combinedCheck,
     clientProductsDiagnostic,
-    survivingQuestions,
-    removedQuestionIds,
-    passed: freshBaseline.ok && survivingQuestions.length > 0,
+    survivingQuestions: passed ? survivingQuestions : [],
+    removedQuestionIds: passed ? removedQuestionIds : [...removedQuestionIds, ...survivingQuestions.map((q) => q.id)],
+    belowMinimumQuestions,
+    passed,
   };
 }
