@@ -28,17 +28,25 @@ function questionIdFor(attributeName) {
 }
 
 // Some derived attribute stat names exist ONLY for cleaner
-// classification/display -- see customAttributeDerivation.mjs's
-// splitWorkwearCompliance, which aggregates the real "Compliance" values
-// under a separate "Visibility" stat key so a Hi-Vis question isn't
-// polluted by unrelated certifications. But "Visibility" is not a real
-// backend field: product.categorisation.promodata_attributes only ever
-// stores "Compliance: Hi-Vis". Confirmed live -- attribute_name=Visibility
-// returns item_count 0 against production for every PX-* leaf and the PX
-// parent (caught by live verification silently stripping the question
-// site-wide). The API filter must target the REAL backend attribute name;
+// classification/display -- see customAttributeDerivation.mjs, which
+// reclassifies the real "Material"/"Compliance" values under clean derived
+// stat keys (Fabric, Coaster Material, Primary Body Material, Visibility)
+// so a customer isn't shown a messy raw question alongside a clean derived
+// one. But none of these derived names are real backend fields:
+// product.categorisation.promodata_attributes only ever stores the
+// ORIGINAL raw name ("Material" or "Compliance"). Confirmed live --
+// attribute_name=Visibility and attribute_name=Primary Body Material and
+// attribute_name=Coaster Material all return item_count 0 against
+// production (caught by live verification silently stripping every one of
+// these questions site-wide, for the PX parent/leaves, Metal Pens, and
+// Coasters). The API filter must target the REAL backend attribute name;
 // only the customer-facing label may use the clean derived name.
-const DERIVED_ATTRIBUTE_BACKEND_NAME = { Visibility: "Compliance" };
+const DERIVED_ATTRIBUTE_BACKEND_NAME = {
+  Visibility: "Compliance",
+  "Primary Body Material": "Material",
+  "Coaster Material": "Material",
+  Fabric: "Material",
+};
 
 /**
  * Builds real, validated dropdown options from one attribute's per-value

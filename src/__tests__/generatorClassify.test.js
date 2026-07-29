@@ -256,6 +256,68 @@ describe("classifyLeaf: presence-mode family attribute (e.g. Workwear Visibility
   });
 });
 
+// Live-verification-caught bug, same root cause as Visibility above: Metal
+// Pens' "Primary Body Material" and Coasters' "Coaster Material" are BOTH
+// derived stat names from customAttributeDerivation.mjs, reclassifying the
+// real "Material" attribute -- but product.categorisation.promodata_attributes
+// never stores those derived names, only the original "Material". Confirmed
+// live: attribute_name=Primary Body Material and attribute_name=Coaster
+// Material both returned item_count 0 against production, silently
+// stripping the question from Metal Pens and Coasters on the previous
+// verification pass -- the exact same bug as Visibility, just missed for
+// these two derived names in the first fix.
+describe("classifyLeaf: generic-fallback derived attribute names also resolve to their real backend field", () => {
+  it("Metal Pens: 'Primary Body Material' question's attributeName resolves to the real backend field 'Material'", () => {
+    const material = attr("Primary Body Material", [
+      { value: "Aluminium", productCount: 40 },
+      { value: "Stainless Steel", productCount: 30 },
+      { value: "Other Metal", productCount: 20 },
+    ]);
+    const leaf = { leafId: "PY-06", parentId: "PY", productCount: 100, attributes: [material], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Primary Body Material");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+  });
+
+  it("Coasters: 'Coaster Material' question's attributeName resolves to the real backend field 'Material'", () => {
+    const material = attr("Coaster Material", [
+      { value: "Cork", productCount: 40 },
+      { value: "Bamboo/Wood", productCount: 30 },
+      { value: "Silicone/Rubber", productCount: 20 },
+    ]);
+    const leaf = { leafId: "PM-07", parentId: "PM", productCount: 100, attributes: [material], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Coaster Material");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+  });
+
+  it("Beanies: 'Fabric' question's attributeName resolves to the real backend field 'Material' (future-proofed even though it doesn't ship today for coverage reasons)", () => {
+    const fabric = attr("Fabric", [
+      { value: "Acrylic", productCount: 40 },
+      { value: "Wool", productCount: 30 },
+      { value: "Cotton", productCount: 20 },
+    ]);
+    const leaf = { leafId: "PK-02", parentId: "PK", productCount: 100, attributes: [fabric], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Fabric");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+  });
+
+  it("a leaf's own genuinely real, non-derived 'Material' attribute is completely unaffected -- attributeName stays 'Material'", () => {
+    const material = attr("Material", [
+      { value: "Steel", productCount: 40 },
+      { value: "Plastic", productCount: 30 },
+    ]);
+    const leaf = { leafId: "X-20", parentId: "X", productCount: 100, attributes: [material], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Material");
+    expect(q.attributeName).toBe("Material");
+  });
+});
+
 describe("classifyLeaf: two-gate runtime enablement (filterMappingsValidated + runtimeEnabled)", () => {
   it("both gates are false for every generator-classified (non-override) entry, regardless of how good the data looks", () => {
     const leaf = { leafId: "X-04", parentId: "X", productCount: 100, attributes: [usableGenderFit], colourPopulatedPct: 0 };

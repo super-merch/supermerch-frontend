@@ -53,6 +53,43 @@ though note Visibility itself is also constrained: the SAME positive-match-only 
 only "Hi-Vis" can be offered, never a genuine "Non-Hi-Vis" (see the `workwear_visibility` family
 comment in `families.js` for the full writeup, and this doc's next section).
 
+## Newly found: a derived CLASSIFICATION LABEL is not automatically a real filter value
+
+Caught by the live-verification pass, not assumed in advance. `attribute_name`/`attribute_value`
+does an exact (word-boundary) regex match against the LITERAL strings already present in
+`product.categorisation.promodata_attributes` -- it has no concept of a "classification label"
+that groups several raw supplier strings together. Confirmed live:
+
+```
+GET .../params-products?product_type_ids=PY-06&attribute_name=Material&attribute_value=Metal+with+Bamboo+Accent
+  -> item_count: 0        (never exists verbatim -- it's a derived label, not a raw tag)
+GET .../params-products?product_type_ids=PY-06&attribute_name=Material&attribute_value=Aluminium
+  -> item_count: 150      (a REAL literal raw value -- works)
+```
+
+This split the 3 owner-requested Material-reclassification filters into two different outcomes:
+
+- **Coasters' "Coaster Material" and Beanies' "Fabric"** group several raw supplier synonyms
+  into one clean bucket (e.g. real observed values like "Bamboo"/"Wood"/"Timber" -> the single
+  label "Bamboo/Wood"). This is architecturally fixable the same way colour normalization already
+  works (`lib/colourNormalization.mjs`): build each option's filter `value` as a comma-joined list
+  of the REAL raw synonyms that map to that bucket (the backend's attribute filter already ORs
+  comma-separated values under one `attribute_name`, confirmed by reading
+  `getAllV2Products.js`'s `groupedValues`/`$or` construction) instead of the bucket label itself.
+  **Not yet implemented** -- currently ships with only the literal-match subset (e.g. Coasters:
+  "Cork" alone survived live verification; every grouped-synonym option was correctly stripped
+  rather than shipped broken). Tracked as follow-up engineering work, not abandoned.
+- **Metal Pens' compound buckets ("Metal with Bamboo Accent", "Metal with Recycled/Other
+  Accent")** are fundamentally different: `classifyMetalPenMaterial` requires CO-OCCURRENCE of
+  two raw tags on the SAME product (e.g. a metal keyword AND "Bamboo" together). No comma-joined
+  value list can express this: the backend's filter is OR-only within one `attribute_name`, with
+  no AND/compound-condition mechanism for two facts about the same product. Even a perfectly
+  constructed synonym list would over-match (e.g. a plain Aluminium pen with no bamboo accent
+  would incorrectly match a filter built from "Aluminium,Bamboo"). **This is a genuine backend
+  limitation, not an implementation gap** -- live verification correctly stripped these 3 options,
+  leaving Metal Pens' "Primary Body Material" filter shipping with only the 2 real literal values
+  (Aluminium, Stainless Steel) it can honestly support today.
+
 ## Also blocked: a genuine "Non-Hi-Vis" filter
 
 Separate from the 7 attributes above, but the same root cause: `getAllV2Products.js`'s attribute
