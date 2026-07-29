@@ -40,6 +40,16 @@ import { validateSnapshot } from "./lib/schema.mjs";
 import { dedupeProductsById } from "./lib/dedupe.mjs";
 import { mapWithConcurrency } from "./lib/concurrency.mjs";
 import { fetchJsonWithRetry as fetchJsonWithRetryShared } from "./lib/httpRetry.mjs";
+import { applyCustomAttributeDerivation } from "./lib/customAttributeDerivation.mjs";
+
+// See lib/customAttributeDerivation.mjs for the actual per-leaf derivation
+// logic (Beanies Fabric, Coaster Material, Metal Pens primary body
+// material, Workwear Visibility/Compliance split) -- extracted there so
+// it's directly unit-testable against fixtures, not only exercisable via a
+// real network fetch. Custom-derived attribute names must be added to
+// ATTR_NAMES below too, or the generic per-product loop's
+// `if (!ATTR_NAMES.includes(name)) continue` guard would silently drop
+// them before they ever reach classify.mjs.
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
@@ -52,7 +62,27 @@ const RETRY_DELAYS_MS = [500, 1500, 4000];
 // be inferred as compliant). No fuzzy name/description keyword classifier
 // was needed for this one; the data already exists, it just wasn't in this
 // allowlist.
-const ATTR_NAMES = ["Gender Fit", "Material", "Capacity", "Eco Factors", "Sport", "Theme", "Feature", "Features", "Sleeves", "Compliance"];
+const ATTR_NAMES = [
+  "Gender Fit",
+  "Material",
+  "Capacity",
+  "Eco Factors",
+  "Sport",
+  "Theme",
+  "Feature",
+  "Features",
+  "Sleeves",
+  "Compliance",
+  // Synthetic, per-product derived attributes (see CUSTOM_ATTRIBUTE_DERIVERS
+  // above) -- these never appear literally in a product's raw
+  // promodata_attributes; they're computed here from the real Material
+  // value(s) already tagged on that product, then folded into the exact
+  // same aggregation/usability pipeline as any other attribute name.
+  "Fabric",
+  "Coaster Material",
+  "Primary Body Material",
+  "Visibility",
+];
 const STRATA_COUNT = 5; // number of pages sampled, spread evenly across the category
 const PER_PAGE_LIMIT = 20; // per-page product count for each stratum (a plain list call, not send_attributes)
 
@@ -165,6 +195,9 @@ async function fetchLeafStats(leaf) {
       if (!perProductValues.has(name)) perProductValues.set(name, new Set());
       perProductValues.get(name).add(value); // Set dedupes a repeated identical value within this one product
     }
+
+    applyCustomAttributeDerivation(leaf.id, perProductValues);
+
     for (const [name, valueSet] of perProductValues) {
       taggedProductCounts.set(name, (taggedProductCounts.get(name) || 0) + 1);
       if (!valueProductCounts.has(name)) valueProductCounts.set(name, new Map());
@@ -188,6 +221,12 @@ async function fetchLeafStats(leaf) {
     }
   }
 
+  // applyCustomAttributeDerivation already deleted the raw source attribute
+  // (Material / Compliance) from each product's OWN perProductValues before
+  // aggregation, for every leaf it touched -- so taggedProductCounts simply
+  // never accumulates anything for that raw name on those leaves, and this
+  // loop's normal zero-count skip below handles it with no special case
+  // needed here.
   const attributes = [];
   for (const name of ATTR_NAMES) {
     const taggedProductCount = taggedProductCounts.get(name) || 0;

@@ -65,23 +65,43 @@ export const FAMILIES = {
     applicableGroups: ["PU", "PV", "PW", "PN", "PO", "PC", "PG", "PB"],
   },
   // Workwear gets its own family (split out of clothing_gender_fit) so
-  // Compliance -- the real, structured Hi-Vis/rail-compliance/UPF-rating
-  // certification tag discovered in the live API's `product.categorisation.
-  // promodata_attributes` (not previously in this generator's ATTR_NAMES
-  // allowlist) -- can be prioritized as the optional attribute slot ahead of
-  // Sleeves. A safety-conscious Workwear buyer choosing "Hi-Vis" is more
-  // valuable than sleeve length; Sleeves stays the optional pick for every
-  // OTHER clothing group, where Compliance data barely exists anyway.
-  workwear_compliance: {
+  // Visibility -- derived from the real, structured "Compliance" tag
+  // discovered in the live API's `product.categorisation.
+  // promodata_attributes` (see fetch-catalogue-snapshot.mjs's
+  // splitWorkwearCompliance, which separates Hi-Vis from the OTHER
+  // compliance values -- rail compliance, UPF rating -- so a customer
+  // asking "is this Hi-Vis" and a customer asking "is this rail-compliant"
+  // get two honestly distinct questions, not one mixed dropdown) -- can be
+  // prioritized as the optional attribute slot ahead of Sleeves. A
+  // safety-conscious Workwear buyer choosing "Hi-Vis" is more valuable than
+  // sleeve length; Sleeves stays the optional pick for every OTHER clothing
+  // group, where this data barely exists anyway.
+  //
+  // IMPORTANT, sets the customer-facing design decision explicitly: this
+  // ships "Visibility: Hi-Vis" as a POSITIVE-ONLY filter (selecting it
+  // narrows to Hi-Vis products; leaving it unselected shows everything,
+  // Hi-Vis and non-Hi-Vis alike -- the existing "Any" default already
+  // covers "don't care"). It does NOT and CANNOT offer an explicit
+  // "Non-Hi-Vis" option: confirmed live that the backend's attribute filter
+  // is positive-match-only (getAllV2Products.js builds an OR of regexes
+  // against promodata_attributes; there is no negation/exclude mechanism
+  // anywhere in that code path), so a genuine "show me only the non-Hi-Vis
+  // ones" filter is impossible without a backend change. A separate backend
+  // PR proposing that change exists (not merged/deployed) -- see
+  // scripts/category-finder/BACKEND_BLOCKED_ATTRIBUTES.md. Never pretend a
+  // positive attribute filter supports full negation; the copy/UI must not
+  // imply a Non-Hi-Vis toggle exists.
+  workwear_visibility: {
     requiredAttribute: "Gender Fit",
-    optionalAttribute: "Compliance",
-    // Compliance is a presence/certification tag (Hi-Vis, NSW/VIC Rail
-    // Compliant, TTMC, UPF Rated), not a categorical choice -- real data
-    // shows it's 88-100% "Hi-Vis" among TAGGED products for most Workwear
-    // leaves (some leaves only ever have Hi-Vis at all, never a second
-    // value), which the generic isAttributeUsable rule would reject as
-    // "no discriminating power" even though selecting "Hi-Vis" genuinely
-    // narrows the whole category. See isPresenceAttributeUsable.
+    optionalAttribute: "Visibility",
+    // Visibility (like the "Compliance" it's derived from) is a
+    // presence/certification tag, not a categorical choice -- real data
+    // shows Hi-Vis is the near-universal value among products that carry
+    // ANY Compliance tag at all for most Workwear leaves (some leaves only
+    // ever have Hi-Vis, never a second value), which the generic
+    // isAttributeUsable rule would reject as "no discriminating power" even
+    // though selecting "Hi-Vis" genuinely narrows the whole category. See
+    // isPresenceAttributeUsable.
     optionalAttributeMode: "presence",
     applicableGroups: ["PX"],
   },
@@ -153,20 +173,20 @@ export const LEAF_FAMILY_MAP = {
   "PW-01": "clothing_gender_fit", // Chefwear
   "PW-04": "clothing_gender_fit", // Roughalls & Overalls
   "PW-10": "clothing_gender_fit", // Tunics
-  "PX-01": "workwear_compliance", // Aprons
-  "PX-02": "workwear_compliance", // Misc Workwear
-  "PX-03": "workwear_compliance", // Work Hoodies
-  "PX-04": "workwear_compliance", // Work Jackets
-  "PX-05": "workwear_compliance", // Work Jumpers
-  "PX-06": "workwear_compliance", // Work Pants
-  "PX-07": "workwear_compliance", // Work Polar Fleece
-  "PX-08": "workwear_compliance", // Work Polo Shirts
-  "PX-09": "workwear_compliance", // Work Shirts
-  "PX-10": "workwear_compliance", // Work Shorts
-  "PX-11": "workwear_compliance", // Work Singlets
-  "PX-12": "workwear_compliance", // Work Socks
-  "PX-13": "workwear_compliance", // Work T-Shirts
-  "PX-14": "workwear_compliance", // Work Vests
+  "PX-01": "workwear_visibility", // Aprons
+  "PX-02": "workwear_visibility", // Misc Workwear
+  "PX-03": "workwear_visibility", // Work Hoodies
+  "PX-04": "workwear_visibility", // Work Jackets
+  "PX-05": "workwear_visibility", // Work Jumpers
+  "PX-06": "workwear_visibility", // Work Pants
+  "PX-07": "workwear_visibility", // Work Polar Fleece
+  "PX-08": "workwear_visibility", // Work Polo Shirts
+  "PX-09": "workwear_visibility", // Work Shirts
+  "PX-10": "workwear_visibility", // Work Shorts
+  "PX-11": "workwear_visibility", // Work Singlets
+  "PX-12": "workwear_visibility", // Work Socks
+  "PX-13": "workwear_visibility", // Work T-Shirts
+  "PX-14": "workwear_visibility", // Work Vests
   // drinkware (11 leaves)
   "PE-01": "drinkware", // Coffee Mugs
   "PE-02": "drinkware", // Drink Bottles (has its own LEAF_OVERRIDES entry below, takes priority)

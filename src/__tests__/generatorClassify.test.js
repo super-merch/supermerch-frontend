@@ -185,50 +185,46 @@ describe("classifyLeaf: question ordering and shape invariants", () => {
   });
 });
 
-describe("classifyLeaf: presence-mode family attribute (e.g. Workwear Compliance)", () => {
+describe("classifyLeaf: presence-mode family attribute (e.g. Workwear Visibility)", () => {
   const PRESENCE_FAMILIES = {
-    workwear_compliance: { requiredAttribute: "Gender Fit", optionalAttribute: "Compliance", optionalAttributeMode: "presence", applicableGroups: ["PX"] },
+    workwear_visibility: { requiredAttribute: "Gender Fit", optionalAttribute: "Visibility", optionalAttributeMode: "presence", applicableGroups: ["PX"] },
   };
 
-  function complianceAttr(values, sampleSize) {
-    const taggedProductCount = values.reduce((s, v) => s + v.productCount, 0);
+  // Visibility is a single-value ("Hi-Vis") presence attribute by design --
+  // fetch-catalogue-snapshot.mjs's splitWorkwearCompliance already separated
+  // it from the OTHER real Compliance values (rail compliance, UPF rating)
+  // before this stage ever sees it, so unlike the raw multi-value Compliance
+  // attribute this replaced, a Visibility stat never carries more than 1
+  // distinct value.
+  function visibilityAttr(productCount, sampleSize) {
     return {
-      name: "Compliance",
+      name: "Visibility",
       sampleSize,
-      taggedProductCount,
-      valueOccurrenceCount: taggedProductCount,
-      populatedPct: round1(taggedProductCount, sampleSize),
-      distinctValues: values.length,
-      topValueProductCount: values[0].productCount,
-      topShare: round1(values[0].productCount, taggedProductCount),
-      values,
+      taggedProductCount: productCount,
+      valueOccurrenceCount: productCount,
+      populatedPct: round1(productCount, sampleSize),
+      distinctValues: 1,
+      topValueProductCount: productCount,
+      topShare: 100,
+      values: [{ value: "Hi-Vis", productCount }],
     };
   }
 
-  it("selects a presence attribute even when one value dominates >=90% of the tagged subset (the real Hi-Vis case)", () => {
-    const compliance = complianceAttr([{ value: "Hi-Vis", productCount: 55 }, { value: "UPF Rated", productCount: 4 }], 94);
-    const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, compliance], colourPopulatedPct: 0 };
-    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_compliance" }, leafOverrides: {} });
-    const q = result.questions.find((x) => x.attributeName === "Compliance");
-    expect(q).toBeDefined();
-    expect(q.options.map((o) => o.value).sort()).toEqual(["Hi-Vis", "UPF Rated"].sort());
-  });
-
-  it("accepts a single-distinct-value presence attribute and marks the question singleValueAllowed", () => {
-    const compliance = complianceAttr([{ value: "Hi-Vis", productCount: 15 }], 32);
-    const leaf = { leafId: "PX-13", parentId: "PX", productCount: 32, attributes: [usableGenderFit, compliance], colourPopulatedPct: 0 };
-    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-13": "workwear_compliance" }, leafOverrides: {} });
-    const q = result.questions.find((x) => x.attributeName === "Compliance");
+  it("selects a presence attribute even though Hi-Vis is the ONLY value it ever carries (the real, already-split case)", () => {
+    const visibility = visibilityAttr(55, 94);
+    const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, visibility], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_visibility" }, leafOverrides: {} });
+    const q = result.questions.find((x) => x.attributeName === "Visibility");
     expect(q).toBeDefined();
     expect(q.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]);
     expect(q.singleValueAllowed).toBe(true);
   });
 
   it("still rejects near-zero or near-total coverage even in presence mode", () => {
-    const sparseCompliance = complianceAttr([{ value: "Hi-Vis", productCount: 1 }], 25); // 4%, below MIN_PRESENCE_COVERAGE
-    const leaf = { leafId: "PX-10", parentId: "PX", productCount: 25, attributes: [usableGenderFit, sparseCompliance], colourPopulatedPct: 0 };
-    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-10": "workwear_compliance" }, leafOverrides: {} });
-    expect(result.questions.find((x) => x.attributeName === "Compliance")).toBeUndefined();
+    const sparseVisibility = visibilityAttr(1, 25); // 4%, below MIN_PRESENCE_COVERAGE
+    const leaf = { leafId: "PX-10", parentId: "PX", productCount: 25, attributes: [usableGenderFit, sparseVisibility], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-10": "workwear_visibility" }, leafOverrides: {} });
+    expect(result.questions.find((x) => x.attributeName === "Visibility")).toBeUndefined();
   });
 
   it("does not mark singleValueAllowed for a regular (non-presence) categorical attribute with just 1 option", () => {
