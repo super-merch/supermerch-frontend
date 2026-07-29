@@ -91,3 +91,4 @@ pnpm-lock.yaml
 # parentGroupManifest.js, reconciliation.js, authoritative-category-ids.json)
 # are committed.
 scripts/category-finder/.snapshot/
+.verify-logs/

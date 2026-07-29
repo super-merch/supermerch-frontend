@@ -1,134 +1,231 @@
-// Run manually, AFTER generate-manifest.mjs, against the same live catalogue
-// snapshot used to generate the manifest:
+// Run manually, AFTER generate-manifest.mjs, against the live catalogue:
 //
 //   node scripts/category-finder/verify-filter-mappings.mjs
 //
-// This is the separate, explicit verification step classify.mjs's comments
-// keep pointing at: the generator can never set filterMappingsValidated true
-// itself (it has no network access), so nothing it classifies can go live
-// until something ELSE checks that the generated question options actually
-// produce working, narrowing requests against the real API. This script is
-// that check.
+// This is the exhaustive live-verification pass: every option of every
+// attribute/colour question, plus quantity/budget/combined checks, replayed
+// against the real /api/params-products endpoint (the one real Category
+// Finder pages actually call), with a fresh unfiltered baseline fetched in
+// THIS run (never trusted from the older snapshot). See
+// lib/verifyFilterMappings.mjs for exactly what each check requires.
 //
-// For every non-excluded, not-already-validated entry in the CURRENT
-// src/config/generated/categoryFinderManifest.js, it replays each
-// attribute/colour question's top option as a real /api/params-products
-// request and requires: the request succeeds, returns a non-empty result,
-// and narrows relative to the leaf's unfiltered count (see
-// lib/verifyFilterMappings.mjs for exactly what "narrows" means and why
-// moq/budget aren't checked here). An entry only gets BOTH
-// filterMappingsValidated AND runtimeEnabled promoted to true if EVERY one
-// of its testable questions passes -- a partial pass is not a pass, and
-// leaves both gates false with the failure recorded in dataQualityNotes so
-// it's visible for a follow-up fix, not silently dropped.
+// This script ONLY sets filterMappingsValidated. It never touches
+// runtimeEnabled -- that is a separate, explicit business-approval step, see
+// promote-runtime-enabled.mjs. The two gates must never be fused into one
+// automatic side effect of a technical check.
 //
-// Re-running this script is safe and idempotent: it never re-checks an entry
-// that's already filterMappingsValidated (an override like PE-02, or an
-// entry a previous run already promoted), and re-checking a still-failing
-// entry just re-records the same (or updated) failure reason.
+// CRASH SAFETY: this can be a multi-thousand-request run against a real
+// production API, and this specific environment has proven unreliable
+// mid-run (system restarts, session teardowns) more than once. So this
+// writes the manifest + evidence file to disk after EVERY SINGLE category
+// finishes, not just once at the very end -- an interruption at any point
+// loses at most the one category that was in flight, never a whole batch's
+// worth of already-completed work.
+//
+// BATCHING is still supported (and still recommended for a controllable,
+// reviewable rollout) via env vars:
+//
+//   VERIFY_OFFSET=0   VERIFY_LIMIT=50  node scripts/category-finder/verify-filter-mappings.mjs
+//   VERIFY_OFFSET=50  VERIFY_LIMIT=50  node scripts/category-finder/verify-filter-mappings.mjs
+//   ... etc
+//
+// Candidates outside the requested slice are read from whatever is ALREADY
+// on disk and passed through unchanged. Omit both env vars to process every
+// remaining candidate in one run (still crash-safe either way, since every
+// individual category's result is persisted immediately).
+//
+// ALWAYS re-verifies every candidate in the requested slice (no
+// skip-if-already-validated shortcut within that slice) -- a stricter
+// verifier run later must never leave stale results from an earlier, more
+// lenient run untouched. Curated overrides (PE-02) are excluded from the
+// manifest-patching entirely (their questions/gates are hand-authored and
+// must never be trimmed or reset by this script), but ARE still run through
+// the same checks as a regression guard every run (cheap -- it's one
+// category), recorded separately, never written to the manifest.
 
 import fs from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { verifyLeafMappings } from "./lib/verifyFilterMappings.mjs";
 import { mapWithConcurrency } from "./lib/concurrency.mjs";
+import { fetchJsonWithRetry as fetchJsonWithRetryShared } from "./lib/httpRetry.mjs";
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
+// verifyLeafMappings checks a question's options concurrently too
+// (OPTION_CHECK_CONCURRENCY in lib/verifyFilterMappings.mjs), so the
+// per-category concurrency here is deliberately modest to keep total
+// simultaneous load on the live API reasonable (worst case ~3x6=18
+// concurrent requests).
 const CONCURRENCY = 3;
 const RETRY_DELAYS_MS = [500, 1500];
+const REQUEST_TIMEOUT_MS = 20_000;
+
+const BATCH_OFFSET = Number(process.env.VERIFY_OFFSET || 0);
+const BATCH_LIMIT = process.env.VERIFY_LIMIT ? Number(process.env.VERIFY_LIMIT) : Infinity;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SNAPSHOT_PATH = path.join(__dirname, ".snapshot", "catalogue-snapshot.json");
 const MANIFEST_PATH = path.join(__dirname, "../../src/config/generated/categoryFinderManifest.js");
+const EVIDENCE_PATH = path.join(__dirname, "../../src/config/generated/categoryFinderVerificationEvidence.json");
 
-async function fetchJsonWithRetry(url) {
-  let lastError;
-  for (const delay of [0, ...RETRY_DELAYS_MS]) {
-    if (delay) await new Promise((r) => setTimeout(r, delay));
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-      return await res.json();
-    } catch (err) {
-      lastError = err;
-    }
-  }
-  throw lastError;
-}
+const fetchJsonWithRetry = (url) => fetchJsonWithRetryShared(url, RETRY_DELAYS_MS, REQUEST_TIMEOUT_MS);
 
 function serializeManifest(manifest) {
   return `// AUTO-GENERATED by scripts/category-finder/generate-manifest.mjs, then
 // PATCHED by scripts/category-finder/verify-filter-mappings.mjs -- do not hand-edit.
-// filterMappingsValidated/runtimeEnabled reflect live verification against
-// the real API (see dataQualityNotes on each entry for evidence).
+// filterMappingsValidated reflects live, exhaustive verification against the
+// real API (every option of every question, quantity/budget/combined
+// checks, fresh baseline each run). See categoryFinderVerificationEvidence.json
+// for the full per-option evidence. runtimeEnabled is set by a SEPARATE step
+// (promote-runtime-enabled.mjs), never by this script.
 export const CATEGORY_FINDER_MANIFEST = ${JSON.stringify(manifest, null, 2)};
 `;
 }
 
-async function main() {
-  if (!fs.existsSync(SNAPSHOT_PATH)) {
-    console.error(`No snapshot found at ${SNAPSHOT_PATH}. Run fetch-catalogue-snapshot.mjs first.`);
-    process.exit(1);
+function loadExistingEvidence() {
+  if (!fs.existsSync(EVIDENCE_PATH)) return { categories: {} };
+  try {
+    return JSON.parse(fs.readFileSync(EVIDENCE_PATH, "utf8"));
+  } catch {
+    return { categories: {} }; // corrupt/partial file from an interrupted run -- start this field fresh rather than crash
   }
+}
+
+async function main() {
   if (!fs.existsSync(MANIFEST_PATH)) {
     console.error(`No manifest found at ${MANIFEST_PATH}. Run generate-manifest.mjs first.`);
     process.exit(1);
   }
 
-  const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_PATH, "utf8"));
-  const countByLeaf = new Map(snapshot.leaves.map((l) => [l.leafId, l.productCount]));
-
   const { CATEGORY_FINDER_MANIFEST } = await import(`${pathToFileURL(MANIFEST_PATH).href}?t=${Date.now()}`);
-
   const entries = Object.entries(CATEGORY_FINDER_MANIFEST);
-  let checked = 0;
-  let promoted = 0;
-  let failed = 0;
-  let skipped = 0;
+  const totalLeafEntries = entries.length;
 
-  const patchedEntries = await mapWithConcurrency(entries, CONCURRENCY, async ([categoryId, entry]) => {
-    if (entry.finderMode === "excluded" || entry.filterMappingsValidated) {
-      skipped += 1;
-      return [categoryId, entry];
+  // Mutable working copies -- persisted to disk after every single category,
+  // never held only in memory until "the end."
+  const liveManifest = { ...CATEGORY_FINDER_MANIFEST };
+  const liveEvidence = { ...loadExistingEvidence().categories };
+
+  const allCandidates = entries.filter(([, entry]) => entry.finderMode !== "excluded" && entry.finderMode !== "curated");
+  const curatedEntries = entries.filter(([, entry]) => entry.finderMode === "curated");
+  const excludedEntries = entries.filter(([, entry]) => entry.finderMode === "excluded");
+
+  const sliceEnd = Number.isFinite(BATCH_LIMIT) ? BATCH_OFFSET + BATCH_LIMIT : allCandidates.length;
+  const batchCandidates = allCandidates.slice(BATCH_OFFSET, sliceEnd);
+
+  if (batchCandidates.length === 0) {
+    console.error(`No candidates in range [${BATCH_OFFSET}, ${sliceEnd}) -- only ${allCandidates.length} candidates exist. Nothing to do.`);
+    process.exit(1);
+  }
+
+  function persist() {
+    if (Object.keys(liveManifest).length !== totalLeafEntries) {
+      throw new Error(`Manifest entry count changed: started with ${totalLeafEntries}, now ${Object.keys(liveManifest).length}. Refusing to write -- this must never silently drop entries.`);
     }
-    checked += 1;
-    const unfilteredCount = countByLeaf.get(categoryId) ?? 0;
-    const { verified, checks, reason } = await verifyLeafMappings(entry, unfilteredCount, {
-      fetchJson: fetchJsonWithRetry,
-      apiBase: API_BASE,
-    });
+    fs.writeFileSync(MANIFEST_PATH, serializeManifest(liveManifest));
 
-    if (verified) {
-      promoted += 1;
-      const evidence =
-        checks.length > 0
-          ? `Live-verified ${checks.length} question(s) against the real API: ${checks.map((c) => `${c.questionId}="${c.value}" -> ${c.itemCount} result(s)`).join("; ")}.`
-          : "No category-specific (attribute/colour) questions to verify -- vacuously passed.";
-      return [
-        categoryId,
-        {
-          ...entry,
-          filterMappingsValidated: true,
-          runtimeEnabled: true,
-          dataQualityNotes: [...entry.dataQualityNotes, evidence],
-        },
-      ];
-    }
-
-    failed += 1;
-    return [
-      categoryId,
-      {
-        ...entry,
-        dataQualityNotes: [...entry.dataQualityNotes, `Live verification FAILED (${reason}): ${JSON.stringify(checks)}`],
+    // "Failed" and "never yet verified" are genuinely different states for a
+    // candidate that currently has filterMappingsValidated=false: one was
+    // explicitly checked and rejected, the other simply hasn't been touched
+    // by any batch yet. Both look identical on the boolean gate alone, so
+    // this distinguishes them by which marker (if either) appears in the
+    // entry's own notes -- computed the same way for both, so they can never
+    // silently double-count or leave a gap.
+    const isCandidate = (e) => e.finderMode !== "excluded" && e.finderMode !== "curated";
+    const wasExplicitlyChecked = (e) => e.dataQualityNotes.some((n) => n.includes("Live-verified") || n.includes("Live verification FAILED"));
+    const allEntries = Object.values(liveManifest);
+    const evidenceDoc = {
+      generatedAt: new Date().toISOString(),
+      summary: {
+        totalLeafEntries,
+        technicallyValidated: allEntries.filter((e) => isCandidate(e) && e.filterMappingsValidated).length,
+        validationFailed: allEntries.filter((e) => isCandidate(e) && !e.filterMappingsValidated && wasExplicitlyChecked(e)).length,
+        neverYetVerified: allEntries.filter((e) => isCandidate(e) && !wasExplicitlyChecked(e)).length,
+        curatedOverrides: curatedEntries.length,
+        excluded: excludedEntries.length,
       },
-    ];
+      categories: liveEvidence,
+    };
+    fs.writeFileSync(EVIDENCE_PATH, JSON.stringify(evidenceDoc, null, 2));
+  }
+
+  // Excluded entries get a static evidence stub -- cheap, idempotent, written now.
+  for (const [categoryId, entry] of excludedEntries) {
+    liveEvidence[categoryId] = { categoryId, note: "excluded (no products / no usable attribute) -- not live-checked, nothing to verify", exclusionReason: entry.exclusionReason, passed: null };
+  }
+  persist();
+
+  // Curated overrides: regression-checked every run (cheap -- one category),
+  // manifest entry never modified, saved immediately.
+  const curatedRegressionReports = {};
+  for (const [categoryId, entry] of curatedEntries) {
+    const evidence = await verifyLeafMappings(entry, { fetchJson: fetchJsonWithRetry, apiBase: API_BASE });
+    curatedRegressionReports[categoryId] = evidence;
+    liveEvidence[categoryId] = { ...evidence, note: "curated override -- regression-checked only, manifest entry NOT modified by this script" };
+    persist();
+  }
+
+  console.log(
+    `Verifying batch: candidates [${BATCH_OFFSET}, ${sliceEnd}) of ${allCandidates.length} total (${batchCandidates.length} in this batch). Saving to disk after EVERY category -- safe to interrupt.`
+  );
+
+  let done = 0;
+  let technicallyValidated = 0;
+  let validationFailed = 0;
+  let totalOptionChecks = 0;
+
+  await mapWithConcurrency(batchCandidates, CONCURRENCY, async ([categoryId, entry]) => {
+    const evidence = await verifyLeafMappings(entry, { fetchJson: fetchJsonWithRetry, apiBase: API_BASE });
+    liveEvidence[categoryId] = evidence;
+    totalOptionChecks += evidence.questions.reduce((s, q) => s + q.options.length, 0);
+
+    if (evidence.passed) {
+      technicallyValidated += 1;
+      liveManifest[categoryId] = {
+        ...entry,
+        questions: evidence.survivingQuestions,
+        filterMappingsValidated: true,
+        runtimeEnabled: false, // set only by the separate promotion step
+        dataQualityNotes: [
+          ...entry.dataQualityNotes,
+          `Live-verified ${evidence.questions.length} category-specific question(s) (${evidence.questions.reduce((s, q) => s + q.options.length, 0)} option(s) tested) + quantity/budget checks against the real API at ${evidence.verifiedAt}.` +
+            (evidence.removedQuestionIds.length > 0 ? ` Removed question(s) that failed verification: ${evidence.removedQuestionIds.join(", ")}.` : ""),
+        ],
+      };
+    } else {
+      validationFailed += 1;
+      liveManifest[categoryId] = {
+        ...entry,
+        questions: [],
+        filterMappingsValidated: false,
+        runtimeEnabled: false,
+        dataQualityNotes: [...entry.dataQualityNotes, `Live verification FAILED at ${evidence.verifiedAt}: no question survived exhaustive checking. See categoryFinderVerificationEvidence.json.`],
+      };
+    }
+
+    // Persisted after EVERY category -- an interruption loses at most the
+    // one (or few, given concurrency) category in flight right now, never
+    // the whole batch.
+    persist();
+
+    done += 1;
+    if (done % 5 === 0 || done === batchCandidates.length) {
+      console.log(`  ...${done}/${batchCandidates.length} in this batch (${totalOptionChecks} option checks so far, ${technicallyValidated} validated, ${validationFailed} failed so far)`);
+    }
   });
 
-  const patchedManifest = Object.fromEntries(patchedEntries);
-  fs.writeFileSync(MANIFEST_PATH, serializeManifest(patchedManifest));
+  const failedRegression = Object.entries(curatedRegressionReports).filter(([, r]) => !r.passed);
+  const finalAllEntries = Object.values(liveManifest);
+  const isCandidateFinal = (e) => e.finderMode !== "excluded" && e.finderMode !== "curated";
+  const wasExplicitlyCheckedFinal = (e) => e.dataQualityNotes.some((n) => n.includes("Live-verified") || n.includes("Live verification FAILED"));
+  const cumulativeValidated = finalAllEntries.filter((e) => isCandidateFinal(e) && e.filterMappingsValidated).length;
+  const cumulativeFailed = finalAllEntries.filter((e) => isCandidateFinal(e) && !e.filterMappingsValidated && wasExplicitlyCheckedFinal(e)).length;
+  const cumulativePending = finalAllEntries.filter((e) => isCandidateFinal(e) && !wasExplicitlyCheckedFinal(e)).length;
+
   console.log(
-    `Verification complete. Checked ${checked}, promoted ${promoted} (both gates now true), failed ${failed} (left disabled, reason recorded), skipped ${skipped} (excluded or already validated). Wrote ${MANIFEST_PATH}.`
+    `Batch complete. This batch: ${batchCandidates.length} checked, ${technicallyValidated} validated, ${validationFailed} failed. Curated regression: ${curatedEntries.length} checked` +
+      (failedRegression.length > 0 ? ` (WARNING: ${failedRegression.map(([id]) => id).join(", ")} FAILED regression)` : ", passed") +
+      `. Cumulative across all runs so far: ${cumulativeValidated} validated, ${cumulativeFailed} failed, ${cumulativePending} not yet checked, out of ${allCandidates.length} total candidates. ` +
+      `Wrote ${MANIFEST_PATH} and ${EVIDENCE_PATH}.`
   );
 }
 

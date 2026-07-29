@@ -58,16 +58,29 @@ describe.each(entries)("categoryFinderManifest entry: $categoryId", (entry) => {
     }
   });
 
-  it("non-excluded entries have a well-formed question set, regardless of verification/runtime-enablement status", () => {
+  it("a non-excluded entry with zero surviving questions must not claim filterMappingsValidated (exhaustive live verification can legitimately fail a whole leaf, e.g. a tiny category where the fixed moq/budget check values never match anything)", () => {
+    if (entry.finderMode === "excluded") return;
+    if (entry.questions.length === 0) {
+      expect(entry.filterMappingsValidated).toBe(false);
+    }
+  });
+
+  it("non-excluded entries WITH surviving questions have a well-formed question set, regardless of runtime-enablement status", () => {
     // Structural correctness (real options, no empty dropdowns, correct
     // ordering) is guaranteed by the generator for EVERY classified entry --
     // filterMappingsValidated/runtimeEnabled are a separate, independently-set
     // axis (live API verification, then business approval) and must never be
     // asserted true here just because an entry was classified curated/
     // inherited/generic. See categoryFinderConfig.test.js for gate-logic tests.
+    //
+    // Live verification can also remove individual questions (moq, budget,
+    // or an attribute/colour question) that failed their live check, or leave
+    // a leaf with zero questions at all (covered by the test above) -- so
+    // "well-formed" here means the SURVIVING set is correctly shaped, not
+    // that every leaf must retain all of moq/budget/attributes/colour.
     if (entry.finderMode === "excluded") return;
+    if (entry.questions.length === 0) return; // covered by the zero-questions test above
     expect(entry.exclusionReason).toBeNull();
-    expect(entry.questions.length).toBeGreaterThan(0);
 
     const ids = entry.questions.map((q) => q.id);
     expect(new Set(ids).size).toBe(ids.length); // no duplicate question ids
@@ -80,9 +93,15 @@ describe.each(entries)("categoryFinderManifest entry: $categoryId", (entry) => {
     const PRIORITY = { moq: 0, budget: 1, colour: 98 };
     const orderedIds = [...ids].sort((a, b) => (PRIORITY[a] ?? 2) - (PRIORITY[b] ?? 2));
 
-    expect(orderedIds[0]).toBe("moq");
-    if (orderedIds.length > 1 && orderedIds.includes("budget")) {
-      expect(orderedIds[1]).toBe("budget");
+    // Whichever of moq/budget survived verification must still lead, in that
+    // relative order -- neither is guaranteed present any more (see above).
+    let cursor = 0;
+    if (orderedIds.includes("moq")) {
+      expect(orderedIds[cursor]).toBe("moq");
+      cursor += 1;
+    }
+    if (orderedIds.includes("budget")) {
+      expect(orderedIds[cursor]).toBe("budget");
     }
 
     // At most 2 non-colour, non-quantity, non-budget attribute questions.

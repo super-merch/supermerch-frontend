@@ -39,6 +39,7 @@ import { flattenHierarchy } from "./lib/hierarchy.mjs";
 import { validateSnapshot } from "./lib/schema.mjs";
 import { dedupeProductsById } from "./lib/dedupe.mjs";
 import { mapWithConcurrency } from "./lib/concurrency.mjs";
+import { fetchJsonWithRetry as fetchJsonWithRetryShared } from "./lib/httpRetry.mjs";
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
@@ -51,20 +52,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SNAPSHOT_DIR = path.join(__dirname, ".snapshot");
 const SNAPSHOT_PATH = path.join(SNAPSHOT_DIR, "catalogue-snapshot.json");
 
-async function fetchJsonWithRetry(url) {
-  let lastError;
-  for (const delay of [0, ...RETRY_DELAYS_MS]) {
-    if (delay) await new Promise((r) => setTimeout(r, delay));
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-      return await res.json();
-    } catch (err) {
-      lastError = err;
-    }
-  }
-  throw lastError;
-}
+const fetchJsonWithRetry = (url) => fetchJsonWithRetryShared(url, RETRY_DELAYS_MS);
 
 function round1(numerator, denominator) {
   if (!denominator) return 0;
