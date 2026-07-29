@@ -127,6 +127,70 @@ describe("generateManifestCore: parent/group pages", () => {
     expect(parentManifest["PE"].finderMode).toBe("excluded");
     expect(parentManifest["PE"].exclusionReason).not.toMatch(/re-run fetch-catalogue-snapshot/); // a REAL exclusion reason, not the missing-data fallback
   });
+
+  // Caught via live browser testing: /Clothing?category=PX still showed the
+  // old unsplit "Compliance" dropdown after the per-product derivation fix,
+  // because generateManifestCore classified every parent with an EMPTY
+  // leafFamilyMap, so the PX parent's own Visibility stat (a single-value,
+  // topShare=100 attribute) failed the generic isAttributeUsable check and
+  // was never even a candidate -- only PARENT_FAMILY_MAP's family-based
+  // presence-mode treatment (mirroring what every PX-* child leaf already
+  // gets) makes it surface as a real question here.
+  it("gives the PX parent page the same presence-mode Visibility treatment its own PX-* child leaves get (PARENT_FAMILY_MAP)", () => {
+    const snapshot = completeSnapshot();
+    snapshot.parents = [
+      {
+        leafId: "PX",
+        leafName: "Workwear",
+        parentId: "PX",
+        parentName: "Workwear",
+        productCount: 1039,
+        auditMode: "sampled_estimate",
+        sampleSize: 99,
+        attributes: [
+          genderFitAttr(),
+          {
+            name: "Visibility",
+            sampleSize: 99,
+            taggedProductCount: 42,
+            valueOccurrenceCount: 42,
+            populatedPct: round1(42, 99),
+            distinctValues: 1,
+            topValueProductCount: 42,
+            topShare: 100,
+            values: [{ value: "Hi-Vis", productCount: 42 }],
+          },
+        ],
+        colourPopulatedPct: 0,
+      },
+    ];
+    const pxAuthoritative = { ...authoritative, parents: [...authoritative.parents, { id: "PX", name: "Workwear" }] };
+    const pxDeps = {
+      ...deps,
+      families: {
+        ...deps.families,
+        workwear_visibility: { requiredAttribute: "Gender Fit", optionalAttribute: "Visibility", optionalAttributeMode: "presence", applicableGroups: ["PX"] },
+      },
+    };
+    const { parentManifest } = generateManifestCore(snapshot, pxAuthoritative, pxDeps);
+    expect(parentManifest["PX"].proposedFamily).toBe("workwear_visibility"); // proves it went through family-based treatment, not a lucky generic pass
+    const visibilityQuestion = parentManifest["PX"].questions.find((q) => q.label === "Visibility");
+    expect(visibilityQuestion).toBeDefined();
+    // attributeName must be the REAL backend field (Compliance), not the derived display label -- see classify.mjs's DERIVED_ATTRIBUTE_BACKEND_NAME.
+    expect(visibilityQuestion.attributeName).toBe("Compliance");
+    expect(visibilityQuestion.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]);
+    expect(visibilityQuestion.singleValueAllowed).toBe(true);
+  });
+
+  it("still applies the ordinary generic (non-family) path for a parent PARENT_FAMILY_MAP does not mention", () => {
+    const snapshot = completeSnapshot();
+    snapshot.parents = [
+      { leafId: "PE", leafName: "Drinkware", parentId: "PE", parentName: "Drinkware", productCount: 500, auditMode: "sampled_estimate", sampleSize: 100, attributes: [genderFitAttr()], colourPopulatedPct: 0 },
+    ];
+    const { parentManifest } = generateManifestCore(snapshot, authoritative, deps);
+    expect(parentManifest["PE"].proposedFamily).toBeNull(); // PE is not in PARENT_FAMILY_MAP, so it must fall through to the generic candidate path, same as before this fix
+    expect(parentManifest["PE"].finderMode).toBe("generic");
+  });
 });
 
 describe("generateManifestCore: determinism", () => {

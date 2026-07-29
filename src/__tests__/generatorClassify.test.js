@@ -214,10 +214,29 @@ describe("classifyLeaf: presence-mode family attribute (e.g. Workwear Visibility
     const visibility = visibilityAttr(55, 94);
     const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, visibility], colourPopulatedPct: 0 };
     const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_visibility" }, leafOverrides: {} });
-    const q = result.questions.find((x) => x.attributeName === "Visibility");
+    const q = result.questions.find((x) => x.label === "Visibility");
     expect(q).toBeDefined();
     expect(q.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]);
     expect(q.singleValueAllowed).toBe(true);
+  });
+
+  // Live-verification-caught bug: "Visibility" is a derived stat name that
+  // exists only for clean classification (see customAttributeDerivation.mjs)
+  // -- product.categorisation.promodata_attributes never stores a
+  // "Visibility" field, only the original "Compliance" one. Confirmed live:
+  // attribute_name=Visibility returned item_count 0 against production for
+  // every PX-* leaf and the PX parent, silently stripping the question from
+  // every one of them on the last verification pass. The question's LABEL
+  // may be the clean derived name, but attributeName -- the field Cards.jsx
+  // sends as the literal `attribute_name` request param -- must be the real
+  // backend field, "Compliance".
+  it("builds the Visibility question's attributeName as the REAL backend field (Compliance), not the derived display name", () => {
+    const visibility = visibilityAttr(55, 94);
+    const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, visibility], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_visibility" }, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Visibility");
+    expect(q.attributeName).toBe("Compliance");
+    expect(q.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]); // the VALUE is unaffected -- only the field name changes
   });
 
   it("still rejects near-zero or near-total coverage even in presence mode", () => {

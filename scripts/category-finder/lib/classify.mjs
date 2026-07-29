@@ -27,6 +27,19 @@ function questionIdFor(attributeName) {
   return attributeName.toLowerCase().replace(/\s+/g, "_");
 }
 
+// Some derived attribute stat names exist ONLY for cleaner
+// classification/display -- see customAttributeDerivation.mjs's
+// splitWorkwearCompliance, which aggregates the real "Compliance" values
+// under a separate "Visibility" stat key so a Hi-Vis question isn't
+// polluted by unrelated certifications. But "Visibility" is not a real
+// backend field: product.categorisation.promodata_attributes only ever
+// stores "Compliance: Hi-Vis". Confirmed live -- attribute_name=Visibility
+// returns item_count 0 against production for every PX-* leaf and the PX
+// parent (caught by live verification silently stripping the question
+// site-wide). The API filter must target the REAL backend attribute name;
+// only the customer-facing label may use the clean derived name.
+const DERIVED_ATTRIBUTE_BACKEND_NAME = { Visibility: "Compliance" };
+
 /**
  * Builds real, validated dropdown options from one attribute's per-value
  * stats. Values are first deduped case/whitespace-insensitively (raw
@@ -205,7 +218,7 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
       label: name,
       placeholder: "Any",
       type: "attribute",
-      attributeName: name,
+      attributeName: DERIVED_ATTRIBUTE_BACKEND_NAME[name] || name,
       options,
       // Only ever true for a deliberately presence-mode family attribute
       // (see FAMILIES' optionalAttributeMode) with exactly 1 real option --

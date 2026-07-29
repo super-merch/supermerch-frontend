@@ -20,8 +20,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (33/47 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:23.462Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:06.906Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -226,8 +226,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (8 real options, 28/32 sampled products tagged).",
       "Generic fallback: selected \"Sleeves\" (3 real options, 15/32 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:23.462Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:06.906Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -394,8 +394,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (59/72 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:23.463Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:06.906Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -550,8 +550,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (64/91 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:37.126Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:20.393Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -746,8 +746,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (34/36 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:37.357Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:20.939Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -918,8 +918,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Theme\" (4 real options, 13/31 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:39.996Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:22.939Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1096,8 +1096,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:47.298Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:33.285Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1250,8 +1250,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Gender Fit\" (3 real options, 75/99 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:52.715Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:40.512Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1420,8 +1420,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:35:55.678Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:41.522Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1574,8 +1574,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Theme\" (3 real options, 16/26 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:07.427Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:01:54.392Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1713,8 +1713,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Gender Fit\" (2 real options, 27/53 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:13.443Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:03.118Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1852,8 +1852,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Gender Fit\" (4 real options, 25/56 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:19.301Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:06.621Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -1986,8 +1986,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:20.170Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:09.995Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -2119,8 +2119,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:26.434Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:17.015Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -2269,8 +2269,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (36/60 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:31.867Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:20.531Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -2453,8 +2453,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (23/35 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:39.782Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:31.708Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -2633,8 +2633,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (53/95 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:36:57.092Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:49.702Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -2823,8 +2823,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (9 real options, 49/61 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 40/61 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:01.500Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:02:51.830Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -3028,15 +3028,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (53/94 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (53/94 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:14.180Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:06.940Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -3094,8 +3094,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -3103,20 +3103,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Vic Rail Compliant",
-            "value": "VIC Rail Compliant"
-          },
-          {
-            "label": "Nsw Rail Compliant",
-            "value": "NSW Rail Compliant"
-          },
-          {
-            "label": "Ttmc",
-            "value": "TTMC"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -3188,15 +3177,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (54/81 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (54/81 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:17.257Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:08.774Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -3274,8 +3263,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -3283,12 +3272,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Upf Rated",
-            "value": "UPF Rated"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -3364,15 +3350,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (46/83 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (46/83 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:27.533Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:17.837Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -3450,8 +3436,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -3459,16 +3445,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Nsw Rail Compliant",
-            "value": "NSW Rail Compliant"
-          },
-          {
-            "label": "Upf Rated",
-            "value": "UPF Rated"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -3557,8 +3536,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (6 real options, 28/31 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 21/31 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:29.243Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:23.223Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -3702,15 +3681,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (38/86 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (38/86 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:31.619Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:24.018Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -3784,8 +3763,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -3793,16 +3772,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Upf Rated",
-            "value": "UPF Rated"
-          },
-          {
-            "label": "Vic Rail Compliant",
-            "value": "VIC Rail Compliant"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -3878,15 +3850,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (16/25 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (16/25 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:38.143Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:31.668Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -4062,15 +4034,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (29/64 sampled products tagged) and produced 4 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (29/64 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:44.103Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:33.789Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -4152,8 +4124,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -4161,20 +4133,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Ttmc",
-            "value": "TTMC"
-          },
-          {
-            "label": "Vic Rail Compliant",
-            "value": "VIC Rail Compliant"
-          },
-          {
-            "label": "Upf Rated",
-            "value": "UPF Rated"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -4259,8 +4220,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (8 real options, 74/85 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 72/85 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:44.802Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:36.784Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -4448,15 +4409,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (6/13 sampled products tagged) and produced 2 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (6/13 sampled products tagged) and produced 2 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:50.513Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:44.317Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -4510,8 +4471,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -4519,12 +4480,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Ttmc",
-            "value": "TTMC"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -4588,15 +4546,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (21/32 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (21/32 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:37:57.765Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:47.298Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -4670,8 +4628,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -4753,15 +4711,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (30/97 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (30/97 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:01.064Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:52.506Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -4974,8 +4932,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (9 real options, 31/34 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 17/34 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:01.810Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:56.375Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5148,12 +5106,12 @@ export const CATEGORY_FINDER_MANIFEST = {
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "workwear_compliance family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
+      "workwear_visibility family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (4 real options, 6/6 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 2/6 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:11.134Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:03:59.891Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5282,8 +5240,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (7 real options, 83/89 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 69/89 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:15.595Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:10.051Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5444,11 +5402,11 @@ export const CATEGORY_FINDER_MANIFEST = {
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "workwear_compliance family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
+      "workwear_visibility family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (5 real options, 34/43 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:20.087Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:10.835Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5579,15 +5537,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (9/15 sampled products tagged) and produced 3 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (9/15 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:21.744Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:11.575Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5764,10 +5722,10 @@ export const CATEGORY_FINDER_MANIFEST = {
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "workwear_compliance family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
+      "workwear_visibility family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:27.933Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:21.847Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5873,15 +5831,15 @@ export const CATEGORY_FINDER_MANIFEST = {
     "finderDescription": "Choose what matters most and we'll narrow the range.",
     "menuLinked": true,
     "finderMode": "inherited",
-    "proposedFamily": "workwear_compliance",
+    "proposedFamily": "workwear_visibility",
     "filterMappingsValidated": true,
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
-      "Inherited workwear_compliance: Gender Fit passed usability check (13/33 sampled products tagged) and produced 2 real options.",
+      "Inherited workwear_visibility: Gender Fit passed usability check (13/33 sampled products tagged) and produced 2 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:31.568Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:22.070Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -5935,8 +5893,8 @@ export const CATEGORY_FINDER_MANIFEST = {
         ]
       },
       {
-        "id": "compliance",
-        "label": "Compliance",
+        "id": "visibility",
+        "label": "Visibility",
         "placeholder": "Any",
         "type": "attribute",
         "attributeName": "Compliance",
@@ -5944,12 +5902,9 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "Hi-Vis",
             "value": "Hi-Vis"
-          },
-          {
-            "label": "Vic Rail Compliant",
-            "value": "VIC Rail Compliant"
           }
-        ]
+        ],
+        "singleValueAllowed": true
       },
       {
         "id": "colour",
@@ -6028,8 +5983,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited writing_eco: Eco Factors passed usability check (52/68 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:32.501Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:23.511Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -6209,8 +6164,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (6 real options, 31/70 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:34.347Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:28.344Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -6367,10 +6322,10 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
-      "Generic fallback: selected \"Material\" (10 real options, 63/97 sampled products tagged).",
+      "Generic fallback: selected \"Primary Body Material\" (5 real options, 62/97 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:44.491Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:34.624Z. Removed question(s) that failed verification: budget, primary_body_material.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -6403,55 +6358,6 @@ export const CATEGORY_FINDER_MANIFEST = {
           {
             "label": "500+",
             "value": "500"
-          }
-        ]
-      },
-      {
-        "id": "material",
-        "label": "Material",
-        "placeholder": "Any",
-        "type": "attribute",
-        "attributeName": "Material",
-        "options": [
-          {
-            "label": "Aluminium",
-            "value": "Aluminium"
-          },
-          {
-            "label": "Metal (Non-Specific)",
-            "value": "Metal (non-specific)"
-          },
-          {
-            "label": "Stainless Steel",
-            "value": "Stainless Steel"
-          },
-          {
-            "label": "Bamboo",
-            "value": "Bamboo"
-          },
-          {
-            "label": "Silicone",
-            "value": "Silicone"
-          },
-          {
-            "label": "Leather",
-            "value": "Leather"
-          },
-          {
-            "label": "Cork",
-            "value": "Cork"
-          },
-          {
-            "label": "Plastic (Non-Specific)",
-            "value": "Plastic (non-specific)"
-          },
-          {
-            "label": "Rpet",
-            "value": "rPET"
-          },
-          {
-            "label": "Cardboard",
-            "value": "Cardboard"
           }
         ]
       },
@@ -6541,8 +6447,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (4 real options, 6/13 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:44.816Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:35.390Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -6668,8 +6574,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited writing_eco: Eco Factors passed usability check (42/64 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:47.229Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:40.949Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -6849,8 +6755,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (2 real options, 7/12 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:38:53.093Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:43.060Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -6973,8 +6879,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (3 real options, 4/8 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:01.005Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:49.104Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -7120,8 +7026,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:01.110Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:51.965Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -7247,8 +7153,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (12 real options, 52/91 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:03.192Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:53.794Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -7411,8 +7317,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (7 real options, 65/94 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:11.867Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:04:58.777Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -7595,8 +7501,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "writing_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (12 real options, 56/100 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:13.834Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:05.600Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -7782,8 +7688,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited writing_eco: Eco Factors passed usability check (30/87 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:13.921Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:06.183Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -7970,8 +7876,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited writing_eco: Eco Factors passed usability check (66/71 sampled products tagged) and produced 7 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:25.925Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:14.332Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -8182,8 +8088,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:27.419Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:18.464Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -8329,8 +8235,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (10 real options, 88/90 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:33.739Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:26.213Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -8500,8 +8406,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited bags_eco: Eco Factors passed usability check (34/87 sampled products tagged) and produced 5 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:38.888Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:28.190Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -8652,8 +8558,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (6 real options, 73/97 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:42.957Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:33.744Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -8799,8 +8705,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited bags_eco: Eco Factors passed usability check (73/85 sampled products tagged) and produced 6 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:47.765Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:42.143Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -8954,8 +8860,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited bags_eco: Eco Factors passed usability check (48/88 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (32 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:51.871Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (32 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:42.312Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -9194,8 +9100,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited bags_eco: Eco Factors passed usability check (26/71 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:39:55.949Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:48.723Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -9333,8 +9239,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:05.831Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:05:58.902Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -9460,8 +9366,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (7 real options, 42/43 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:09.516Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:00.243Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -9608,8 +9514,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (11 real options, 77/82 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:11.529Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:01.246Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -9783,8 +9689,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:18.375Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:11.650Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -9938,8 +9844,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (11 real options, 45/48 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:20.704Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:13.545Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -10109,8 +10015,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:28.471Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:20.250Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -10260,8 +10166,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (11 real options, 56/68 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:29.354Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:22.235Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -10427,8 +10333,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited bags_eco: Eco Factors passed usability check (40/92 sampled products tagged) and produced 6 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:34.392Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:26.913Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -10591,8 +10497,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (10 real options, 80/85 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:41.402Z. Removed question(s) that failed verification: material.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:33.443Z. Removed question(s) that failed verification: material.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -10742,8 +10648,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "bags_eco family considered but Eco Factors failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (11 real options, 68/71 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:42.119Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:34.673Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -10922,8 +10828,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (2 real options, 17/22 sampled products tagged).",
       "Generic fallback: selected \"Theme\" (4 real options, 12/22 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:50.634Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:42.737Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -11087,8 +10993,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (7 real options, 53/93 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 32/93 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:57.909Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:50.353Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -11280,8 +11186,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (2 real options, 4/4 sampled products tagged).",
       "Generic fallback: selected \"Material\" (3 real options, 4/4 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:40:59.018Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:50.629Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -11417,8 +11323,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (2 real options, 5/7 sampled products tagged).",
       "Generic fallback: selected \"Material\" (2 real options, 4/7 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:05.898Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:06:57.061Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -11562,8 +11468,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (3 real options, 85/88 sampled products tagged).",
       "Generic fallback: selected \"Material\" (8 real options, 82/88 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:09.896Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:01.367Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -11763,8 +11669,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (3 real options, 12/17 sampled products tagged).",
       "Generic fallback: selected \"Material\" (7 real options, 12/17 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:10.675Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:04.365Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -11960,8 +11866,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (3 real options, 41/42 sampled products tagged).",
       "Generic fallback: selected \"Material\" (5 real options, 39/42 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:15.274Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:06.961Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -12129,8 +12035,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (3 real options, 40/44 sampled products tagged).",
       "Generic fallback: selected \"Material\" (4 real options, 39/44 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:24.975Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:19.209Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -12265,8 +12171,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Gender Fit\" (2 real options, 80/100 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:29.112Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:21.037Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -12432,8 +12338,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (79/91 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:32.481Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:27.211Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -12813,8 +12719,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (43/82 sampled products tagged) and produced 8 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:39.805Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:32.438Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -12984,8 +12890,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (89/98 sampled products tagged) and produced 7 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:48.246Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:43.011Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -13184,8 +13090,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (15/18 sampled products tagged) and produced 2 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:41:53.353Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:46.045Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -13352,8 +13258,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (76/85 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:03.369Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:55.185Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -13577,8 +13483,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "drinkware family considered but Capacity failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (9 real options, 66/72 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:05.708Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:07:59.597Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -13744,8 +13650,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (48/50 sampled products tagged) and produced 7 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:18.764Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:11.587Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -13925,8 +13831,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (11 real options, 53/72 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (6 real options, 45/72 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (33 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:19.355Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (33 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:11.859Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -14137,8 +14043,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (87/92 sampled products tagged) and produced 6 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:19.607Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:12.469Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -14313,8 +14219,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited drinkware: Capacity passed usability check (87/100 sampled products tagged) and produced 9 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:32.617Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:25.523Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -14485,8 +14391,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (7 real options, 58/71 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 49/71 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:34.459Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:27.893Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -14694,8 +14600,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (10 real options, 78/87 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 71/87 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:39.068Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:31.217Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -14911,8 +14817,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (3 real options, 16/19 sampled products tagged).",
       "Generic fallback: selected \"Sport\" (3 real options, 6/19 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:45.594Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:39.190Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15096,8 +15002,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (5 real options, 15/17 sampled products tagged).",
       "Generic fallback: selected \"Sleeves\" (3 real options, 8/17 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:54.114Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:47.380Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15276,8 +15182,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Gender Fit\" (2 real options, 9/11 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:55.063Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:47.892Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15412,8 +15318,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (2 real options, 3/3 sampled products tagged).",
       "Colour excluded: 100% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:42:58.349Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:51.801Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15487,8 +15393,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (4 real options, 11/11 sampled products tagged).",
       "Generic fallback: selected \"Sleeves\" (2 real options, 8/11 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:04.067Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:56.600Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15632,8 +15538,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (3 real options, 10/14 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (2 real options, 9/14 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:05.279Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:57.211Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15773,8 +15679,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (6 real options, 10/12 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 9/12 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:07.815Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:08:59.960Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -15948,8 +15854,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:12.542Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:09:05.679Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -16102,8 +16008,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (5 real options, 42/89 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:15.412Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:09:06.995Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -16257,8 +16163,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 13/42 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:19.225Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:09:12.166Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -16436,8 +16342,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 26/84 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:22.499Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:09:15.907Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -16611,8 +16517,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (12 real options, 32/84 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:27.244Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:09:19.624Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -16794,8 +16700,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 22/59 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:32.586Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:09:26.004Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -16945,8 +16851,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 24/55 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:35.897Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:03.022Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17103,8 +17009,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:39.922Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:03.023Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17228,8 +17134,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:43.357Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:03.023Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17341,8 +17247,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:46.404Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:12.313Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17454,8 +17360,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:49.412Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:12.753Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17572,8 +17478,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 46/99 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:52.412Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:13.229Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17706,8 +17612,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:43:54.588Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:21.094Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17795,8 +17701,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (4 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:00.122Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (4 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:21.597Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -17877,8 +17783,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (3 real options, 18/26 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:00.318Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:26.635Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -18031,8 +17937,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:06.035Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:27.252Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -18124,8 +18030,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:08.352Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:34.325Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -18199,8 +18105,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (5 real options, 85/87 sampled products tagged).",
       "Generic fallback: selected \"Sleeves\" (3 real options, 85/87 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:13.391Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:34.609Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -18388,8 +18294,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (10 real options, 86/93 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 82/93 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:13.549Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:37.097Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -18601,8 +18507,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (4 real options, 82/97 sampled products tagged).",
       "Generic fallback: selected \"Material\" (7 real options, 82/97 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:14.165Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:40.769Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -18806,8 +18712,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (8 real options, 83/87 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 67/87 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:31.943Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:10:52.913Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -19015,8 +18921,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (8 real options, 71/88 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 62/88 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:42.177Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:01.570Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -19218,8 +19124,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:44:45.927Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:11.296Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -19372,8 +19278,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 67/90 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:03.684Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:21.496Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -19551,8 +19457,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 96/99 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:03.856Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:27.001Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -19699,8 +19605,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (9 real options, 17/26 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 8/26 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:08.304Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:29.024Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -19879,8 +19785,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (12 real options, 54/72 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:14.826Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:35.042Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20058,8 +19964,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (9 real options, 12/16 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:17.046Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:37.194Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20208,8 +20114,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:21.292Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:41.080Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20326,8 +20232,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 11/13 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:26.870Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:46.581Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20454,8 +20360,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (3 real options, 10/11 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 9/11 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:28.932Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:48.673Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20586,8 +20492,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 38/41 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:32.770Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:52.525Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20715,9 +20621,10 @@ export const CATEGORY_FINDER_MANIFEST = {
     "runtimeEnabled": true,
     "exclusionReason": null,
     "dataQualityNotes": [
+      "Generic fallback: selected \"Coaster Material\" (7 real options, 79/94 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:35.602Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:55.574Z. Removed question(s) that failed verification: budget, coaster_material.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20833,8 +20740,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:37.663Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:11:57.268Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -20955,8 +20862,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (3 real options, 5/9 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (5 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:41.516Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (5 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:00.134Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -21051,8 +20958,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (10 real options, 55/66 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (5 real options, 46/66 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (30 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:45.452Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (30 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:07.877Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -21255,8 +21162,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 59/74 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:50.302Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:09.647Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -21414,8 +21321,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (12 real options, 33/38 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:45:50.919Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:10.262Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -21617,7 +21524,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 37.8% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:46:00.957Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:12:21.952Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -21640,8 +21547,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (10 real options, 70/85 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (3 real options, 61/85 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:03.947Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:22.020Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -21833,8 +21740,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Gender Fit\" (3 real options, 88/94 sampled products tagged).",
       "Generic fallback: selected \"Material\" (9 real options, 82/94 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:04.276Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:22.311Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -22034,8 +21941,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (9 real options, 85/97 sampled products tagged).",
       "Generic fallback: selected \"Gender Fit\" (4 real options, 78/97 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:05.770Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:26.441Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -22242,8 +22149,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Theme\" (3 real options, 12/21 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:19.516Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:36.286Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -22381,8 +22288,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (53/53 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:21.018Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:37.053Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -22537,8 +22444,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (29/29 sampled products tagged) and produced 2 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:25.615Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:44.177Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -22693,8 +22600,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (74/92 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:28.708Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:45.719Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -22893,8 +22800,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (69/96 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:33.012Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:48.113Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -23105,8 +23012,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (76/92 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:37.264Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:12:55.807Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -23301,8 +23208,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (74/85 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:47.451Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:05.272Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -23485,8 +23392,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (36/48 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:46:50.977Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:06.670Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -23682,7 +23589,7 @@ export const CATEGORY_FINDER_MANIFEST = {
       "clothing_gender_fit family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Colour excluded: 100% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:46:56.528Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:13:14.128Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -23704,8 +23611,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (69/82 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:00.713Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:18.304Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -23906,8 +23813,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (6 real options, 16/24 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (4 real options, 8/24 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:03.843Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:20.263Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24054,8 +23961,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (13/21 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:10.603Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:24.915Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24254,8 +24161,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (4 real options, 14/22 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:13.453Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:29.970Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24356,8 +24263,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:19.862Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:36.354Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24473,8 +24380,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:24.336Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:40.031Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24587,8 +24494,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (4 real options, 39/79 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:25.511Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:40.956Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24745,8 +24652,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:28.975Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:45.704Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24807,7 +24714,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 50% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:47:32.250Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:13:47.862Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -24828,8 +24735,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:34.478Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:51.321Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -24926,8 +24833,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (4 real options, 38/96 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:35.731Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:51.371Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25097,7 +25004,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 37.5% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:47:36.390Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:13:52.242Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -25118,8 +25025,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:40.305Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:55.848Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25223,8 +25130,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:41.102Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:13:58.291Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25360,8 +25267,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (4 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:46.260Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (4 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:01.521Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25430,8 +25337,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (5 real options, 8/25 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:48.426Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:04.989Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25565,8 +25472,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (3 real options, 16/41 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:51.909Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:07.920Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25708,8 +25615,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (78/82 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:52.036Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (26 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:09.566Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -25916,8 +25823,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (25/28 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:47:58.800Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:14.201Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -26096,8 +26003,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (71/93 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:01.089Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:16.152Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -26304,8 +26211,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (67/97 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (30 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:12.126Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (30 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:24.611Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -26520,8 +26427,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (86/99 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:19.190Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:36.121Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -26720,8 +26627,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (33/50 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:25.164Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:37.915Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -26903,8 +26810,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:37.301Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:49.227Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -27052,8 +26959,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:39.122Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:51.135Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -27167,8 +27074,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Capacity\" (8 real options, 76/98 sampled products tagged).",
       "Generic fallback: selected \"Material\" (12 real options, 42/98 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (35 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:40.159Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (35 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:14:55.384Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -27415,8 +27322,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Features\" (3 real options, 40/97 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:48:50.737Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:05.531Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -27591,8 +27498,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Features\" (3 real options, 85/88 sampled products tagged).",
       "Generic fallback: selected \"Material\" (12 real options, 35/88 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:07.721Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (29 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:21.013Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -27792,8 +27699,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (11 real options, 49/82 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (5 real options, 39/82 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:07.959Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:23.218Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -27972,8 +27879,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Features\" (2 real options, 78/96 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:11.064Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:24.115Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28136,8 +28043,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Capacity\" (6 real options, 91/94 sampled products tagged).",
       "Generic fallback: selected \"Material\" (11 real options, 37/94 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:21.459Z. Removed question(s) that failed verification: budget, capacity.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:36.269Z. Removed question(s) that failed verification: budget, capacity.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28299,8 +28206,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 13/14 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:22.213Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:36.323Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28427,8 +28334,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (6 real options, 29/48 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 23/48 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:23.040Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:36.371Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28574,8 +28481,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:32.828Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:46.194Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28680,8 +28587,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (9 real options, 43/55 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:33.865Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:47.066Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28870,8 +28777,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:34.224Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:48.331Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -28963,8 +28870,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:41.084Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:54.497Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29065,8 +28972,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 7/19 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:41.857Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:55.301Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29220,8 +29127,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 24/68 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:46.426Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:15:58.459Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29375,8 +29282,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (2 real options, 40/93 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:50.021Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:02.376Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29538,8 +29445,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (3 real options, 30/83 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:51.060Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:04.428Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29681,8 +29588,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "clothing_gender_fit family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:49:58.456Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:10.268Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29799,8 +29706,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (63/97 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:05.137Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:14.855Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -29942,8 +29849,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "clothing_gender_fit family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:06.306Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:17.062Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30068,8 +29975,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (13/23 sampled products tagged) and produced 4 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:07.361Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:17.723Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30212,8 +30119,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (7 real options, 19/33 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 12/33 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:17.231Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:27.180Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30388,8 +30295,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Capacity\" (2 real options, 2/5 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:18.017Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:28.176Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30487,8 +30394,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 18/38 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:19.118Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:28.875Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30646,8 +30553,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 25/53 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:25.506Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:34.983Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30808,8 +30715,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:29.539Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:38.776Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -30938,8 +30845,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 55/85 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:30.652Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:39.681Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -31113,8 +31020,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 15/22 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:38.525Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:47.431Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -31268,8 +31175,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (9 real options, 34/42 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:44.273Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (22 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:52.957Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -31431,8 +31338,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 12/30 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:46.329Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:55.244Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -31589,8 +31496,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:49.406Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:16:57.803Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -31719,8 +31626,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 39/55 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:58.015Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:17:40.750Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -31886,8 +31793,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 28/46 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:50:58.588Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:17:40.750Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32058,8 +31965,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Eco Factors\" (3 real options, 14/23 sampled products tagged).",
       "Generic fallback: selected \"Material\" (5 real options, 9/23 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:03.731Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:17:40.750Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32206,8 +32113,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 13/22 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:12.115Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:17:52.637Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32365,8 +32272,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Sport\" (8 real options, 51/74 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:12.271Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:17:53.455Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32524,8 +32431,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (3 real options, 11/23 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:15.855Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:17:54.552Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32663,8 +32570,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Sport\" (6 real options, 13/43 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:22.193Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:03.755Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32814,8 +32721,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (9 real options, 20/34 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:24.795Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:06.057Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -32969,8 +32876,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (5 real options, 7/11 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:26.968Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:06.457Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -33100,7 +33007,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 24.7% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:51:33.336Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:18:14.516Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -33122,8 +33029,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Gender Fit\" (4 real options, 19/37 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:35.548Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:15.025Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -33253,8 +33160,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "clothing_gender_fit family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:35.764Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:16.365Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -33404,8 +33311,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "clothing_gender_fit family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Generic fallback: selected \"Material\" (11 real options, 55/92 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:37.825Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:18.256Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -33603,8 +33510,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (9/25 sampled products tagged) and produced 2 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:51.394Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:31.007Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -33763,7 +33670,7 @@ export const CATEGORY_FINDER_MANIFEST = {
       "clothing_gender_fit family considered but Gender Fit failed usability for this leaf -- fell back to generic.",
       "Colour excluded: 100% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:51:51.664Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:18:31.375Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -33785,8 +33692,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (36/99 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:55.601Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:35.031Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -33948,8 +33855,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Inherited clothing_gender_fit: Gender Fit passed usability check (10/19 sampled products tagged) and produced 3 real options.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:51:57.814Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:37.813Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34123,8 +34030,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:05.078Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:43.423Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34264,8 +34171,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (4 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:09.420Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (4 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:47.890Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34330,8 +34237,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (2 real options, 10/18 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:09.697Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:47.972Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34500,8 +34407,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:16.552Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:53.802Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34609,8 +34516,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:16.658Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:18:54.400Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34730,7 +34637,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:52:19.158Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:18:57.293Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -34751,7 +34658,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:52:24.154Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:19:01.309Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -34793,7 +34700,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 100% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:52:24.432Z: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:19:03.226Z: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -34834,8 +34741,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (6 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:25.920Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (6 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:03.854Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34915,8 +34822,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (5 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:27.468Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (5 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:06.203Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -34981,7 +34888,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 100% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:52:30.099Z: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:19:07.347Z: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -35022,8 +34929,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:32.224Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:09.687Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -35168,8 +35075,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (10 real options, 38/49 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:33.119Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:11.083Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -35347,8 +35254,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (2 real options, 4/11 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:34.256Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:12.334Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -35470,8 +35377,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 15/32 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:44.529Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:21.174Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -35620,8 +35527,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:45.496Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:21.489Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -35730,8 +35637,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (10 real options, 65/86 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:45.739Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (25 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:23.062Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -35904,8 +35811,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:56.112Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:31.826Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36002,8 +35909,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 15/18 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:52:56.283Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:32.742Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36161,8 +36068,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (9 real options, 70/82 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:01.605Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:38.170Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36324,8 +36231,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (4 real options, 24/72 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:05.225Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (18 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:38.872Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36483,8 +36390,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 30/42 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:07.486Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:43.289Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36613,8 +36520,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:16.584Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:49.899Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36698,8 +36605,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:17.180Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:51.217Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36819,8 +36726,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:21.598Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:55.835Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -36916,8 +36823,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:25.143Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:19:57.385Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37037,8 +36944,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:28.470Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:03.331Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37191,8 +37098,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 58.6% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 0 category-specific question(s) (0 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:29.464Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 0 category-specific question(s) (0 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:04.412Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37271,8 +37178,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:34.306Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:09.252Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37384,8 +37291,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:36.682Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:09.695Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37505,8 +37412,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:42.349Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:16.750Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37606,8 +37513,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (3 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:43.438Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (3 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:17.931Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37679,8 +37586,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (6 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:44.906Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (6 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:18.598Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37768,8 +37675,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (3 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:51.604Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (3 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:24.642Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37842,7 +37749,7 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Colour excluded: 22.8% populated or fewer than 2 real colour values.",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live verification FAILED at 2026-07-29T10:53:51.698Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
+      "Live verification FAILED at 2026-07-29T14:20:24.733Z: only 1 question survived exhaustive checking, below the 2-question minimum to ship a real Finder (never ship a single-weak-question Finder). See scripts/category-finder/verification-summary.json."
     ],
     "questions": []
   },
@@ -37863,8 +37770,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:52.180Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:25.340Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -37972,8 +37879,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:55.414Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:28.598Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38077,8 +37984,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:53:57.818Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:30.675Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38190,8 +38097,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (5 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:00.497Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (5 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:33.605Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38275,8 +38182,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:04.093Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (7 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:35.448Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38368,8 +38275,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:08.011Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:39.858Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38485,8 +38392,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:08.720Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:40.425Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38631,8 +38538,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 54/96 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:11.908Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:42.882Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38802,8 +38709,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (9 real options, 71/80 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:19.645Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:50.658Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -38965,8 +38872,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 35/67 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:20.152Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:51.090Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39116,8 +39023,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (8 real options, 67/81 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:25.112Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:20:56.151Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39267,8 +39174,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 21/29 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:31.471Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (19 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:01.841Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39430,8 +39337,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (11 real options, 60/82 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:32.720Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (24 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:03.021Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39601,8 +39508,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (3 real options, 18/53 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:37.072Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:08.001Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39743,8 +39650,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:42.084Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (8 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:13.054Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39840,8 +39747,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:45.847Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:14.894Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -39977,8 +39884,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:50.811Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:19.908Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40130,8 +40037,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:51.626Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:20.716Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40255,8 +40162,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:54:57.923Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:26.154Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40369,8 +40276,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (3 real options, 12/22 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:04.399Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (15 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:31.876Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40531,8 +40438,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:05.403Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (12 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:32.803Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40644,8 +40551,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:09.140Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (2 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:35.288Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40701,8 +40608,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (3 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:14.528Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (3 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:41.099Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40780,8 +40687,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (10 real options, 17/32 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 13/32 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:14.779Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (23 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:41.154Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -40955,8 +40862,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:15.544Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (13 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:41.742Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41069,8 +40976,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (5 real options, 28/83 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:20.907Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:46.751Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41213,8 +41120,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (6 real options, 8/13 sampled products tagged).",
       "Generic fallback: selected \"Eco Factors\" (2 real options, 4/13 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:26.649Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:52.444Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41353,8 +41260,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (7 real options, 12/23 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:26.768Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (10 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:21:52.511Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41469,8 +41376,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Capacity\" (4 real options, 80/91 sampled products tagged).",
       "Generic fallback: selected \"Material\" (8 real options, 53/91 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:38.281Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (28 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:00.045Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41694,8 +41601,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (5 real options, 17/29 sampled products tagged).",
       "Generic fallback: selected \"Capacity\" (3 real options, 16/29 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:38.376Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (16 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:00.100Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41842,8 +41749,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (6 real options, 5/8 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:40.821Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (11 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:01.047Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -41960,8 +41867,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:48.980Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (9 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:09.408Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -42061,8 +41968,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:49.080Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:10.925Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -42183,8 +42090,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Eco Factors\" (3 real options, 24/74 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:56.860Z.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (17 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:17.456Z.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -42347,8 +42254,8 @@ export const CATEGORY_FINDER_MANIFEST = {
       "Generic fallback: selected \"Material\" (4 real options, 32/60 sampled products tagged).",
       "Generic fallback: selected \"Capacity\" (4 real options, 26/60 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:57.126Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 3 category-specific question(s) (21 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:18.472Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -42510,8 +42417,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "exclusionReason": null,
     "dataQualityNotes": [
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:55:59.680Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 1 category-specific question(s) (14 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:21.305Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -42632,8 +42539,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Material\" (12 real options, 27/75 sampled products tagged).",
       "Audit mode is \"complete_paginated\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:56:11.290Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (27 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:29.173Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {
@@ -42811,8 +42718,8 @@ export const CATEGORY_FINDER_MANIFEST = {
     "dataQualityNotes": [
       "Generic fallback: selected \"Capacity\" (5 real options, 33/84 sampled products tagged).",
       "Audit mode is \"sampled_estimate\" (not an exact/complete count) -- filterMappingsValidated and runtimeEnabled cannot be set true by the generator regardless of how the stats look; live verification is required first.",
-      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T10:56:11.557Z. Removed question(s) that failed verification: budget.",
-      "Runtime-enabled by explicit promotion step at 2026-07-29T11:02:25.922Z."
+      "Live-verified 2 category-specific question(s) (20 option(s) tested) + quantity/budget checks against the real API at 2026-07-29T14:22:30.193Z. Removed question(s) that failed verification: budget.",
+      "Runtime-enabled by explicit promotion step at 2026-07-29T14:27:10.541Z."
     ],
     "questions": [
       {

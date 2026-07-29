@@ -70,6 +70,16 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
   // classifyLeaf every leaf gets -- not a blanket stub exclusion. A snapshot
   // fetched before this existed (snapshot.parents missing) falls back to the
   // previous stub behavior rather than crashing.
+  // Parents don't get the leaf family map wholesale -- a parent aggregates
+  // across MULTIPLE leaves that don't always share one family, so blanket
+  // family inheritance could misfire. But where every one of a parent's own
+  // children genuinely IS the same family (confirmed here: all 14 PX-*
+  // leaves are "workwear_visibility"), the parent should get the identical
+  // treatment its own children do -- otherwise a customer would see the
+  // presence-mode Visibility filter on every PX-* leaf page but not on the
+  // PX parent page itself, an inconsistency caught via live browser testing.
+  const PARENT_FAMILY_MAP = { PX: "workwear_visibility" };
+
   const parentStatsById = new Map((snapshot.parents || []).map((p) => [p.leafId, p]));
   const parentManifest = {};
   for (const parent of authoritative.parents) {
@@ -89,7 +99,7 @@ export function generateManifestCore(snapshot, authoritative, { families, leafFa
       };
       continue;
     }
-    const result = classifyLeaf(stats, { families, leafFamilyMap: {}, leafOverrides: {} });
+    const result = classifyLeaf(stats, { families, leafFamilyMap: PARENT_FAMILY_MAP, leafOverrides: {} });
     parentManifest[parent.id] = {
       categoryId: parent.id,
       categoryName: parent.name,
