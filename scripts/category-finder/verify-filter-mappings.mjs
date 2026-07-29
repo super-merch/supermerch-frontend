@@ -65,7 +65,16 @@ const BATCH_LIMIT = process.env.VERIFY_LIMIT ? Number(process.env.VERIFY_LIMIT) 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MANIFEST_PATH = path.join(__dirname, "../../src/config/generated/categoryFinderManifest.js");
-const EVIDENCE_PATH = path.join(__dirname, "../../src/config/generated/categoryFinderVerificationEvidence.json");
+// Full per-option raw evidence (URLs, every option's individual pass/fail,
+// sample product ids) lives OUTSIDE src/ and is gitignored -- it was
+// previously committed into src/config/generated/, which reads as "part of
+// the shipped app" even though nothing ever imports it as a module (it was
+// only ever referenced by filename in a text note). Regenerate it any time
+// by re-running this script; VERIFICATION_SUMMARY_PATH below is the
+// compact, committed, human-reviewable record that survives in git history.
+const EVIDENCE_DIR = path.join(__dirname, ".evidence");
+const EVIDENCE_PATH = path.join(EVIDENCE_DIR, "categoryFinderVerificationEvidence.json");
+const VERIFICATION_SUMMARY_PATH = path.join(__dirname, "verification-summary.json");
 
 const fetchJsonWithRetry = (url) => fetchJsonWithRetryShared(url, RETRY_DELAYS_MS, REQUEST_TIMEOUT_MS);
 
@@ -74,9 +83,12 @@ function serializeManifest(manifest) {
 // PATCHED by scripts/category-finder/verify-filter-mappings.mjs -- do not hand-edit.
 // filterMappingsValidated reflects live, exhaustive verification against the
 // real API (every option of every question, quantity/budget/combined
-// checks, fresh baseline each run). See categoryFinderVerificationEvidence.json
-// for the full per-option evidence. runtimeEnabled is set by a SEPARATE step
-// (promote-runtime-enabled.mjs), never by this script.
+// checks, fresh baseline each run). See scripts/category-finder/verification-summary.json
+// (committed) for a per-category pass/fail summary, or re-run
+// verify-filter-mappings.mjs to regenerate the full per-option evidence
+// (scripts/category-finder/.evidence/, gitignored -- not committed).
+// runtimeEnabled is set by a SEPARATE step (promote-runtime-enabled.mjs),
+// never by this script.
 export const CATEGORY_FINDER_MANIFEST = ${JSON.stringify(manifest, null, 2)};
 `;
 }
@@ -145,7 +157,33 @@ async function main() {
       },
       categories: liveEvidence,
     };
+    fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
     fs.writeFileSync(EVIDENCE_PATH, JSON.stringify(evidenceDoc, null, 2));
+
+    // Compact, committed companion to the full (gitignored) evidence file --
+    // per-category pass/fail and question/option COUNTS only, no raw URLs or
+    // per-option detail, so a reviewer can audit what happened to every
+    // category from git history without ever needing the full dump.
+    const compactCategories = {};
+    for (const [categoryId, evidence] of Object.entries(liveEvidence)) {
+      if (evidence.note) {
+        compactCategories[categoryId] = { passed: evidence.passed, note: evidence.note };
+        continue;
+      }
+      compactCategories[categoryId] = {
+        passed: evidence.passed,
+        verifiedAt: evidence.verifiedAt,
+        liveUnfilteredCount: evidence.liveUnfilteredCount,
+        survivingQuestionIds: evidence.survivingQuestions.map((q) => q.id),
+        removedQuestionIds: evidence.removedQuestionIds,
+        questionOptionCounts: evidence.questions.map((q) => ({
+          id: q.id,
+          optionsTested: q.options.length,
+          optionsSurviving: q.survivingOptions.length,
+        })),
+      };
+    }
+    fs.writeFileSync(VERIFICATION_SUMMARY_PATH, JSON.stringify({ ...evidenceDoc, categories: compactCategories }, null, 2));
   }
 
   // Excluded entries get a static evidence stub -- cheap, idempotent, written now.
@@ -198,7 +236,7 @@ async function main() {
         questions: [],
         filterMappingsValidated: false,
         runtimeEnabled: false,
-        dataQualityNotes: [...entry.dataQualityNotes, `Live verification FAILED at ${evidence.verifiedAt}: no question survived exhaustive checking. See categoryFinderVerificationEvidence.json.`],
+        dataQualityNotes: [...entry.dataQualityNotes, `Live verification FAILED at ${evidence.verifiedAt}: no question survived exhaustive checking. See scripts/category-finder/verification-summary.json.`],
       };
     }
 
@@ -225,7 +263,7 @@ async function main() {
     `Batch complete. This batch: ${batchCandidates.length} checked, ${technicallyValidated} validated, ${validationFailed} failed. Curated regression: ${curatedEntries.length} checked` +
       (failedRegression.length > 0 ? ` (WARNING: ${failedRegression.map(([id]) => id).join(", ")} FAILED regression)` : ", passed") +
       `. Cumulative across all runs so far: ${cumulativeValidated} validated, ${cumulativeFailed} failed, ${cumulativePending} not yet checked, out of ${allCandidates.length} total candidates. ` +
-      `Wrote ${MANIFEST_PATH} and ${EVIDENCE_PATH}.`
+      `Wrote ${MANIFEST_PATH}, ${VERIFICATION_SUMMARY_PATH} (committed), and ${EVIDENCE_PATH} (gitignored, full detail).`
   );
 }
 
