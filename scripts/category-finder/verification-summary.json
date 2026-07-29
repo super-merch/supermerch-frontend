@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-29T14:58:20.610Z",
+  "generatedAt": "2026-07-29T22:45:18.525Z",
   "summary": {
     "totalLeafEntries": 297,
-    "technicallyValidated": 279,
-    "validationFailed": 11,
+    "technicallyValidated": 265,
+    "validationFailed": 25,
     "neverYetVerified": 0,
     "curatedOverrides": 1,
     "excluded": 6
@@ -39,7 +39,7 @@
     },
     "PB-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:36:57.418Z",
+      "verifiedAt": "2026-07-29T22:22:32.108Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
@@ -70,7 +70,7 @@
     },
     "PB-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:36:57.418Z",
+      "verifiedAt": "2026-07-29T22:22:32.108Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
@@ -101,16 +101,17 @@
     },
     "PB-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:36:57.418Z",
+      "verifiedAt": "2026-07-29T22:22:32.107Z",
       "liveUnfilteredCount": 47,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -131,7 +132,7 @@
     },
     "PB-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:10.871Z",
+      "verifiedAt": "2026-07-29T22:22:46.128Z",
       "liveUnfilteredCount": 36,
       "survivingQuestionIds": [
         "moq",
@@ -161,7 +162,7 @@
     },
     "PK-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:12.956Z",
+      "verifiedAt": "2026-07-29T22:22:47.871Z",
       "liveUnfilteredCount": 31,
       "survivingQuestionIds": [
         "moq",
@@ -185,16 +186,17 @@
     },
     "PB-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:10.820Z",
+      "verifiedAt": "2026-07-29T22:22:45.852Z",
       "liveUnfilteredCount": 111,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "theme",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -215,14 +217,15 @@
     },
     "PK-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:20.619Z",
+      "verifiedAt": "2026-07-29T22:22:57.020Z",
       "liveUnfilteredCount": 345,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -233,15 +236,16 @@
     },
     "PK-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:27.791Z",
+      "verifiedAt": "2026-07-29T22:23:03.932Z",
       "liveUnfilteredCount": 199,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -257,7 +261,7 @@
     },
     "PK-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:38.892Z",
+      "verifiedAt": "2026-07-29T22:23:16.355Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
         "moq",
@@ -282,7 +286,7 @@
     },
     "PK-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:29.414Z",
+      "verifiedAt": "2026-07-29T22:23:05.316Z",
       "liveUnfilteredCount": 1238,
       "survivingQuestionIds": [
         "moq",
@@ -300,7 +304,7 @@
     },
     "PK-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:51.883Z",
+      "verifiedAt": "2026-07-29T22:23:29.878Z",
       "liveUnfilteredCount": 56,
       "survivingQuestionIds": [
         "moq",
@@ -325,7 +329,7 @@
     },
     "PK-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:47.050Z",
+      "verifiedAt": "2026-07-29T22:23:23.904Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
@@ -350,14 +354,15 @@
     },
     "PK-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:00.568Z",
+      "verifiedAt": "2026-07-29T22:23:38.853Z",
       "liveUnfilteredCount": 61,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -368,16 +373,17 @@
     },
     "PV-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:14.411Z",
+      "verifiedAt": "2026-07-29T22:23:52.610Z",
       "liveUnfilteredCount": 35,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -398,16 +404,17 @@
     },
     "PU": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:05.064Z",
+      "verifiedAt": "2026-07-29T22:23:43.364Z",
       "liveUnfilteredCount": 2952,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -428,16 +435,17 @@
     },
     "PW": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:33.127Z",
+      "verifiedAt": "2026-07-29T22:24:14.217Z",
       "liveUnfilteredCount": 575,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -458,7 +466,7 @@
     },
     "PW-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:35.589Z",
+      "verifiedAt": "2026-07-29T22:24:17.308Z",
       "liveUnfilteredCount": 61,
       "survivingQuestionIds": [
         "moq",
@@ -488,7 +496,7 @@
     },
     "PX-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:48.748Z",
+      "verifiedAt": "2026-07-29T22:24:30.016Z",
       "liveUnfilteredCount": 114,
       "survivingQuestionIds": [
         "moq",
@@ -519,7 +527,7 @@
     },
     "PX-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:50.777Z",
+      "verifiedAt": "2026-07-29T22:24:33.731Z",
       "liveUnfilteredCount": 101,
       "survivingQuestionIds": [
         "moq",
@@ -549,16 +557,17 @@
     },
     "PB-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:05.926Z",
+      "verifiedAt": "2026-07-29T22:24:46.045Z",
       "liveUnfilteredCount": 31,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -579,7 +588,7 @@
     },
     "PK-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:37:51.953Z",
+      "verifiedAt": "2026-07-29T22:23:30.828Z",
       "liveUnfilteredCount": 233,
       "survivingQuestionIds": [
         "moq",
@@ -597,16 +606,17 @@
     },
     "PX-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:38:59.562Z",
+      "verifiedAt": "2026-07-29T22:24:38.777Z",
       "liveUnfilteredCount": 163,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "visibility",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -627,16 +637,17 @@
     },
     "PX-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:06.512Z",
+      "verifiedAt": "2026-07-29T22:24:49.610Z",
       "liveUnfilteredCount": 126,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "visibility",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -657,7 +668,7 @@
     },
     "PX-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:14.012Z",
+      "verifiedAt": "2026-07-29T22:24:54.560Z",
       "liveUnfilteredCount": 25,
       "survivingQuestionIds": [
         "moq",
@@ -687,7 +698,7 @@
     },
     "PX-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:26.597Z",
+      "verifiedAt": "2026-07-29T22:25:08.437Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
@@ -718,16 +729,17 @@
     },
     "PX-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:16.562Z",
+      "verifiedAt": "2026-07-29T22:24:55.327Z",
       "liveUnfilteredCount": 64,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "visibility",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -748,16 +760,17 @@
     },
     "PW-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:19.615Z",
+      "verifiedAt": "2026-07-29T22:25:03.782Z",
       "liveUnfilteredCount": 105,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -778,16 +791,17 @@
     },
     "PX-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:30.129Z",
+      "verifiedAt": "2026-07-29T22:25:08.833Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "visibility",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -808,7 +822,7 @@
     },
     "PX-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:43.087Z",
+      "verifiedAt": "2026-07-29T22:25:21.496Z",
       "liveUnfilteredCount": 6,
       "survivingQuestionIds": [
         "moq",
@@ -839,7 +853,7 @@
     },
     "PW-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:38.942Z",
+      "verifiedAt": "2026-07-29T22:25:21.332Z",
       "liveUnfilteredCount": 34,
       "survivingQuestionIds": [
         "moq",
@@ -870,16 +884,17 @@
     },
     "PX-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:35.362Z",
+      "verifiedAt": "2026-07-29T22:25:21.195Z",
       "liveUnfilteredCount": 297,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -900,7 +915,7 @@
     },
     "PN-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:52.904Z",
+      "verifiedAt": "2026-07-29T22:25:31.607Z",
       "liveUnfilteredCount": 109,
       "survivingQuestionIds": [
         "moq",
@@ -930,15 +945,15 @@
       ]
     },
     "PX-02": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:40:06.315Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:25:44.311Z",
       "liveUnfilteredCount": 7,
-      "survivingQuestionIds": [
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
         "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -949,7 +964,7 @@
     },
     "PX-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:53.716Z",
+      "verifiedAt": "2026-07-29T22:25:35.266Z",
       "liveUnfilteredCount": 43,
       "survivingQuestionIds": [
         "moq",
@@ -974,16 +989,17 @@
     },
     "PX-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:39:54.184Z",
+      "verifiedAt": "2026-07-29T22:25:39.741Z",
       "liveUnfilteredCount": 15,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1004,7 +1020,7 @@
     },
     "PX-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:07.168Z",
+      "verifiedAt": "2026-07-29T22:25:48.456Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
@@ -1035,16 +1051,16 @@
     },
     "PY-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:07.221Z",
+      "verifiedAt": "2026-07-29T22:25:49.828Z",
       "liveUnfilteredCount": 68,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "eco_factors",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -1066,15 +1082,16 @@
     },
     "PY-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:12.669Z",
+      "verifiedAt": "2026-07-29T22:25:50.403Z",
       "liveUnfilteredCount": 70,
       "survivingQuestionIds": [
-        "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq",
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1090,15 +1107,16 @@
     },
     "PY-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:19.961Z",
+      "verifiedAt": "2026-07-29T22:26:02.738Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1114,14 +1132,14 @@
     },
     "PY-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:28.444Z",
+      "verifiedAt": "2026-07-29T22:26:10.848Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
-        "moq",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
+        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -1139,17 +1157,16 @@
     },
     "PY-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:25.225Z",
+      "verifiedAt": "2026-07-29T22:26:04.998Z",
       "liveUnfilteredCount": 64,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "eco_factors",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1170,7 +1187,7 @@
     },
     "PY-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:34.650Z",
+      "verifiedAt": "2026-07-29T22:26:18.115Z",
       "liveUnfilteredCount": 8,
       "survivingQuestionIds": [
         "moq",
@@ -1194,16 +1211,15 @@
     },
     "PY-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:19.315Z",
+      "verifiedAt": "2026-07-29T22:26:02.333Z",
       "liveUnfilteredCount": 417,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "primary_body_material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "primary_body_material",
@@ -1219,16 +1235,15 @@
     },
     "PY-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:38.969Z",
+      "verifiedAt": "2026-07-29T22:26:19.617Z",
       "liveUnfilteredCount": 91,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1244,16 +1259,15 @@
     },
     "PY-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:49.632Z",
+      "verifiedAt": "2026-07-29T22:26:30.541Z",
       "liveUnfilteredCount": 100,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1269,15 +1283,16 @@
     },
     "PY-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:44.284Z",
+      "verifiedAt": "2026-07-29T22:26:28.175Z",
       "liveUnfilteredCount": 194,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1293,14 +1308,14 @@
     },
     "PY-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:37.057Z",
+      "verifiedAt": "2026-07-29T22:26:19.114Z",
       "liveUnfilteredCount": 559,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -1312,7 +1327,7 @@
     },
     "PY-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:58.864Z",
+      "verifiedAt": "2026-07-29T22:26:42.614Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
@@ -1342,14 +1357,15 @@
     },
     "PA-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:02.935Z",
+      "verifiedAt": "2026-07-29T22:26:44.305Z",
       "liveUnfilteredCount": 404,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -1360,16 +1376,16 @@
     },
     "PY-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:40:49.989Z",
+      "verifiedAt": "2026-07-29T22:26:32.704Z",
       "liveUnfilteredCount": 207,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "eco_factors",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -1391,7 +1407,7 @@
     },
     "PA-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:19.360Z",
+      "verifiedAt": "2026-07-29T22:27:08.109Z",
       "liveUnfilteredCount": 157,
       "survivingQuestionIds": [
         "moq",
@@ -1416,14 +1432,14 @@
     },
     "PA-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:13.820Z",
+      "verifiedAt": "2026-07-29T22:26:57.915Z",
       "liveUnfilteredCount": 127,
       "survivingQuestionIds": [
-        "moq",
         "eco_factors",
         "colour"
       ],
       "removedQuestionIds": [
+        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -1441,7 +1457,7 @@
     },
     "PA-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:09.697Z",
+      "verifiedAt": "2026-07-29T22:26:53.194Z",
       "liveUnfilteredCount": 250,
       "survivingQuestionIds": [
         "moq",
@@ -1466,16 +1482,15 @@
     },
     "PA-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:33.536Z",
+      "verifiedAt": "2026-07-29T22:27:21.171Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1491,15 +1506,15 @@
     },
     "PA-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:24.352Z",
+      "verifiedAt": "2026-07-29T22:27:14.692Z",
       "liveUnfilteredCount": 105,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "eco_factors",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -1516,7 +1531,7 @@
     },
     "PA-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:26.707Z",
+      "verifiedAt": "2026-07-29T22:27:18.847Z",
       "liveUnfilteredCount": 608,
       "survivingQuestionIds": [
         "moq",
@@ -1546,15 +1561,14 @@
     },
     "PA-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:40.552Z",
+      "verifiedAt": "2026-07-29T22:27:31.245Z",
       "liveUnfilteredCount": 246,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -1565,7 +1579,7 @@
     },
     "PA-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:45.166Z",
+      "verifiedAt": "2026-07-29T22:27:35.095Z",
       "liveUnfilteredCount": 43,
       "survivingQuestionIds": [
         "moq",
@@ -1590,14 +1604,15 @@
     },
     "PA-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:53.008Z",
+      "verifiedAt": "2026-07-29T22:27:44.106Z",
       "liveUnfilteredCount": 90,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -1608,16 +1623,15 @@
     },
     "PA-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:56.575Z",
+      "verifiedAt": "2026-07-29T22:27:46.892Z",
       "liveUnfilteredCount": 48,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1633,7 +1647,7 @@
     },
     "PA-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:41:45.830Z",
+      "verifiedAt": "2026-07-29T22:27:37.562Z",
       "liveUnfilteredCount": 222,
       "survivingQuestionIds": [
         "moq",
@@ -1658,15 +1672,15 @@
     },
     "PA-17": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:05.615Z",
+      "verifiedAt": "2026-07-29T22:27:55.314Z",
       "liveUnfilteredCount": 68,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -1683,14 +1697,15 @@
     },
     "PA-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:04.153Z",
+      "verifiedAt": "2026-07-29T22:27:54.927Z",
       "liveUnfilteredCount": 485,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -1701,16 +1716,15 @@
     },
     "PA-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:11.549Z",
+      "verifiedAt": "2026-07-29T22:28:02.970Z",
       "liveUnfilteredCount": 252,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -1726,7 +1740,7 @@
     },
     "PA-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:17.489Z",
+      "verifiedAt": "2026-07-29T22:28:09.700Z",
       "liveUnfilteredCount": 485,
       "survivingQuestionIds": [
         "moq",
@@ -1751,7 +1765,7 @@
     },
     "PA-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:18.230Z",
+      "verifiedAt": "2026-07-29T22:28:10.519Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
@@ -1776,7 +1790,7 @@
     },
     "PW-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:35.242Z",
+      "verifiedAt": "2026-07-29T22:28:27.993Z",
       "liveUnfilteredCount": 4,
       "survivingQuestionIds": [
         "moq",
@@ -1807,17 +1821,16 @@
     },
     "69ef23fa51b1f59dd0adc850": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:27.179Z",
+      "verifiedAt": "2026-07-29T22:28:20.246Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "gender_fit",
         "theme",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1838,16 +1851,17 @@
     },
     "PW-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:33.976Z",
+      "verifiedAt": "2026-07-29T22:28:27.249Z",
       "liveUnfilteredCount": 153,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -1868,16 +1882,17 @@
     },
     "PW-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:41.483Z",
+      "verifiedAt": "2026-07-29T22:28:35.418Z",
       "liveUnfilteredCount": 7,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1898,16 +1913,17 @@
     },
     "PW-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:46.540Z",
+      "verifiedAt": "2026-07-29T22:28:40.615Z",
       "liveUnfilteredCount": 17,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -1928,7 +1944,7 @@
     },
     "PW-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:50.449Z",
+      "verifiedAt": "2026-07-29T22:28:45.029Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
@@ -1959,7 +1975,7 @@
     },
     "PW-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:00.822Z",
+      "verifiedAt": "2026-07-29T22:28:55.986Z",
       "liveUnfilteredCount": 44,
       "survivingQuestionIds": [
         "moq",
@@ -1990,17 +2006,16 @@
     },
     "PE-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:09.290Z",
+      "verifiedAt": "2026-07-29T22:29:04.680Z",
       "liveUnfilteredCount": 351,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "capacity",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2021,16 +2036,17 @@
     },
     "PW-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:42:45.324Z",
+      "verifiedAt": "2026-07-29T22:28:38.926Z",
       "liveUnfilteredCount": 108,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2051,15 +2067,16 @@
     },
     "69ef243e51b1f59dd0adc892": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:05.116Z",
+      "verifiedAt": "2026-07-29T22:28:58.900Z",
       "liveUnfilteredCount": 140,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2075,16 +2092,17 @@
     },
     "PE-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:29.961Z",
+      "verifiedAt": "2026-07-29T22:29:25.957Z",
       "liveUnfilteredCount": 18,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2105,7 +2123,7 @@
     },
     "PE-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:15.763Z",
+      "verifiedAt": "2026-07-29T22:29:11.282Z",
       "liveUnfilteredCount": 102,
       "survivingQuestionIds": [
         "moq",
@@ -2130,17 +2148,16 @@
     },
     "PE-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:25.375Z",
+      "verifiedAt": "2026-07-29T22:29:21.378Z",
       "liveUnfilteredCount": 158,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "capacity",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2161,16 +2178,15 @@
     },
     "PE-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:41.231Z",
+      "verifiedAt": "2026-07-29T22:29:38.900Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2186,16 +2202,17 @@
     },
     "PE-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:39.378Z",
+      "verifiedAt": "2026-07-29T22:29:35.552Z",
       "liveUnfilteredCount": 145,
       "survivingQuestionIds": [
-        "moq",
-        "budget",
         "capacity",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq",
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2216,15 +2233,16 @@
     },
     "PE-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:54.261Z",
+      "verifiedAt": "2026-07-29T22:29:48.724Z",
       "liveUnfilteredCount": 50,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -2240,16 +2258,16 @@
     },
     "PE-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:54.896Z",
+      "verifiedAt": "2026-07-29T22:29:53.334Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -2271,7 +2289,7 @@
     },
     "PE-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:43:55.063Z",
+      "verifiedAt": "2026-07-29T22:29:53.477Z",
       "liveUnfilteredCount": 192,
       "survivingQuestionIds": [
         "moq",
@@ -2302,7 +2320,7 @@
     },
     "PE-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:07.957Z",
+      "verifiedAt": "2026-07-29T22:30:05.875Z",
       "liveUnfilteredCount": 120,
       "survivingQuestionIds": [
         "moq",
@@ -2327,16 +2345,17 @@
     },
     "PV-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:21.354Z",
+      "verifiedAt": "2026-07-29T22:30:21.531Z",
       "liveUnfilteredCount": 19,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "sport",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2357,16 +2376,17 @@
     },
     "PV-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:10.236Z",
+      "verifiedAt": "2026-07-29T22:30:10.369Z",
       "liveUnfilteredCount": 71,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2387,16 +2407,17 @@
     },
     "PB-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:14.324Z",
+      "verifiedAt": "2026-07-29T22:30:14.985Z",
       "liveUnfilteredCount": 147,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2417,16 +2438,17 @@
     },
     "PV-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:29.934Z",
+      "verifiedAt": "2026-07-29T22:30:30.909Z",
       "liveUnfilteredCount": 17,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2447,7 +2469,7 @@
     },
     "PV-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:34.056Z",
+      "verifiedAt": "2026-07-29T22:30:34.454Z",
       "liveUnfilteredCount": 3,
       "survivingQuestionIds": [
         "moq",
@@ -2466,15 +2488,16 @@
     },
     "PV-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:30.060Z",
+      "verifiedAt": "2026-07-29T22:30:31.048Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -2490,7 +2513,7 @@
     },
     "PV-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:39.004Z",
+      "verifiedAt": "2026-07-29T22:30:40.074Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
@@ -2521,7 +2544,7 @@
     },
     "PV-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:39.091Z",
+      "verifiedAt": "2026-07-29T22:30:40.212Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
@@ -2552,16 +2575,17 @@
     },
     "PV-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:42.586Z",
+      "verifiedAt": "2026-07-29T22:30:43.903Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2582,7 +2606,7 @@
     },
     "PF-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:48.702Z",
+      "verifiedAt": "2026-07-29T22:30:49.744Z",
       "liveUnfilteredCount": 169,
       "survivingQuestionIds": [
         "moq",
@@ -2607,15 +2631,16 @@
     },
     "PF-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:54.268Z",
+      "verifiedAt": "2026-07-29T22:30:54.357Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2631,14 +2656,15 @@
     },
     "69ef240e51b1f59dd0adc871": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:47.295Z",
+      "verifiedAt": "2026-07-29T22:30:48.118Z",
       "liveUnfilteredCount": 299,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -2649,7 +2675,7 @@
     },
     "PF-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:44:57.333Z",
+      "verifiedAt": "2026-07-29T22:30:58.420Z",
       "liveUnfilteredCount": 184,
       "survivingQuestionIds": [
         "moq",
@@ -2673,16 +2699,15 @@
     },
     "PF-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:08.844Z",
+      "verifiedAt": "2026-07-29T22:31:08.255Z",
       "liveUnfilteredCount": 59,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -2698,15 +2723,15 @@
     },
     "PF-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:01.050Z",
+      "verifiedAt": "2026-07-29T22:31:03.238Z",
       "liveUnfilteredCount": 204,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -2723,15 +2748,15 @@
     },
     "PF-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:48.224Z",
+      "verifiedAt": "2026-07-29T22:31:55.472Z",
       "liveUnfilteredCount": 55,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -2748,14 +2773,14 @@
     },
     "PF-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:48.224Z",
+      "verifiedAt": "2026-07-29T22:31:55.475Z",
       "liveUnfilteredCount": 7,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -2767,14 +2792,15 @@
     },
     "PF-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:48.224Z",
+      "verifiedAt": "2026-07-29T22:31:55.473Z",
       "liveUnfilteredCount": 52,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -2785,7 +2811,7 @@
     },
     "PF-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:57.761Z",
+      "verifiedAt": "2026-07-29T22:32:05.482Z",
       "liveUnfilteredCount": 24,
       "survivingQuestionIds": [
         "moq",
@@ -2804,7 +2830,7 @@
     },
     "PF-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:58.747Z",
+      "verifiedAt": "2026-07-29T22:32:07.162Z",
       "liveUnfilteredCount": 159,
       "survivingQuestionIds": [
         "moq",
@@ -2828,15 +2854,15 @@
       ]
     },
     "PF-06": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:46:06.668Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:32:14.258Z",
       "liveUnfilteredCount": 38,
-      "survivingQuestionIds": [
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
         "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -2847,7 +2873,7 @@
     },
     "PF-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:07.346Z",
+      "verifiedAt": "2026-07-29T22:32:15.631Z",
       "liveUnfilteredCount": 40,
       "survivingQuestionIds": [
         "moq",
@@ -2866,7 +2892,7 @@
     },
     "PF-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:11.957Z",
+      "verifiedAt": "2026-07-29T22:32:19.122Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
         "moq",
@@ -2890,15 +2916,14 @@
     },
     "PF-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:45:57.958Z",
+      "verifiedAt": "2026-07-29T22:32:05.804Z",
       "liveUnfilteredCount": 30,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -2909,7 +2934,7 @@
     },
     "PF-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:19.639Z",
+      "verifiedAt": "2026-07-29T22:32:28.060Z",
       "liveUnfilteredCount": 66,
       "survivingQuestionIds": [
         "moq",
@@ -2928,7 +2953,7 @@
     },
     "PF-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:12.700Z",
+      "verifiedAt": "2026-07-29T22:32:21.394Z",
       "liveUnfilteredCount": 105,
       "survivingQuestionIds": [
         "moq",
@@ -2947,7 +2972,7 @@
     },
     "PU-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:20.037Z",
+      "verifiedAt": "2026-07-29T22:32:29.639Z",
       "liveUnfilteredCount": 687,
       "survivingQuestionIds": [
         "moq",
@@ -2977,16 +3002,17 @@
     },
     "PU-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:20.964Z",
+      "verifiedAt": "2026-07-29T22:32:29.909Z",
       "liveUnfilteredCount": 113,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3007,16 +3033,17 @@
     },
     "PU-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:26.027Z",
+      "verifiedAt": "2026-07-29T22:32:35.622Z",
       "liveUnfilteredCount": 937,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3037,16 +3064,17 @@
     },
     "PU-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:38.321Z",
+      "verifiedAt": "2026-07-29T22:32:49.322Z",
       "liveUnfilteredCount": 1047,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3067,16 +3095,15 @@
     },
     "PM-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:08.378Z",
+      "verifiedAt": "2026-07-29T22:33:21.486Z",
       "liveUnfilteredCount": 110,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3092,15 +3119,16 @@
     },
     "PM-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:12.608Z",
+      "verifiedAt": "2026-07-29T22:33:24.113Z",
       "liveUnfilteredCount": 99,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3116,16 +3144,17 @@
     },
     "PU-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:45.676Z",
+      "verifiedAt": "2026-07-29T22:32:56.316Z",
       "liveUnfilteredCount": 168,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3146,7 +3175,7 @@
     },
     "PM-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:12.678Z",
+      "verifiedAt": "2026-07-29T22:33:26.521Z",
       "liveUnfilteredCount": 26,
       "survivingQuestionIds": [
         "moq",
@@ -3177,7 +3206,7 @@
     },
     "69ef244d51b1f59dd0adc8b3": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:46:56.337Z",
+      "verifiedAt": "2026-07-29T22:33:09.569Z",
       "liveUnfilteredCount": 1095,
       "survivingQuestionIds": [
         "moq",
@@ -3195,16 +3224,15 @@
     },
     "PM-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:22.309Z",
+      "verifiedAt": "2026-07-29T22:33:35.212Z",
       "liveUnfilteredCount": 16,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3220,7 +3248,7 @@
     },
     "PM-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:32.153Z",
+      "verifiedAt": "2026-07-29T22:33:46.029Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
@@ -3245,15 +3273,15 @@
     },
     "PM-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:21.839Z",
+      "verifiedAt": "2026-07-29T22:33:34.546Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -3269,15 +3297,14 @@
       ]
     },
     "PM-11": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:47:25.297Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:33:39.386Z",
       "liveUnfilteredCount": 119,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -3289,7 +3316,7 @@
     },
     "PM-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:36.341Z",
+      "verifiedAt": "2026-07-29T22:33:50.784Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
@@ -3320,7 +3347,7 @@
     },
     "PM-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:37.151Z",
+      "verifiedAt": "2026-07-29T22:33:51.572Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
@@ -3345,7 +3372,7 @@
     },
     "PM-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:44.850Z",
+      "verifiedAt": "2026-07-29T22:34:00.436Z",
       "liveUnfilteredCount": 9,
       "survivingQuestionIds": [
         "moq",
@@ -3370,21 +3397,21 @@
     },
     "PM-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:41.185Z",
+      "verifiedAt": "2026-07-29T22:33:56.262Z",
       "liveUnfilteredCount": 134,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
+        "coaster_material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget",
-        "coaster_material"
+        "moq"
       ],
       "questionOptionCounts": [
         {
           "id": "coaster_material",
           "optionsTested": 7,
-          "optionsSurviving": 1
+          "optionsSurviving": 7
         },
         {
           "id": "colour",
@@ -3395,14 +3422,14 @@
     },
     "PM-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:44.777Z",
+      "verifiedAt": "2026-07-29T22:34:00.251Z",
       "liveUnfilteredCount": 422,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -3414,17 +3441,16 @@
     },
     "PM-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:52.151Z",
+      "verifiedAt": "2026-07-29T22:34:09.241Z",
       "liveUnfilteredCount": 66,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3445,16 +3471,15 @@
     },
     "PM-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:52.608Z",
+      "verifiedAt": "2026-07-29T22:34:09.545Z",
       "liveUnfilteredCount": 74,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3470,7 +3495,7 @@
     },
     "PM-17": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:48:06.424Z",
+      "verifiedAt": "2026-07-29T22:34:23.982Z",
       "liveUnfilteredCount": 45,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -3481,7 +3506,7 @@
     },
     "PM-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:47:57.645Z",
+      "verifiedAt": "2026-07-29T22:34:15.442Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
@@ -3505,7 +3530,7 @@
     },
     "PB-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:10.375Z",
+      "verifiedAt": "2026-07-29T22:34:28.344Z",
       "liveUnfilteredCount": 114,
       "survivingQuestionIds": [
         "moq",
@@ -3535,7 +3560,7 @@
     },
     "PB-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:08.578Z",
+      "verifiedAt": "2026-07-29T22:34:26.620Z",
       "liveUnfilteredCount": 125,
       "survivingQuestionIds": [
         "moq",
@@ -3566,16 +3591,15 @@
     },
     "69ef249151b1f59dd0adc8e8": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:23.835Z",
+      "verifiedAt": "2026-07-29T22:34:44.219Z",
       "liveUnfilteredCount": 21,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "theme",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "theme",
@@ -3591,7 +3615,7 @@
     },
     "PN-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:24.596Z",
+      "verifiedAt": "2026-07-29T22:34:44.419Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
@@ -3622,7 +3646,7 @@
     },
     "PB-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:10.643Z",
+      "verifiedAt": "2026-07-29T22:34:28.637Z",
       "liveUnfilteredCount": 157,
       "survivingQuestionIds": [
         "moq",
@@ -3652,16 +3676,17 @@
     },
     "PN-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:29.409Z",
+      "verifiedAt": "2026-07-29T22:34:48.447Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "sleeves",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3682,16 +3707,17 @@
     },
     "PN-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:33.080Z",
+      "verifiedAt": "2026-07-29T22:34:54.651Z",
       "liveUnfilteredCount": 112,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3712,7 +3738,7 @@
     },
     "PN-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:41.060Z",
+      "verifiedAt": "2026-07-29T22:35:00.885Z",
       "liveUnfilteredCount": 152,
       "survivingQuestionIds": [
         "moq",
@@ -3742,16 +3768,17 @@
     },
     "PN-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:36.364Z",
+      "verifiedAt": "2026-07-29T22:34:55.445Z",
       "liveUnfilteredCount": 176,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3772,7 +3799,7 @@
     },
     "PN-11": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:48:59.677Z",
+      "verifiedAt": "2026-07-29T22:35:20.793Z",
       "liveUnfilteredCount": 1,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -3783,16 +3810,17 @@
     },
     "PN-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:51.676Z",
+      "verifiedAt": "2026-07-29T22:35:13.435Z",
       "liveUnfilteredCount": 285,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3813,7 +3841,7 @@
     },
     "PN-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:07.381Z",
+      "verifiedAt": "2026-07-29T22:35:29.654Z",
       "liveUnfilteredCount": 24,
       "survivingQuestionIds": [
         "moq",
@@ -3844,7 +3872,7 @@
     },
     "PN-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:48:54.475Z",
+      "verifiedAt": "2026-07-29T22:35:15.285Z",
       "liveUnfilteredCount": 48,
       "survivingQuestionIds": [
         "moq",
@@ -3874,16 +3902,15 @@
     },
     "PT-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:16.377Z",
+      "verifiedAt": "2026-07-29T22:35:38.647Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -3899,15 +3926,14 @@
     },
     "PT-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:22.711Z",
+      "verifiedAt": "2026-07-29T22:35:45.881Z",
       "liveUnfilteredCount": 90,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -3918,7 +3944,7 @@
     },
     "PN-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:04.700Z",
+      "verifiedAt": "2026-07-29T22:35:25.189Z",
       "liveUnfilteredCount": 422,
       "survivingQuestionIds": [
         "moq",
@@ -3948,16 +3974,17 @@
     },
     "PN-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:13.220Z",
+      "verifiedAt": "2026-07-29T22:35:34.895Z",
       "liveUnfilteredCount": 21,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -3978,15 +4005,14 @@
     },
     "PT-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:31.265Z",
+      "verifiedAt": "2026-07-29T22:35:54.711Z",
       "liveUnfilteredCount": 91,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -3997,14 +4023,14 @@
     },
     "PT-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:27.112Z",
+      "verifiedAt": "2026-07-29T22:35:49.014Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -4016,7 +4042,7 @@
     },
     "PT-04": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:49:35.014Z",
+      "verifiedAt": "2026-07-29T22:35:57.287Z",
       "liveUnfilteredCount": 4,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -4027,15 +4053,14 @@
     },
     "PT-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:36.677Z",
+      "verifiedAt": "2026-07-29T22:36:01.130Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -4046,15 +4071,16 @@
     },
     "PT-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:28.457Z",
+      "verifiedAt": "2026-07-29T22:35:51.330Z",
       "liveUnfilteredCount": 79,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -4070,7 +4096,7 @@
     },
     "PT-05": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:49:38.999Z",
+      "verifiedAt": "2026-07-29T22:36:03.343Z",
       "liveUnfilteredCount": 8,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -4081,15 +4107,16 @@
     },
     "PT-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:38.523Z",
+      "verifiedAt": "2026-07-29T22:36:02.372Z",
       "liveUnfilteredCount": 136,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4105,15 +4132,14 @@
     },
     "PT-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:42.740Z",
+      "verifiedAt": "2026-07-29T22:36:07.378Z",
       "liveUnfilteredCount": 148,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -4124,14 +4150,14 @@
     },
     "PT-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:48.949Z",
+      "verifiedAt": "2026-07-29T22:36:13.449Z",
       "liveUnfilteredCount": 6,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -4143,15 +4169,15 @@
     },
     "PT-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:50.392Z",
+      "verifiedAt": "2026-07-29T22:36:15.702Z",
       "liveUnfilteredCount": 25,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -4168,7 +4194,7 @@
     },
     "PT-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:43.741Z",
+      "verifiedAt": "2026-07-29T22:36:09.266Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
@@ -4186,7 +4212,7 @@
     },
     "PT-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:53.998Z",
+      "verifiedAt": "2026-07-29T22:36:18.586Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
@@ -4210,16 +4236,17 @@
     },
     "PO-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:59.637Z",
+      "verifiedAt": "2026-07-29T22:36:25.130Z",
       "liveUnfilteredCount": 28,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4240,16 +4267,17 @@
     },
     "PO-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:03.895Z",
+      "verifiedAt": "2026-07-29T22:36:27.502Z",
       "liveUnfilteredCount": 93,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4270,7 +4298,7 @@
     },
     "PO-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:49:54.155Z",
+      "verifiedAt": "2026-07-29T22:36:20.021Z",
       "liveUnfilteredCount": 442,
       "survivingQuestionIds": [
         "moq",
@@ -4300,16 +4328,17 @@
     },
     "PO-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:11.837Z",
+      "verifiedAt": "2026-07-29T22:36:36.545Z",
       "liveUnfilteredCount": 157,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4330,7 +4359,7 @@
     },
     "PO-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:25.948Z",
+      "verifiedAt": "2026-07-29T22:36:50.713Z",
       "liveUnfilteredCount": 50,
       "survivingQuestionIds": [
         "moq",
@@ -4360,14 +4389,14 @@
     },
     "PS-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:40.044Z",
+      "verifiedAt": "2026-07-29T22:37:05.356Z",
       "liveUnfilteredCount": 69,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -4379,16 +4408,17 @@
     },
     "PO-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:20.871Z",
+      "verifiedAt": "2026-07-29T22:36:47.397Z",
       "liveUnfilteredCount": 279,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4409,15 +4439,16 @@
     },
     "PS-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:51.859Z",
+      "verifiedAt": "2026-07-29T22:37:18.010Z",
       "liveUnfilteredCount": 457,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "features",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "features",
@@ -4433,7 +4464,7 @@
     },
     "PS-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:41.048Z",
+      "verifiedAt": "2026-07-29T22:37:07.833Z",
       "liveUnfilteredCount": 458,
       "survivingQuestionIds": [
         "moq",
@@ -4463,14 +4494,15 @@
     },
     "69ef24c451b1f59dd0adc909": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:50:36.142Z",
+      "verifiedAt": "2026-07-29T22:37:02.559Z",
       "liveUnfilteredCount": 2242,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -4481,17 +4513,16 @@
     },
     "PS-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:07.015Z",
+      "verifiedAt": "2026-07-29T22:37:33.276Z",
       "liveUnfilteredCount": 168,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "features",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "features",
@@ -4512,16 +4543,16 @@
     },
     "PS-17": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:08.299Z",
+      "verifiedAt": "2026-07-29T22:37:34.265Z",
       "liveUnfilteredCount": 282,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -4543,16 +4574,15 @@
     },
     "PS-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:22.344Z",
+      "verifiedAt": "2026-07-29T22:37:48.841Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4568,15 +4598,16 @@
     },
     "PS-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:11.372Z",
+      "verifiedAt": "2026-07-29T22:37:36.080Z",
       "liveUnfilteredCount": 116,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "features",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "features",
@@ -4592,7 +4623,7 @@
     },
     "PS-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:21.880Z",
+      "verifiedAt": "2026-07-29T22:37:48.051Z",
       "liveUnfilteredCount": 194,
       "survivingQuestionIds": [
         "moq",
@@ -4623,7 +4654,7 @@
     },
     "PS-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:22.676Z",
+      "verifiedAt": "2026-07-29T22:37:49.784Z",
       "liveUnfilteredCount": 48,
       "survivingQuestionIds": [
         "moq",
@@ -4654,7 +4685,7 @@
     },
     "PS-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:32.212Z",
+      "verifiedAt": "2026-07-29T22:37:59.604Z",
       "liveUnfilteredCount": 36,
       "survivingQuestionIds": [
         "moq",
@@ -4672,15 +4703,14 @@
       ]
     },
     "PS-14": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:51:33.997Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:38:00.813Z",
       "liveUnfilteredCount": 33,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -4692,15 +4722,14 @@
     },
     "PS-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:40.475Z",
+      "verifiedAt": "2026-07-29T22:38:08.234Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -4711,15 +4740,16 @@
     },
     "PS-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:41.261Z",
+      "verifiedAt": "2026-07-29T22:38:08.923Z",
       "liveUnfilteredCount": 19,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4735,15 +4765,16 @@
     },
     "PS-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:33.177Z",
+      "verifiedAt": "2026-07-29T22:38:00.635Z",
       "liveUnfilteredCount": 55,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4759,7 +4790,7 @@
     },
     "PS-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:44.681Z",
+      "verifiedAt": "2026-07-29T22:38:13.233Z",
       "liveUnfilteredCount": 68,
       "survivingQuestionIds": [
         "moq",
@@ -4784,7 +4815,7 @@
     },
     "PG-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:55.847Z",
+      "verifiedAt": "2026-07-29T22:38:25.271Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
@@ -4802,15 +4833,15 @@
     },
     "PS-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:49.552Z",
+      "verifiedAt": "2026-07-29T22:38:17.081Z",
       "liveUnfilteredCount": 143,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "eco_factors",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -4827,15 +4858,16 @@
     },
     "PS-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:51:47.918Z",
+      "verifiedAt": "2026-07-29T22:38:16.130Z",
       "liveUnfilteredCount": 193,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -4851,15 +4883,16 @@
     },
     "PG-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:04.284Z",
+      "verifiedAt": "2026-07-29T22:38:33.323Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
-        "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq",
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -4874,15 +4907,14 @@
       ]
     },
     "PG-02": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:52:03.343Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:38:30.378Z",
       "liveUnfilteredCount": 46,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -4894,7 +4926,7 @@
     },
     "PG-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:00.403Z",
+      "verifiedAt": "2026-07-29T22:38:29.569Z",
       "liveUnfilteredCount": 117,
       "survivingQuestionIds": [
         "moq",
@@ -4919,14 +4951,14 @@
     },
     "PQ-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:14.470Z",
+      "verifiedAt": "2026-07-29T22:38:42.768Z",
       "liveUnfilteredCount": 5,
       "survivingQuestionIds": [
-        "moq",
         "capacity",
         "colour"
       ],
       "removedQuestionIds": [
+        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -4944,17 +4976,16 @@
     },
     "PQ-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:13.832Z",
+      "verifiedAt": "2026-07-29T22:38:42.608Z",
       "liveUnfilteredCount": 33,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -4975,16 +5006,15 @@
     },
     "PQ-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:15.003Z",
+      "verifiedAt": "2026-07-29T22:38:43.331Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5000,15 +5030,15 @@
     },
     "PQ-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:21.549Z",
+      "verifiedAt": "2026-07-29T22:38:49.582Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -5025,16 +5055,15 @@
     },
     "PQ-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:33.895Z",
+      "verifiedAt": "2026-07-29T22:39:01.567Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5050,14 +5079,14 @@
     },
     "PQ-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:25.120Z",
+      "verifiedAt": "2026-07-29T22:38:53.438Z",
       "liveUnfilteredCount": 123,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -5069,7 +5098,7 @@
     },
     "PQ-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:41.459Z",
+      "verifiedAt": "2026-07-29T22:39:13.056Z",
       "liveUnfilteredCount": 30,
       "survivingQuestionIds": [
         "moq",
@@ -5094,7 +5123,7 @@
     },
     "PQ-18": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:25.839Z",
+      "verifiedAt": "2026-07-29T22:38:56.635Z",
       "liveUnfilteredCount": 205,
       "survivingQuestionIds": [
         "moq",
@@ -5119,7 +5148,7 @@
     },
     "PM-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:38.705Z",
+      "verifiedAt": "2026-07-29T22:39:08.140Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
@@ -5144,14 +5173,14 @@
     },
     "PQ-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:52:44.461Z",
+      "verifiedAt": "2026-07-29T22:39:13.584Z",
       "liveUnfilteredCount": 203,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -5163,7 +5192,7 @@
     },
     "PQ-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:19.064Z",
+      "verifiedAt": "2026-07-29T22:39:56.868Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
@@ -5193,7 +5222,7 @@
     },
     "PQ-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:19.064Z",
+      "verifiedAt": "2026-07-29T22:39:56.867Z",
       "liveUnfilteredCount": 46,
       "survivingQuestionIds": [
         "moq",
@@ -5218,14 +5247,14 @@
     },
     "PQ-16": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:19.064Z",
+      "verifiedAt": "2026-07-29T22:39:56.867Z",
       "liveUnfilteredCount": 55,
       "survivingQuestionIds": [
-        "moq",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
+        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -5243,7 +5272,7 @@
     },
     "PQ-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:30.534Z",
+      "verifiedAt": "2026-07-29T22:40:10.090Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -5268,7 +5297,7 @@
     },
     "PQ-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:32.211Z",
+      "verifiedAt": "2026-07-29T22:40:11.624Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
@@ -5293,16 +5322,15 @@
     },
     "PQ-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:39.853Z",
+      "verifiedAt": "2026-07-29T22:40:20.149Z",
       "liveUnfilteredCount": 43,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "sport",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "sport",
@@ -5318,7 +5346,7 @@
     },
     "PQ-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:31.250Z",
+      "verifiedAt": "2026-07-29T22:40:10.910Z",
       "liveUnfilteredCount": 74,
       "survivingQuestionIds": [
         "moq",
@@ -5343,7 +5371,7 @@
     },
     "PQ-19": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:53:50.655Z",
+      "verifiedAt": "2026-07-29T22:40:31.088Z",
       "liveUnfilteredCount": 81,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5354,16 +5382,15 @@
     },
     "PQ-17": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:43.076Z",
+      "verifiedAt": "2026-07-29T22:40:23.301Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5379,7 +5406,7 @@
     },
     "PQ-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:42.231Z",
+      "verifiedAt": "2026-07-29T22:40:22.697Z",
       "liveUnfilteredCount": 34,
       "survivingQuestionIds": [
         "moq",
@@ -5404,7 +5431,7 @@
     },
     "69ef24dc51b1f59dd0adc92a": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:51.333Z",
+      "verifiedAt": "2026-07-29T22:40:31.795Z",
       "liveUnfilteredCount": 37,
       "survivingQuestionIds": [
         "moq",
@@ -5428,15 +5455,15 @@
       ]
     },
     "PC-04": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:53:52.273Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:40:33.497Z",
       "liveUnfilteredCount": 134,
-      "survivingQuestionIds": [
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
         "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -5447,7 +5474,7 @@
     },
     "PC-02": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:54:08.058Z",
+      "verifiedAt": "2026-07-29T22:40:48.800Z",
       "liveUnfilteredCount": 1,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5458,15 +5485,16 @@
     },
     "PC-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:07.218Z",
+      "verifiedAt": "2026-07-29T22:40:48.651Z",
       "liveUnfilteredCount": 25,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -5482,15 +5510,16 @@
     },
     "PC-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:53:54.278Z",
+      "verifiedAt": "2026-07-29T22:40:35.234Z",
       "liveUnfilteredCount": 92,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5506,16 +5535,17 @@
     },
     "PC-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:14.181Z",
+      "verifiedAt": "2026-07-29T22:40:55.051Z",
       "liveUnfilteredCount": 19,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -5536,15 +5566,16 @@
     },
     "PC-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:11.762Z",
+      "verifiedAt": "2026-07-29T22:40:52.514Z",
       "liveUnfilteredCount": 159,
       "survivingQuestionIds": [
-        "moq",
-        "budget",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq",
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -5559,15 +5590,14 @@
       ]
     },
     "PD-11": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:54:23.652Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:41:04.782Z",
       "liveUnfilteredCount": 12,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -5579,16 +5609,15 @@
     },
     "PD-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:23.787Z",
+      "verifiedAt": "2026-07-29T22:41:05.827Z",
       "liveUnfilteredCount": 18,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -5604,7 +5633,7 @@
     },
     "PD-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:29.990Z",
+      "verifiedAt": "2026-07-29T22:41:12.024Z",
       "liveUnfilteredCount": 15,
       "survivingQuestionIds": [
         "moq",
@@ -5623,7 +5652,7 @@
     },
     "PD-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:19.768Z",
+      "verifiedAt": "2026-07-29T22:41:01.008Z",
       "liveUnfilteredCount": 52,
       "survivingQuestionIds": [
         "moq",
@@ -5641,7 +5670,7 @@
     },
     "PD-16": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:54:33.301Z",
+      "verifiedAt": "2026-07-29T22:41:15.714Z",
       "liveUnfilteredCount": 2,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5659,7 +5688,7 @@
     },
     "PD-02": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:54:37.406Z",
+      "verifiedAt": "2026-07-29T22:41:20.410Z",
       "liveUnfilteredCount": 2,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5677,7 +5706,7 @@
     },
     "PD-08": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:54:38.515Z",
+      "verifiedAt": "2026-07-29T22:41:21.538Z",
       "liveUnfilteredCount": 1,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5688,15 +5717,14 @@
     },
     "PD-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:30.352Z",
+      "verifiedAt": "2026-07-29T22:41:12.194Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -5707,7 +5735,7 @@
     },
     "PD-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:39.157Z",
+      "verifiedAt": "2026-07-29T22:41:22.135Z",
       "liveUnfilteredCount": 16,
       "survivingQuestionIds": [
         "moq",
@@ -5726,7 +5754,7 @@
     },
     "PD-15": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:54:42.902Z",
+      "verifiedAt": "2026-07-29T22:41:26.383Z",
       "liveUnfilteredCount": 2,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -5737,7 +5765,7 @@
     },
     "PD-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:41.586Z",
+      "verifiedAt": "2026-07-29T22:41:24.792Z",
       "liveUnfilteredCount": 27,
       "survivingQuestionIds": [
         "moq",
@@ -5756,15 +5784,16 @@
     },
     "PH-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:47.531Z",
+      "verifiedAt": "2026-07-29T22:41:31.580Z",
       "liveUnfilteredCount": 11,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5780,15 +5809,16 @@
     },
     "PH-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:46.697Z",
+      "verifiedAt": "2026-07-29T22:41:30.455Z",
       "liveUnfilteredCount": 49,
       "survivingQuestionIds": [
-        "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq",
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5804,15 +5834,15 @@
     },
     "PH-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:56.888Z",
+      "verifiedAt": "2026-07-29T22:41:40.782Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -5828,15 +5858,14 @@
       ]
     },
     "PH-10": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:54:56.960Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:41:41.036Z",
       "liveUnfilteredCount": 69,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -5848,14 +5877,15 @@
     },
     "PH-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:08.417Z",
+      "verifiedAt": "2026-07-29T22:41:51.080Z",
       "liveUnfilteredCount": 46,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -5866,16 +5896,15 @@
     },
     "PH-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:58.358Z",
+      "verifiedAt": "2026-07-29T22:41:43.194Z",
       "liveUnfilteredCount": 186,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5891,15 +5920,16 @@
     },
     "PH-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:09.661Z",
+      "verifiedAt": "2026-07-29T22:41:53.554Z",
       "liveUnfilteredCount": 18,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5915,15 +5945,16 @@
     },
     "PH-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:15.778Z",
+      "verifiedAt": "2026-07-29T22:42:00.796Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5939,16 +5970,15 @@
     },
     "PH-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:20.104Z",
+      "verifiedAt": "2026-07-29T22:42:06.546Z",
       "liveUnfilteredCount": 42,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -5963,15 +5993,14 @@
       ]
     },
     "PH-13": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:55:26.441Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:42:12.510Z",
       "liveUnfilteredCount": 85,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -5983,14 +6012,14 @@
     },
     "PH-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:14.987Z",
+      "verifiedAt": "2026-07-29T22:42:00.463Z",
       "liveUnfilteredCount": 142,
       "survivingQuestionIds": [
-        "moq",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
+        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -6008,7 +6037,7 @@
     },
     "69ef253551b1f59dd0adc94b": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:54:45.032Z",
+      "verifiedAt": "2026-07-29T22:41:28.515Z",
       "liveUnfilteredCount": 89,
       "survivingQuestionIds": [
         "moq",
@@ -6025,15 +6054,14 @@
       ]
     },
     "PH-09": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:55:32.278Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:42:20.127Z",
       "liveUnfilteredCount": 33,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -6045,14 +6073,14 @@
     },
     "PH-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:28.023Z",
+      "verifiedAt": "2026-07-29T22:42:14.809Z",
       "liveUnfilteredCount": 125,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -6063,26 +6091,26 @@
       ]
     },
     "PI-01": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:55:39.672Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:42:27.039Z",
       "liveUnfilteredCount": 29,
-      "survivingQuestionIds": [
-        "moq",
-        "budget"
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
+        "budget",
+        "moq"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": []
     },
     "PH-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:33.601Z",
-      "liveUnfilteredCount": 155,
+      "verifiedAt": "2026-07-29T22:42:20.798Z",
+      "liveUnfilteredCount": 156,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -6094,15 +6122,14 @@
     },
     "PI-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:44.455Z",
+      "verifiedAt": "2026-07-29T22:42:31.529Z",
       "liveUnfilteredCount": 38,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6113,14 +6140,15 @@
     },
     "PI-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:44.752Z",
+      "verifiedAt": "2026-07-29T22:42:31.878Z",
       "liveUnfilteredCount": 102,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6131,7 +6159,7 @@
     },
     "PI-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:52.896Z",
+      "verifiedAt": "2026-07-29T22:42:41.083Z",
       "liveUnfilteredCount": 10,
       "survivingQuestionIds": [
         "moq",
@@ -6150,7 +6178,7 @@
     },
     "PI-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:51.624Z",
+      "verifiedAt": "2026-07-29T22:42:39.444Z",
       "liveUnfilteredCount": 63,
       "survivingQuestionIds": [
         "moq",
@@ -6169,7 +6197,7 @@
     },
     "PI-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:53.580Z",
+      "verifiedAt": "2026-07-29T22:42:41.775Z",
       "liveUnfilteredCount": 14,
       "survivingQuestionIds": [
         "moq",
@@ -6188,14 +6216,15 @@
     },
     "69ef254951b1f59dd0adc96c": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:38.520Z",
+      "verifiedAt": "2026-07-29T22:42:26.271Z",
       "liveUnfilteredCount": 72,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6206,7 +6235,7 @@
     },
     "PJ-02": {
       "passed": false,
-      "verifiedAt": "2026-07-29T14:55:59.525Z",
+      "verifiedAt": "2026-07-29T22:42:47.976Z",
       "liveUnfilteredCount": 57,
       "survivingQuestionIds": [],
       "removedQuestionIds": [
@@ -6217,7 +6246,7 @@
     },
     "PI-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:55:59.457Z",
+      "verifiedAt": "2026-07-29T22:42:47.826Z",
       "liveUnfilteredCount": 9,
       "survivingQuestionIds": [
         "moq",
@@ -6236,14 +6265,15 @@
     },
     "PJ-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:04.844Z",
+      "verifiedAt": "2026-07-29T22:42:52.345Z",
       "liveUnfilteredCount": 12,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6254,7 +6284,7 @@
     },
     "PJ-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:00.348Z",
+      "verifiedAt": "2026-07-29T22:42:48.658Z",
       "liveUnfilteredCount": 21,
       "survivingQuestionIds": [
         "moq",
@@ -6273,14 +6303,14 @@
     },
     "PJ-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:09.981Z",
+      "verifiedAt": "2026-07-29T22:42:57.425Z",
       "liveUnfilteredCount": 20,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -6292,7 +6322,7 @@
     },
     "PJ-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:11.693Z",
+      "verifiedAt": "2026-07-29T22:42:58.652Z",
       "liveUnfilteredCount": 35,
       "survivingQuestionIds": [
         "moq",
@@ -6311,7 +6341,7 @@
     },
     "PJ-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:06.874Z",
+      "verifiedAt": "2026-07-29T22:42:54.325Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -6330,14 +6360,14 @@
     },
     "PP-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:16.442Z",
+      "verifiedAt": "2026-07-29T22:43:04.930Z",
       "liveUnfilteredCount": 402,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -6349,14 +6379,15 @@
     },
     "PP-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:16.731Z",
+      "verifiedAt": "2026-07-29T22:43:05.343Z",
       "liveUnfilteredCount": 156,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6367,16 +6398,15 @@
     },
     "PP-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:18.824Z",
+      "verifiedAt": "2026-07-29T22:43:06.415Z",
       "liveUnfilteredCount": 96,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6392,16 +6422,15 @@
     },
     "PP-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:27.169Z",
+      "verifiedAt": "2026-07-29T22:43:16.849Z",
       "liveUnfilteredCount": 80,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6417,16 +6446,15 @@
     },
     "PP-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:27.225Z",
+      "verifiedAt": "2026-07-29T22:43:17.044Z",
       "liveUnfilteredCount": 67,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6442,16 +6470,15 @@
     },
     "PP-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:32.072Z",
+      "verifiedAt": "2026-07-29T22:43:21.244Z",
       "liveUnfilteredCount": 81,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6467,15 +6494,16 @@
     },
     "PP-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:37.934Z",
+      "verifiedAt": "2026-07-29T22:43:28.839Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6491,15 +6519,15 @@
     },
     "PP-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:39.509Z",
+      "verifiedAt": "2026-07-29T22:43:34.483Z",
       "liveUnfilteredCount": 142,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -6516,15 +6544,14 @@
     },
     "PL-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:48.304Z",
+      "verifiedAt": "2026-07-29T22:43:42.213Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6535,7 +6562,7 @@
     },
     "PL-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:42.777Z",
+      "verifiedAt": "2026-07-29T22:43:36.114Z",
       "liveUnfilteredCount": 53,
       "survivingQuestionIds": [
         "moq",
@@ -6560,7 +6587,7 @@
     },
     "PL-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:50.965Z",
+      "verifiedAt": "2026-07-29T22:43:46.241Z",
       "liveUnfilteredCount": 46,
       "survivingQuestionIds": [
         "moq",
@@ -6577,15 +6604,14 @@
       ]
     },
     "PL-04": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:56:55.947Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:43:50.788Z",
       "liveUnfilteredCount": 161,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -6597,15 +6623,14 @@
     },
     "PL-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:03.115Z",
+      "verifiedAt": "2026-07-29T22:43:58.282Z",
       "liveUnfilteredCount": 50,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6616,14 +6641,15 @@
     },
     "PL-08": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:56:54.408Z",
+      "verifiedAt": "2026-07-29T22:43:48.351Z",
       "liveUnfilteredCount": 347,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6633,15 +6659,14 @@
       ]
     },
     "PL-10": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:57:13.234Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:44:08.580Z",
       "liveUnfilteredCount": 26,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
+      "survivingQuestionIds": [],
       "removedQuestionIds": [
-        "budget"
+        "moq",
+        "budget",
+        "colour"
       ],
       "questionOptionCounts": [
         {
@@ -6653,7 +6678,7 @@
     },
     "PL-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:07.681Z",
+      "verifiedAt": "2026-07-29T22:44:03.363Z",
       "liveUnfilteredCount": 41,
       "survivingQuestionIds": [
         "moq",
@@ -6672,15 +6697,14 @@
     },
     "PL-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:15.889Z",
+      "verifiedAt": "2026-07-29T22:44:12.387Z",
       "liveUnfilteredCount": 15,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6691,7 +6715,7 @@
     },
     "PL-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:07.519Z",
+      "verifiedAt": "2026-07-29T22:44:02.675Z",
       "liveUnfilteredCount": 22,
       "survivingQuestionIds": [
         "moq",
@@ -6715,7 +6739,7 @@
     },
     "PR-01": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:17.346Z",
+      "verifiedAt": "2026-07-29T22:44:12.946Z",
       "liveUnfilteredCount": 32,
       "survivingQuestionIds": [
         "moq",
@@ -6746,7 +6770,7 @@
     },
     "PR-10": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:18.466Z",
+      "verifiedAt": "2026-07-29T22:44:13.763Z",
       "liveUnfilteredCount": 77,
       "survivingQuestionIds": [
         "moq",
@@ -6765,17 +6789,16 @@
     },
     "PR-02": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:28.018Z",
+      "verifiedAt": "2026-07-29T22:44:24.576Z",
       "liveUnfilteredCount": 13,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6796,16 +6819,15 @@
     },
     "PR-12": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:21.559Z",
+      "verifiedAt": "2026-07-29T22:44:18.157Z",
       "liveUnfilteredCount": 403,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6821,16 +6843,15 @@
     },
     "PR-04": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:28.893Z",
+      "verifiedAt": "2026-07-29T22:44:25.145Z",
       "liveUnfilteredCount": 23,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -6846,7 +6867,7 @@
     },
     "PR-05": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:36.597Z",
+      "verifiedAt": "2026-07-29T22:44:32.853Z",
       "liveUnfilteredCount": 29,
       "survivingQuestionIds": [
         "moq",
@@ -6877,7 +6898,7 @@
     },
     "PR-06": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:37.858Z",
+      "verifiedAt": "2026-07-29T22:44:33.706Z",
       "liveUnfilteredCount": 8,
       "survivingQuestionIds": [
         "moq",
@@ -6901,15 +6922,15 @@
       ]
     },
     "PR-08": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T14:57:45.105Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:44:42.462Z",
       "liveUnfilteredCount": 13,
-      "survivingQuestionIds": [
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
         "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -6920,7 +6941,7 @@
     },
     "PR-03": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:46.971Z",
+      "verifiedAt": "2026-07-29T22:44:43.913Z",
       "liveUnfilteredCount": 112,
       "survivingQuestionIds": [
         "moq",
@@ -6939,7 +6960,7 @@
     },
     "PR-11": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:34.037Z",
+      "verifiedAt": "2026-07-29T22:44:31.986Z",
       "liveUnfilteredCount": 531,
       "survivingQuestionIds": [
         "moq",
@@ -6969,15 +6990,16 @@
     },
     "PR-13": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:52.294Z",
+      "verifiedAt": "2026-07-29T22:44:50.347Z",
       "liveUnfilteredCount": 74,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "eco_factors",
@@ -6993,14 +7015,14 @@
     },
     "PR-09": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:57.497Z",
+      "verifiedAt": "2026-07-29T22:44:56.081Z",
       "liveUnfilteredCount": 168,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -7012,17 +7034,16 @@
     },
     "PR-15": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:57:53.090Z",
+      "verifiedAt": "2026-07-29T22:44:50.621Z",
       "liveUnfilteredCount": 60,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "capacity",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -7043,15 +7064,15 @@
     },
     "PR-14": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:58:05.570Z",
+      "verifiedAt": "2026-07-29T22:45:03.820Z",
       "liveUnfilteredCount": 75,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "material",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -7068,15 +7089,15 @@
     },
     "PR-07": {
       "passed": true,
-      "verifiedAt": "2026-07-29T14:58:05.994Z",
+      "verifiedAt": "2026-07-29T22:45:04.132Z",
       "liveUnfilteredCount": 144,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "capacity",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {

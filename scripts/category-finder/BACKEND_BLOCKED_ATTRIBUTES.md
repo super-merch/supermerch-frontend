@@ -70,15 +70,18 @@ GET .../params-products?product_type_ids=PY-06&attribute_name=Material&attribute
 This split the 3 owner-requested Material-reclassification filters into two different outcomes:
 
 - **Coasters' "Coaster Material" and Beanies' "Fabric"** group several raw supplier synonyms
-  into one clean bucket (e.g. real observed values like "Bamboo"/"Wood"/"Timber" -> the single
-  label "Bamboo/Wood"). This is architecturally fixable the same way colour normalization already
-  works (`lib/colourNormalization.mjs`): build each option's filter `value` as a comma-joined list
-  of the REAL raw synonyms that map to that bucket (the backend's attribute filter already ORs
-  comma-separated values under one `attribute_name`, confirmed by reading
-  `getAllV2Products.js`'s `groupedValues`/`$or` construction) instead of the bucket label itself.
-  **Not yet implemented** -- currently ships with only the literal-match subset (e.g. Coasters:
-  "Cork" alone survived live verification; every grouped-synonym option was correctly stripped
-  rather than shipped broken). Tracked as follow-up engineering work, not abandoned.
+  into one clean bucket (e.g. real observed values like "Bamboo"/"Wood"/"Wheat Straw" -> the
+  single label "Bamboo/Wood"). **Fixed** the same way colour normalization already works
+  (`lib/colourNormalization.mjs`): `lib/materialClassifiers.mjs`'s `buildMaterialFamilyOptions`
+  builds each option's filter `value` as a comma-joined list of the REAL raw synonyms that map to
+  that bucket (the backend's attribute filter already ORs comma-separated values under one
+  `attribute_name`, confirmed by reading `getAllV2Products.js`'s `groupedValues`/`$or`
+  construction), classified directly from the leaf's real raw Material stat at generate-manifest
+  time (`classify.mjs`'s `MATERIAL_FAMILY_LEAF_CONFIG`) instead of the bucket label itself.
+  Live-verified: Coasters' "Bamboo/Wood" option (value `Bamboo,Wood,Wheat Straw`) genuinely
+  narrows 134 -> 35 products. Beanies' Fabric still correctly does not ship -- raw Material
+  coverage is a genuine 2.4%, below the population threshold, an honest exclusion unrelated to
+  this fix.
 - **Metal Pens' compound buckets ("Metal with Bamboo Accent", "Metal with Recycled/Other
   Accent")** are fundamentally different: `classifyMetalPenMaterial` requires CO-OCCURRENCE of
   two raw tags on the SAME product (e.g. a metal keyword AND "Bamboo" together). No comma-joined

@@ -1,18 +1,19 @@
 {
-  "generatedAt": "2026-07-29T15:07:43.368Z",
+  "generatedAt": "2026-07-29T22:49:46.272Z",
   "categories": {
     "PB": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:03:48.833Z",
+      "verifiedAt": "2026-07-29T22:45:53.913Z",
       "liveUnfilteredCount": 872,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -33,16 +34,17 @@
     },
     "PV": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:03:48.929Z",
-      "liveUnfilteredCount": 193,
+      "verifiedAt": "2026-07-29T22:45:54.067Z",
+      "liveUnfilteredCount": 192,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -63,14 +65,15 @@
     },
     "PK": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:03:48.928Z",
+      "verifiedAt": "2026-07-29T22:45:54.064Z",
       "liveUnfilteredCount": 2242,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -81,16 +84,17 @@
     },
     "PX": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:04:11.728Z",
+      "verifiedAt": "2026-07-29T22:46:15.517Z",
       "liveUnfilteredCount": 1039,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "gender_fit",
         "visibility",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "gender_fit",
@@ -111,15 +115,14 @@
     },
     "PY": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:04:18.146Z",
+      "verifiedAt": "2026-07-29T22:46:22.233Z",
       "liveUnfilteredCount": 1874,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -130,45 +133,16 @@
     },
     "PA": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:04:19.796Z",
-      "liveUnfilteredCount": 3732,
+      "verifiedAt": "2026-07-29T22:46:24.916Z",
+      "liveUnfilteredCount": 3733,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 14
-        }
-      ]
-    },
-    "69ef235c51b1f59dd0adc7af": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T15:04:53.605Z",
-      "liveUnfilteredCount": 340,
-      "survivingQuestionIds": [
-        "moq",
-        "budget",
-        "material",
-        "gender_fit",
-        "colour"
+      "removedQuestionIds": [
+        "budget"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": [
-        {
-          "id": "material",
-          "optionsTested": 9,
-          "optionsSurviving": 9
-        },
-        {
-          "id": "gender_fit",
-          "optionsTested": 4,
-          "optionsSurviving": 4
-        },
         {
           "id": "colour",
           "optionsTested": 14,
@@ -178,7 +152,7 @@
     },
     "69ef233551b1f59dd0adc782": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:04:43.420Z",
+      "verifiedAt": "2026-07-29T22:46:41.751Z",
       "liveUnfilteredCount": 404,
       "survivingQuestionIds": [
         "moq",
@@ -207,18 +181,50 @@
         }
       ]
     },
+    "69ef235c51b1f59dd0adc7af": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T22:46:58.170Z",
+      "liveUnfilteredCount": 339,
+      "survivingQuestionIds": [
+        "moq",
+        "material",
+        "gender_fit",
+        "colour"
+      ],
+      "removedQuestionIds": [
+        "budget"
+      ],
+      "questionOptionCounts": [
+        {
+          "id": "material",
+          "optionsTested": 9,
+          "optionsSurviving": 9
+        },
+        {
+          "id": "gender_fit",
+          "optionsTested": 4,
+          "optionsSurviving": 4
+        },
+        {
+          "id": "colour",
+          "optionsTested": 14,
+          "optionsSurviving": 14
+        }
+      ]
+    },
     "PE": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:04:46.254Z",
+      "verifiedAt": "2026-07-29T22:46:50.712Z",
       "liveUnfilteredCount": 2018,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "capacity",
         "eco_factors",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "capacity",
@@ -239,14 +245,15 @@
     },
     "PF": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:05:17.441Z",
+      "verifiedAt": "2026-07-29T22:47:17.881Z",
       "liveUnfilteredCount": 1260,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -257,7 +264,7 @@
     },
     "PM": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:05:18.395Z",
+      "verifiedAt": "2026-07-29T22:47:22.920Z",
       "liveUnfilteredCount": 1337,
       "survivingQuestionIds": [
         "moq",
@@ -279,48 +286,19 @@
         }
       ]
     },
-    "69ef236e51b1f59dd0adc7e4": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T15:05:17.932Z",
-      "liveUnfilteredCount": 2952,
-      "survivingQuestionIds": [
-        "moq",
-        "budget",
-        "material",
-        "gender_fit",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "material",
-          "optionsTested": 9,
-          "optionsSurviving": 9
-        },
-        {
-          "id": "gender_fit",
-          "optionsTested": 4,
-          "optionsSurviving": 4
-        },
-        {
-          "id": "colour",
-          "optionsTested": 14,
-          "optionsSurviving": 14
-        }
-      ]
-    },
     "69ef238e51b1f59dd0adc819": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:05:43.841Z",
+      "verifiedAt": "2026-07-29T22:47:40.378Z",
       "liveUnfilteredCount": 872,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "material",
         "gender_fit",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -339,9 +317,64 @@
         }
       ]
     },
+    "69ef236e51b1f59dd0adc7e4": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T22:47:20.297Z",
+      "liveUnfilteredCount": 2949,
+      "survivingQuestionIds": [
+        "moq",
+        "material",
+        "gender_fit",
+        "colour"
+      ],
+      "removedQuestionIds": [
+        "budget"
+      ],
+      "questionOptionCounts": [
+        {
+          "id": "material",
+          "optionsTested": 9,
+          "optionsSurviving": 9
+        },
+        {
+          "id": "gender_fit",
+          "optionsTested": 4,
+          "optionsSurviving": 4
+        },
+        {
+          "id": "colour",
+          "optionsTested": 14,
+          "optionsSurviving": 14
+        }
+      ]
+    },
+    "PT": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T22:48:07.418Z",
+      "liveUnfilteredCount": 729,
+      "survivingQuestionIds": [
+        "moq",
+        "budget",
+        "material",
+        "colour"
+      ],
+      "removedQuestionIds": [],
+      "questionOptionCounts": [
+        {
+          "id": "material",
+          "optionsTested": 6,
+          "optionsSurviving": 6
+        },
+        {
+          "id": "colour",
+          "optionsTested": 12,
+          "optionsSurviving": 9
+        }
+      ]
+    },
     "PN": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:05:46.435Z",
+      "verifiedAt": "2026-07-29T22:47:54.717Z",
       "liveUnfilteredCount": 1432,
       "survivingQuestionIds": [
         "moq",
@@ -370,33 +403,9 @@
         }
       ]
     },
-    "PT": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T15:06:04.658Z",
-      "liveUnfilteredCount": 729,
-      "survivingQuestionIds": [
-        "moq",
-        "budget",
-        "material",
-        "colour"
-      ],
-      "removedQuestionIds": [],
-      "questionOptionCounts": [
-        {
-          "id": "material",
-          "optionsTested": 6,
-          "optionsSurviving": 6
-        },
-        {
-          "id": "colour",
-          "optionsTested": 12,
-          "optionsSurviving": 9
-        }
-      ]
-    },
     "PO": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:06:09.590Z",
+      "verifiedAt": "2026-07-29T22:48:07.750Z",
       "liveUnfilteredCount": 1049,
       "survivingQuestionIds": [
         "moq",
@@ -426,15 +435,15 @@
     },
     "PG": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:06:21.543Z",
+      "verifiedAt": "2026-07-29T22:48:24.596Z",
       "liveUnfilteredCount": 227,
       "survivingQuestionIds": [
-        "moq",
         "gender_fit",
         "theme",
         "colour"
       ],
       "removedQuestionIds": [
+        "moq",
         "budget"
       ],
       "questionOptionCounts": [
@@ -457,16 +466,17 @@
     },
     "PS": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:06:18.766Z",
+      "verifiedAt": "2026-07-29T22:48:23.753Z",
       "liveUnfilteredCount": 2365,
       "survivingQuestionIds": [
         "moq",
-        "budget",
         "features",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "budget"
+      ],
       "questionOptionCounts": [
         {
           "id": "features",
@@ -487,14 +497,14 @@
     },
     "PQ": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:06:43.864Z",
+      "verifiedAt": "2026-07-29T22:48:41.885Z",
       "liveUnfilteredCount": 1124,
       "survivingQuestionIds": [
-        "moq",
+        "budget",
         "colour"
       ],
       "removedQuestionIds": [
-        "budget"
+        "moq"
       ],
       "questionOptionCounts": [
         {
@@ -505,15 +515,15 @@
       ]
     },
     "PC": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T15:06:47.117Z",
+      "passed": false,
+      "verifiedAt": "2026-07-29T22:48:51.380Z",
       "liveUnfilteredCount": 430,
-      "survivingQuestionIds": [
+      "survivingQuestionIds": [],
+      "removedQuestionIds": [
         "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -524,7 +534,7 @@
     },
     "PD": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:06:48.055Z",
+      "verifiedAt": "2026-07-29T22:48:53.837Z",
       "liveUnfilteredCount": 169,
       "survivingQuestionIds": [
         "moq",
@@ -548,15 +558,14 @@
     },
     "PI": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:07:04.860Z",
+      "verifiedAt": "2026-07-29T22:49:10.042Z",
       "liveUnfilteredCount": 265,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "colour",
@@ -565,37 +574,17 @@
         }
       ]
     },
-    "PJ": {
-      "passed": true,
-      "verifiedAt": "2026-07-29T15:07:06.737Z",
-      "liveUnfilteredCount": 167,
-      "survivingQuestionIds": [
-        "moq",
-        "colour"
-      ],
-      "removedQuestionIds": [
-        "budget"
-      ],
-      "questionOptionCounts": [
-        {
-          "id": "colour",
-          "optionsTested": 13,
-          "optionsSurviving": 13
-        }
-      ]
-    },
     "PH": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:07:03.802Z",
-      "liveUnfilteredCount": 1065,
+      "verifiedAt": "2026-07-29T22:49:03.163Z",
+      "liveUnfilteredCount": 1066,
       "survivingQuestionIds": [
         "moq",
+        "budget",
         "material",
         "colour"
       ],
-      "removedQuestionIds": [
-        "budget"
-      ],
+      "removedQuestionIds": [],
       "questionOptionCounts": [
         {
           "id": "material",
@@ -609,9 +598,28 @@
         }
       ]
     },
+    "PJ": {
+      "passed": true,
+      "verifiedAt": "2026-07-29T22:49:13.283Z",
+      "liveUnfilteredCount": 167,
+      "survivingQuestionIds": [
+        "budget",
+        "colour"
+      ],
+      "removedQuestionIds": [
+        "moq"
+      ],
+      "questionOptionCounts": [
+        {
+          "id": "colour",
+          "optionsTested": 13,
+          "optionsSurviving": 13
+        }
+      ]
+    },
     "PP": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:07:17.146Z",
+      "verifiedAt": "2026-07-29T22:49:23.165Z",
       "liveUnfilteredCount": 1053,
       "survivingQuestionIds": [
         "moq",
@@ -629,7 +637,7 @@
     },
     "PL": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:07:19.811Z",
+      "verifiedAt": "2026-07-29T22:49:24.489Z",
       "liveUnfilteredCount": 793,
       "survivingQuestionIds": [
         "moq",
@@ -647,14 +655,15 @@
     },
     "PR": {
       "passed": true,
-      "verifiedAt": "2026-07-29T15:07:24.655Z",
+      "verifiedAt": "2026-07-29T22:49:25.627Z",
       "liveUnfilteredCount": 1762,
       "survivingQuestionIds": [
-        "moq",
         "budget",
         "colour"
       ],
-      "removedQuestionIds": [],
+      "removedQuestionIds": [
+        "moq"
+      ],
       "questionOptionCounts": [
         {
           "id": "colour",
