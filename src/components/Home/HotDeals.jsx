@@ -1,38 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFire } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import noimage from "/noimage.png";
 import Tooltip from "../Common/Tooltip";
 
 const HotDeals = () => {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const hasRequestedRef = useRef(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    if (hasRequestedRef.current) return;
-
-    const fetchDeals = async () => {
-      try {
-        hasRequestedRef.current = true;
-        setLoading(true);
-
-        const response = await axios.get(`${backendUrl}/api/frontend/deals?limit=4&featured=true`);
-
-        if (response.data?.success) {
-          setDeals(response.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching deals:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDeals();
+    // Temporarily disabled: the only featured deal currently returned by the
+    // backend has incorrect pricing/imagery. Leaving `deals` empty renders
+    // the existing "no deals" fallback below. Re-enable once the featured
+    // deal data is corrected.
+    setLoading(false);
   }, [backendUrl]);
 
   return (
