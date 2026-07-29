@@ -82,6 +82,13 @@ describe("applyCustomAttributeDerivation", () => {
     expect(WORKWEAR_LEAF_IDS.size).toBe(14);
   });
 
+  it("Workwear: the PX parent/group aggregate page itself gets the identical split as its own 14 child leaves", () => {
+    const perProductValues = new Map([["Compliance", new Set(["Hi-Vis", "UPF Rated"])]]);
+    applyCustomAttributeDerivation("PX", perProductValues);
+    expect(perProductValues.get("Visibility")).toEqual(new Set(["Hi-Vis"]));
+    expect(perProductValues.get("Compliance")).toEqual(new Set(["UPF Rated"]));
+  });
+
   it("a leaf with no matching deriver is left completely untouched", () => {
     const perProductValues = new Map([["Material", new Set(["Steel"])], ["Gender Fit", new Set(["Unisex"])]]);
     applyCustomAttributeDerivation("PE-02", perProductValues);

@@ -42,6 +42,12 @@ export function splitWorkwearCompliance(complianceValues) {
 // PX-* set, not just the 10 the owner named by example, so any PX leaf with
 // real Compliance data gets the same honest Visibility/Compliance split.
 export const WORKWEAR_LEAF_IDS = new Set(["PX-01", "PX-02", "PX-03", "PX-04", "PX-05", "PX-06", "PX-07", "PX-08", "PX-09", "PX-10", "PX-11", "PX-12", "PX-13", "PX-14"]);
+// The "PX" parent/group aggregate page itself (covering all 14 leaves above)
+// must get the identical split -- otherwise the parent page would show the
+// old, unsplit "Compliance" dropdown while every one of its own child leaf
+// pages shows the clean Visibility/Compliance split, an inconsistency a
+// customer could notice browsing from the parent page down into a leaf.
+const WORKWEAR_PARENT_ID = "PX";
 
 /**
  * @param {string} leafId
@@ -60,7 +66,7 @@ export function applyCustomAttributeDerivation(leafId, perProductValues) {
     const { classification } = classifyMetalPenMaterial([...(perProductValues.get("Material") || [])]);
     perProductValues.delete("Material");
     if (classification) perProductValues.set("Primary Body Material", new Set([classification]));
-  } else if (WORKWEAR_LEAF_IDS.has(leafId)) {
+  } else if (WORKWEAR_LEAF_IDS.has(leafId) || leafId === WORKWEAR_PARENT_ID) {
     const { visibility, otherCompliance } = splitWorkwearCompliance([...(perProductValues.get("Compliance") || [])]);
     perProductValues.delete("Compliance");
     if (visibility) perProductValues.set("Visibility", new Set([visibility]));
