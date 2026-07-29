@@ -9,7 +9,7 @@ export default function FAQs() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/api/faqs/active")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/faqs/active`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         return res.json();

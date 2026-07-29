@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/api/policies/by-type/privacy")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/policies/by-type/privacy`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         return res.json();
