@@ -57,6 +57,15 @@ describe("buildAttributeOptions", () => {
     const options = buildAttributeOptions(attr("X", [{ value: "Supplier Code", productCount: 5 }, { value: "Real Value", productCount: 3 }]));
     expect(options.map((o) => o.value)).toEqual(["Real Value"]);
   });
+
+  it("merges case/whitespace duplicate raw values into one option instead of shipping a duplicate visible label", () => {
+    const options = buildAttributeOptions(attr("Material", [{ value: "Steel", productCount: 40 }, { value: "steel", productCount: 10 }, { value: "Plastic", productCount: 5 }]));
+    expect(options).toHaveLength(2);
+    const steel = options.find((o) => o.value === "Steel");
+    expect(steel).toBeDefined();
+    const labels = options.map((o) => o.label);
+    expect(new Set(labels).size).toBe(labels.length); // no duplicate visible labels
+  });
 });
 
 describe("buildColourOptions", () => {
@@ -72,6 +81,27 @@ describe("buildColourOptions", () => {
     const options = buildColourOptions({ colourPopulatedPct: 80, colourValues: [{ value: "White", productCount: 10 }, { value: "Black", productCount: 40 }] });
     expect(options).toEqual([{ label: "Black", value: "Black" }, { label: "White", value: "White" }]);
   });
+
+  it("groups a large raw colour list into a short controlled family list instead of shipping every raw shade", () => {
+    const manyShades = [
+      { value: "Navy", productCount: 50 },
+      { value: "Royal Blue", productCount: 40 },
+      { value: "Sky Blue", productCount: 30 },
+      { value: "Black", productCount: 60 },
+      { value: "Charcoal", productCount: 20 },
+      { value: "Ecru", productCount: 5 },
+      { value: "Burgundy", productCount: 4 },
+    ];
+    const options = buildColourOptions({ colourPopulatedPct: 80, colourValues: manyShades });
+    expect(options.length).toBeLessThan(manyShades.length);
+    expect(options.map((o) => o.label)).toEqual(["Blue", "Black", "Grey / Silver", "Natural / Beige", "Red"]);
+  });
+
+  it("collapses case/whitespace colour duplicates before building options (no duplicate visible labels)", () => {
+    const options = buildColourOptions({ colourPopulatedPct: 80, colourValues: [{ value: "Natural", productCount: 10 }, { value: "natural", productCount: 4 }, { value: "Black", productCount: 5 }] });
+    const labels = options.map((o) => o.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
 });
 
 describe("classifyLeaf: exclusion", () => {
@@ -82,6 +112,18 @@ describe("classifyLeaf: exclusion", () => {
     expect(result.filterMappingsValidated).toBe(false);
     expect(result.runtimeEnabled).toBe(false);
     expect(result.notes[0]).toMatch(/productMatchRules empty/);
+  });
+
+  it("excludes a fetchFailed leaf with its failure reason, distinct from a zero-product exclusion", () => {
+    const result = classifyLeaf(
+      { leafId: "PU", leafName: "Shirts", productCount: 2200, fetchFailed: true, fetchFailureReason: "All 5 stratified page fetches failed." },
+      { families: {}, leafFamilyMap: {}, leafOverrides: {} }
+    );
+    expect(result.finderMode).toBe("excluded");
+    expect(result.questions).toHaveLength(0);
+    expect(result.filterMappingsValidated).toBe(false);
+    expect(result.runtimeEnabled).toBe(false);
+    expect(result.notes[0]).toMatch(/stratified page fetches failed/);
   });
 });
 
@@ -143,6 +185,139 @@ describe("classifyLeaf: question ordering and shape invariants", () => {
   });
 });
 
+describe("classifyLeaf: presence-mode family attribute (e.g. Workwear Visibility)", () => {
+  const PRESENCE_FAMILIES = {
+    workwear_visibility: { requiredAttribute: "Gender Fit", optionalAttribute: "Visibility", optionalAttributeMode: "presence", applicableGroups: ["PX"] },
+  };
+
+  // Visibility is a single-value ("Hi-Vis") presence attribute by design --
+  // fetch-catalogue-snapshot.mjs's splitWorkwearCompliance already separated
+  // it from the OTHER real Compliance values (rail compliance, UPF rating)
+  // before this stage ever sees it, so unlike the raw multi-value Compliance
+  // attribute this replaced, a Visibility stat never carries more than 1
+  // distinct value.
+  function visibilityAttr(productCount, sampleSize) {
+    return {
+      name: "Visibility",
+      sampleSize,
+      taggedProductCount: productCount,
+      valueOccurrenceCount: productCount,
+      populatedPct: round1(productCount, sampleSize),
+      distinctValues: 1,
+      topValueProductCount: productCount,
+      topShare: 100,
+      values: [{ value: "Hi-Vis", productCount }],
+    };
+  }
+
+  it("selects a presence attribute even though Hi-Vis is the ONLY value it ever carries (the real, already-split case)", () => {
+    const visibility = visibilityAttr(55, 94);
+    const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, visibility], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_visibility" }, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Visibility");
+    expect(q).toBeDefined();
+    expect(q.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]);
+    expect(q.singleValueAllowed).toBe(true);
+  });
+
+  // Live-verification-caught bug: "Visibility" is a derived stat name that
+  // exists only for clean classification (see customAttributeDerivation.mjs)
+  // -- product.categorisation.promodata_attributes never stores a
+  // "Visibility" field, only the original "Compliance" one. Confirmed live:
+  // attribute_name=Visibility returned item_count 0 against production for
+  // every PX-* leaf and the PX parent, silently stripping the question from
+  // every one of them on the last verification pass. The question's LABEL
+  // may be the clean derived name, but attributeName -- the field Cards.jsx
+  // sends as the literal `attribute_name` request param -- must be the real
+  // backend field, "Compliance".
+  it("builds the Visibility question's attributeName as the REAL backend field (Compliance), not the derived display name", () => {
+    const visibility = visibilityAttr(55, 94);
+    const leaf = { leafId: "PX-04", parentId: "PX", productCount: 114, attributes: [usableGenderFit, visibility], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-04": "workwear_visibility" }, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Visibility");
+    expect(q.attributeName).toBe("Compliance");
+    expect(q.options).toEqual([{ label: "Hi-Vis", value: "Hi-Vis" }]); // the VALUE is unaffected -- only the field name changes
+  });
+
+  it("still rejects near-zero or near-total coverage even in presence mode", () => {
+    const sparseVisibility = visibilityAttr(1, 25); // 4%, below MIN_PRESENCE_COVERAGE
+    const leaf = { leafId: "PX-10", parentId: "PX", productCount: 25, attributes: [usableGenderFit, sparseVisibility], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: PRESENCE_FAMILIES, leafFamilyMap: { "PX-10": "workwear_visibility" }, leafOverrides: {} });
+    expect(result.questions.find((x) => x.attributeName === "Visibility")).toBeUndefined();
+  });
+
+  it("does not mark singleValueAllowed for a regular (non-presence) categorical attribute with just 1 option", () => {
+    // A generic single-value attribute is excluded entirely by isAttributeUsable's
+    // MIN_DISTINCT_VALUES rule -- confirms presence mode is genuinely opt-in per family,
+    // not a global relaxation of the single-value rule.
+    const leaf = { leafId: "X-09", parentId: "X", productCount: 100, attributes: [attr("Material", [{ value: "Steel", productCount: 90 }])], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.some((q) => q.attributeName === "Material")).toBe(false);
+  });
+});
+
+// Live-verification-caught bug, same root cause as Visibility above: Metal
+// Pens' "Primary Body Material" and Coasters' "Coaster Material" are BOTH
+// derived stat names from customAttributeDerivation.mjs, reclassifying the
+// real "Material" attribute -- but product.categorisation.promodata_attributes
+// never stores those derived names, only the original "Material". Confirmed
+// live: attribute_name=Primary Body Material and attribute_name=Coaster
+// Material both returned item_count 0 against production, silently
+// stripping the question from Metal Pens and Coasters on the previous
+// verification pass -- the exact same bug as Visibility, just missed for
+// these two derived names in the first fix.
+describe("classifyLeaf: generic-fallback derived attribute names also resolve to their real backend field", () => {
+  it("Metal Pens: 'Primary Body Material' question's attributeName resolves to the real backend field 'Material'", () => {
+    const material = attr("Primary Body Material", [
+      { value: "Aluminium", productCount: 40 },
+      { value: "Stainless Steel", productCount: 30 },
+      { value: "Other Metal", productCount: 20 },
+    ]);
+    const leaf = { leafId: "PY-06", parentId: "PY", productCount: 100, attributes: [material], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Primary Body Material");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+  });
+
+  it("Coasters: 'Coaster Material' question's attributeName resolves to the real backend field 'Material'", () => {
+    const material = attr("Coaster Material", [
+      { value: "Cork", productCount: 40 },
+      { value: "Bamboo/Wood", productCount: 30 },
+      { value: "Silicone/Rubber", productCount: 20 },
+    ]);
+    const leaf = { leafId: "PM-07", parentId: "PM", productCount: 100, attributes: [material], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Coaster Material");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+  });
+
+  it("Beanies: 'Fabric' question's attributeName resolves to the real backend field 'Material' (future-proofed even though it doesn't ship today for coverage reasons)", () => {
+    const fabric = attr("Fabric", [
+      { value: "Acrylic", productCount: 40 },
+      { value: "Wool", productCount: 30 },
+      { value: "Cotton", productCount: 20 },
+    ]);
+    const leaf = { leafId: "PK-02", parentId: "PK", productCount: 100, attributes: [fabric], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Fabric");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+  });
+
+  it("a leaf's own genuinely real, non-derived 'Material' attribute is completely unaffected -- attributeName stays 'Material'", () => {
+    const material = attr("Material", [
+      { value: "Steel", productCount: 40 },
+      { value: "Plastic", productCount: 30 },
+    ]);
+    const leaf = { leafId: "X-20", parentId: "X", productCount: 100, attributes: [material], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Material");
+    expect(q.attributeName).toBe("Material");
+  });
+});
+
 describe("classifyLeaf: two-gate runtime enablement (filterMappingsValidated + runtimeEnabled)", () => {
   it("both gates are false for every generator-classified (non-override) entry, regardless of how good the data looks", () => {
     const leaf = { leafId: "X-04", parentId: "X", productCount: 100, attributes: [usableGenderFit], colourPopulatedPct: 0 };
@@ -176,5 +351,100 @@ describe("classifyLeaf: two-gate runtime enablement (filterMappingsValidated + r
     const leaf = { leafId: "X-05", parentId: "X", productCount: 100, auditMode: "sampled_estimate", attributes: [], colourPopulatedPct: 0 };
     const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
     expect(result.notes.some((n) => /Audit mode/.test(n))).toBe(true);
+  });
+});
+
+// Live-verification-caught bug fix: Coasters (PM-07) and Beanies (PK-02) must
+// build their Material/Fabric question from the real RAW Material stat,
+// grouped into clean buckets with REAL raw synonyms as each option's filter
+// value -- never the derived bucket LABEL, which always returned zero
+// results live. See classify.mjs's MATERIAL_FAMILY_LEAF_CONFIG.
+describe("classifyLeaf: material-family grouping (Beanies Fabric / Coasters Material)", () => {
+  // Mirrors the real observed PM-07 distribution documented in
+  // materialClassifiers.mjs: 25 raw distinct values -- deliberately more than
+  // MAX_DISTINCT_VALUES (12), proving the generic isAttributeUsable check is
+  // correctly bypassed for this leaf (grouping is what makes it usable).
+  const realisticCoasterMaterial = attr(
+    "Material",
+    [
+      { value: "Cork", productCount: 18 },
+      { value: "Bamboo", productCount: 12 },
+      { value: "Wood", productCount: 8 },
+      { value: "Wheat Straw", productCount: 3 },
+      { value: "Silicone", productCount: 6 },
+      { value: "Neoprene", productCount: 2 },
+      { value: "Acrylic", productCount: 5 },
+      { value: "PVC", productCount: 4 },
+      { value: "Polypropylene", productCount: 3 },
+      { value: "Synthetic", productCount: 2 },
+      { value: "Vinyl", productCount: 1 },
+      { value: "Stainless Steel", productCount: 4 },
+      { value: "Aluminium", productCount: 2 },
+      { value: "Metal", productCount: 1 },
+      { value: "Cardboard", productCount: 3 },
+      { value: "Paper", productCount: 2 },
+      { value: "Ceramic", productCount: 3 },
+      { value: "Glass", productCount: 2 },
+      { value: "Jute", productCount: 1 },
+      { value: "Cotton 100%", productCount: 1 },
+      { value: "Cotton Rich Blend", productCount: 1 },
+      { value: "Polyester 100%", productCount: 1 },
+      { value: "Polyester Rich Blend", productCount: 1 },
+      { value: "Leather", productCount: 1 },
+      { value: "rPET", productCount: 1 },
+    ],
+    { sampleSize: 94 }
+  );
+
+  it("Coasters (PM-07): builds a real grouped Coaster Material question from the raw Material stat despite it having 25 distinct raw values (above MAX_DISTINCT_VALUES)", () => {
+    expect(realisticCoasterMaterial.distinctValues).toBeGreaterThan(12); // sanity: this really would fail the generic isAttributeUsable check
+    const leaf = { leafId: "PM-07", parentId: "PM", productCount: 400, attributes: [realisticCoasterMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Coaster Material");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material"); // the real backend field, not the derived label
+    const cork = q.options.find((o) => o.label === "Cork");
+    expect(cork.value).toBe("Cork");
+    const bambooWood = q.options.find((o) => o.label === "Bamboo/Wood");
+    expect(bambooWood.value.split(",").sort()).toEqual(["Bamboo", "Wheat Straw", "Wood"].sort()); // real raw synonyms, not the bucket label
+  });
+
+  it("Coasters (PM-07): never offers the raw ungrouped Material attribute as a fallback alongside/instead of the grouped question", () => {
+    const leaf = { leafId: "PM-07", parentId: "PM", productCount: 400, attributes: [realisticCoasterMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.filter((q) => q.attributeName === "Material")).toHaveLength(1); // exactly the grouped one, never a second raw one
+  });
+
+  it("Beanies (PK-02): correctly excluded when raw Material coverage is below the population threshold (the real, honest 6% case)", () => {
+    const sparseMaterial = attr("Material", [{ value: "Acrylic", productCount: 6 }], { sampleSize: 100 });
+    const leaf = { leafId: "PK-02", parentId: "PK", productCount: 300, attributes: [sparseMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.some((q) => q.label === "Fabric")).toBe(false);
+    expect(result.notes.some((n) => /Fabric family-grouping considered but raw Material coverage/.test(n))).toBe(true);
+  });
+
+  it("Beanies (PK-02): ships a real Fabric question when raw Material coverage genuinely clears the threshold", () => {
+    const healthyMaterial = attr(
+      "Material",
+      [
+        { value: "Acrylic", productCount: 25 },
+        { value: "Cotton 100%", productCount: 15 },
+        { value: "Wool", productCount: 5 },
+        { value: "Cardboard", productCount: 8 }, // packaging noise -- must not appear as a Fabric option
+      ],
+      { sampleSize: 100 }
+    );
+    const leaf = { leafId: "PK-02", parentId: "PK", productCount: 300, attributes: [healthyMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    const q = result.questions.find((x) => x.label === "Fabric");
+    expect(q).toBeDefined();
+    expect(q.attributeName).toBe("Material");
+    expect(q.options.some((o) => o.label === "Cardboard")).toBe(false);
+  });
+
+  it("a leaf outside MATERIAL_FAMILY_LEAF_CONFIG with the same raw Material shape is treated as a normal generic attribute (no special grouping applied)", () => {
+    const leaf = { leafId: "PM-99", parentId: "PM", productCount: 400, attributes: [realisticCoasterMaterial], colourPopulatedPct: 0 };
+    const result = classifyLeaf(leaf, { families: {}, leafFamilyMap: {}, leafOverrides: {} });
+    expect(result.questions.some((q) => q.label === "Coaster Material")).toBe(false); // no grouping label ever appears for an unmapped leaf
   });
 });

@@ -100,6 +100,16 @@ describe("validateLeafSnapshot", () => {
     expect(() => validateLeafSnapshot({ leafId: "X-01", leafName: "Empty", productCount: 0 })).not.toThrow();
   });
 
+  it("accepts a fetchFailed leaf (positive productCount, every stratum errored) with no sampling data required, given a reason", () => {
+    const leaf = { leafId: "PU", leafName: "Shirts", productCount: 2200, fetchFailed: true, fetchFailureReason: "All 5 stratified page fetches failed." };
+    expect(() => validateLeafSnapshot(leaf)).not.toThrow();
+  });
+
+  it("rejects a fetchFailed leaf missing fetchFailureReason", () => {
+    const leaf = { leafId: "PU", leafName: "Shirts", productCount: 2200, fetchFailed: true };
+    expect(() => validateLeafSnapshot(leaf)).toThrow(/fetchFailureReason/);
+  });
+
   it("accepts a sample smaller than the full category without complaint (this is expected/normal) but still requires auditMode/sampleSize", () => {
     const leaf = { ...validLeaf(), sampleSize: 40, attributes: [{ ...capacityAttr(), sampleSize: 40, taggedProductCount: 30, populatedPct: 75, distinctValues: 2, topShare: round1(15, 30), topValueProductCount: 15, valueOccurrenceCount: 30, values: [{ value: "500ml", productCount: 15 }, { value: "750ml", productCount: 15 }] }] };
     expect(() => validateLeafSnapshot(leaf)).not.toThrow();

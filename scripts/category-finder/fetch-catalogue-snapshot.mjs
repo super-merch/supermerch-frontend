@@ -38,11 +38,52 @@ import { fileURLToPath } from "url";
 import { flattenHierarchy } from "./lib/hierarchy.mjs";
 import { validateSnapshot } from "./lib/schema.mjs";
 import { dedupeProductsById } from "./lib/dedupe.mjs";
+import { mapWithConcurrency } from "./lib/concurrency.mjs";
+import { fetchJsonWithRetry as fetchJsonWithRetryShared } from "./lib/httpRetry.mjs";
+import { applyCustomAttributeDerivation } from "./lib/customAttributeDerivation.mjs";
+
+// See lib/customAttributeDerivation.mjs for the actual per-leaf derivation
+// logic (Metal Pens primary body material, Workwear Visibility/Compliance
+// split) -- extracted there so it's directly unit-testable against
+// fixtures, not only exercisable via a real network fetch. Custom-derived
+// attribute names must be added to ATTR_NAMES below too, or the generic
+// per-product loop's `if (!ATTR_NAMES.includes(name)) continue` guard would
+// silently drop them before they ever reach classify.mjs. (Beanies
+// Fabric/Coasters Material are NOT per-product derivations -- they're built
+// from the real raw "Material" stat at generate-manifest time instead, see
+// classify.mjs's MATERIAL_FAMILY_LEAF_CONFIG.)
 
 const API_BASE = process.env.SUPERMERCH_API_BASE || "https://api.supermerch.com.au";
 const CONCURRENCY = 3;
 const RETRY_DELAYS_MS = [500, 1500, 4000];
-const ATTR_NAMES = ["Gender Fit", "Material", "Capacity", "Eco Factors", "Sport", "Theme", "Feature", "Features", "Sleeves"];
+// "Compliance" added after discovering the live API already carries a real,
+// structured certification tag (values seen: Hi-Vis, NSW Rail Compliant,
+// TTMC, VIC Rail Compliant, UPF Rated) -- this is exactly the authoritative
+// signal the Workwear Hi-Vis/Non-Hi-Vis requirement needs, decoupled from
+// colour (a fluoro-coloured garment with no Compliance:Hi-Vis tag must not
+// be inferred as compliant). No fuzzy name/description keyword classifier
+// was needed for this one; the data already exists, it just wasn't in this
+// allowlist.
+const ATTR_NAMES = [
+  "Gender Fit",
+  "Material",
+  "Capacity",
+  "Eco Factors",
+  "Sport",
+  "Theme",
+  "Feature",
+  "Features",
+  "Sleeves",
+  "Compliance",
+  // Synthetic, per-product derived attributes (see
+  // lib/customAttributeDerivation.mjs) -- these never appear literally in a
+  // product's raw promodata_attributes; they're computed here from the real
+  // Material/Compliance value(s) already tagged on that product, then folded
+  // into the exact same aggregation/usability pipeline as any other
+  // attribute name.
+  "Primary Body Material",
+  "Visibility",
+];
 const STRATA_COUNT = 5; // number of pages sampled, spread evenly across the category
 const PER_PAGE_LIMIT = 20; // per-page product count for each stratum (a plain list call, not send_attributes)
 
@@ -50,33 +91,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SNAPSHOT_DIR = path.join(__dirname, ".snapshot");
 const SNAPSHOT_PATH = path.join(SNAPSHOT_DIR, "catalogue-snapshot.json");
 
-async function fetchJsonWithRetry(url) {
-  let lastError;
-  for (const delay of [0, ...RETRY_DELAYS_MS]) {
-    if (delay) await new Promise((r) => setTimeout(r, delay));
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-      return await res.json();
-    } catch (err) {
-      lastError = err;
-    }
-  }
-  throw lastError;
-}
-
-async function mapWithConcurrency(items, limit, fn) {
-  const results = new Array(items.length);
-  let next = 0;
-  async function worker() {
-    while (next < items.length) {
-      const i = next++;
-      results[i] = await fn(items[i], i);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
-  return results;
-}
+const fetchJsonWithRetry = (url) => fetchJsonWithRetryShared(url, RETRY_DELAYS_MS);
 
 function round1(numerator, denominator) {
   if (!denominator) return 0;
@@ -101,7 +116,11 @@ function pickStrataPages(totalPages) {
   return [...pages].sort((a, b) => a - b);
 }
 
-async function fetchLeafStats(leaf) {
+// Exported (not just used internally by main()) so a targeted re-fetch of a
+// small subset of leaves -- e.g. after a derivation-logic change that only
+// affects a couple of leaves -- doesn't require re-running the ENTIRE
+// 297+27 category live audit. See patch-snapshot-leaves.mjs.
+export async function fetchLeafStats(leaf) {
   const countUrl = `${API_BASE}/api/client-products?product_type_ids=${encodeURIComponent(leaf.id)}&limit=1&page=1`;
   const countResp = await fetchJsonWithRetry(countUrl);
   const productCount = countResp.item_count ?? countResp.pagination?.totalCount ?? 0;
@@ -112,13 +131,28 @@ async function fetchLeafStats(leaf) {
 
   const totalPages = Math.max(1, Math.ceil(productCount / PER_PAGE_LIMIT));
   const strataPages = pickStrataPages(totalPages);
-  const isCompleteAudit = strataPages.length === totalPages;
 
+  // Some deep page/skip values trigger a backend 500 on large categories (a
+  // known Mongo sort/skip limitation, same class of issue as the earlier
+  // Phone & Technology investigation) -- a single bad stratum must not abort
+  // the whole 297-leaf batch. Each page is fetched independently; a page that
+  // still fails after fetchJsonWithRetry's own retries contributes nothing to
+  // the sample rather than throwing, and forces auditMode to
+  // "sampled_estimate" (never claim a complete/exact count when part of the
+  // intended sample is missing, even if every OTHER stratum succeeded).
+  let anyPageFailed = false;
   const pageResults = await mapWithConcurrency(strataPages, CONCURRENCY, async (page) => {
     const url = `${API_BASE}/api/client-products?product_type_ids=${encodeURIComponent(leaf.id)}&limit=${PER_PAGE_LIMIT}&page=${page}`;
-    const resp = await fetchJsonWithRetry(url);
-    return resp.data || [];
+    try {
+      const resp = await fetchJsonWithRetry(url);
+      return resp.data || [];
+    } catch (err) {
+      console.error(`  ! stratum fetch failed for ${leaf.id} page ${page}: ${err.message} -- continuing with remaining strata`);
+      anyPageFailed = true;
+      return [];
+    }
   });
+  const isCompleteAudit = !anyPageFailed && strataPages.length === totalPages;
 
   // Dedupe by catalogue-record identity in case of any page-boundary overlap
   // (defensive -- shouldn't normally happen with correct pagination, but
@@ -126,6 +160,24 @@ async function fetchLeafStats(leaf) {
   // takes priority over `meta.id`.
   const sampleProducts = dedupeProductsById(pageResults.flat());
   const sampleSize = sampleProducts.length; // ACTUAL count returned, not the requested limit*pages
+
+  if (sampleSize === 0) {
+    // Every stratum failed (or the category is genuinely all unparseable
+    // records) -- there is no real sample to build attribute/colour stats
+    // from. Report this honestly as a fetch failure rather than fabricating
+    // a sampleSize of 0 against a known-positive productCount (which the
+    // schema would otherwise accept as "genuinely nothing populated").
+    return {
+      leafId: leaf.id,
+      leafName: leaf.name,
+      parentId: leaf.parentId,
+      parentName: leaf.parentName,
+      navGroup: leaf.navGroup,
+      productCount,
+      fetchFailed: true,
+      fetchFailureReason: `All ${strataPages.length} stratified page fetches failed for a category reporting ${productCount} products -- needs re-audit, not evidence of zero data.`,
+    };
+  }
 
   // Per-product dedup: a product listing "Material: Steel" twice must not
   // count twice, and a product with BOTH "Material: Steel" and
@@ -148,6 +200,9 @@ async function fetchLeafStats(leaf) {
       if (!perProductValues.has(name)) perProductValues.set(name, new Set());
       perProductValues.get(name).add(value); // Set dedupes a repeated identical value within this one product
     }
+
+    applyCustomAttributeDerivation(leaf.id, perProductValues);
+
     for (const [name, valueSet] of perProductValues) {
       taggedProductCounts.set(name, (taggedProductCounts.get(name) || 0) + 1);
       if (!valueProductCounts.has(name)) valueProductCounts.set(name, new Map());
@@ -171,6 +226,12 @@ async function fetchLeafStats(leaf) {
     }
   }
 
+  // applyCustomAttributeDerivation already deleted the raw source attribute
+  // (Material / Compliance) from each product's OWN perProductValues before
+  // aggregation, for every leaf it touched -- so taggedProductCounts simply
+  // never accumulates anything for that raw name on those leaves, and this
+  // loop's normal zero-count skip below handles it with no special case
+  // needed here.
   const attributes = [];
   for (const name of ATTR_NAMES) {
     const taggedProductCount = taggedProductCounts.get(name) || 0;
@@ -229,7 +290,28 @@ async function main() {
     return stats;
   });
 
-  const snapshot = { fetchedAt: new Date().toISOString(), apiBase: API_BASE, strataCount: STRATA_COUNT, perPageLimit: PER_PAGE_LIMIT, leaves: results };
+  // Parent/group aggregate pages (e.g. "PX" Workwear, covering all of
+  // PX-01..PX-14): confirmed live that BOTH /api/client-products and
+  // /api/params-products (the endpoint real Finder pages call) already
+  // return the correct aggregate across every child leaf when queried by the
+  // parent's own category ID directly (e.g. product_type_ids=PX summed
+  // exactly to the total of all its PX-* children in a live spot-check) --
+  // no separate aggregation logic is needed, fetchLeafStats already works
+  // unmodified since it only needs {id, name}.
+  console.log(`Auditing ${parents.length} parent/group pages the same way ...`);
+  const parentResults = await mapWithConcurrency(parents, CONCURRENCY, async (parent) => {
+    const stats = await fetchLeafStats({ id: parent.id, name: parent.name, parentId: parent.id, parentName: parent.name, navGroup: null });
+    return { ...stats, childCount: parent.childCount };
+  });
+
+  const snapshot = {
+    fetchedAt: new Date().toISOString(),
+    apiBase: API_BASE,
+    strataCount: STRATA_COUNT,
+    perPageLimit: PER_PAGE_LIMIT,
+    leaves: results,
+    parents: parentResults,
+  };
 
   validateSnapshot(snapshot); // fail loudly here, before writing anything, if the fetch produced anything malformed or a duplicate leafId
 

@@ -91,3 +91,8 @@ pnpm-lock.yaml
 # parentGroupManifest.js, reconciliation.js, authoritative-category-ids.json)
 # are committed.
 scripts/category-finder/.snapshot/
+.verify-logs/
+# Full per-option live-verification evidence (URLs, per-option pass/fail,
+# sample product ids) -- regenerate with verify-filter-mappings.mjs. The
+# compact, committed companion is scripts/category-finder/verification-summary.json.
+scripts/category-finder/.evidence/

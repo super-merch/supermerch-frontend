@@ -1,5 +1,23 @@
 import { CATEGORY_FINDER_MANIFEST } from "./generated/categoryFinderManifest";
+import { PARENT_GROUP_MANIFEST } from "./generated/parentGroupManifest";
 import { QUANTITY_OPTIONS } from "./quantityOptions";
+
+// Both manifests are generated independently (leaves by generate-manifest.mjs
+// + verify-filter-mappings.mjs, parents by generate-manifest.mjs +
+// verify-parent-mappings.mjs) and are never supposed to share an ID -- a leaf
+// type code (e.g. "PX-04") and a parent/group code (e.g. "PX") are drawn from
+// disjoint ID spaces by construction (see authoritative-category-ids.json /
+// reconcile.mjs's leaf-vs-parent collision check at generation time). This is
+// a defensive, load-time assertion: if the two manifests were ever generated
+// out of sync with each other and DID collide on an ID, silently preferring
+// one manifest over the other would be exactly the "competing configuration
+// for the same ID" bug this must never allow -- fail loudly instead.
+const collidingIds = Object.keys(CATEGORY_FINDER_MANIFEST).filter((id) => Object.prototype.hasOwnProperty.call(PARENT_GROUP_MANIFEST, id));
+if (collidingIds.length > 0) {
+  throw new Error(
+    `categoryFinderConfig: ${collidingIds.length} ID(s) exist in BOTH the leaf and parent manifests (${collidingIds.join(", ")}) -- these must be regenerated so leaf and parent/group IDs never collide.`
+  );
+}
 
 // Thin adapter over the generated manifest -- CategoryFinder.jsx doesn't know the
 // manifest exists, it just calls getCategoryFinderConfig(productTypeId) and gets
@@ -30,8 +48,7 @@ const withCanonicalQuantityOptions = (questions) =>
 // render in production until each is explicitly promoted on both axes.
 const isRuntimeReady = (entry) => entry.filterMappingsValidated === true && entry.runtimeEnabled === true;
 
-export const getCategoryFinderConfig = (productTypeId) => {
-  const entry = CATEGORY_FINDER_MANIFEST[productTypeId];
+function buildConfigFromEntry(entry) {
   if (!entry || entry.finderMode === "excluded" || entry.questions.length === 0 || !isRuntimeReady(entry)) {
     return null;
   }
@@ -43,6 +60,22 @@ export const getCategoryFinderConfig = (productTypeId) => {
     itemNamePlural: entry.itemNamePlural,
     questions: withCanonicalQuantityOptions(entry.questions),
   };
+}
+
+// Resolves a productTypeId against BOTH manifests -- a leaf category (e.g.
+// "PX-04" Work Jackets) or a parent/group aggregate page (e.g. "PX"
+// Workwear, covering every PX-* leaf at once; confirmed live that
+// /api/params-products correctly aggregates when queried by the parent ID
+// directly). The two manifests are disjoint by construction (asserted at
+// load time above), so exactly one of them can ever have a matching entry
+// for a given ID -- this never has to choose between two competing
+// configurations, only between "leaf has it", "parent has it", or neither.
+export const getCategoryFinderConfig = (productTypeId) => {
+  const leafEntry = CATEGORY_FINDER_MANIFEST[productTypeId];
+  if (leafEntry) return buildConfigFromEntry(leafEntry);
+  const parentEntry = PARENT_GROUP_MANIFEST[productTypeId];
+  if (parentEntry) return buildConfigFromEntry(parentEntry);
+  return null;
 };
 
 // Kept for existing/adapter-level tests that want the raw manifest entries.

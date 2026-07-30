@@ -2,8 +2,11 @@
 // dependency-injected module so it can be unit-tested against fixtures
 // without needing a real snapshot file or network access.
 
-import { isAttributeUsable, isColourUsable, hasNoProducts } from "./exclusionRules.mjs";
+import { isAttributeUsable, isPresenceAttributeUsable, isColourUsable, hasNoProducts, THRESHOLDS } from "./exclusionRules.mjs";
 import { sharedQuantityQuestion, sharedBudgetQuestion, sharedColourQuestion } from "../families.js";
+import { dedupeValueStats } from "./valueDedup.mjs";
+import { buildColourFamilyOptions } from "./colourNormalization.mjs";
+import { classifyBeanieFabric, classifyCoasterMaterial, buildMaterialFamilyOptions } from "./materialClassifiers.mjs";
 
 const BLOCKED_ATTRIBUTE_NAMES = new Set([
   "supplier",
@@ -25,9 +28,50 @@ function questionIdFor(attributeName) {
   return attributeName.toLowerCase().replace(/\s+/g, "_");
 }
 
+// Some derived attribute stat names exist ONLY for cleaner
+// classification/display -- see customAttributeDerivation.mjs, which
+// reclassifies the real "Material"/"Compliance" values under clean derived
+// stat keys (Fabric, Coaster Material, Primary Body Material, Visibility)
+// so a customer isn't shown a messy raw question alongside a clean derived
+// one. But none of these derived names are real backend fields:
+// product.categorisation.promodata_attributes only ever stores the
+// ORIGINAL raw name ("Material" or "Compliance"). Confirmed live --
+// attribute_name=Visibility and attribute_name=Primary Body Material and
+// attribute_name=Coaster Material all return item_count 0 against
+// production (caught by live verification silently stripping every one of
+// these questions site-wide, for the PX parent/leaves, Metal Pens, and
+// Coasters). The API filter must target the REAL backend attribute name;
+// only the customer-facing label may use the clean derived name.
+const DERIVED_ATTRIBUTE_BACKEND_NAME = {
+  Visibility: "Compliance",
+  "Primary Body Material": "Material",
+  "Coaster Material": "Material",
+  Fabric: "Material",
+};
+
+// Beanies (PK-02) and Coasters (PM-07): unlike Metal Pens' co-occurrence-
+// aware classification (which must stay a per-product derivation, see
+// customAttributeDerivation.mjs), these two classify a SINGLE raw Material
+// value independent of anything else on the product -- so the clean
+// customer-facing bucket can be built directly from the leaf's real, raw
+// "Material" stat at generate time (mirrors colourNormalization.mjs's
+// buildColourFamilyOptions exactly): each option's filter `value` becomes a
+// comma-joined list of the REAL raw synonyms that classify into that
+// bucket, not the bucket label itself, so the shipped filter can actually
+// narrow results (see BACKEND_BLOCKED_ATTRIBUTES.md's "Newly found" section
+// for why the bucket label alone always returned zero results live).
+const MATERIAL_FAMILY_LEAF_CONFIG = {
+  "PK-02": { classifier: classifyBeanieFabric, questionLabel: "Fabric" },
+  "PM-07": { classifier: classifyCoasterMaterial, questionLabel: "Coaster Material" },
+};
+
 /**
  * Builds real, validated dropdown options from one attribute's per-value
- * stats. Each option's `value` is the exact raw string the backend's
+ * stats. Values are first deduped case/whitespace-insensitively (raw
+ * supplier data has casing variants of the same value -- e.g. "Steel" vs
+ * "steel " -- that would otherwise title-case down to identical duplicate
+ * VISIBLE labels; see valueDedup.mjs) before each surviving value's `value`
+ * is passed through verbatim as the exact raw string the backend's
  * attribute_value regex match expects -- never a cleaned-up label -- and
  * `label` is a light title-case cleanup for display only. Sorted by
  * per-value PRODUCT count (not raw value-occurrence count), and values that
@@ -36,24 +80,30 @@ function questionIdFor(attributeName) {
  * here.
  */
 export function buildAttributeOptions(attributeStat) {
-  return attributeStat.values
-    .filter((v) => v.productCount > 0)
+  const deduped = dedupeValueStats(attributeStat.values.filter((v) => v.productCount > 0));
+  return deduped
     .filter((v) => !BLOCKED_ATTRIBUTE_NAMES.has(v.value.trim().toLowerCase()))
-    .sort((a, b) => b.productCount - a.productCount)
     .map((v) => ({ label: toTitleCase(v.value), value: v.value }));
 }
 
 /**
- * Builds real colour options from a leaf's colourValues stats, if colour
- * passes the population threshold.
+ * Builds colour options from a leaf's colourValues stats, if colour passes
+ * the population threshold. Raw supplier colour vocabulary can run to
+ * hundreds of distinct shade names per leaf (case duplicates included) --
+ * buildColourFamilyOptions (see colourNormalization.mjs) both dedupes
+ * case/whitespace variants and groups the survivors into a short, controlled
+ * family list (Black, White, Blue, ...), so what ships is never the raw
+ * per-shade list. A family option's `value` is a comma-joined list of the
+ * leaf's own raw values in that family -- CategoryFinder.jsx puts it
+ * straight into one URL param, and Cards.jsx already splits any `colors`
+ * param on "," before building the colors[] array sent to the backend, so
+ * no component or backend change is needed to support this.
  */
 export function buildColourOptions(leaf) {
   if (!isColourUsable(leaf.colourPopulatedPct)) return null;
-  const values = (leaf.colourValues || []).filter((v) => v.productCount > 0);
-  if (values.length < 2) return null; // a single-colour "choice" isn't a real question
-  return values
-    .sort((a, b) => b.productCount - a.productCount)
-    .map((v) => ({ label: toTitleCase(v.value), value: v.value }));
+  const familyOptions = buildColourFamilyOptions(leaf.colourValues || []);
+  if (familyOptions.length < 2) return null; // a single-family "choice" isn't a real question
+  return familyOptions.map((f) => ({ label: f.label, value: f.value }));
 }
 
 function findAttr(attributes, name) {
@@ -87,6 +137,15 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
       filterMappingsValidated: override.filterMappingsValidated === true,
       runtimeEnabled: override.runtimeEnabled === true,
       notes: ["Hand-authored override."],
+      // Optional copy overrides -- a fully hand-curated leaf (e.g. PE-02)
+      // needs its exact eyebrow/title/description/itemNamePlural preserved
+      // too, not just its questions. undefined here means buildManifestEntry
+      // falls back to the generic leafName-derived copy, so existing
+      // overrides that only set questions/gates are unaffected.
+      itemNamePlural: override.itemNamePlural,
+      finderEyebrow: override.finderEyebrow,
+      finderTitle: override.finderTitle,
+      finderDescription: override.finderDescription,
     };
   }
 
@@ -98,6 +157,20 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
       filterMappingsValidated: false,
       runtimeEnabled: false,
       notes: [leaf.exclusionReason || "Zero products match this category's filter rules."],
+    };
+  }
+
+  if (leaf.fetchFailed === true) {
+    // A live-audit failure, not zero/unusable data -- excluded with a
+    // distinct reason so it reads as "needs re-audit" rather than "no
+    // products here" (see fetch-catalogue-snapshot.mjs).
+    return {
+      finderMode: "excluded",
+      proposedFamily: null,
+      questions: [],
+      filterMappingsValidated: false,
+      runtimeEnabled: false,
+      notes: [leaf.fetchFailureReason || "Live catalogue audit failed for this category -- needs re-audit."],
     };
   }
 
@@ -123,10 +196,19 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
           notes.push(`Inherited ${familyKey}: ${family.requiredAttribute} passed usability check (${requiredStat.taggedProductCount}/${requiredStat.sampleSize} sampled products tagged) and produced ${options.length} real options.`);
 
           const optionalStat = findAttr(leaf.attributes, family.optionalAttribute);
-          if (chosenAttrs.length < 2 && isAttributeUsable(optionalStat)) {
+          const isPresenceMode = family.optionalAttributeMode === "presence";
+          const optionalUsable = isPresenceMode ? isPresenceAttributeUsable(optionalStat) : isAttributeUsable(optionalStat);
+          if (chosenAttrs.length < 2 && optionalUsable) {
             const optionalOptions = buildAttributeOptions(optionalStat);
-            if (optionalOptions.length >= 2) {
-              chosenAttrs.push({ name: family.optionalAttribute, options: optionalOptions });
+            // A presence attribute (e.g. "Hi-Vis") is meaningful with just 1
+            // real option -- selecting it narrows from the whole category
+            // down to the tagged subset; the unselected "Any" default
+            // already covers "don't care", so no paired negative value is
+            // needed the way a categorical attribute would need >=2 choices
+            // to be a real question.
+            const minOptions = isPresenceMode ? 1 : 2;
+            if (optionalOptions.length >= minOptions) {
+              chosenAttrs.push({ name: family.optionalAttribute, options: optionalOptions, singleValueAllowed: isPresenceMode && optionalOptions.length === 1 });
             }
           }
         } else {
@@ -139,8 +221,37 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
   }
 
   if (chosenAttrs.length < 2) {
+    const materialFamilyConfig = MATERIAL_FAMILY_LEAF_CONFIG[leaf.leafId];
+    if (materialFamilyConfig) {
+      const materialStat = findAttr(leaf.attributes, "Material");
+      const coverage = materialStat ? materialStat.taggedProductCount / materialStat.sampleSize : 0;
+      // Population-only gate, evaluated on the RAW Material stat -- the
+      // generic isAttributeUsable's MAX_DISTINCT_VALUES rule would wrongly
+      // reject these leaves (Coasters alone has ~25 raw Material values),
+      // but that's exactly what the family grouping below exists to solve;
+      // "too many raw values" isn't a real usability problem once they're
+      // grouped into a handful of clean buckets, the same reasoning
+      // buildColourOptions already applies via its own separate threshold.
+      if (materialStat && coverage >= THRESHOLDS.MIN_ATTRIBUTE_COVERAGE) {
+        const familyOptions = buildMaterialFamilyOptions(materialStat.values, materialFamilyConfig.classifier);
+        if (familyOptions.length >= 2) {
+          chosenAttrs.push({ name: materialFamilyConfig.questionLabel, options: familyOptions });
+          notes.push(`Generic fallback (material-family grouping): selected "${materialFamilyConfig.questionLabel}" (${familyOptions.length} real grouped options from ${materialStat.distinctValues} raw Material values, ${materialStat.taggedProductCount}/${materialStat.sampleSize} sampled products tagged).`);
+        } else {
+          notes.push(`${materialFamilyConfig.questionLabel} family-grouping considered but produced fewer than 2 real options after grouping raw Material values -- not offered.`);
+        }
+      } else {
+        const pct = materialStat ? Math.round(coverage * 100) : 0;
+        notes.push(`${materialFamilyConfig.questionLabel} family-grouping considered but raw Material coverage (${pct}%) is below the ${Math.round(THRESHOLDS.MIN_ATTRIBUTE_COVERAGE * 100)}% threshold -- not offered.`);
+      }
+    }
+
     const candidates = (leaf.attributes || [])
-      .filter((a) => isAttributeUsable(a) && !chosenAttrs.some((c) => c.name === a.name))
+      // Raw "Material" is deliberately excluded from the generic path for
+      // these 2 leaves regardless of the family-grouping outcome above --
+      // they must only ever offer the clean grouped version, never the raw
+      // ~25-value dropdown as a fallback.
+      .filter((a) => isAttributeUsable(a) && !chosenAttrs.some((c) => c.name === a.name) && !(materialFamilyConfig && a.name === "Material"))
       .sort((a, b) => b.taggedProductCount - a.taggedProductCount);
     for (const candidate of candidates) {
       if (chosenAttrs.length >= 2) break;
@@ -155,8 +266,22 @@ export function classifyLeaf(leaf, { families, leafFamilyMap, leafOverrides }) {
   const colourOptions = buildColourOptions(leaf);
 
   const questions = [sharedQuantityQuestion(), sharedBudgetQuestion()];
-  chosenAttrs.forEach(({ name, options }) => {
-    questions.push({ id: questionIdFor(name), label: name, placeholder: "Any", type: "attribute", attributeName: name, options });
+  chosenAttrs.forEach(({ name, options, singleValueAllowed }) => {
+    questions.push({
+      id: questionIdFor(name),
+      label: name,
+      placeholder: "Any",
+      type: "attribute",
+      attributeName: DERIVED_ATTRIBUTE_BACKEND_NAME[name] || name,
+      options,
+      // Only ever true for a deliberately presence-mode family attribute
+      // (see FAMILIES' optionalAttributeMode) with exactly 1 real option --
+      // tells the live verifier (MIN_SURVIVING_OPTIONS normally requires >=2
+      // options to keep a question) that this ONE option is still a
+      // meaningful filter on its own, since the unselected "Any" state
+      // already covers the complement.
+      ...(singleValueAllowed ? { singleValueAllowed: true } : {}),
+    });
   });
   if (colourOptions) {
     questions.push(sharedColourQuestion(colourOptions));

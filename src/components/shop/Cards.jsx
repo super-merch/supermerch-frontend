@@ -1,4 +1,5 @@
 import { setMaxPrice, setMinPrice, setMoq } from "@/redux/slices/filterSlice";
+import { buildProductsFilterKey } from "@/utils/productFilterKey";
 import { toProductUrl } from "@/utils/utils";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -437,11 +438,7 @@ const Cards = ({ category = "" }) => {
   ]);
 
   useEffect(() => {
-    const currentFiltersKey = `${paginationData.productTypeId}-${paginationData.category
-      }-${paginationData.searchTerm}-${paginationData.sortOption
-      }-${JSON.stringify(paginationData.pricerange)}-${JSON.stringify(
-        paginationData.colors
-      )}-${paginationData.expressWindow || ""}`;
+    const currentFiltersKey = buildProductsFilterKey(paginationData);
 
     if (
       filtersKeyRef.current !== null &&
@@ -463,7 +460,12 @@ const Cards = ({ category = "" }) => {
     paginationData.productTypeId,
     paginationData.category,
     paginationData.searchTerm,
+    paginationData.sortOption,
+    paginationData.pricerange,
+    paginationData.colors,
     paginationData.expressWindow,
+    paginationData.moq,
+    paginationData.attributes,
   ]);
 
   useEffect(() => {
