@@ -420,6 +420,33 @@ describe("verifyLeafMappings: overall leaf outcome", () => {
     expect(result.quantityCheck.questionSurvives).toBe(true);
   });
 
+  it("treats price breaks as authoritative when overview.min_qty contradicts them", async () => {
+    const contradictoryProduct = product({
+      id: "contradictory",
+      minQty: 1,
+      price: 8,
+      priceBreaks: [{ qty: 500, price: 8 }],
+    });
+    const entry = leaf([moqQuestion, capacityQuestion]);
+    const fetchJson = async (url) => {
+      const p = urlParams(url);
+      if (p.has("attribute_value")) {
+        return response(5, [
+          product({
+            id: "capacity",
+            attrs: [`Capacity:${p.get("attribute_value")}`],
+          }),
+        ]);
+      }
+      if (p.has("moq")) return response(1, [contradictoryProduct]);
+      return response(50);
+    };
+
+    const result = await verifyLeafMappings(entry, { fetchJson, apiBase });
+    expect(result.quantityCheck.questionSurvives).toBe(false);
+    expect(result.removedQuestionIds).toContain("moq");
+  });
+
   it("records a client-products diagnostic result without letting it affect passed/failed", async () => {
     const entry = leaf([moqQuestion, budgetQuestion]);
     const fetchJson = async (url) => {
