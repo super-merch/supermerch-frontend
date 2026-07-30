@@ -142,7 +142,6 @@ function productPrice(product) {
 // neither field is present to check against, rather than guessing.
 function productIsOrderableAtQuantity(product, qty) {
   const minQty = product?.overview?.min_qty;
-  if (typeof minQty === "number" && minQty > 0 && minQty <= qty) return true;
   const priceGroups = product?.product?.prices?.price_groups;
   if (Array.isArray(priceGroups) && priceGroups.length > 0) {
     const allBreaks = priceGroups.flatMap((group) => group?.base_price?.price_breaks || []);
