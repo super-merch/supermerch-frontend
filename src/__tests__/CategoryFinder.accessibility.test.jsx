@@ -66,6 +66,13 @@ describe("CategoryFinder accessibility", () => {
     expect(editButton).toHaveAttribute("aria-expanded", "false");
     const controlsId = editButton.getAttribute("aria-controls");
     expect(controlsId).toBeTruthy();
+    // Regression guard: aria-controls must resolve to a real element WHILE
+    // COLLAPSED, not only after expanding -- a screen reader user hears
+    // "Edit my answers, collapsed, controls <region>" before ever clicking it,
+    // so the referenced region has to exist right now, in this exact state.
+    // This previously failed: the id-bearing element only rendered in the
+    // expanded branch, so aria-controls pointed at nothing while collapsed.
+    expect(document.getElementById(controlsId)).not.toBeNull();
   });
 
   it("expanding via Edit my answers renders the panel with the id aria-controls points at, and moves focus into it", () => {

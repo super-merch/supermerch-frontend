@@ -216,6 +216,15 @@ const CategoryFinder = ({ productTypeId }) => {
           </p>
         </div>
 
+        {/* This wrapper always exists, in both collapsed and expanded states, so
+            that "Edit my answers" (below, collapsed branch) and "Cancel editing"
+            (below, expanded branch) can both carry aria-controls={panelId} and
+            have it resolve to a real element -- an aria-controls pointing at an
+            id that doesn't exist in the current DOM is an accessibility bug
+            (screen readers cannot locate the controlled region), which is
+            exactly what happened when the id lived only on the expanded-branch
+            div below. */}
+        <div id={panelId}>
         {collapsed ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-gray-700" role="status" aria-live="polite">
@@ -242,7 +251,7 @@ const CategoryFinder = ({ productTypeId }) => {
             </button>
           </div>
         ) : (
-          <div id={panelId}>
+          <div>
             <div className="mb-3 flex justify-end">
               {/* A disclosure control must exist in BOTH states for aria-expanded
                   to ever be observably true -- "Edit my answers" (below, collapsed
@@ -325,6 +334,7 @@ const CategoryFinder = ({ productTypeId }) => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </section>
   );
