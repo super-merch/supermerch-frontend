@@ -174,7 +174,14 @@ const ProductsContextProvider = ({ children }) => {
         }
 
         const res = await fetch(url);
+        if (!res.ok) {
+            throw new Error(`Product request failed with HTTP ${res.status}`);
+        }
         const data = await res.json();
+
+        if (!data || !Array.isArray(data.data)) {
+            throw new Error("Product request returned an invalid response");
+        }
 
         setTotalCount(
             data.total_count ||
@@ -187,7 +194,14 @@ const ProductsContextProvider = ({ children }) => {
         return data;
     };
 
-    const { data: getProducts, isLoading: productsLoading, isFetching: productsFetching, refetch: refetchProducts } = useQuery({
+    const {
+        data: getProducts,
+        isLoading: productsLoading,
+        isFetching: productsFetching,
+        isError: productsIsError,
+        error: productsError,
+        refetch: refetchProducts,
+    } = useQuery({
         queryKey: [
             paginationData.productTypeId,
             paginationData.page,
@@ -1344,6 +1358,8 @@ const ProductsContextProvider = ({ children }) => {
             getProducts,
             productsLoading,
             productsFetching,
+            productsIsError,
+            productsError,
             refetchProducts,
 
 
@@ -1409,6 +1425,8 @@ const ProductsContextProvider = ({ children }) => {
             getProducts,
             productsLoading,
             productsFetching,
+            productsIsError,
+            productsError,
             refetchProducts,
 
             products,
