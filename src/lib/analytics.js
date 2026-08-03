@@ -10,13 +10,19 @@
 //   render-blocking), so they never break checkout — though loading them
 //   still consumes bandwidth/CPU, so they are gated on consent (below).
 // - track* helpers are always safe to call from anywhere in the app, even
-//   before init runs or when a provider isn't configured — they just check
-//   for the relevant global (window.gtag / window.fbq) and no-op otherwise.
+//   before init runs or when a provider isn't configured — they check
+//   hasAnalyticsConsent() first (so they stop firing the instant consent is
+//   withdrawn, without relying on window.gtag/window.fbq happening to be
+//   gone) and then check for the relevant global before calling it.
 // - Disabled on localhost/dev so local testing never pollutes real analytics
 //   data (matches the convention the previous inline GA snippet used).
 // - Gated on cookie consent: none of GA4/Meta Pixel/Clarity load until the
 //   shopper explicitly accepts via the cookie banner (see CookieConsentBanner).
 //   Declining (or not yet deciding) means the scripts are never injected.
+// - Withdrawing consent after providers already loaded can't un-inject
+//   scripts or kill in-flight listeners from JS alone, so declineAnalyticsConsent()
+//   forces a full page reload in that case — the next load starts fresh,
+//   initAnalytics() sees the stored "declined" value, and nothing loads at all.
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 const META_PIXEL_ID = import.meta.env.VITE_META_PIXEL_ID;
@@ -119,16 +125,22 @@ const initClarity = () => {
  * Actually injects the provider scripts. Guarded so it only ever runs once
  * per page load no matter how many times it's called (consent grant,
  * startup check, re-renders, etc).
+ *
+ * @returns {boolean} true iff THIS call is the one that transitioned
+ *   providers from not-loaded to loaded this session; false if they were
+ *   already loaded (or this isn't a browser). Callers use this to detect
+ *   the transition without needing a second module-level flag.
  */
 const loadProviders = () => {
-  if (!isBrowser || initialized) return;
+  if (!isBrowser || initialized) return false;
   initialized = true;
 
-  if (isLocalDev()) return;
+  if (isLocalDev()) return true;
 
   initGoogleAnalytics();
   initMetaPixel();
   initClarity();
+  return true;
 };
 
 /**
@@ -147,6 +159,15 @@ export const initAnalytics = () => {
  * Call when the shopper accepts the cookie banner. Persists the decision so
  * future visits don't re-prompt, and loads the providers for the first time
  * (no-ops if they're already loaded).
+ *
+ * If this call is what actually transitions providers from not-loaded to
+ * loaded (i.e. a first-time accept, not a re-affirming click from a
+ * returning visitor whose providers were already loaded at startup), we
+ * also emit one page_view/PageView for the page the shopper is already on.
+ * Without this, App.jsx's route-tracking effect already ran (and no-op'd,
+ * since there was no consent yet) before this moment, so GA4/Meta would
+ * otherwise never see a pageview for the entry page — only for whatever
+ * page the shopper navigates to next.
  */
 export const grantAnalyticsConsent = () => {
   if (!isBrowser) return;
@@ -156,22 +177,34 @@ export const grantAnalyticsConsent = () => {
     // localStorage unavailable (private browsing, etc.) — consent won't
     // persist across reloads, but scripts still load for this session.
   }
-  loadProviders();
+  const justLoaded = loadProviders();
+  if (justLoaded) {
+    trackPageView(`${window.location.pathname}${window.location.search}`);
+  }
 };
 
 /**
- * Call when the shopper declines the cookie banner. Persists the decision so
- * GA4/Meta Pixel/Clarity are never loaded on this device/browser — this only
- * flips a flag; it never calls loadProviders(), so no script tag is ever
- * injected and no provider global (gtag/fbq/clarity) is ever defined.
+ * Call when the shopper declines the cookie banner (including re-opening
+ * Cookie Preferences later and declining after having previously accepted).
+ * Persists the decision so GA4/Meta Pixel/Clarity are never loaded on this
+ * device/browser again — and, critically, if providers were ALREADY loaded
+ * this session (scripts injected, globals defined, listeners attached),
+ * flipping localStorage alone can't stop any of that from JS. So in that
+ * case we force a full page reload immediately: on the next load,
+ * initAnalytics() sees the freshly stored "declined" value and never calls
+ * loadProviders() at all, so nothing loads and nothing keeps tracking.
  */
 export const declineAnalyticsConsent = () => {
   if (!isBrowser) return;
+  const providersWereLoaded = initialized;
   try {
     window.localStorage.setItem(CONSENT_STORAGE_KEY, CONSENT_DECLINED);
   } catch {
     // localStorage unavailable — nothing to persist, but we also never
     // call loadProviders(), so analytics still doesn't load this session.
+  }
+  if (providersWereLoaded) {
+    window.location.reload();
   }
 };
 
@@ -183,6 +216,7 @@ export const __resetAnalyticsForTests = () => {
 /** Fire on every route change (SPA navigations don't trigger a browser page load). */
 export const trackPageView = (path) => {
   if (!isBrowser) return;
+  if (!hasAnalyticsConsent()) return;
   if (window.gtag) {
     window.gtag("event", "page_view", { page_path: path });
   }
@@ -197,6 +231,7 @@ export const trackPageView = (path) => {
  */
 export const trackAddToCart = ({ id, name, price, quantity, currency = "AUD" }) => {
   if (!isBrowser) return;
+  if (!hasAnalyticsConsent()) return;
   const value = Number(price || 0) * Number(quantity || 1);
 
   if (window.gtag) {
@@ -231,6 +266,7 @@ export const trackAddToCart = ({ id, name, price, quantity, currency = "AUD" }) 
  */
 export const trackCheckoutStarted = ({ value, currency = "AUD", numItems }) => {
   if (!isBrowser) return;
+  if (!hasAnalyticsConsent()) return;
 
   if (window.gtag) {
     window.gtag("event", "begin_checkout", { currency, value: Number(value || 0) });
@@ -250,6 +286,7 @@ export const trackCheckoutStarted = ({ value, currency = "AUD", numItems }) => {
  */
 export const trackPurchase = ({ transactionId, value, currency = "AUD" }) => {
   if (!isBrowser) return;
+  if (!hasAnalyticsConsent()) return;
 
   if (window.gtag) {
     window.gtag("event", "purchase", {

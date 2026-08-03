@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
   const handleBackdropClick = (e) => {
@@ -48,9 +49,16 @@ const CookieModal = ({ isOpen, onClose, onAccept, onDecline }) => {
                   Cookie Preferences
                 </h3>
                 <p className="text-white text-base leading-relaxed mb-3">
-                  We use cookies to enhance your browsing experience, provide
-                  personalized content, and analyze our traffic. By continuing
-                  to use our site, you consent to our use of cookies.
+                  We&rsquo;d like to use Google Analytics, Meta Pixel, and
+                  Microsoft Clarity to understand how visitors use our site.
+                  These stay off unless you click &ldquo;Accept All&rdquo;
+                  &mdash; browsing our site alone doesn&rsquo;t turn them on.
+                  See our{" "}
+                  <Link to="/privacy" className="underline hover:text-gray-200">
+                    Privacy Policy
+                  </Link>{" "}
+                  for details, or click &ldquo;Decline All&rdquo; to keep them
+                  off.
                 </p>
               </div>
             </div>
