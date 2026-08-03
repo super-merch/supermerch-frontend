@@ -49,7 +49,7 @@ const baseProduct = {
     slug: "ocean-bottle",
     description: "<p>Reusable &amp; insulated bottle for the outdoors.</p>",
     categorisation: {
-      promodata_product_type: { type_name: "Drink Bottles" },
+      promodata_product_type: { type_name: "Drink Bottles", type_id: "PE-02" },
     },
   },
 };
@@ -87,7 +87,7 @@ describe("product page handler", () => {
     expect(res.result.body).toContain("<span>Ocean Bottle</span>");
   });
 
-  it("keeps the product's category consistent between the visible breadcrumb and the BreadcrumbList JSON-LD", async () => {
+  it("keeps the product's category consistent between the visible breadcrumb and the BreadcrumbList JSON-LD, and links use the real type_id, not the display label", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
@@ -104,10 +104,12 @@ describe("product page handler", () => {
     const body = res.result.body;
     expect(res.result.statusCode).toBe(200);
 
-    // Visible breadcrumb <a> for the category.
-    expect(body).toContain(
-      '<a href="/shop?category=Drink%20Bottles">Drink Bottles</a>',
-    );
+    // Visible breadcrumb <a> for the category: Cards.jsx treats the
+    // ?category= value as a productTypeId sent straight to the backend as
+    // product_type_ids, so the URL must carry the real type_id ("PE-02"),
+    // never the human-readable label -- the label is display text only.
+    expect(body).toContain('<a href="/shop?category=PE-02">Drink Bottles</a>');
+    expect(body).not.toContain("category=Drink");
 
     // BreadcrumbList JSON-LD must reference the exact same category name and
     // the exact same href — the visible crumb and the structured data must
@@ -130,8 +132,51 @@ describe("product page handler", () => {
     );
     expect(categoryCrumb).toBeDefined();
     expect(categoryCrumb.item).toBe(
-      "https://www.supermerch.com.au/shop?category=Drink%20Bottles",
+      "https://www.supermerch.com.au/shop?category=PE-02",
     );
+  });
+
+  it("omits the category breadcrumb link entirely when no reliable type_id is available, rather than publishing a broken URL", async () => {
+    const productWithNoTypeId = {
+      ...baseProduct,
+      product: {
+        ...baseProduct.product,
+        // supplier_category has no ID equivalent anywhere in the codebase --
+        // a category resolved only from this fallback must not get a link.
+        categorisation: { supplier_category: "Drinkware" },
+      },
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
+      .mockResolvedValueOnce(response({ data: productWithNoTypeId }))
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      { query: { id: "44" }, headers: { host: "www.supermerch.com.au" } },
+      res,
+    );
+
+    const body = res.result.body;
+    expect(res.result.statusCode).toBe(200);
+    // No category breadcrumb link -- "Drinkware" can still legitimately
+    // appear elsewhere (e.g. the Product schema's plain category field,
+    // which needs no URL), but nothing may link to a category with no
+    // real type_id behind it.
+    expect(body).not.toContain("shop?category=");
+
+    const jsonLdMatches = [
+      ...body.matchAll(
+        /<script type="application\/ld\+json" data-sm-seo-jsonld="true">([\s\S]*?)<\/script>/g,
+      ),
+    ].map((match) => JSON.parse(match[1]));
+    const breadcrumbSchema = jsonLdMatches.find(
+      (v) => v["@type"] === "BreadcrumbList",
+    );
+    // Home, Shop, and the product itself -- no category crumb in between.
+    expect(breadcrumbSchema.itemListElement).toHaveLength(3);
   });
 
   it("HTML-escapes a hostile/malicious product name and description before injecting into #root", async () => {

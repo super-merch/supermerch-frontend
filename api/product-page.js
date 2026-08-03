@@ -71,6 +71,16 @@ const productAttributes = (details) => {
       categorisation?.product_type?.type_name ||
       categorisation?.supplier_category,
   );
+  // The client's /shop?category=X route (see Cards.jsx) treats X as a
+  // productTypeId sent straight to the backend as product_type_ids -- it is
+  // never the human-readable type_name. Only promodata_product_type/
+  // product_type carry a real type_id; supplier_category has no ID
+  // equivalent, so a category resolved only from that fallback has no safe
+  // link target.
+  const categoryId = cleanText(
+    categorisation?.promodata_product_type?.type_id ||
+      categorisation?.product_type?.type_id,
+  );
   const material =
     detailValue(details.details, ["Material", "Materials"]) ||
     cleanText(
@@ -87,6 +97,7 @@ const productAttributes = (details) => {
   );
   return {
     category,
+    categoryId,
     material,
     color,
     capacity: detailValue(details.details, ["Capacity", "Volume"]),
@@ -370,17 +381,20 @@ export default async function handler(req, res) {
 
   // Real breadcrumb trail — reused for both the visible <a> links injected
   // into #root and the BreadcrumbList JSON-LD below, so the two never
-  // contradict each other. Category links point at /shop?category=X, the
-  // same route the SEO layer for /shop already treats as that category's
-  // canonical page (see api/seo-page.js).
+  // contradict each other. Category links point at /shop?category=<id>:
+  // Cards.jsx treats that value as a productTypeId and sends it to the
+  // backend as product_type_ids, so the URL must carry the real type_id,
+  // not the human-readable category label -- the label is display text
+  // only. If no type_id was resolved, the category has no safe link
+  // target, so the crumb is omitted rather than publishing a broken URL.
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Shop", href: "/shop" },
-    ...(attributes.category
+    ...(attributes.category && attributes.categoryId
       ? [
           {
             label: attributes.category,
-            href: `/shop?category=${encodeURIComponent(attributes.category)}`,
+            href: `/shop?category=${encodeURIComponent(attributes.categoryId)}`,
           },
         ]
       : []),
