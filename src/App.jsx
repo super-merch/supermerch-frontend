@@ -13,6 +13,7 @@ import { HelmetProvider } from "react-helmet-async";
 import ChatWidget from "./components/Chat/ChatWidget";
 import SitePopups from "./components/Home/SitePopups";
 import RouteSeo from "./components/Common/RouteSeo";
+import CookieConsentBanner from "./components/Common/CookieConsentBanner";
 import { trackPageView } from "./lib/analytics";
 
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
@@ -184,6 +185,7 @@ const App = () => {
       {/* <Sidebar /> */}
       <ChatWidget />
       <SitePopups />
+      <CookieConsentBanner />
       <Footer />
     </>
   );

@@ -7,12 +7,16 @@
 //   VITE_META_PIXEL_ID, VITE_CLARITY_PROJECT_ID). If a var is unset, that
 //   provider is skipped entirely — no empty/invalid tags are ever injected.
 // - Scripts are loaded async and appended to <head> at runtime (never
-//   render-blocking), so they cannot slow down or break checkout.
+//   render-blocking), so they never break checkout — though loading them
+//   still consumes bandwidth/CPU, so they are gated on consent (below).
 // - track* helpers are always safe to call from anywhere in the app, even
 //   before init runs or when a provider isn't configured — they just check
 //   for the relevant global (window.gtag / window.fbq) and no-op otherwise.
 // - Disabled on localhost/dev so local testing never pollutes real analytics
 //   data (matches the convention the previous inline GA snippet used).
+// - Gated on cookie consent: none of GA4/Meta Pixel/Clarity load until the
+//   shopper explicitly accepts via the cookie banner (see CookieConsentBanner).
+//   Declining (or not yet deciding) means the scripts are never injected.
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 const META_PIXEL_ID = import.meta.env.VITE_META_PIXEL_ID;
@@ -25,6 +29,23 @@ const isLocalDev = () => {
   const host = window.location.hostname;
   return host === "localhost" || host === "127.0.0.1" || host === "::1";
 };
+
+/** localStorage key holding the shopper's cookie-consent decision. */
+export const CONSENT_STORAGE_KEY = "sm_analytics_consent";
+export const CONSENT_ACCEPTED = "accepted";
+export const CONSENT_DECLINED = "declined";
+
+/** Returns "accepted" | "declined" | null (no decision made yet). */
+export const getStoredConsent = () => {
+  if (!isBrowser) return null;
+  try {
+    return window.localStorage.getItem(CONSENT_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+};
+
+export const hasAnalyticsConsent = () => getStoredConsent() === CONSENT_ACCEPTED;
 
 let initialized = false;
 
@@ -74,7 +95,10 @@ const initMetaPixel = () => {
   window._fbq = window._fbq || window.fbq;
 
   window.fbq("init", META_PIXEL_ID);
-  window.fbq("track", "PageView");
+  // Do NOT fire an initial "PageView" here. App.jsx's route-tracking effect
+  // (trackPageView, below) already fires once on initial mount and once per
+  // subsequent navigation — it is the single source of truth for PageView
+  // events. Firing one here too double-counts every hard-loaded page.
 
   appendScript("https://connect.facebook.net/en_US/fbevents.js");
 };
@@ -91,8 +115,12 @@ const initClarity = () => {
   appendScript(`https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}`);
 };
 
-/** Call once on app startup. Safe to call multiple times (no-ops after the first). */
-export const initAnalytics = () => {
+/**
+ * Actually injects the provider scripts. Guarded so it only ever runs once
+ * per page load no matter how many times it's called (consent grant,
+ * startup check, re-renders, etc).
+ */
+const loadProviders = () => {
   if (!isBrowser || initialized) return;
   initialized = true;
 
@@ -101,6 +129,55 @@ export const initAnalytics = () => {
   initGoogleAnalytics();
   initMetaPixel();
   initClarity();
+};
+
+/**
+ * Call once on app startup. Only loads GA4/Meta Pixel/Clarity if the shopper
+ * already accepted analytics cookies on a previous visit — otherwise this is
+ * a no-op and nothing is injected until `grantAnalyticsConsent()` runs.
+ * Safe to call multiple times (no-ops after the first successful load).
+ */
+export const initAnalytics = () => {
+  if (!isBrowser) return;
+  if (!hasAnalyticsConsent()) return;
+  loadProviders();
+};
+
+/**
+ * Call when the shopper accepts the cookie banner. Persists the decision so
+ * future visits don't re-prompt, and loads the providers for the first time
+ * (no-ops if they're already loaded).
+ */
+export const grantAnalyticsConsent = () => {
+  if (!isBrowser) return;
+  try {
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, CONSENT_ACCEPTED);
+  } catch {
+    // localStorage unavailable (private browsing, etc.) — consent won't
+    // persist across reloads, but scripts still load for this session.
+  }
+  loadProviders();
+};
+
+/**
+ * Call when the shopper declines the cookie banner. Persists the decision so
+ * GA4/Meta Pixel/Clarity are never loaded on this device/browser — this only
+ * flips a flag; it never calls loadProviders(), so no script tag is ever
+ * injected and no provider global (gtag/fbq/clarity) is ever defined.
+ */
+export const declineAnalyticsConsent = () => {
+  if (!isBrowser) return;
+  try {
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, CONSENT_DECLINED);
+  } catch {
+    // localStorage unavailable — nothing to persist, but we also never
+    // call loadProviders(), so analytics still doesn't load this session.
+  }
+};
+
+/** Test-only: allows test suites to reset the module-level init guard. */
+export const __resetAnalyticsForTests = () => {
+  initialized = false;
 };
 
 /** Fire on every route change (SPA navigations don't trigger a browser page load). */
