@@ -1,23 +1,9 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-
-// The full, authoritative leaf+parent category ID inventory (297 leaves +
-// 27 parents as of its last fetch) -- independent of whether an admin has
-// configured an SEO override for any given ID. Used to decide whether a
+// Shared with the client (src/utils/shopSeo.js, RouteSeo.jsx) so both sides
+// agree on exactly the same category IDs -- used to decide whether a
 // /shop?category=X value is a real category (self-canonical, indexable)
 // or arbitrary/invalid input (canonicalize to plain /shop, noindex) --
 // admin-override presence must never be used as that validity signal.
-const categoryIdsPath = fileURLToPath(
-  new URL(
-    "../scripts/category-finder/authoritative-category-ids.json",
-    import.meta.url,
-  ),
-);
-const { leaves: authoritativeLeaves, parents: authoritativeParents } =
-  JSON.parse(readFileSync(categoryIdsPath, "utf8"));
-const VALID_CATEGORY_IDS = new Set(
-  [...authoritativeLeaves, ...authoritativeParents].map((item) => item.id),
-);
+import { isValidCategoryId } from "../src/utils/categoryValidity.js";
 
 const SITE_URL = "https://www.supermerch.com.au";
 const BACKEND_URL =
@@ -313,7 +299,7 @@ export default async function handler(req, res) {
     path === "/shop" ? String(req.query.category || "").trim() : "";
   // Whether `category` is a real leaf/parent product-type ID, not whether
   // an admin has configured an SEO override for it -- those are unrelated.
-  const isValidCategory = category ? VALID_CATEGORY_IDS.has(category) : false;
+  const isValidCategory = isValidCategoryId(category);
 
   let shell;
   try {

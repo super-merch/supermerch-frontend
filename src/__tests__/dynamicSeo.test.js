@@ -4,9 +4,12 @@ import { getShopSeoContext, hasShopFilterParams } from "../utils/shopSeo";
 
 describe("dynamic category SEO", () => {
   it("uses the selected category as the SEO entity", () => {
-    expect(getShopSeoContext("?category=wooden-pens")).toEqual({
-      entityId: "wooden-pens",
-      canonicalPath: "/shop?category=wooden-pens",
+    // PE-02 is a real leaf category ID (Drink Bottles) in
+    // authoritative-category-ids.json, so this also covers the valid case.
+    expect(getShopSeoContext("?category=PE-02")).toEqual({
+      entityId: "PE-02",
+      canonicalPath: "/shop?category=PE-02",
+      isValidCategory: true,
     });
   });
 
@@ -14,6 +17,15 @@ describe("dynamic category SEO", () => {
     expect(getShopSeoContext("")).toEqual({
       entityId: "shop",
       canonicalPath: "/shop",
+      isValidCategory: true,
+    });
+  });
+
+  it("flags a category value with no matching leaf/parent ID as invalid", () => {
+    expect(getShopSeoContext("?category=wooden-pens")).toEqual({
+      entityId: "wooden-pens",
+      canonicalPath: "/shop?category=wooden-pens",
+      isValidCategory: false,
     });
   });
 

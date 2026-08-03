@@ -1,3 +1,5 @@
+import { isValidCategoryId } from "./categoryValidity";
+
 export const getShopSeoContext = (search = "") => {
   const params = new URLSearchParams(search);
   const category = params.get("category")?.trim() || "";
@@ -7,6 +9,10 @@ export const getShopSeoContext = (search = "") => {
     canonicalPath: category
       ? `/shop?category=${encodeURIComponent(category)}`
       : "/shop",
+    // Plain /shop (no category) is always a real, indexable page. A
+    // category value only counts as valid when it's a real leaf/parent
+    // product-type ID -- must match api/seo-page.js's server-side check.
+    isValidCategory: category ? isValidCategoryId(category) : true,
   };
 };
 

@@ -24,6 +24,9 @@ afterEach(() => {
 const robotsContent = () =>
   document.head.querySelector('meta[name="robots"]')?.getAttribute("content");
 
+const canonicalHref = () =>
+  document.head.querySelector('link[rel="canonical"]')?.getAttribute("href");
+
 const renderAt = (path) =>
   render(
     <MemoryRouter initialEntries={[path]}>
@@ -31,19 +34,22 @@ const renderAt = (path) =>
     </MemoryRouter>,
   );
 
+// PE-02 is a real leaf category ID (Drink Bottles) in
+// authoritative-category-ids.json -- used wherever a test needs a genuinely
+// valid category, as opposed to "wooden-pens", which is not a real ID.
 describe("RouteSeo client-side robots tag for /shop", () => {
   it("keeps the plain /shop page indexable", () => {
     renderAt("/shop");
     expect(robotsContent()).toBe("index, follow");
   });
 
-  it("keeps a category view of /shop indexable", () => {
-    renderAt("/shop?category=wooden-pens");
+  it("keeps a real category view of /shop indexable", () => {
+    renderAt("/shop?category=PE-02");
     expect(robotsContent()).toBe("index, follow");
   });
 
   it("keeps benign params (page/sort/view/utm/gclid) indexable", () => {
-    renderAt("/shop?category=wooden-pens&page=2&sort=price&view=grid&utm_source=x&gclid=1");
+    renderAt("/shop?category=PE-02&page=2&sort=price&view=grid&utm_source=x&gclid=1");
     expect(robotsContent()).toBe("index, follow");
   });
 
@@ -58,7 +64,45 @@ describe("RouteSeo client-side robots tag for /shop", () => {
   });
 
   it("noindexes /shop with a price facet param even alongside a category", () => {
-    renderAt("/shop?category=wooden-pens&priceMin=10&priceMax=50");
+    renderAt("/shop?category=PE-02&priceMin=10&priceMax=50");
+    expect(robotsContent()).toBe("noindex, follow");
+  });
+
+  it("noindexes /shop with a category value that isn't a real leaf/parent ID", () => {
+    renderAt("/shop?category=wooden-pens");
+    expect(robotsContent()).toBe("noindex, follow");
+  });
+});
+
+// Must stay in parity with the server-side canonical decision in
+// api/seo-page.js -- both consume the same shared isValidCategoryId() check,
+// so hydration can never contradict the tags the server already sent.
+describe("RouteSeo client-side canonical tag for /shop", () => {
+  it("/shop -> self-canonical, indexable", () => {
+    renderAt("/shop");
+    expect(canonicalHref()).toBe("https://www.supermerch.com.au/shop");
+    expect(robotsContent()).toBe("index, follow");
+  });
+
+  it("/shop?category=<valid> -> self-canonical (same category URL), indexable", () => {
+    renderAt("/shop?category=PE-02");
+    expect(canonicalHref()).toBe(
+      "https://www.supermerch.com.au/shop?category=PE-02",
+    );
+    expect(robotsContent()).toBe("index, follow");
+  });
+
+  it("/shop?category=<invalid> -> canonicalizes to plain /shop, noindex", () => {
+    renderAt("/shop?category=wooden-pens");
+    expect(canonicalHref()).toBe("https://www.supermerch.com.au/shop");
+    expect(robotsContent()).toBe("noindex, follow");
+  });
+
+  it("/shop?category=<valid>&<facet> -> canonicalizes to the category-only URL, noindex", () => {
+    renderAt("/shop?category=PE-02&color=blue");
+    expect(canonicalHref()).toBe(
+      "https://www.supermerch.com.au/shop?category=PE-02",
+    );
     expect(robotsContent()).toBe("noindex, follow");
   });
 });

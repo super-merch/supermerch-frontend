@@ -74,22 +74,34 @@ const RouteSeo = () => {
     "/shop": {
       entityType: "category",
       entityId: shopSeo.entityId,
-      canonicalUrlWhenSeoMissing:
-        shopSeo.entityId === "shop" ? undefined : `${SITE_URL}/shop`,
+      // A category value that isn't a real leaf/parent ID (typos, arbitrary
+      // input) canonicalizes to plain /shop and stays out of the index --
+      // same rule api/seo-page.js applies server-side, via the same shared
+      // isValidCategoryId() check, so hydration can never contradict it.
+      // forceCanonicalUrl wins over any admin SEO override for this entity,
+      // matching the server, which ignores overrides for invalid categories.
+      forceCanonicalUrl: shopSeo.isValidCategory
+        ? undefined
+        : `${SITE_URL}/shop`,
+      canonicalUrlWhenSeoMissing: shopSeo.isValidCategory
+        ? undefined
+        : `${SITE_URL}/shop`,
       fallback: {
         ...makeFallback({
           title: "Shop Promotional Products | Super Merch Australia",
           description: "Browse branded promotional products, custom merchandise, and business giveaways.",
           keywords: "shop promotional products, branded merchandise australia, business giveaways",
-          path: shopSeo.canonicalPath,
+          path: shopSeo.isValidCategory ? shopSeo.canonicalPath : "/shop",
         }),
         // Faceted/filtered /shop URLs (color, size, price, etc.) are thin,
-        // largely duplicate variants of the canonical category view — keep
-        // them out of the index while /shop and /shop?category=X stay
-        // indexable. Must match the server-side robots tag in api/seo-page.js.
-        robots: hasShopFilterParams(location.search)
-          ? "noindex, follow"
-          : "index, follow",
+        // largely duplicate variants of the canonical category view, and an
+        // invalid category value is never indexable -- keep both out of the
+        // index while /shop and /shop?category=<valid> stay indexable. Must
+        // match the server-side robots tag in api/seo-page.js.
+        robots:
+          hasShopFilterParams(location.search) || !shopSeo.isValidCategory
+            ? "noindex, follow"
+            : "index, follow",
       },
     },
     "/about": {
