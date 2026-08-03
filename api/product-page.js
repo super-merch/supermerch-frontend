@@ -70,16 +70,18 @@ const productAttributes = (details) => {
   // not from independent fallback chains -- otherwise promodata_product_type
   // could supply a name while product_type supplies an unrelated ID, and the
   // visible breadcrumb/JSON-LD would describe one category while linking to
-  // another. Pick whichever source actually has a type_id first, since the
-  // client's /shop?category=X route (see Cards.jsx) treats X as a
-  // productTypeId sent straight to the backend as product_type_ids -- a
-  // label with no matching ID from the same object is not a safe link
-  // target.
-  const productType = categorisation?.promodata_product_type?.type_id
-    ? categorisation.promodata_product_type
-    : categorisation?.product_type?.type_id
-      ? categorisation.product_type
-      : null;
+  // another. Only an object carrying BOTH a usable type_id AND type_name
+  // qualifies -- selecting on type_id alone would let a same-object
+  // type_name gap silently fall back to the unrelated supplier_category
+  // label while still keeping that object's ID, recreating the exact
+  // mismatch this is meant to prevent. The client's /shop?category=X route
+  // (see Cards.jsx) treats the value as a productTypeId sent straight to
+  // the backend as product_type_ids -- a label with no matching ID from
+  // the same object is not a safe link target.
+  const productType = [
+    categorisation?.promodata_product_type,
+    categorisation?.product_type,
+  ].find((item) => cleanText(item?.type_id) && cleanText(item?.type_name));
   const category = cleanText(
     productType?.type_name || categorisation?.supplier_category,
   );

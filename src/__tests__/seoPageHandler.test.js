@@ -86,7 +86,7 @@ describe("SEO page handler", () => {
     );
   });
 
-  it("stays self-canonical for a category with no admin SEO override configured", async () => {
+  it("stays self-canonical and indexable for a real category with no admin SEO override configured", async () => {
     // Whether an admin has configured a custom SEO override for a category
     // is unrelated to whether that category's own URL is the canonical
     // page. Collapsing to plain "/shop" here for every un-overridden
@@ -94,6 +94,41 @@ describe("SEO page handler", () => {
     // ("index, follow") set on this exact same URL just above in the
     // handler, and disagreed with the client-side canonical logic in
     // src/utils/shopSeo.js, which has never gated on override existence.
+    // "PE-02" is a real leaf category ID (Drink Bottles) in the
+    // authoritative category inventory.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: {
+          path: "/shop",
+          category: "PE-02",
+        },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain(
+      '<link rel="canonical" href="https://www.supermerch.com.au/shop?category=PE-02">',
+    );
+    expect(res.result.body).toContain(
+      '<meta name="robots" content="index, follow">',
+    );
+  });
+
+  it("canonicalizes an invalid/nonexistent category to plain /shop and keeps it out of the index", async () => {
+    // A category value that isn't a real leaf/parent ID must never become
+    // self-canonical or indexable -- that would let unlimited junk category
+    // URLs consume crawl budget and appear as thin/duplicate pages, which
+    // is the exact problem this endpoint exists to fix, not reintroduce.
+    // Admin SEO override presence is never used as the validity signal.
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
@@ -114,7 +149,10 @@ describe("SEO page handler", () => {
 
     expect(res.result.statusCode).toBe(200);
     expect(res.result.body).toContain(
-      '<link rel="canonical" href="https://www.supermerch.com.au/shop?category=does-not-exist-xyz">',
+      '<link rel="canonical" href="https://www.supermerch.com.au/shop">',
+    );
+    expect(res.result.body).toContain(
+      '<meta name="robots" content="noindex, follow">',
     );
   });
 
@@ -372,6 +410,9 @@ describe("SEO page handler", () => {
     });
 
     it("keeps a /shop?category=X URL indexable", async () => {
+      // "PE-02" is a real leaf category ID (Drink Bottles) in the
+      // authoritative category inventory -- indexability now depends on
+      // that, not just on the absence of facet params.
       const fetchMock = vi
         .fn()
         .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
@@ -381,7 +422,7 @@ describe("SEO page handler", () => {
 
       await handler(
         {
-          query: { path: "/shop", category: "wooden-pens" },
+          query: { path: "/shop", category: "PE-02" },
           headers: { host: "www.supermerch.com.au" },
         },
         res,
@@ -405,7 +446,7 @@ describe("SEO page handler", () => {
         {
           query: {
             path: "/shop",
-            category: "wooden-pens",
+            category: "PE-02",
             page: "2",
             sort: "price",
             view: "grid",

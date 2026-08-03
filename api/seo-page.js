@@ -1,3 +1,24 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+// The full, authoritative leaf+parent category ID inventory (297 leaves +
+// 27 parents as of its last fetch) -- independent of whether an admin has
+// configured an SEO override for any given ID. Used to decide whether a
+// /shop?category=X value is a real category (self-canonical, indexable)
+// or arbitrary/invalid input (canonicalize to plain /shop, noindex) --
+// admin-override presence must never be used as that validity signal.
+const categoryIdsPath = fileURLToPath(
+  new URL(
+    "../scripts/category-finder/authoritative-category-ids.json",
+    import.meta.url,
+  ),
+);
+const { leaves: authoritativeLeaves, parents: authoritativeParents } =
+  JSON.parse(readFileSync(categoryIdsPath, "utf8"));
+const VALID_CATEGORY_IDS = new Set(
+  [...authoritativeLeaves, ...authoritativeParents].map((item) => item.id),
+);
+
 const SITE_URL = "https://www.supermerch.com.au";
 const BACKEND_URL =
   process.env.BACKEND_URL ||
@@ -290,6 +311,9 @@ export default async function handler(req, res) {
   const path = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
   const category =
     path === "/shop" ? String(req.query.category || "").trim() : "";
+  // Whether `category` is a real leaf/parent product-type ID, not whether
+  // an admin has configured an SEO override for it -- those are unrelated.
+  const isValidCategory = category ? VALID_CATEGORY_IDS.has(category) : false;
 
   let shell;
   try {
@@ -329,10 +353,15 @@ export default async function handler(req, res) {
   // largely duplicate variants of the canonical category view — keep them
   // out of the index while /shop and /shop?category=X stay indexable. Must
   // match the client-side robots decision in src/components/Common/RouteSeo.jsx.
+  // A category value that isn't a real leaf/parent ID (typos, arbitrary
+  // input) must never become indexable -- that would let unlimited junk
+  // category URLs consume crawl budget and appear as thin/duplicate pages,
+  // which is the same problem this PR exists to fix, not solve.
   if (path === "/shop") {
-    page.robots = hasShopFilterParams(req.query)
-      ? "noindex, follow"
-      : "index, follow";
+    page.robots =
+      hasShopFilterParams(req.query) || (category && !isValidCategory)
+        ? "noindex, follow"
+        : "index, follow";
   }
 
   const override = await fetchSeoOverride(page.entityType, page.entityId);
@@ -343,17 +372,22 @@ export default async function handler(req, res) {
   const socialDescription =
     cleanText(override?.ogDescription).slice(0, 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
-  // A /shop?category=X view is self-canonical whenever it's indexable (see
-  // the robots decision above, which already excludes faceted/filtered
-  // variants) -- whether an admin has configured a custom SEO override for
-  // that specific category is unrelated to whether the URL itself is the
+  // A /shop?category=X view is self-canonical whenever it's a real,
+  // indexable category (see the robots decision above, which already
+  // excludes both faceted/filtered variants and invalid category values)
+  // -- whether an admin has configured a custom SEO override for that
+  // specific category is unrelated to whether the URL itself is the
   // canonical page. Collapsing to plain "/shop" here used to happen for
-  // every category with no override (i.e. nearly all ~297 of them), which
-  // told Google the real/preferred page was the generic shop listing even
-  // while the robots tag said "index, follow" on this URL -- a direct
+  // every valid category with no override (i.e. nearly all ~297 of them),
+  // which told Google the real/preferred page was the generic shop listing
+  // even while the robots tag said "index, follow" on this URL -- a direct
   // contradiction that actively worked against indexing the category pages
-  // this endpoint exists to make crawlable.
-  const canonicalPath = page.canonicalPath || path;
+  // this endpoint exists to make crawlable. An invalid category still
+  // canonicalizes to plain "/shop", since it isn't a real page of its own.
+  const canonicalPath =
+    path === "/shop" && category && !isValidCategory
+      ? "/shop"
+      : page.canonicalPath || path;
   const fallbackCanonical = `${SITE_URL}${
     canonicalPath === "/"
       ? "/"

@@ -215,6 +215,42 @@ describe("product page handler", () => {
     expect(body).not.toContain("Eco Drinkware");
   });
 
+  it("never pairs a type_id with a label from a different source when that same object has no type_name", async () => {
+    const idOnlyTaxonomyProduct = {
+      ...baseProduct,
+      product: {
+        ...baseProduct.product,
+        categorisation: {
+          // Has an ID but no name -- selecting on type_id alone would keep
+          // this object for the ID while falling through to
+          // supplier_category for the label, recreating the exact
+          // label/ID mismatch this fix exists to prevent.
+          promodata_product_type: { type_id: "PE-02" },
+          supplier_category: "Drinkware",
+        },
+      },
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
+      .mockResolvedValueOnce(response({ data: idOnlyTaxonomyProduct }))
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      { query: { id: "46" }, headers: { host: "www.supermerch.com.au" } },
+      res,
+    );
+
+    const body = res.result.body;
+    expect(res.result.statusCode).toBe(200);
+    // No object has both fields, so no category crumb at all -- never
+    // "Drinkware" (supplier_category's label) linked to "PE-02"
+    // (promodata_product_type's ID).
+    expect(body).not.toContain("shop?category=");
+  });
+
   it("HTML-escapes a hostile/malicious product name and description before injecting into #root", async () => {
     const hostileProduct = {
       ...baseProduct,
