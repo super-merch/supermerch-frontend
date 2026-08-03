@@ -179,6 +179,42 @@ describe("product page handler", () => {
     expect(breadcrumbSchema.itemListElement).toHaveLength(3);
   });
 
+  it("resolves the category label and its type_id from the same source object, never mixing the two", async () => {
+    const mismatchedTaxonomyProduct = {
+      ...baseProduct,
+      product: {
+        ...baseProduct.product,
+        categorisation: {
+          // Has a name but no ID -- must not be used for anything.
+          promodata_product_type: { type_name: "Eco Drinkware" },
+          // Has both a name and an ID -- this is the only valid source.
+          product_type: { type_name: "Drink Bottles", type_id: "PE-02" },
+        },
+      },
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
+      .mockResolvedValueOnce(response({ data: mismatchedTaxonomyProduct }))
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      { query: { id: "45" }, headers: { host: "www.supermerch.com.au" } },
+      res,
+    );
+
+    const body = res.result.body;
+    expect(res.result.statusCode).toBe(200);
+    // The label and ID must both come from product_type, the same object --
+    // never "Eco Drinkware" (promodata's name) paired with "PE-02"
+    // (product_type's ID), which would describe one category while linking
+    // to another.
+    expect(body).toContain('<a href="/shop?category=PE-02">Drink Bottles</a>');
+    expect(body).not.toContain("Eco Drinkware");
+  });
+
   it("HTML-escapes a hostile/malicious product name and description before injecting into #root", async () => {
     const hostileProduct = {
       ...baseProduct,

@@ -343,10 +343,17 @@ export default async function handler(req, res) {
   const socialDescription =
     cleanText(override?.ogDescription).slice(0, 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
-  const canonicalPath =
-    path === "/shop" && category && !override
-      ? "/shop"
-      : page.canonicalPath || path;
+  // A /shop?category=X view is self-canonical whenever it's indexable (see
+  // the robots decision above, which already excludes faceted/filtered
+  // variants) -- whether an admin has configured a custom SEO override for
+  // that specific category is unrelated to whether the URL itself is the
+  // canonical page. Collapsing to plain "/shop" here used to happen for
+  // every category with no override (i.e. nearly all ~297 of them), which
+  // told Google the real/preferred page was the generic shop listing even
+  // while the robots tag said "index, follow" on this URL -- a direct
+  // contradiction that actively worked against indexing the category pages
+  // this endpoint exists to make crawlable.
+  const canonicalPath = page.canonicalPath || path;
   const fallbackCanonical = `${SITE_URL}${
     canonicalPath === "/"
       ? "/"

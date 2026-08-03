@@ -86,7 +86,14 @@ describe("SEO page handler", () => {
     );
   });
 
-  it("canonicalises an unknown category to the general shop", async () => {
+  it("stays self-canonical for a category with no admin SEO override configured", async () => {
+    // Whether an admin has configured a custom SEO override for a category
+    // is unrelated to whether that category's own URL is the canonical
+    // page. Collapsing to plain "/shop" here for every un-overridden
+    // category (the vast majority of them) contradicted the robots tag
+    // ("index, follow") set on this exact same URL just above in the
+    // handler, and disagreed with the client-side canonical logic in
+    // src/utils/shopSeo.js, which has never gated on override existence.
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
@@ -107,7 +114,7 @@ describe("SEO page handler", () => {
 
     expect(res.result.statusCode).toBe(200);
     expect(res.result.body).toContain(
-      '<link rel="canonical" href="https://www.supermerch.com.au/shop">',
+      '<link rel="canonical" href="https://www.supermerch.com.au/shop?category=does-not-exist-xyz">',
     );
   });
 

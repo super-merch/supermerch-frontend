@@ -66,21 +66,24 @@ const detailValue = (details, names) => {
 
 const productAttributes = (details) => {
   const categorisation = details.categorisation || {};
+  // category (label) and categoryId must come from the SAME source object,
+  // not from independent fallback chains -- otherwise promodata_product_type
+  // could supply a name while product_type supplies an unrelated ID, and the
+  // visible breadcrumb/JSON-LD would describe one category while linking to
+  // another. Pick whichever source actually has a type_id first, since the
+  // client's /shop?category=X route (see Cards.jsx) treats X as a
+  // productTypeId sent straight to the backend as product_type_ids -- a
+  // label with no matching ID from the same object is not a safe link
+  // target.
+  const productType = categorisation?.promodata_product_type?.type_id
+    ? categorisation.promodata_product_type
+    : categorisation?.product_type?.type_id
+      ? categorisation.product_type
+      : null;
   const category = cleanText(
-    categorisation?.promodata_product_type?.type_name ||
-      categorisation?.product_type?.type_name ||
-      categorisation?.supplier_category,
+    productType?.type_name || categorisation?.supplier_category,
   );
-  // The client's /shop?category=X route (see Cards.jsx) treats X as a
-  // productTypeId sent straight to the backend as product_type_ids -- it is
-  // never the human-readable type_name. Only promodata_product_type/
-  // product_type carry a real type_id; supplier_category has no ID
-  // equivalent, so a category resolved only from that fallback has no safe
-  // link target.
-  const categoryId = cleanText(
-    categorisation?.promodata_product_type?.type_id ||
-      categorisation?.product_type?.type_id,
-  );
+  const categoryId = cleanText(productType?.type_id);
   const material =
     detailValue(details.details, ["Material", "Materials"]) ||
     cleanText(
