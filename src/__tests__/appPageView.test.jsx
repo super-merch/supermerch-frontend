@@ -71,21 +71,25 @@ const renderApp = (initialEntries) =>
   );
 
 describe("App PageView tracking", () => {
-  it("fires exactly one trackPageView on initial mount", () => {
+  // Home and ProductPageResolver are lazy-loaded (see src/App.jsx) behind a
+  // <Suspense> boundary, so their mocked modules resolve asynchronously —
+  // use findByText (which awaits) rather than getByText (which is sync-only).
+  it("fires exactly one trackPageView on initial mount", async () => {
     renderApp(["/"]);
 
-    expect(screen.getByText("HomePage")).toBeInTheDocument();
+    expect(await screen.findByText("HomePage")).toBeInTheDocument();
     expect(trackPageViewMock).toHaveBeenCalledTimes(1);
     expect(trackPageViewMock).toHaveBeenCalledWith("/");
   });
 
-  it("fires exactly one additional trackPageView per subsequent navigation, no duplicates", () => {
+  it("fires exactly one additional trackPageView per subsequent navigation, no duplicates", async () => {
     renderApp(["/"]);
+    expect(await screen.findByText("HomePage")).toBeInTheDocument();
     expect(trackPageViewMock).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByText("go-to-/product/1"));
 
-    expect(screen.getByText("ProductPage")).toBeInTheDocument();
+    expect(await screen.findByText("ProductPage")).toBeInTheDocument();
     expect(trackPageViewMock).toHaveBeenCalledTimes(2);
     expect(trackPageViewMock).toHaveBeenNthCalledWith(2, "/product/1");
   });

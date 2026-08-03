@@ -66,11 +66,26 @@ const detailValue = (details, names) => {
 
 const productAttributes = (details) => {
   const categorisation = details.categorisation || {};
+  // category (label) and categoryId must come from the SAME source object,
+  // not from independent fallback chains -- otherwise promodata_product_type
+  // could supply a name while product_type supplies an unrelated ID, and the
+  // visible breadcrumb/JSON-LD would describe one category while linking to
+  // another. Only an object carrying BOTH a usable type_id AND type_name
+  // qualifies -- selecting on type_id alone would let a same-object
+  // type_name gap silently fall back to the unrelated supplier_category
+  // label while still keeping that object's ID, recreating the exact
+  // mismatch this is meant to prevent. The client's /shop?category=X route
+  // (see Cards.jsx) treats the value as a productTypeId sent straight to
+  // the backend as product_type_ids -- a label with no matching ID from
+  // the same object is not a safe link target.
+  const productType = [
+    categorisation?.promodata_product_type,
+    categorisation?.product_type,
+  ].find((item) => cleanText(item?.type_id) && cleanText(item?.type_name));
   const category = cleanText(
-    categorisation?.promodata_product_type?.type_name ||
-      categorisation?.product_type?.type_name ||
-      categorisation?.supplier_category,
+    productType?.type_name || categorisation?.supplier_category,
   );
+  const categoryId = cleanText(productType?.type_id);
   const material =
     detailValue(details.details, ["Material", "Materials"]) ||
     cleanText(
@@ -87,6 +102,7 @@ const productAttributes = (details) => {
   );
   return {
     category,
+    categoryId,
     material,
     color,
     capacity: detailValue(details.details, ["Capacity", "Volume"]),
@@ -131,6 +147,40 @@ const injectHead = (html, tags) => {
   output = output.replace(/<link\s+[^>]*rel=["']canonical["'][^>]*>\s*/gi, "");
   return output.replace("</head>", `${tags}\n</head>`);
 };
+
+// Renders real, crawlable breadcrumb links as plain <a> tags. The final
+// (current-page) crumb has no href, matching how visible breadcrumbs render
+// elsewhere on the site.
+const renderBreadcrumbLinks = (items) =>
+  items
+    .map((item) =>
+      item.href
+        ? `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`
+        : `<span>${escapeHtml(item.label)}</span>`,
+    )
+    .join(' <span aria-hidden="true">/</span> ');
+
+/**
+ * Injects a small, real, crawlable content block directly into the SPA's
+ * mount point (#root) — an H1, a description paragraph, and breadcrumb
+ * links — instead of only <head> meta tags. main.jsx mounts React with
+ * createRoot() (not hydrateRoot()), so React fully replaces #root's
+ * contents on mount rather than diffing against them: there is no
+ * hydration to mismatch, and once JS runs this markup is simply discarded
+ * in favour of the real client-rendered page.
+ */
+const injectBody = (html, bodyHtml) =>
+  html.replace(
+    /<div id=["']root["']><\/div>/,
+    `<div id="root">${bodyHtml}</div>`,
+  );
+
+const renderProductBody = ({ name, description, breadcrumbItems }) => `
+<div data-ssr-content="product">
+<nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>
+<h1>${escapeHtml(name)}</h1>
+<p>${escapeHtml(description)}</p>
+</div>`;
 
 const getIdentifier = (query) => {
   if (query.id !== undefined && String(query.id).trim()) {
@@ -243,9 +293,10 @@ export default async function handler(req, res) {
   const name =
     cleanText(details.name || overview.name || overview.originalName) ||
     "Promotional Product";
-  const description = cleanText(
+  const rawDescription = cleanText(
     details.description || overview.description || details.short_description,
-  ).slice(0, 160);
+  );
+  const description = rawDescription.slice(0, 160);
   const productId =
     product?.meta?.id ?? overview.sku_number ?? details.code ?? identifier;
   const sku = overview.sku_number || details.code || "";
@@ -333,15 +384,44 @@ export default async function handler(req, res) {
     };
   }
 
+  // Real breadcrumb trail — reused for both the visible <a> links injected
+  // into #root and the BreadcrumbList JSON-LD below, so the two never
+  // contradict each other. Category links point at /shop?category=<id>:
+  // Cards.jsx treats that value as a productTypeId and sends it to the
+  // backend as product_type_ids, so the URL must carry the real type_id,
+  // not the human-readable category label -- the label is display text
+  // only. If no type_id was resolved, the category has no safe link
+  // target, so the crumb is omitted rather than publishing a broken URL.
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    ...(attributes.category && attributes.categoryId
+      ? [
+          {
+            label: attributes.category,
+            href: `/shop?category=${encodeURIComponent(attributes.categoryId)}`,
+          },
+        ]
+      : []),
+    { label: name, href: null },
+  ];
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-      { "@type": "ListItem", position: 2, name: "Shop", item: `${SITE_URL}/shop` },
-      { "@type": "ListItem", position: 3, name, item: canonical },
-    ],
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.label,
+      item: item.href ? `${SITE_URL}${item.href}` : canonical,
+    })),
   };
+
+  const bodyContent = renderProductBody({
+    name,
+    description: rawDescription.slice(0, 500) || metaDescription,
+    breadcrumbItems,
+  });
 
   const tags = `
 <title>${escapeHtml(title)}</title>
@@ -366,5 +446,5 @@ ${keywords ? `<meta name="keywords" content="${escapeHtml(keywords)}">` : ""}
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
-  res.status(200).send(injectHead(shell, tags));
+  res.status(200).send(injectBody(injectHead(shell, tags), bodyContent));
 }

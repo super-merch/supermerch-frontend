@@ -1589,7 +1589,7 @@ const ProductDetails = () => {
             <div className="flex justify-between items-center md:flex-row flex-col">
               <div className="w-full">
                 <div className="flex items-start justify-between gap-3">
-                  <h2
+                  <h1
                     className={`text-2xl flex-1 min-w-0 ${product?.name ? "font-bold" : "font-medium"
                       } cursor-pointer transition-colors capitalize`}
                     onClick={handleHeadingClick}
@@ -1603,7 +1603,7 @@ const ProductDetails = () => {
                     aria-label="Product name - Press Shift+A to view supplier information"
                   >
                     {product?.name}
-                  </h2>
+                  </h1>
                   <Tooltip
                     title={
                       isFavourited
