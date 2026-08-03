@@ -35,6 +35,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,11 +80,18 @@ const Signup = () => {
 
       setError("");
       setFormData({ name: "", lastName: "", email: "", companyName: "",  password: "", confirmPassword: "" });
-      toast.success("SignUp successful!");
+      toast.success("Account created successfully!");
       localStorage.setItem("isNewUser", "true");
+      setSignupSuccess(true);
 
-      // Redirect to login page after successful signup
-      window.location.href = "/login";
+      // Give the confirmation screen time to actually be seen before moving on.
+      // A hard redirect (rather than router navigation) matches this app's
+      // existing post-auth pattern (see useAuth's googleLogin), but firing it
+      // immediately after toast.success() unmounted the app before the toast
+      // or any confirmation could ever be seen.
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 3000);
     } catch (err) {
       setError(err?.response?.data?.message);
       clearError();
@@ -91,6 +99,33 @@ const Signup = () => {
       setLoading(false);
     }
   };
+
+  if (signupSuccess) {
+    return (
+      <AuthLayout
+        title="Account Created!"
+        subtitle="You're all set — welcome to Super Merch."
+        linkText="Not redirected automatically?"
+        linkPath="/login"
+        linkLabel="Sign In now"
+      >
+        <div className="flex flex-col items-center text-center py-6">
+          <div className="mb-4 h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
+            <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-gray-700">
+            Your account has been created. We've sent a welcome email to{" "}
+            <span className="font-medium">{formData.email}</span>.
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Taking you to the sign-in page...
+          </p>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
