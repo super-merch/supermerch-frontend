@@ -17,6 +17,7 @@ import CustomerStep from "./CheckoutSteps/CustomerStep";
 import OrderSummarySidebar from "./CheckoutSteps/OrderSummarySidebar";
 import PaymentStep from "./CheckoutSteps/PaymentStep";
 import ShippingStep from "./CheckoutSteps/ShippingStep";
+import { trackCheckoutStarted, trackPurchase } from "@/lib/analytics";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -219,6 +220,12 @@ const Checkout = () => {
       const createdOrder = response.data?.checkout;
       const orderId =
         createdOrder?.orderId || createdOrder?.orderNumber || createdOrder?._id;
+
+      trackPurchase({
+        transactionId: orderId || sessionId,
+        value: Number(createdOrder?.total ?? checkoutData?.total ?? 0),
+        currency: "AUD",
+      });
 
       // A guest (no account) has no other way to prove this order is theirs.
       // The backend hands this token out once, here, and requires it (or
@@ -630,6 +637,12 @@ const Checkout = () => {
           : null,
         gstPercent: gstCharges,
       };
+
+      trackCheckoutStarted({
+        value: Number(total || 0),
+        currency: "AUD",
+        numItems: items.length,
+      });
 
       const resp = await axios.post(
         `${backendUrl}/api/create-checkout-session`,

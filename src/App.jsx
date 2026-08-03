@@ -13,6 +13,7 @@ import { HelmetProvider } from "react-helmet-async";
 import ChatWidget from "./components/Chat/ChatWidget";
 import SitePopups from "./components/Home/SitePopups";
 import RouteSeo from "./components/Common/RouteSeo";
+import { trackPageView } from "./lib/analytics";
 
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const ShopPage = lazy(() => import("./pages/ShopPage"));
@@ -76,6 +77,12 @@ const App = () => {
       }
     }
   }, [location.pathname]);
+
+  // Track SPA page views — route changes here don't trigger a real browser
+  // navigation, so GA4/Meta Pixel wouldn't otherwise see them.
+  useEffect(() => {
+    trackPageView(`${location.pathname}${location.search}`);
+  }, [location.pathname, location.search]);
 
   const handleCouponClick = () => {
     // Ensure we are on Home so the modal listener exists, then trigger it
