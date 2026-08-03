@@ -8,6 +8,7 @@ import filterSlice from "./slices/filterSlice";
 import categoryReducer from "./slices/categorySlice";
 import promotionalReducer from "./slices/promotionalSlice";
 import favouriteReducer from "./slices/favouriteSlice";
+import { analyticsMiddleware } from "./middleware/analyticsMiddleware";
 
 // 1️⃣ Create a root reducer
 const rootReducer = combineReducers({
@@ -64,7 +65,7 @@ export const store = configureStore({
         // redux-persist dispatches some non-serializable actions — ignore those
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
-    }),
+    }).concat(analyticsMiddleware),
 });
 
 // 5️⃣ Export a persistor

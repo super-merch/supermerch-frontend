@@ -14,6 +14,13 @@ import App from "./App.jsx";
 import { AppContextProvider } from "./context/AppContext";
 import { ProductsContextProvider } from "./context/ProductsContext.jsx";
 import CartInitializer from "./pages/cartInitializer.jsx";
+import { initAnalytics } from "./lib/analytics";
+
+// Fires GA4 / Meta Pixel / Clarity init, but only if the shopper already
+// accepted analytics cookies on a previous visit (see CookieConsentBanner /
+// src/lib/analytics.js). Each provider is also a no-op if its env var isn't
+// set. Scripts load async and never block this render.
+initAnalytics();
 
 // Create a QueryClient instance
 const queryClient = new QueryClient({

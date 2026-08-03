@@ -297,6 +297,15 @@ const Footer = () => {
               >
                 Terms of Service
               </Link>
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent("openCookiePreferences"))
+                }
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Cookie Preferences
+              </button>
             </div>
           </div>
         </div>
