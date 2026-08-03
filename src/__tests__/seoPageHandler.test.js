@@ -45,6 +45,9 @@ describe("SEO page handler", () => {
   });
 
   it("renders the selected category record and keeps only its canonical query", async () => {
+    // PE-02 is a real leaf category ID (Drink Bottles) in the authoritative
+    // category inventory -- an admin SEO override is only ever consulted for
+    // a valid category, so this test uses a real one.
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
@@ -53,9 +56,9 @@ describe("SEO page handler", () => {
           success: true,
           data: {
             metaTitle:
-              "Wooden Pens Promotional Products | Super Merch Australia",
+              "Drink Bottles Promotional Products | Super Merch Australia",
             canonicalUrl:
-              "https://supermerch.com.au/shop?category=wooden-pens&page=2&utm_source=test",
+              "https://supermerch.com.au/shop?category=PE-02&page=2&utm_source=test",
           },
         }),
       );
@@ -66,7 +69,7 @@ describe("SEO page handler", () => {
       {
         query: {
           path: "/shop",
-          category: "wooden-pens",
+          category: "PE-02",
           page: "2",
         },
         headers: { host: "www.supermerch.com.au" },
@@ -75,14 +78,14 @@ describe("SEO page handler", () => {
     );
 
     expect(fetchMock.mock.calls[1][0]).toContain(
-      "/api/seo-meta/by-entity/category/wooden-pens",
+      "/api/seo-meta/by-entity/category/PE-02",
     );
     expect(res.result.statusCode).toBe(200);
     expect(res.result.body).toContain(
-      "<title>Wooden Pens Promotional Products | Super Merch Australia</title>",
+      "<title>Drink Bottles Promotional Products | Super Merch Australia</title>",
     );
     expect(res.result.body).toContain(
-      '<link rel="canonical" href="https://www.supermerch.com.au/shop?category=wooden-pens">',
+      '<link rel="canonical" href="https://www.supermerch.com.au/shop?category=PE-02">',
     );
   });
 
@@ -133,6 +136,46 @@ describe("SEO page handler", () => {
       .fn()
       .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: {
+          path: "/shop",
+          category: "does-not-exist-xyz",
+        },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain(
+      '<link rel="canonical" href="https://www.supermerch.com.au/shop">',
+    );
+    expect(res.result.body).toContain(
+      '<meta name="robots" content="noindex, follow">',
+    );
+  });
+
+  it("ignores a stale/mistaken admin SEO override for an invalid category, rather than letting its canonicalUrl win", async () => {
+    // If a category is ever removed, or an admin previously created an
+    // override keyed to a bad value, that override must never resurrect an
+    // invalid category as self-canonical/indexable -- the validity check
+    // must win regardless of what admin data happens to exist for this ID.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
+      .mockResolvedValueOnce(
+        response({
+          success: true,
+          data: {
+            canonicalUrl:
+              "https://www.supermerch.com.au/shop?category=does-not-exist-xyz",
+          },
+        }),
+      );
     vi.stubGlobal("fetch", fetchMock);
     const res = createResponse();
 
@@ -236,6 +279,9 @@ describe("SEO page handler", () => {
     });
 
     it("injects breadcrumb links for a category page, consistent with the visible Shop crumb", async () => {
+      // PE-02 is a real leaf category ID (Drink Bottles) -- the admin
+      // override this test exercises is only ever consulted for a valid
+      // category.
       const fetchMock = vi
         .fn()
         .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
@@ -244,7 +290,7 @@ describe("SEO page handler", () => {
             success: true,
             data: {
               metaTitle:
-                "Wooden Pens Promotional Products | Super Merch Australia",
+                "Drink Bottles Promotional Products | Super Merch Australia",
             },
           }),
         );
@@ -253,7 +299,7 @@ describe("SEO page handler", () => {
 
       await handler(
         {
-          query: { path: "/shop", category: "wooden-pens" },
+          query: { path: "/shop", category: "PE-02" },
           headers: { host: "www.supermerch.com.au" },
         },
         res,
@@ -263,7 +309,7 @@ describe("SEO page handler", () => {
       expect(res.result.body).toContain('<nav aria-label="Breadcrumb">');
       expect(res.result.body).toContain('<a href="/">Home</a>');
       expect(res.result.body).toContain(
-        "<h1>Wooden Pens Promotional Products</h1>",
+        "<h1>Drink Bottles Promotional Products</h1>",
       );
     });
 

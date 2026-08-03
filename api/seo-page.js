@@ -350,7 +350,14 @@ export default async function handler(req, res) {
         : "index, follow";
   }
 
-  const override = await fetchSeoOverride(page.entityType, page.entityId);
+  // An invalid /shop?category=X value must never be indexable, even if a
+  // stale or mistaken admin SEO override exists for that exact entityId --
+  // otherwise its canonicalUrl could win below and reintroduce the SSR/CSR
+  // disagreement the validity check exists to prevent.
+  const override =
+    path === "/shop" && category && !isValidCategory
+      ? null
+      : await fetchSeoOverride(page.entityType, page.entityId);
   const title = cleanText(override?.metaTitle) || page.title;
   const description =
     cleanText(override?.metaDescription).slice(0, 160) || page.description;
