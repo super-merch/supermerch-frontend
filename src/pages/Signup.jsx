@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
@@ -35,6 +35,19 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  // Captured separately from formData.email, which gets cleared to "" in the
+  // same handler right before this is set — reading formData.email on the
+  // confirmation screen would always render blank.
+  const [signupEmail, setSignupEmail] = useState("");
+
+  useEffect(() => {
+    if (!signupSuccess) return;
+    const timer = setTimeout(() => {
+      window.location.href = "/login";
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [signupSuccess]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -78,12 +91,11 @@ const Signup = () => {
       });
 
       setError("");
+      setSignupEmail(formData.email);
       setFormData({ name: "", lastName: "", email: "", companyName: "",  password: "", confirmPassword: "" });
-      toast.success("SignUp successful!");
+      toast.success("Account created successfully!");
       localStorage.setItem("isNewUser", "true");
-
-      // Redirect to login page after successful signup
-      window.location.href = "/login";
+      setSignupSuccess(true);
     } catch (err) {
       setError(err?.response?.data?.message);
       clearError();
@@ -91,6 +103,34 @@ const Signup = () => {
       setLoading(false);
     }
   };
+
+  if (signupSuccess) {
+    return (
+      <AuthLayout
+        title="Account Created!"
+        subtitle="You're all set — welcome to Super Merch."
+        linkText="Not redirected automatically?"
+        linkPath="/login"
+        linkLabel="Sign In now"
+      >
+        <div className="flex flex-col items-center text-center py-6">
+          <div className="mb-4 h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
+            <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-gray-700">
+            Your account has been created with{" "}
+            <span className="font-medium">{signupEmail}</span>. A welcome
+            email is on its way — please check your inbox shortly.
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Taking you to the sign-in page...
+          </p>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
