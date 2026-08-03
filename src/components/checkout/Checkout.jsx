@@ -215,17 +215,36 @@ const Checkout = () => {
       });
       dispatch(clearCart());
       toast.success("Order placed successfully!");
-      await loadUserOrder();
 
       const createdOrder = response.data?.checkout;
       const orderId =
         createdOrder?.orderId || createdOrder?.orderNumber || createdOrder?._id;
 
+      // Fire the purchase conversion event immediately once the order has
+      // been created and payment confirmed by the backend (the axios.post
+      // above already resolved successfully). This must NOT be gated on
+      // loadUserOrder() below — that call refreshes the account/order list
+      // for the UI and is unrelated to whether the purchase actually
+      // happened. If it fails, the customer has already been charged and
+      // the order already exists, so the conversion must still be recorded.
       trackPurchase({
         transactionId: orderId || sessionId,
         value: Number(createdOrder?.total ?? checkoutData?.total ?? 0),
         currency: "AUD",
       });
+
+      // Best-effort refresh of the user's order history for the account UI.
+      // Deliberately decoupled from analytics above — a failure here (e.g.
+      // a flaky refetch) must never suppress the purchase event or block
+      // the redirect to the order confirmation page below.
+      try {
+        await loadUserOrder();
+      } catch (refreshError) {
+        console.error(
+          "loadUserOrder failed after a successful checkout (order was still created and tracked):",
+          refreshError,
+        );
+      }
 
       // A guest (no account) has no other way to prove this order is theirs.
       // The backend hands this token out once, here, and requires it (or
