@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
@@ -36,6 +36,18 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  // Captured separately from formData.email, which gets cleared to "" in the
+  // same handler right before this is set — reading formData.email on the
+  // confirmation screen would always render blank.
+  const [signupEmail, setSignupEmail] = useState("");
+
+  useEffect(() => {
+    if (!signupSuccess) return;
+    const timer = setTimeout(() => {
+      window.location.href = "/login";
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [signupSuccess]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,19 +91,11 @@ const Signup = () => {
       });
 
       setError("");
+      setSignupEmail(formData.email);
       setFormData({ name: "", lastName: "", email: "", companyName: "",  password: "", confirmPassword: "" });
       toast.success("Account created successfully!");
       localStorage.setItem("isNewUser", "true");
       setSignupSuccess(true);
-
-      // Give the confirmation screen time to actually be seen before moving on.
-      // A hard redirect (rather than router navigation) matches this app's
-      // existing post-auth pattern (see useAuth's googleLogin), but firing it
-      // immediately after toast.success() unmounted the app before the toast
-      // or any confirmation could ever be seen.
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 3000);
     } catch (err) {
       setError(err?.response?.data?.message);
       clearError();
@@ -116,8 +120,9 @@ const Signup = () => {
             </svg>
           </div>
           <p className="text-gray-700">
-            Your account has been created. We've sent a welcome email to{" "}
-            <span className="font-medium">{formData.email}</span>.
+            Your account has been created with{" "}
+            <span className="font-medium">{signupEmail}</span>. A welcome
+            email is on its way — please check your inbox shortly.
           </p>
           <p className="text-gray-500 text-sm mt-2">
             Taking you to the sign-in page...
