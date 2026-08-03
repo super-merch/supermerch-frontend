@@ -197,6 +197,10 @@ describe("SEO page handler", () => {
     expect(res.result.body).toContain(
       '<meta name="robots" content="noindex, follow">',
     );
+    // Proves the override endpoint was never even queried for an invalid
+    // category, not just that its response was ignored -- only the shell
+    // fetch (call 1) should have happened.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("adds organisation structured data to the homepage", async () => {
