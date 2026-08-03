@@ -63,6 +63,23 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://www.supermerch.com.au/" />
 
+  <!-- Organization structured data — static so it's present in the raw HTML
+       with no JS required. Fixed, non-dynamic content; kept in sync with the
+       former ORGANIZATION_SCHEMA constant in RouteSeo.jsx. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://www.supermerch.com.au/#organization",
+    "name": "Super Merch",
+    "url": "https://www.supermerch.com.au/",
+    "logo": "https://www.supermerch.com.au/logo-teal.png",
+    "email": "Info@supermerch.com.au",
+    "telephone": "+61466468528",
+    "areaServed": "AU"
+  }
+  </script>
+
   <!-- Preconnect for Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

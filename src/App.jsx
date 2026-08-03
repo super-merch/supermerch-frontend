@@ -2,8 +2,6 @@ import { lazy, Suspense, useContext } from "react";
 import Navbar from "./components/Home/Navbar";
 import { Routes, Route } from "react-router-dom";
 import RouteTransition from "./components/Common/RouteTransition";
-import Home from "./pages/Home/Home";
-import ProductPageResolver from "./pages/ProductPageResolver";
 import Footer from "./components/Home/Footer";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -16,6 +14,16 @@ import RouteSeo from "./components/Common/RouteSeo";
 import CookieConsentBanner from "./components/Common/CookieConsentBanner";
 import { trackPageView } from "./lib/analytics";
 
+// Home and the product detail page are the highest-traffic routes, but they
+// are also (via their shared sub-components) the biggest pullers of heavy
+// third-party libraries (swiper/slick carousels, lightgallery, etc.) into the
+// bundle. Because they were previously imported eagerly, every one of those
+// dependencies ended up in the main entry chunk and was downloaded on every
+// route — checkout, account, about, everything. Both already render inside
+// the <Suspense> boundary below, so lazy-loading them is a drop-in change
+// with no synchronous-availability requirement to preserve.
+const Home = lazy(() => import("./pages/Home/Home"));
+const ProductPageResolver = lazy(() => import("./pages/ProductPageResolver"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const ShopPage = lazy(() => import("./pages/ShopPage"));
 const Login = lazy(() => import("./pages/Login"));

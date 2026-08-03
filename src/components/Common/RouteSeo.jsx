@@ -1,20 +1,12 @@
 import { useLocation } from "react-router-dom";
 import SeoHelmet from "./SeoHelmet";
-import { getShopSeoContext } from "../../utils/shopSeo";
+import { getShopSeoContext, hasShopFilterParams } from "../../utils/shopSeo";
 
 const SITE_URL = "https://www.supermerch.com.au";
 const DEFAULT_IMAGE = `${SITE_URL}/logo-teal.png`;
-const ORGANIZATION_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": `${SITE_URL}/#organization`,
-  name: "Super Merch",
-  url: `${SITE_URL}/`,
-  logo: DEFAULT_IMAGE,
-  email: "Info@supermerch.com.au",
-  telephone: "+61466468528",
-  areaServed: "AU",
-};
+// Organization/WebSite structured data is fixed, non-dynamic content — it now
+// ships as a static <script type="application/ld+json"> block in index.html
+// so it's present in the raw HTML with no JS required. Do not re-add it here.
 
 const makeFallback = ({ title, description, keywords, path, ogType = "website" }) => ({
   title,
@@ -66,7 +58,6 @@ const RouteSeo = () => {
       <SeoHelmet
         entityType="cmsPage"
         entityId="home"
-        structuredData={[ORGANIZATION_SCHEMA]}
         fallback={makeFallback({
           title: "Super Merch Australia | Promotional Products & Custom Merchandise",
           description:
@@ -85,12 +76,21 @@ const RouteSeo = () => {
       entityId: shopSeo.entityId,
       canonicalUrlWhenSeoMissing:
         shopSeo.entityId === "shop" ? undefined : `${SITE_URL}/shop`,
-      fallback: makeFallback({
-        title: "Shop Promotional Products | Super Merch Australia",
-        description: "Browse branded promotional products, custom merchandise, and business giveaways.",
-        keywords: "shop promotional products, branded merchandise australia, business giveaways",
-        path: shopSeo.canonicalPath,
-      }),
+      fallback: {
+        ...makeFallback({
+          title: "Shop Promotional Products | Super Merch Australia",
+          description: "Browse branded promotional products, custom merchandise, and business giveaways.",
+          keywords: "shop promotional products, branded merchandise australia, business giveaways",
+          path: shopSeo.canonicalPath,
+        }),
+        // Faceted/filtered /shop URLs (color, size, price, etc.) are thin,
+        // largely duplicate variants of the canonical category view — keep
+        // them out of the index while /shop and /shop?category=X stay
+        // indexable. Must match the server-side robots tag in api/seo-page.js.
+        robots: hasShopFilterParams(location.search)
+          ? "noindex, follow"
+          : "index, follow",
+      },
     },
     "/about": {
       entityType: "cmsPage",

@@ -205,6 +205,86 @@ const injectHead = (html, tags) => {
   return output.replace("</head>", `${tags}\n</head>`);
 };
 
+// Renders real, crawlable breadcrumb links as plain <a> tags. The final
+// (current-page) crumb has no href, matching how visible breadcrumbs render
+// elsewhere on the site.
+const renderBreadcrumbLinks = (items) =>
+  items
+    .map((item) =>
+      item.href
+        ? `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`
+        : `<span>${escapeHtml(item.label)}</span>`,
+    )
+    .join(' <span aria-hidden="true">/</span> ');
+
+/**
+ * Injects a small, real, crawlable content block directly into the SPA's
+ * mount point (#root) — an H1, a description paragraph, and breadcrumb
+ * links — instead of only <head> meta tags. main.jsx mounts React with
+ * createRoot() (not hydrateRoot()), so React fully replaces #root's
+ * contents on mount rather than diffing against them: there is no
+ * hydration to mismatch, and once JS runs this markup is simply discarded
+ * in favour of the real client-rendered page.
+ */
+const injectBody = (html, bodyHtml) =>
+  html.replace(
+    /<div id=["']root["']><\/div>/,
+    `<div id="root">${bodyHtml}</div>`,
+  );
+
+const SITE_SUFFIX = / \| Super Merch Australia$/i;
+
+// Builds the same breadcrumb trail used for both the visible <a> links and
+// (where present) any future structured data — a category page sits under
+// Shop, a blog post under Blog, a deal under Deals; everything else sits
+// directly under Home. The homepage itself gets no breadcrumb.
+const buildBreadcrumbItems = (path, entityType, displayName) => {
+  if (path === "/") return [];
+  const items = [{ label: "Home", href: "/" }];
+  if (entityType === "category" && displayName !== "Shop") {
+    items.push({ label: "Shop", href: "/shop" });
+  } else if (entityType === "blog" && displayName !== "Blog") {
+    items.push({ label: "Blog", href: "/all-blogs" });
+  } else if (entityType === "deal" && displayName !== "Deals") {
+    items.push({ label: "Deals", href: "/deals" });
+  }
+  items.push({ label: displayName, href: null });
+  return items;
+};
+
+const renderPageBody = ({ displayName, description, breadcrumbItems }) => `
+<div data-ssr-content="page">
+${breadcrumbItems.length ? `<nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>\n` : ""}<h1>${escapeHtml(displayName)}</h1>
+<p>${escapeHtml(description)}</p>
+</div>`;
+
+// Query params that don't create a distinct, thin/duplicate variant of a
+// /shop page: `category` selects the canonical category view itself, and
+// the rest are already stripped when building the canonical URL below.
+const BENIGN_SHOP_PARAMS = new Set([
+  "category",
+  "page",
+  "sort",
+  "view",
+  "gclid",
+  "fbclid",
+]);
+
+/**
+ * True when /shop has facet/filter params beyond the ones above (e.g.
+ * color, size, price range). Those combinations create combinatorial,
+ * largely duplicate content and should be kept out of the index while the
+ * canonical /shop and /shop?category=X views stay indexable. Must match
+ * hasShopFilterParams() in src/utils/shopSeo.js, which drives the same
+ * decision client-side.
+ */
+const hasShopFilterParams = (query) =>
+  Object.keys(query).some((key) => {
+    if (key === "path") return false;
+    const normalized = key.toLowerCase();
+    return !BENIGN_SHOP_PARAMS.has(normalized) && !normalized.startsWith("utm_");
+  });
+
 export default async function handler(req, res) {
   const rawPath = String(req.query.path || "/");
   const path = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
@@ -243,6 +323,16 @@ export default async function handler(req, res) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.status(404).send(injectHead(shell, tags));
     return;
+  }
+
+  // Faceted/filtered /shop URLs (color, size, price, etc.) are thin,
+  // largely duplicate variants of the canonical category view — keep them
+  // out of the index while /shop and /shop?category=X stay indexable. Must
+  // match the client-side robots decision in src/components/Common/RouteSeo.jsx.
+  if (path === "/shop") {
+    page.robots = hasShopFilterParams(req.query)
+      ? "noindex, follow"
+      : "index, follow";
   }
 
   const override = await fetchSeoOverride(page.entityType, page.entityId);
@@ -360,7 +450,15 @@ export default async function handler(req, res) {
 <meta name="twitter:url" content="${escapeHtml(canonical)}">
 ${jsonLdTags}`;
 
+  const displayName = title.replace(SITE_SUFFIX, "").trim() || title;
+  const breadcrumbItems = buildBreadcrumbItems(path, page.entityType, displayName);
+  const bodyContent = renderPageBody({
+    displayName,
+    description,
+    breadcrumbItems,
+  });
+
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
-  res.status(200).send(injectHead(shell, tags));
+  res.status(200).send(injectBody(injectHead(shell, tags), bodyContent));
 }
