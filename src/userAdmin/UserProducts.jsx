@@ -166,8 +166,20 @@ const UserProducts = () => {
       try {
         const token = localStorage.getItem("token");
         const config = token ? { headers: { token } } : undefined;
+        // A guest (no account) has no other way to prove this order is
+        // theirs — the token was handed to them once, right after checkout.
+        let guestAccessToken = null;
+        try {
+          guestAccessToken = localStorage.getItem(`guestOrderToken_${orderId}`);
+        } catch {
+          // localStorage unavailable — fall through with no token; a
+          // logged-in customer's own auth still works via `config`.
+        }
+        const query = guestAccessToken
+          ? `?accessToken=${encodeURIComponent(guestAccessToken)}`
+          : "";
         const { data } = await axios.get(
-          `${backendUrl}/api/checkout/products/${orderId}`,
+          `${backendUrl}/api/checkout/products/${orderId}${query}`,
           config,
         );
         const fetchedOrder = data?.data?.[0] || null;
