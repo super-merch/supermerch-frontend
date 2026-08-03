@@ -165,10 +165,21 @@ const UserProducts = () => {
 
       try {
         const token = localStorage.getItem("token");
-        const config = token ? { headers: { token } } : undefined;
+        const headers = token ? { token } : {};
+        // A guest (no account) has no other way to prove this order is
+        // theirs — the token was handed to them once, right after checkout.
+        // Sent as a dedicated header, not a query string, which would leak
+        // into browser history/logs/referrers.
+        try {
+          const guestAccessToken = localStorage.getItem(`guestOrderToken_${orderId}`);
+          if (guestAccessToken) headers["x-guest-order-token"] = guestAccessToken;
+        } catch {
+          // localStorage unavailable — fall through with no token; a
+          // logged-in customer's own auth still works via the `token` header.
+        }
         const { data } = await axios.get(
           `${backendUrl}/api/checkout/products/${orderId}`,
-          config,
+          { headers },
         );
         const fetchedOrder = data?.data?.[0] || null;
         if (!cancelled) setSelectedOrder(fetchedOrder);

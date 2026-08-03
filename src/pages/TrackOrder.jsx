@@ -129,8 +129,25 @@ export default function TrackOrder() {
     setLoading(true);
     try {
       const params = email.trim() ? `?email=${encodeURIComponent(email.trim())}` : "";
+
+      // An order number alone is not proof of ownership (numbers are
+      // sequential). Send whichever proof is available: the guest token
+      // handed out once at checkout (stored locally, same browser), or a
+      // logged-in customer's own auth token. Neither is required if the
+      // caller supplies the order's email instead.
+      const headers = {};
+      const loggedInToken = localStorage.getItem("token");
+      if (loggedInToken) headers.token = loggedInToken;
+      try {
+        const guestToken = localStorage.getItem(`guestOrderToken_${orderNum.trim()}`);
+        if (guestToken) headers["x-guest-order-token"] = guestToken;
+      } catch {
+        // localStorage unavailable — fall through with whatever else we have
+      }
+
       const { data } = await axios.get(
-        `${backendUrl}/api/user-orders/track/${orderNum.trim()}${params}`
+        `${backendUrl}/api/user-orders/track/${orderNum.trim()}${params}`,
+        { headers }
       );
       if (data.success) {
         setOrderData(data.data);
@@ -138,7 +155,12 @@ export default function TrackOrder() {
         setError(data.message || "Order not found");
       }
     } catch (err) {
-      const msg = err.response?.data?.message || "Order not found. Please check your details.";
+      const noProofAvailable = !email.trim() && !localStorage.getItem("token");
+      const msg =
+        err.response?.data?.message ||
+        (noProofAvailable
+          ? "Order not found. If you're tracking from a different device or browser, enter the email used for this order."
+          : "Order not found. Please check your details.");
       setError(msg);
     } finally {
       setLoading(false);

@@ -220,6 +220,32 @@ const Checkout = () => {
       const orderId =
         createdOrder?.orderId || createdOrder?.orderNumber || createdOrder?._id;
 
+      // A guest (no account) has no other way to prove this order is theirs.
+      // The backend hands this token out once, here, and requires it (or
+      // ownership/staff auth) for any later lookup of the order. Stored
+      // under both identifiers since different pages land with different
+      // ones: /track-order uses the human order number, the account area
+      // uses the Mongo id.
+      if (createdOrder?.guestAccessToken) {
+        try {
+          if (createdOrder._id) {
+            localStorage.setItem(
+              `guestOrderToken_${createdOrder._id}`,
+              createdOrder.guestAccessToken,
+            );
+          }
+          if (createdOrder.orderId) {
+            localStorage.setItem(
+              `guestOrderToken_${createdOrder.orderId}`,
+              createdOrder.guestAccessToken,
+            );
+          }
+        } catch {
+          // localStorage unavailable (private browsing, etc.) — the
+          // customer can still track the order while logged in.
+        }
+      }
+
       if (orderId) {
         navigate(`/track-order?order=${encodeURIComponent(orderId)}&source=checkout`, {
           replace: true,
