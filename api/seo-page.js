@@ -118,6 +118,41 @@ const toProductUrl = (productName, id) => {
 
 const PRODUCTS_PER_CATEGORY_PAGE = 24;
 
+// Audit B3: every /shop?category=X value fell through to the generic
+// STATIC_PAGES["/shop"] title/description/H1 ("Shop Promotional Products...")
+// regardless of which of the ~324 real leaf/parent categories it was --
+// confirmed byte-identical across categories in the audit. This builds a
+// distinct title/H1/description per category from data we actually have
+// (the category's own name and, for leaves, its parent's name) rather than
+// leaving every category page duplicate-content. This is the templated,
+// engineering-only layer the audit explicitly flags as a partial fix, not
+// the full one -- true differentiation (buying guides, real use-cases,
+// MOQs/turnaround copy) still needs the business input tracked as audit
+// item A7/B3 and is NOT attempted here since those facts don't exist in
+// any API this function can reach.
+const buildCategoryDisplay = (categoryId) => {
+  const leaf = LEAVES_BY_ID.get(categoryId);
+  if (leaf) {
+    const parentName = leaf.parentName || PARENTS_BY_ID.get(leaf.parentId)?.name || "";
+    return {
+      title: parentName
+        ? `${leaf.name} | ${parentName} | Super Merch Australia`
+        : `${leaf.name} | Super Merch Australia`,
+      description: parentName
+        ? `Shop custom ${leaf.name.toLowerCase()} from Super Merch's ${parentName.toLowerCase()} range -- branded promotional products for Australian businesses, events and teams.`
+        : `Shop custom ${leaf.name.toLowerCase()} promotional products and branded merchandise for Australian businesses, events and teams.`,
+    };
+  }
+  const parent = PARENTS_BY_ID.get(categoryId);
+  if (parent) {
+    return {
+      title: `${parent.name} | Super Merch Australia`,
+      description: `Browse the full ${parent.name.toLowerCase()} range of custom branded promotional products and merchandise from Super Merch Australia.`,
+    };
+  }
+  return null;
+};
+
 // Real products for a category/general listing page, for server-rendered
 // internal links (audit B2 -- "likely the single biggest lever for moving
 // indexation off ~1%"). Mirrors the exact endpoints Cards.jsx itself calls:
@@ -553,6 +588,17 @@ export default async function handler(req, res) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.status(404).send(injectHead(shell, tags));
     return;
+  }
+
+  // Audit B3: give real leaf/parent categories their own title/H1/description
+  // instead of inheriting the generic /shop copy resolvePage() returns above.
+  // An admin SEO override (fetched next) still takes precedence over this.
+  if (path === "/shop" && category && isValidCategory) {
+    const categoryDisplay = buildCategoryDisplay(category);
+    if (categoryDisplay) {
+      page.title = categoryDisplay.title;
+      page.description = categoryDisplay.description;
+    }
   }
 
   // Faceted/filtered /shop URLs (color, size, price, etc.) are thin,

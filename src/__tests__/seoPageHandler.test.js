@@ -148,6 +148,91 @@ describe("SEO page handler", () => {
     );
   });
 
+  it("gives a real leaf category its own title/H1/description instead of the generic /shop copy (audit B3)", async () => {
+    // PE-02 (Drink Bottles, parent Drinkware) is a real leaf category ID.
+    // Before audit item B3, every /shop?category=X value with no admin
+    // override fell through to the generic STATIC_PAGES["/shop"] copy
+    // ("Shop Promotional Products | Super Merch Australia") regardless of
+    // which category it was -- the exact duplicate-content problem the
+    // audit found byte-identical across categories.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: { path: "/shop", category: "PE-02" },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).not.toContain("Shop Promotional Products");
+    expect(res.result.body).toContain(
+      "<title>Drink Bottles | Drinkware | Super Merch Australia</title>",
+    );
+    expect(res.result.body).toContain("<h1>Drink Bottles | Drinkware</h1>");
+    expect(res.result.body).toContain(
+      "Shop custom drink bottles from Super Merch's drinkware range",
+    );
+  });
+
+  it("gives a real parent category its own title/H1/description instead of the generic /shop copy (audit B3)", async () => {
+    // "PB" (Bottoms) is a real parent category ID with no leaf entry of its
+    // own in the authoritative inventory.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: { path: "/shop", category: "PB" },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).not.toContain("Shop Promotional Products");
+    expect(res.result.body).toContain(
+      "<title>Bottoms | Super Merch Australia</title>",
+    );
+    expect(res.result.body).toContain("<h1>Bottoms</h1>");
+    expect(res.result.body).toContain(
+      "Browse the full bottoms range of custom branded promotional products",
+    );
+  });
+
+  it("still lets an admin SEO override win over the generated category copy (audit B3)", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      response({
+        success: true,
+        data: { metaTitle: "Custom Drink Bottles Sale | Super Merch" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: { path: "/shop", category: "PE-02" },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain(
+      "<title>Custom Drink Bottles Sale | Super Merch</title>",
+    );
+    expect(res.result.body).not.toContain("Drinkware | Super Merch Australia");
+  });
+
   it("canonicalizes an invalid/nonexistent category to plain /shop and keeps it out of the index", async () => {
     // A category value that isn't a real leaf/parent ID must never become
     // self-canonical or indexable -- that would let unlimited junk category
