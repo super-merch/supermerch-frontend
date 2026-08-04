@@ -55,8 +55,8 @@
       "destination": "/api/seo-page?path=/:path"
     },
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/:path*",
+      "destination": "/api/app-shell?path=/:path"
     }
   ]
 }

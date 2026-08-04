@@ -334,6 +334,22 @@ export default async function handler(req, res) {
     return;
   }
 
+  // A slug is only trustworthy as a redirect target when it's what actually
+  // resolved the product (not an id/ref lookup) — otherwise every historical
+  // slug for a product stays permanently indexable alongside the current one.
+  const requestedSlug = req.query.slug ? String(req.query.slug).trim() : "";
+  const requestedId = req.query.id !== undefined ? String(req.query.id).trim() : "";
+  if (requestedSlug && requestedId && identifier === requestedId) {
+    const canonicalPath = `/product/${canonicalSlug}/${encodeURIComponent(String(productId))}`;
+    const currentPath = `/product/${requestedSlug}/${requestedId}`;
+    if (currentPath !== canonicalPath) {
+      res.setHeader("Location", canonicalPath);
+      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+      res.status(301).end();
+      return;
+    }
+  }
+
   const generatedTitle = `${name} | Custom Branded | Super Merch Australia`;
   const generatedDescription =
     description ||
