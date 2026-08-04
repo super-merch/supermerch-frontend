@@ -28,10 +28,22 @@ export default async function handler(req, res) {
         Math.ceil(Number(payload.pagination.totalCount || 0) / PAGE_SIZE),
     );
 
+    // Audit B9: the index previously shipped with zero <lastmod> tags on any
+    // of its 67 entries. A real per-shard freshness value isn't cheaply
+    // available here without an extra backend call per shard (66 of them),
+    // and a live sample showed every product's updatedAt identical within a
+    // page anyway (a bulk-sync timestamp, not a real per-item change time) --
+    // so a per-shard max wouldn't be meaningful even if fetched. Using the
+    // index's own generation time is the honest, cheap option: it's still a
+    // real, monotonically-refreshing value crawlers can use to know the
+    // index itself was recently regenerated, which is what this cache's
+    // s-maxage already implies.
+    const generatedAt = new Date().toISOString();
+
     const productMaps = Array.from(
       { length: totalPages },
       (_, index) =>
-        `  <sitemap><loc>${SITE_URL}/sitemaps/products-${index + 1}.xml</loc></sitemap>`,
+        `  <sitemap><loc>${SITE_URL}/sitemaps/products-${index + 1}.xml</loc><lastmod>${generatedAt}</lastmod></sitemap>`,
     ).join("\n");
 
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
@@ -41,7 +53,7 @@ export default async function handler(req, res) {
     );
     res.status(200).send(
       xml(
-        `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${SITE_URL}/sitemap-static.xml</loc></sitemap>\n${productMaps}\n</sitemapindex>`,
+        `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${SITE_URL}/sitemap-static.xml</loc><lastmod>${generatedAt}</lastmod></sitemap>\n${productMaps}\n</sitemapindex>`,
       ),
     );
   } catch (error) {
