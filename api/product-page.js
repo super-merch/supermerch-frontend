@@ -34,6 +34,21 @@ const escapeHtml = (value) =>
 const escapeJson = (value) =>
   JSON.stringify(value).replace(/</g, "\\u003c");
 
+// Truncates to `limit` characters without cutting a word in half: backs up
+// to the last whole-word boundary (space) before the limit, then appends a
+// single ellipsis character. Text already at or under the limit is returned
+// unchanged. Used everywhere a title/description/og/twitter string is
+// hard-truncated for display -- never for unrelated slicing (e.g. category
+// ID validation, canonical URL building).
+const truncateAtWordBoundary = (text, limit) => {
+  const value = String(text || "");
+  if (value.length <= limit) return value;
+  const cut = value.slice(0, Math.max(0, limit - 1));
+  const lastSpace = cut.lastIndexOf(" ");
+  const truncated = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${truncated.trimEnd()}\u2026`;
+};
+
 const isTrue = (value) =>
   value === true || String(value).toLowerCase() === "true";
 
@@ -178,10 +193,11 @@ const injectBody = (html, bodyHtml) =>
     `<div id="root">${bodyHtml}</div>`,
   );
 
-const renderProductBody = ({ name, description, breadcrumbItems }) => `
+const renderProductBody = ({ name, description, breadcrumbItems, image, imageAlt }) => `
 <div data-ssr-content="product">
 <nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>
 <h1>${escapeHtml(name)}</h1>
+<img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}">
 <p>${escapeHtml(description)}</p>
 </div>`;
 
@@ -305,7 +321,7 @@ export default async function handler(req, res) {
   const rawDescription = cleanText(
     details.description || overview.description || details.short_description,
   );
-  const description = rawDescription.slice(0, 160);
+  const description = truncateAtWordBoundary(rawDescription, 160);
   const productId =
     product?.meta?.id ?? overview.sku_number ?? details.code ?? identifier;
   const sku = overview.sku_number || details.code || "";
@@ -362,25 +378,27 @@ export default async function handler(req, res) {
   const generatedTitle = `${name} | Custom Branded | Super Merch Australia`;
   const generatedDescription =
     description ||
-    [
-      name,
-      attributes.category ? `Custom branded ${attributes.category.toLowerCase()}` : "Custom branded promotional product",
-      attributes.material ? `made from ${attributes.material}` : "",
-      attributes.capacity ? `with ${attributes.capacity} capacity` : "",
-      "from Super Merch Australia.",
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .slice(0, 160);
+    truncateAtWordBoundary(
+      [
+        name,
+        attributes.category ? `Custom branded ${attributes.category.toLowerCase()}` : "Custom branded promotional product",
+        attributes.material ? `made from ${attributes.material}` : "",
+        attributes.capacity ? `with ${attributes.capacity} capacity` : "",
+        "from Super Merch Australia.",
+      ]
+        .filter(Boolean)
+        .join(" "),
+      160,
+    );
   const seoOverride = await getSeoOverride(productId);
   const title = cleanText(seoOverride?.metaTitle) || generatedTitle;
   const metaDescription =
-    cleanText(seoOverride?.metaDescription).slice(0, 160) ||
+    truncateAtWordBoundary(cleanText(seoOverride?.metaDescription), 160) ||
     generatedDescription;
   const keywords = cleanText(seoOverride?.keywords);
   const socialTitle = cleanText(seoOverride?.ogTitle) || title;
   const socialDescription =
-    cleanText(seoOverride?.ogDescription).slice(0, 200) || metaDescription;
+    truncateAtWordBoundary(cleanText(seoOverride?.ogDescription), 200) || metaDescription;
   const socialImage = cleanText(seoOverride?.ogImage) || image;
   const socialImageAlt =
     socialImage === image ? imageAlt : `${name} promotional product`;
@@ -446,6 +464,8 @@ export default async function handler(req, res) {
     name,
     description: rawDescription.slice(0, 500) || metaDescription,
     breadcrumbItems,
+    image: socialImage,
+    imageAlt: socialImageAlt,
   });
 
   const tags = `
