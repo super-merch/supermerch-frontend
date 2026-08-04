@@ -96,3 +96,7 @@ scripts/category-finder/.snapshot/
 # sample product ids) -- regenerate with verify-filter-mappings.mjs. The
 # compact, committed companion is scripts/category-finder/verification-summary.json.
 scripts/category-finder/.evidence/
+# SSR shell copy written by scripts/prepare-vercel-shell.mjs during the
+# Vercel-only "vercel-build" script. Regenerated on every deploy and kept
+# outside dist/ so it is never served as a public URL -- never committed.
+/server-assets/

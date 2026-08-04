@@ -12,13 +12,13 @@
     },
     "api/seo-page.js": {
       "maxDuration": 60,
-      "includeFiles": "dist/_shell.html"
+      "includeFiles": "server-assets/app-shell.html"
     },
     "api/product-page.js": {
-      "includeFiles": "dist/_shell.html"
+      "includeFiles": "server-assets/app-shell.html"
     },
     "api/app-shell.js": {
-      "includeFiles": "dist/_shell.html"
+      "includeFiles": "server-assets/app-shell.html"
     }
   },
   "rewrites": [
