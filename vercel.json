@@ -10,7 +10,14 @@
       "maxDuration": 60
     },
     "api/seo-page.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "dist/index.html"
+    },
+    "api/product-page.js": {
+      "includeFiles": "dist/index.html"
+    },
+    "api/app-shell.js": {
+      "includeFiles": "dist/index.html"
     }
   },
   "rewrites": [
@@ -51,12 +58,16 @@
       "destination": "/api/seo-page?path=/page/:slug"
     },
     {
+      "source": "/",
+      "destination": "/api/seo-page?path=/"
+    },
+    {
       "source": "/:path(home|shop|promotional|Clothing|Headwear|australia-made|24hr-production|return-gifts|deals|hot-deals|clearance|category|all-blogs|about|contact|faqs|artwork-policy|refund-policy|privacy|terms|help-center|pms)",
       "destination": "/api/seo-page?path=/:path"
     },
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/:path*",
+      "destination": "/api/app-shell?path=/:path"
     }
   ]
 }

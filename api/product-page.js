@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 const SITE_URL = "https://www.supermerch.com.au";
 const BACKEND_URL =
   process.env.BACKEND_URL ||
@@ -30,6 +33,21 @@ const escapeHtml = (value) =>
 
 const escapeJson = (value) =>
   JSON.stringify(value).replace(/</g, "\\u003c");
+
+// Truncates to `limit` characters without cutting a word in half: backs up
+// to the last whole-word boundary (space) before the limit, then appends a
+// single ellipsis character. Text already at or under the limit is returned
+// unchanged. Used everywhere a title/description/og/twitter string is
+// hard-truncated for display -- never for unrelated slicing (e.g. category
+// ID validation, canonical URL building).
+const truncateAtWordBoundary = (text, limit) => {
+  const value = String(text || "");
+  if (value.length <= limit) return value;
+  const cut = value.slice(0, Math.max(0, limit - 1));
+  const lastSpace = cut.lastIndexOf(" ");
+  const truncated = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${truncated.trimEnd()}\u2026`;
+};
 
 const isTrue = (value) =>
   value === true || String(value).toLowerCase() === "true";
@@ -175,10 +193,11 @@ const injectBody = (html, bodyHtml) =>
     `<div id="root">${bodyHtml}</div>`,
   );
 
-const renderProductBody = ({ name, description, breadcrumbItems }) => `
+const renderProductBody = ({ name, description, breadcrumbItems, image, imageAlt }) => `
 <div data-ssr-content="product">
 <nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>
 <h1>${escapeHtml(name)}</h1>
+<img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}">
 <p>${escapeHtml(description)}</p>
 </div>`;
 
@@ -211,14 +230,20 @@ const getSeoOverride = async (entityId) => {
   }
 };
 
-const getShell = async (req) => {
-  const host = req.headers["x-forwarded-host"] || req.headers.host;
-  const protocol = host?.includes("localhost") ? "http" : "https";
-  const response = await fetchWithTimeout(`${protocol}://${host}/`, {
-    headers: { "x-seo-shell-request": "1" },
-  });
-  if (!response.ok) throw new Error(`Application shell returned ${response.status}`);
-  return response.text();
+// Reads the built SPA shell straight off disk instead of self-fetching "/"
+// over HTTP. On Vercel, a request matching an actual static file (dist/
+// index.html at "/") is served directly and never reaches rewrites at all —
+// so as long as any function depends on fetching "/" live, "/" itself can
+// never be rewritten to a function. Reading the on-disk build artifact
+// removes that dependency entirely and is what makes the "/" → seo-page
+// rewrite (see vercel.json) safe to add. Cached in module scope so warm
+// lambda instances pay the disk read only once.
+let cachedShell = null;
+const getShell = () => {
+  if (!cachedShell) {
+    cachedShell = readFileSync(join(process.cwd(), "dist", "index.html"), "utf8");
+  }
+  return cachedShell;
 };
 
 const errorHead = (status) => {
@@ -249,7 +274,7 @@ const errorHead = (status) => {
 export default async function handler(req, res) {
   let shell;
   try {
-    shell = await getShell(req);
+    shell = getShell();
   } catch {
     res.status(503).send("Website temporarily unavailable");
     return;
@@ -296,7 +321,7 @@ export default async function handler(req, res) {
   const rawDescription = cleanText(
     details.description || overview.description || details.short_description,
   );
-  const description = rawDescription.slice(0, 160);
+  const description = truncateAtWordBoundary(rawDescription, 160);
   const productId =
     product?.meta?.id ?? overview.sku_number ?? details.code ?? identifier;
   const sku = overview.sku_number || details.code || "";
@@ -334,28 +359,46 @@ export default async function handler(req, res) {
     return;
   }
 
+  // A slug is only trustworthy as a redirect target when it's what actually
+  // resolved the product (not an id/ref lookup) — otherwise every historical
+  // slug for a product stays permanently indexable alongside the current one.
+  const requestedSlug = req.query.slug ? String(req.query.slug).trim() : "";
+  const requestedId = req.query.id !== undefined ? String(req.query.id).trim() : "";
+  if (requestedSlug && requestedId && identifier === requestedId) {
+    const canonicalPath = `/product/${canonicalSlug}/${encodeURIComponent(String(productId))}`;
+    const currentPath = `/product/${requestedSlug}/${requestedId}`;
+    if (currentPath !== canonicalPath) {
+      res.setHeader("Location", canonicalPath);
+      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+      res.status(301).end();
+      return;
+    }
+  }
+
   const generatedTitle = `${name} | Custom Branded | Super Merch Australia`;
   const generatedDescription =
     description ||
-    [
-      name,
-      attributes.category ? `Custom branded ${attributes.category.toLowerCase()}` : "Custom branded promotional product",
-      attributes.material ? `made from ${attributes.material}` : "",
-      attributes.capacity ? `with ${attributes.capacity} capacity` : "",
-      "from Super Merch Australia.",
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .slice(0, 160);
+    truncateAtWordBoundary(
+      [
+        name,
+        attributes.category ? `Custom branded ${attributes.category.toLowerCase()}` : "Custom branded promotional product",
+        attributes.material ? `made from ${attributes.material}` : "",
+        attributes.capacity ? `with ${attributes.capacity} capacity` : "",
+        "from Super Merch Australia.",
+      ]
+        .filter(Boolean)
+        .join(" "),
+      160,
+    );
   const seoOverride = await getSeoOverride(productId);
   const title = cleanText(seoOverride?.metaTitle) || generatedTitle;
   const metaDescription =
-    cleanText(seoOverride?.metaDescription).slice(0, 160) ||
+    truncateAtWordBoundary(cleanText(seoOverride?.metaDescription), 160) ||
     generatedDescription;
   const keywords = cleanText(seoOverride?.keywords);
   const socialTitle = cleanText(seoOverride?.ogTitle) || title;
   const socialDescription =
-    cleanText(seoOverride?.ogDescription).slice(0, 200) || metaDescription;
+    truncateAtWordBoundary(cleanText(seoOverride?.ogDescription), 200) || metaDescription;
   const socialImage = cleanText(seoOverride?.ogImage) || image;
   const socialImageAlt =
     socialImage === image ? imageAlt : `${name} promotional product`;
@@ -421,6 +464,8 @@ export default async function handler(req, res) {
     name,
     description: rawDescription.slice(0, 500) || metaDescription,
     breadcrumbItems,
+    image: socialImage,
+    imageAlt: socialImageAlt,
   });
 
   const tags = `

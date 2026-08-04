@@ -1,5 +1,16 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import handler from "../../api/product-page";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// api/product-page.js now reads the app shell straight off disk
+// (readFileSync) instead of self-fetching "/" over HTTP, and caches it in
+// module scope for the lifetime of the module (see getShell() in
+// api/product-page.js). To give each test control over the shell content,
+// mock node:fs and force a fresh module instance (via resetModules +
+// dynamic import) per test so the cache never leaks between tests.
+vi.mock("node:fs", () => ({
+  readFileSync: vi.fn(),
+}));
+
+const { readFileSync } = await import("node:fs");
 
 const response = (body, status = 200) => ({
   ok: status >= 200 && status < 300,
@@ -54,7 +65,22 @@ const baseProduct = {
   },
 };
 
+let handler;
+
+// Forces a fresh api/product-page.js module instance with readFileSync
+// stubbed to return `html`, so the module's module-scoped shell cache can
+// never carry a previous test's shell into this one.
+const useShell = async (html) => {
+  vi.resetModules();
+  readFileSync.mockReturnValue(html);
+  handler = (await import("../../api/product-page")).default;
+};
+
 describe("product page handler", () => {
+  beforeEach(async () => {
+    await useShell(SHELL_WITH_ROOT);
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -62,7 +88,6 @@ describe("product page handler", () => {
   it("injects a real H1, description, and breadcrumb links into #root", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: baseProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -87,10 +112,33 @@ describe("product page handler", () => {
     expect(res.result.body).toContain("<span>Ocean Bottle</span>");
   });
 
+  it("renders a real, crawlable <img> tag with a non-empty alt for the product image (B7)", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response({ data: baseProduct }))
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      { query: { id: "42" }, headers: { host: "www.supermerch.com.au" } },
+      res,
+    );
+
+    const body = res.result.body;
+    expect(res.result.statusCode).toBe(200);
+    const imgMatch = body.match(/<img\s+[^>]*>/i);
+    expect(imgMatch).not.toBeNull();
+    const imgTag = imgMatch[0];
+    expect(imgTag).toContain(`src="${baseProduct.overview.hero_image}"`);
+    const altMatch = imgTag.match(/alt="([^"]*)"/);
+    expect(altMatch).not.toBeNull();
+    expect(altMatch[1].trim().length).toBeGreaterThan(0);
+  });
+
   it("keeps the product's category consistent between the visible breadcrumb and the BreadcrumbList JSON-LD, and links use the real type_id, not the display label", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: baseProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -148,7 +196,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: productWithNoTypeId }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -194,7 +241,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: mismatchedTaxonomyProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -232,7 +278,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: idOnlyTaxonomyProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -263,7 +308,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: hostileProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -282,8 +326,14 @@ describe("product page handler", () => {
     // tags are expected and safe, so assert on the hostile payload
     // specifically rather than banning "<script" outright.
     expect(body).not.toContain("<script>alert");
-    expect(body.toLowerCase()).not.toContain("<img");
     expect(body).not.toContain("onerror=");
+    // The page now renders one real, trusted <img> for the product's own
+    // image (audit item B7) -- assert it's exactly that safe, escaped tag,
+    // not the hostile <img src=x onerror=...> tag smuggled in via the name.
+    const imgTags = body.match(/<img[^>]*>/gi) || [];
+    expect(imgTags).toEqual([
+      '<img src="https://images.example.test/bottle.jpg" alt="Mugs &amp; &quot;Steins&quot; promotional product">',
+    ]);
     // Every remaining <script> tag is one of our own trusted JSON-LD blocks.
     const scriptOpenTags = body.match(/<script(?![^>]*application\/ld\+json)[^>]*>/gi) || [];
     expect(scriptOpenTags).toEqual([]);
@@ -293,10 +343,50 @@ describe("product page handler", () => {
     expect(body).toContain("Mugs &amp; &quot;Steins&quot;</h1>");
   });
 
-  it("fails safely and still returns valid HTML when #root is missing from the page shell", async () => {
+  it("truncates a long meta description to the last whole word, never mid-word, and appends an ellipsis (B8)", async () => {
+    // Crafted so a naive .slice(0, 160) lands mid-word ("...under a mi"),
+    // reproducing the exact audit finding (a word cut in half with no
+    // ellipsis appended).
+    const longDescription =
+      "The cover of the stand is fully customisable with a full colour print design. The standout feature is a lightweight aluminium frame that assembles in under a minute without tools required for setup.";
+    const productWithLongDescription = {
+      ...baseProduct,
+      product: {
+        ...baseProduct.product,
+        description: longDescription,
+      },
+    };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITHOUT_ROOT))
+      .mockResolvedValueOnce(response({ data: productWithLongDescription }))
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      { query: { id: "47" }, headers: { host: "www.supermerch.com.au" } },
+      res,
+    );
+
+    const body = res.result.body;
+    expect(res.result.statusCode).toBe(200);
+    const descriptionMatch = body.match(
+      /<meta name="description" content="([^"]*)">/,
+    );
+    expect(descriptionMatch).not.toBeNull();
+    const metaDescription = descriptionMatch[1];
+    // Never cuts a word mid-way -- the truncated text must not still contain
+    // the broken fragment ("a mi") that a naive 160-char slice produces.
+    expect(metaDescription).not.toContain("a mi");
+    // Ends at a whole-word boundary followed by a single ellipsis character.
+    expect(metaDescription.endsWith("\u2026")).toBe(true);
+    expect(metaDescription.length).toBeLessThanOrEqual(160);
+  });
+
+  it("fails safely and still returns valid HTML when #root is missing from the page shell", async () => {
+    await useShell(SHELL_WITHOUT_ROOT);
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce(response({ data: baseProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);

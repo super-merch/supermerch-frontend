@@ -4,6 +4,9 @@
 // or arbitrary/invalid input (canonicalize to plain /shop, noindex) --
 // admin-override presence must never be used as that validity signal.
 import { isValidCategoryId } from "../src/utils/categoryValidity.js";
+import categoryData from "../scripts/category-finder/authoritative-category-ids.json" with { type: "json" };
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const SITE_URL = "https://www.supermerch.com.au";
 const BACKEND_URL =
@@ -52,12 +55,164 @@ const wordCount = (value) => {
   return text ? text.split(/\s+/).length : 0;
 };
 
+// Same category ID lookup used by isValidCategoryId, kept here (rather than
+// re-exported from categoryValidity.js) so this module can build sibling
+// links without changing that file's browser-safe, validity-only surface.
+const LEAVES_BY_ID = new Map(
+  (categoryData.leaves || []).map((item) => [item.id, item]),
+);
+const LEAVES_BY_PARENT = new Map();
+(categoryData.leaves || []).forEach((item) => {
+  const list = LEAVES_BY_PARENT.get(item.parentId) || [];
+  list.push(item);
+  LEAVES_BY_PARENT.set(item.parentId, list);
+});
+const PARENTS_BY_ID = new Map(
+  (categoryData.parents || []).map((item) => [item.id, item]),
+);
+
+// Up to N sibling category links for internal linking (audit item B2): a
+// leaf links to its parent plus a few sibling leaves under the same parent;
+// a parent links to a handful of its own leaf children. Real leaf/parent IDs
+// only, so every link target is itself a valid, indexable category page.
+const SIBLING_LINK_LIMIT = 12;
+const buildSiblingCategoryLinks = (categoryId) => {
+  const leaf = LEAVES_BY_ID.get(categoryId);
+  if (leaf) {
+    const parent = PARENTS_BY_ID.get(leaf.parentId);
+    const siblings = (LEAVES_BY_PARENT.get(leaf.parentId) || []).filter(
+      (item) => item.id !== categoryId,
+    );
+    return [
+      ...(parent ? [{ label: parent.name, href: `/shop?category=${encodeURIComponent(parent.id)}` }] : []),
+      ...siblings
+        .slice(0, SIBLING_LINK_LIMIT)
+        .map((item) => ({ label: item.name, href: `/shop?category=${encodeURIComponent(item.id)}` })),
+    ];
+  }
+  const parent = PARENTS_BY_ID.get(categoryId);
+  if (parent) {
+    return (LEAVES_BY_PARENT.get(categoryId) || [])
+      .slice(0, SIBLING_LINK_LIMIT)
+      .map((item) => ({ label: item.name, href: `/shop?category=${encodeURIComponent(item.id)}` }));
+  }
+  return [];
+};
+
+// Mirrors src/utils/utils.jsx's toProductUrl()/slugify() exactly -- must
+// produce the identical /product/<slug>/<id> path the client itself
+// generates, or these SSR links would 301/mismatch against the real
+// canonical product URL.
+const slugify = (value) =>
+  cleanText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const toProductUrl = (productName, id) => {
+  if (!productName) return "/";
+  const base = `/product/${slugify(productName)}`;
+  const normalizedId = id !== undefined && id !== null ? String(id).trim() : "";
+  return normalizedId ? `${base}/${encodeURIComponent(normalizedId)}` : base;
+};
+
+const PRODUCTS_PER_CATEGORY_PAGE = 24;
+
+// Real products for a category/general listing page, for server-rendered
+// internal links (audit B2 -- "likely the single biggest lever for moving
+// indexation off ~1%"). Mirrors the exact endpoints Cards.jsx itself calls:
+// a real leaf/parent category ID goes through product_type_ids (not the
+// confusingly-named /client-products/category, which is a free-text name
+// search, not a category filter); no category means the plain product feed.
+const fetchCategoryProducts = async (categoryId) => {
+  try {
+    const url = categoryId
+      ? `${BACKEND_URL}/api/params-products?product_type_ids=${encodeURIComponent(
+          categoryId,
+        )}&page=1&limit=${PRODUCTS_PER_CATEGORY_PAGE}`
+      : `${BACKEND_URL}/api/client-products?page=1&limit=${PRODUCTS_PER_CATEGORY_PAGE}&filter=true`;
+    const payload = await fetchJson(url);
+    const products = Array.isArray(payload?.data) ? payload.data : [];
+    return products
+      .map((product) => {
+        const id = product?.meta?.id;
+        const name = product?.slug || product?.overview?.originalName || product?.overview?.name;
+        if (!id || !name) return null;
+        return { label: cleanText(name), href: toProductUrl(name, id) };
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
+// Real, crawlable posts for the blog index (audit B5 -- "/all-blogs" served
+// zero <a href="/blogs...">  links anywhere in its raw HTML). Reuses the
+// exact same list endpoint/shape the client's BlogContext.fetchBlogs() calls
+// (payload.blogs, falling back to payload.data), and the same "real,
+// published post" gate used when this file adds blog posts to the sitemap
+// (content-sitemap.js): active, non-draft, and past the thin-content
+// threshold, so every link this renders points at a post that is itself
+// indexable rather than compounding the orphaned-content problem.
+const fetchBlogPosts = async () => {
+  try {
+    const payload = await fetchJson(`${BACKEND_URL}/api/blogs/get-blogs`);
+    const posts = Array.isArray(payload?.blogs)
+      ? payload.blogs
+      : Array.isArray(payload?.data)
+        ? payload.data
+        : [];
+    return posts
+      .filter(
+        (post) =>
+          post?.isActive !== false &&
+          post?.status !== "draft" &&
+          wordCount(post?.content) >= 300,
+      )
+      .map((post) => {
+        const id = post?._id || post?.id;
+        const label = cleanText(post?.title);
+        if (!id || !label) return null;
+        return { label, href: `/blogs/${encodeURIComponent(id)}` };
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
+// Same plain <ul><a> nav pattern as renderCatalogueLinks/renderHomeCategoryLinks
+// below, applied to blog posts on the /all-blogs index.
+const renderBlogListLinks = (posts) => {
+  if (!posts.length) return "";
+  return `<nav aria-label="Blog posts">
+<ul>
+${posts.map((item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join("\n")}
+</ul>
+</nav>`;
+};
+
 const escapeHtml = (value) =>
   String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+// Truncates to `limit` characters without cutting a word in half: backs up
+// to the last whole-word boundary (space) before the limit, then appends a
+// single ellipsis character. Text already at or under the limit is returned
+// unchanged. Used everywhere a title/description/og/twitter string is
+// hard-truncated for display -- never for unrelated slicing (e.g. category
+// ID validation, canonical URL building).
+const truncateAtWordBoundary = (text, limit) => {
+  const value = String(text || "");
+  if (value.length <= limit) return value;
+  const cut = value.slice(0, Math.max(0, limit - 1));
+  const lastSpace = cut.lastIndexOf(" ");
+  const truncated = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${truncated.trimEnd()}\u2026`;
+};
 
 const fetchJson = async (url, timeoutMs = 8000) => {
   const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
@@ -107,7 +262,7 @@ const resolvePage = async (path, category) => {
       entityId: `collection-${slug}`,
       title: `${cleanText(collection.name)} | Super Merch Australia`,
       description:
-        cleanText(collection.shortDescription).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(collection.shortDescription), 160) ||
         `Browse products in our ${cleanText(collection.name)} collection.`,
       image: cleanText(collection.image) || DEFAULT_IMAGE,
     };
@@ -126,7 +281,7 @@ const resolvePage = async (path, category) => {
       entityId: deal.id || deal._id || slug,
       title: `${cleanText(deal.title)} Deal | Super Merch Australia`,
       description:
-        cleanText(deal.description).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(deal.description), 160) ||
         `Explore the ${cleanText(deal.title)} promotional product deal from Super Merch Australia.`,
       image: cleanText(deal.bannerImage) || DEFAULT_IMAGE,
     };
@@ -146,12 +301,17 @@ const resolvePage = async (path, category) => {
       entityId: blog._id || id,
       title: `${title} | Super Merch Australia`,
       description:
-        cleanText(blog.metaDescription || blog.shortDescription || blog.content).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(blog.metaDescription || blog.shortDescription || blog.content), 160) ||
         `Read ${title} from Super Merch Australia.`,
       image:
         cleanText(blog.ogImage || blog.image?.url || blog.image || blog.images?.[0]?.url) ||
         DEFAULT_IMAGE,
       robots: wordCount(blog.content) >= 300 ? "index, follow" : "noindex, follow",
+      // get-blog never returns a separate "published" timestamp -- createdAt
+      // is the closest real field to it, and updatedAt (falling back to
+      // createdAt when a post has never been edited) covers dateModified.
+      datePublished: blog.publishedAt || blog.createdAt || null,
+      dateModified: blog.updatedAt || blog.publishedAt || blog.createdAt || null,
     };
   }
 
@@ -169,7 +329,7 @@ const resolvePage = async (path, category) => {
       entityId: slug,
       title: `${title} | Super Merch Australia`,
       description:
-        cleanText(page.metaDescription || page.description || page.content).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(page.metaDescription || page.description || page.content), 160) ||
         `Learn more about ${title} from Super Merch Australia.`,
       image: cleanText(page.ogImage || page.image) || DEFAULT_IMAGE,
     };
@@ -259,10 +419,61 @@ const buildBreadcrumbItems = (path, entityType, displayName) => {
   return items;
 };
 
-const renderPageBody = ({ displayName, description, breadcrumbItems }) => `
+// Real, crawlable entry points into the catalogue from the homepage — audit
+// item B1 calls for "real <a href> links to top categories/products" here,
+// not just an H1 and a paragraph. These mirror the top-level STATIC_PAGES
+// categories already server-rendered on their own pages, so every link
+// target already has its own real SSR content behind it.
+const HOME_CATEGORY_LINKS = [
+  { label: "Shop All Products", href: "/shop" },
+  { label: "Promotional Products", href: "/promotional" },
+  { label: "Clothing", href: "/Clothing" },
+  { label: "Headwear", href: "/Headwear" },
+  { label: "Australia Made", href: "/australia-made" },
+  { label: "Deals", href: "/deals" },
+  { label: "Return Gifts", href: "/return-gifts" },
+  { label: "Clearance", href: "/clearance" },
+];
+
+const renderHomeCategoryLinks = () => `
+<nav aria-label="Top categories">
+<ul>
+${HOME_CATEGORY_LINKS.map(
+  (item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`,
+).join("\n")}
+</ul>
+</nav>`;
+
+// Real, crawlable links from a category/shop listing page to the products
+// and sibling categories it actually contains (audit B2). Rendered as plain
+// <ul><a> lists, same pattern as the homepage's category nav above -- these
+// are the internal link graph the audit found completely missing, with the
+// XML sitemap left as the only non-JS discovery path to any product.
+const renderCatalogueLinks = (products, siblingCategories) => {
+  if (!products.length && !siblingCategories.length) return "";
+  const productList = products.length
+    ? `<nav aria-label="Products in this category">
+<ul>
+${products.map((item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join("\n")}
+</ul>
+</nav>`
+    : "";
+  const siblingList = siblingCategories.length
+    ? `<nav aria-label="Related categories">
+<ul>
+${siblingCategories.map((item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join("\n")}
+</ul>
+</nav>`
+    : "";
+  return `${productList}\n${siblingList}`;
+};
+
+const renderPageBody = ({ path, displayName, description, breadcrumbItems, catalogueLinks }) => `
 <div data-ssr-content="page">
 ${breadcrumbItems.length ? `<nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>\n` : ""}<h1>${escapeHtml(displayName)}</h1>
 <p>${escapeHtml(description)}</p>
+${path === "/" ? renderHomeCategoryLinks() : ""}
+${catalogueLinks || ""}
 </div>`;
 
 // Query params that don't create a distinct, thin/duplicate variant of a
@@ -292,6 +503,22 @@ const hasShopFilterParams = (query) =>
     return !BENIGN_SHOP_PARAMS.has(normalized) && !normalized.startsWith("utm_");
   });
 
+// Reads the built SPA shell straight off disk instead of self-fetching "/"
+// over HTTP. On Vercel, a request matching an actual static file (dist/
+// index.html at "/") is served directly and never reaches rewrites at all —
+// so as long as any function depends on fetching "/" live, "/" itself can
+// never be rewritten to a function. Reading the on-disk build artifact
+// removes that dependency entirely and is what makes the "/" → seo-page
+// rewrite (see vercel.json) safe to add. Cached in module scope so warm
+// lambda instances pay the disk read only once.
+let cachedShell = null;
+const getShell = () => {
+  if (!cachedShell) {
+    cachedShell = readFileSync(join(process.cwd(), "dist", "index.html"), "utf8");
+  }
+  return cachedShell;
+};
+
 export default async function handler(req, res) {
   const rawPath = String(req.query.path || "/");
   const path = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
@@ -303,14 +530,7 @@ export default async function handler(req, res) {
 
   let shell;
   try {
-    const host = req.headers["x-forwarded-host"] || req.headers.host;
-    const protocol = host?.includes("localhost") ? "http" : "https";
-    const response = await fetch(`${protocol}://${host}/`, {
-      headers: { "x-seo-shell-request": "1" },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) throw new Error("Application shell unavailable");
-    shell = await response.text();
+    shell = getShell();
   } catch {
     res.status(503).send("Website temporarily unavailable");
     return;
@@ -360,10 +580,10 @@ export default async function handler(req, res) {
       : await fetchSeoOverride(page.entityType, page.entityId);
   const title = cleanText(override?.metaTitle) || page.title;
   const description =
-    cleanText(override?.metaDescription).slice(0, 160) || page.description;
+    truncateAtWordBoundary(cleanText(override?.metaDescription), 160) || page.description;
   const socialTitle = cleanText(override?.ogTitle) || title;
   const socialDescription =
-    cleanText(override?.ogDescription).slice(0, 200) || description;
+    truncateAtWordBoundary(cleanText(override?.ogDescription), 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
   // A /shop?category=X view is self-canonical whenever it's a real,
   // indexable category (see the robots decision above, which already
@@ -456,6 +676,50 @@ export default async function handler(req, res) {
     }
   }
 
+  // BlogPosting schema for individual posts (audit B5: "add proper Article
+  // schema"). BlogPosting is the more specific, appropriate type for a blog
+  // article vs. the generic Article/CreativeWork. Only emitted for a real
+  // blog post (page.entityType === "blog" is set exclusively by the
+  // blogMatch branch of resolvePage above), and skipped entirely if the
+  // backend never gave us a headline/image to build it from.
+  if (page.entityType === "blog" && title && socialImage) {
+    const headline = title.replace(SITE_SUFFIX, "").trim() || title;
+    const toIsoDate = (value) => {
+      if (!value) return null;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    };
+    const datePublished = toIsoDate(page.datePublished);
+    const dateModified = toIsoDate(page.dateModified) || datePublished;
+    structuredData.push({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline,
+      image: socialImage,
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
+      // Matches the Organization JSON-LD emitted for the homepage above --
+      // same name/logo/url, since there is no separate per-post author.
+      author: {
+        "@type": "Organization",
+        name: "Super Merch",
+        url: `${SITE_URL}/`,
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Super Merch",
+        logo: {
+          "@type": "ImageObject",
+          url: DEFAULT_IMAGE,
+        },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": canonical,
+      },
+    });
+  }
+
   const jsonLdTags = structuredData
     .map(
       (value) =>
@@ -484,12 +748,40 @@ export default async function handler(req, res) {
 <meta name="twitter:url" content="${escapeHtml(canonical)}">
 ${jsonLdTags}`;
 
+  // Real internal links from category/listing pages to their products and
+  // sibling categories (audit B2). Only fetched for pages that are actually
+  // indexable -- a noindex faceted/invalid-category variant gets no product
+  // links, since there is nothing to gain from spending a backend call on a
+  // page Google won't index anyway. STATIC_PAGES entries whose real listing
+  // is "all products" (Promotional/Clothing/Headwear behave exactly like
+  // plain /shop -- see src/components/shop/Cards.jsx's isTopLevel check)
+  // reuse the general product feed; a real /shop?category=X leaf/parent ID
+  // gets its own category-filtered feed plus sibling-category links.
+  const CATALOGUE_LISTING_PATHS = new Set(["/shop", "/promotional", "/Clothing", "/Headwear"]);
+  let catalogueLinks = "";
+  if (CATALOGUE_LISTING_PATHS.has(path) && page.robots !== "noindex, follow") {
+    const categoryForFetch = path === "/shop" && isValidCategory ? category : "";
+    const products = await fetchCategoryProducts(categoryForFetch);
+    const siblingCategories = categoryForFetch ? buildSiblingCategoryLinks(categoryForFetch) : [];
+    catalogueLinks = renderCatalogueLinks(products, siblingCategories);
+  } else if (path === "/all-blogs") {
+    // Audit B5: the blog index rendered zero <a href="/blogs..."> links in
+    // its raw HTML -- server-render the real post list here, same as the
+    // catalogue links above, so posts are actually discoverable off the JS
+    // render path. Fails gracefully (empty links, no page-level failure) if
+    // the blog list endpoint is unreachable -- see fetchBlogPosts().
+    const posts = await fetchBlogPosts();
+    catalogueLinks = renderBlogListLinks(posts);
+  }
+
   const displayName = title.replace(SITE_SUFFIX, "").trim() || title;
   const breadcrumbItems = buildBreadcrumbItems(path, page.entityType, displayName);
   const bodyContent = renderPageBody({
+    path,
     displayName,
     description,
     breadcrumbItems,
+    catalogueLinks,
   });
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");

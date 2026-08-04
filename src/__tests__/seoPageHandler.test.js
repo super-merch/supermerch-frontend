@@ -1,5 +1,16 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import handler from "../../api/seo-page";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// api/seo-page.js now reads the app shell straight off disk (readFileSync)
+// instead of self-fetching "/" over HTTP, and caches it in module scope for
+// the lifetime of the module (see getShell() in api/seo-page.js). To give
+// each test control over the shell content, mock node:fs and force a fresh
+// module instance (via resetModules + dynamic import) per test so the cache
+// never leaks between tests.
+vi.mock("node:fs", () => ({
+  readFileSync: vi.fn(),
+}));
+
+const { readFileSync } = await import("node:fs");
 
 const response = (body, status = 200) => ({
   ok: status >= 200 && status < 300,
@@ -39,7 +50,22 @@ const SHELL_WITH_ROOT =
 const SHELL_WITHOUT_ROOT =
   "<html><head><title>Fallback</title></head><body></body></html>";
 
+let handler;
+
+// Forces a fresh api/seo-page.js module instance with readFileSync stubbed
+// to return `html`, so the module's module-scoped shell cache can never
+// carry a previous test's shell into this one.
+const useShell = async (html) => {
+  vi.resetModules();
+  readFileSync.mockReturnValue(html);
+  handler = (await import("../../api/seo-page")).default;
+};
+
 describe("SEO page handler", () => {
+  beforeEach(async () => {
+    await useShell(SHELL_WITH_ROOT);
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -48,20 +74,17 @@ describe("SEO page handler", () => {
     // PE-02 is a real leaf category ID (Drink Bottles) in the authoritative
     // category inventory -- an admin SEO override is only ever consulted for
     // a valid category, so this test uses a real one.
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
-      .mockResolvedValueOnce(
-        response({
-          success: true,
-          data: {
-            metaTitle:
-              "Drink Bottles Promotional Products | Super Merch Australia",
-            canonicalUrl:
-              "https://supermerch.com.au/shop?category=PE-02&page=2&utm_source=test",
-          },
-        }),
-      );
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      response({
+        success: true,
+        data: {
+          metaTitle:
+            "Drink Bottles Promotional Products | Super Merch Australia",
+          canonicalUrl:
+            "https://supermerch.com.au/shop?category=PE-02&page=2&utm_source=test",
+        },
+      }),
+    );
     vi.stubGlobal("fetch", fetchMock);
     const res = createResponse();
 
@@ -77,7 +100,7 @@ describe("SEO page handler", () => {
       res,
     );
 
-    expect(fetchMock.mock.calls[1][0]).toContain(
+    expect(fetchMock.mock.calls[0][0]).toContain(
       "/api/seo-meta/by-entity/category/PE-02",
     );
     expect(res.result.statusCode).toBe(200);
@@ -101,7 +124,6 @@ describe("SEO page handler", () => {
     // authoritative category inventory.
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
     const res = createResponse();
@@ -134,7 +156,6 @@ describe("SEO page handler", () => {
     // Admin SEO override presence is never used as the validity signal.
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
     const res = createResponse();
@@ -164,18 +185,15 @@ describe("SEO page handler", () => {
     // override keyed to a bad value, that override must never resurrect an
     // invalid category as self-canonical/indexable -- the validity check
     // must win regardless of what admin data happens to exist for this ID.
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
-      .mockResolvedValueOnce(
-        response({
-          success: true,
-          data: {
-            canonicalUrl:
-              "https://www.supermerch.com.au/shop?category=does-not-exist-xyz",
-          },
-        }),
-      );
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      response({
+        success: true,
+        data: {
+          canonicalUrl:
+            "https://www.supermerch.com.au/shop?category=does-not-exist-xyz",
+        },
+      }),
+    );
     vi.stubGlobal("fetch", fetchMock);
     const res = createResponse();
 
@@ -198,15 +216,15 @@ describe("SEO page handler", () => {
       '<meta name="robots" content="noindex, follow">',
     );
     // Proves the override endpoint was never even queried for an invalid
-    // category, not just that its response was ignored -- only the shell
-    // fetch (call 1) should have happened.
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    // category, not just that its response was ignored -- the shell now
+    // comes from disk (readFileSync), so no fetch call at all should have
+    // happened.
+    expect(fetchMock).toHaveBeenCalledTimes(0);
   });
 
   it("adds organisation structured data to the homepage", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
     const res = createResponse();
@@ -228,7 +246,6 @@ describe("SEO page handler", () => {
   it("noindexes thin blog posts", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(
         response({
           data: {
@@ -256,11 +273,123 @@ describe("SEO page handler", () => {
     );
   });
 
+  it("emits a BlogPosting JSON-LD block for a real blog post (audit B5)", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response({
+          data: {
+            _id: "real-post",
+            title: "Trade Show Giveaways People Actually Keep",
+            content: "This blog post has plenty of real words in it so it clears the thin-content threshold and stays indexable. ".repeat(
+              10,
+            ),
+            image: "https://example.com/blog-hero.jpg",
+            createdAt: "2026-07-26T03:56:52.006Z",
+            updatedAt: "2026-07-30T10:00:00.000Z",
+          },
+        }),
+      )
+      .mockResolvedValueOnce(response({ success: false }, 404));
+    vi.stubGlobal("fetch", fetchMock);
+    const res = createResponse();
+
+    await handler(
+      {
+        query: { path: "/blogs/real-post" },
+        headers: { host: "www.supermerch.com.au" },
+      },
+      res,
+    );
+
+    expect(res.result.statusCode).toBe(200);
+    expect(res.result.body).toContain('data-sm-seo-jsonld="true"');
+    expect(res.result.body).toContain('"@type":"BlogPosting"');
+    expect(res.result.body).toContain(
+      '"headline":"Trade Show Giveaways People Actually Keep"',
+    );
+    expect(res.result.body).toContain('"image":"https://example.com/blog-hero.jpg"');
+    expect(res.result.body).toContain('"datePublished":"2026-07-26T03:56:52.006Z"');
+    expect(res.result.body).toContain('"dateModified":"2026-07-30T10:00:00.000Z"');
+    expect(res.result.body).toContain('"@type":"Organization","name":"Super Merch"');
+    expect(res.result.body).toContain('"mainEntityOfPage"');
+  });
+
+  describe("/all-blogs index links (audit B5)", () => {
+    it("server-renders real <a href=\"/blogs/...\"> links from the live blog list", async () => {
+      const fetchMock = vi
+        .fn()
+        // First call: fetchSeoOverride for the /all-blogs cmsPage entity.
+        .mockResolvedValueOnce(response({ success: false }, 404))
+        // Second call: fetchBlogPosts (the blog list endpoint).
+        .mockResolvedValueOnce(
+        response({
+          success: true,
+          blogs: [
+            {
+              _id: "post-1",
+              title: "First Post",
+              isActive: true,
+              content: "Real published article content with plenty of words. ".repeat(
+                40,
+              ),
+            },
+            {
+              _id: "post-2",
+              title: "Second Post",
+              isActive: true,
+              content: "Another real published article with plenty of words. ".repeat(
+                40,
+              ),
+            },
+          ],
+        }),
+      );
+      vi.stubGlobal("fetch", fetchMock);
+      const res = createResponse();
+
+      await handler(
+        {
+          query: { path: "/all-blogs" },
+          headers: { host: "www.supermerch.com.au" },
+        },
+        res,
+      );
+
+      expect(res.result.statusCode).toBe(200);
+      expect(res.result.body).toContain('<a href="/blogs/post-1">First Post</a>');
+      expect(res.result.body).toContain('<a href="/blogs/post-2">Second Post</a>');
+    });
+
+    it("skips thin/inactive posts and returns no links (not a crash) if the blog list fetch fails", async () => {
+      const fetchMock = vi
+        .fn()
+        // First call: fetchSeoOverride for the /all-blogs cmsPage entity.
+        .mockResolvedValueOnce(response({ success: false }, 404))
+        // Second call: fetchBlogPosts, simulating the backend being down.
+        .mockRejectedValueOnce(new Error("network down"));
+      vi.stubGlobal("fetch", fetchMock);
+      const res = createResponse();
+
+      await expect(
+        handler(
+          {
+            query: { path: "/all-blogs" },
+            headers: { host: "www.supermerch.com.au" },
+          },
+          res,
+        ),
+      ).resolves.not.toThrow();
+
+      expect(res.result.statusCode).toBe(200);
+      expect(res.result.body).not.toContain("/blogs/");
+    });
+  });
+
   describe("#root body injection", () => {
     it("injects a real, crawlable H1 and description for a static/CMS page into #root", async () => {
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
@@ -286,18 +415,15 @@ describe("SEO page handler", () => {
       // PE-02 is a real leaf category ID (Drink Bottles) -- the admin
       // override this test exercises is only ever consulted for a valid
       // category.
-      const fetchMock = vi
-        .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
-        .mockResolvedValueOnce(
-          response({
-            success: true,
-            data: {
-              metaTitle:
-                "Drink Bottles Promotional Products | Super Merch Australia",
-            },
-          }),
-        );
+      const fetchMock = vi.fn().mockResolvedValueOnce(
+        response({
+          success: true,
+          data: {
+            metaTitle:
+              "Drink Bottles Promotional Products | Super Merch Australia",
+          },
+        }),
+      );
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
 
@@ -320,7 +446,6 @@ describe("SEO page handler", () => {
     it("HTML-escapes a hostile/malicious blog title and content before injecting into #root", async () => {
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(
           response({
             data: {
@@ -349,9 +474,16 @@ describe("SEO page handler", () => {
       expect(res.result.statusCode).toBe(200);
       // No raw, executable markup anywhere in the response: cleanText()
       // strips all HTML tags from the source before the result is ever
-      // embedded, so no <script> or <img onerror=...> tag can survive
-      // (the sanitizer removes the tag itself, not just its attributes).
-      expect(res.result.body.toLowerCase()).not.toContain("<script");
+      // embedded, so no <img onerror=...> tag can survive (the sanitizer
+      // removes the tag itself, not just its attributes). The response may
+      // legitimately contain our own trusted JSON-LD <script> tag (the
+      // BlogPosting schema, data-sm-seo-jsonld="true") -- but never the raw
+      // <script>alert('xss')</script> injected via the post's own content.
+      expect(res.result.body).not.toContain("<script>alert('xss')</script>");
+      const scriptTags = res.result.body.match(/<script[^>]*>/gi) || [];
+      expect(
+        scriptTags.every((tag) => tag.includes('data-sm-seo-jsonld="true"')),
+      ).toBe(true);
       expect(res.result.body.toLowerCase()).not.toContain("<img");
       expect(res.result.body).not.toContain("onerror=");
       // The surviving text is safely HTML-entity-escaped wherever it's
@@ -362,9 +494,9 @@ describe("SEO page handler", () => {
     });
 
     it("fails safely and returns the untouched shell when #root is missing from the page shell", async () => {
+      await useShell(SHELL_WITHOUT_ROOT);
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITHOUT_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
@@ -396,7 +528,6 @@ describe("SEO page handler", () => {
     it("noindexes a /shop URL with a color facet param", async () => {
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
@@ -418,7 +549,6 @@ describe("SEO page handler", () => {
     it("noindexes a /shop URL with a price-range facet param even with a category selected", async () => {
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
@@ -440,7 +570,6 @@ describe("SEO page handler", () => {
     it("keeps the plain /shop URL indexable", async () => {
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
@@ -465,7 +594,6 @@ describe("SEO page handler", () => {
       // that, not just on the absence of facet params.
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
@@ -487,7 +615,6 @@ describe("SEO page handler", () => {
     it("keeps benign params (page/sort/view/utm/gclid) indexable", async () => {
       const fetchMock = vi
         .fn()
-        .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
         .mockResolvedValueOnce(response({ success: false }, 404));
       vi.stubGlobal("fetch", fetchMock);
       const res = createResponse();
