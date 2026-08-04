@@ -4,6 +4,7 @@
 // or arbitrary/invalid input (canonicalize to plain /shop, noindex) --
 // admin-override presence must never be used as that validity signal.
 import { isValidCategoryId } from "../src/utils/categoryValidity.js";
+import categoryData from "../scripts/category-finder/authoritative-category-ids.json" with { type: "json" };
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -52,6 +53,97 @@ const cleanText = (value) =>
 const wordCount = (value) => {
   const text = cleanText(value);
   return text ? text.split(/\s+/).length : 0;
+};
+
+// Same category ID lookup used by isValidCategoryId, kept here (rather than
+// re-exported from categoryValidity.js) so this module can build sibling
+// links without changing that file's browser-safe, validity-only surface.
+const LEAVES_BY_ID = new Map(
+  (categoryData.leaves || []).map((item) => [item.id, item]),
+);
+const LEAVES_BY_PARENT = new Map();
+(categoryData.leaves || []).forEach((item) => {
+  const list = LEAVES_BY_PARENT.get(item.parentId) || [];
+  list.push(item);
+  LEAVES_BY_PARENT.set(item.parentId, list);
+});
+const PARENTS_BY_ID = new Map(
+  (categoryData.parents || []).map((item) => [item.id, item]),
+);
+
+// Up to N sibling category links for internal linking (audit item B2): a
+// leaf links to its parent plus a few sibling leaves under the same parent;
+// a parent links to a handful of its own leaf children. Real leaf/parent IDs
+// only, so every link target is itself a valid, indexable category page.
+const SIBLING_LINK_LIMIT = 12;
+const buildSiblingCategoryLinks = (categoryId) => {
+  const leaf = LEAVES_BY_ID.get(categoryId);
+  if (leaf) {
+    const parent = PARENTS_BY_ID.get(leaf.parentId);
+    const siblings = (LEAVES_BY_PARENT.get(leaf.parentId) || []).filter(
+      (item) => item.id !== categoryId,
+    );
+    return [
+      ...(parent ? [{ label: parent.name, href: `/shop?category=${encodeURIComponent(parent.id)}` }] : []),
+      ...siblings
+        .slice(0, SIBLING_LINK_LIMIT)
+        .map((item) => ({ label: item.name, href: `/shop?category=${encodeURIComponent(item.id)}` })),
+    ];
+  }
+  const parent = PARENTS_BY_ID.get(categoryId);
+  if (parent) {
+    return (LEAVES_BY_PARENT.get(categoryId) || [])
+      .slice(0, SIBLING_LINK_LIMIT)
+      .map((item) => ({ label: item.name, href: `/shop?category=${encodeURIComponent(item.id)}` }));
+  }
+  return [];
+};
+
+// Mirrors src/utils/utils.jsx's toProductUrl()/slugify() exactly -- must
+// produce the identical /product/<slug>/<id> path the client itself
+// generates, or these SSR links would 301/mismatch against the real
+// canonical product URL.
+const slugify = (value) =>
+  cleanText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const toProductUrl = (productName, id) => {
+  if (!productName) return "/";
+  const base = `/product/${slugify(productName)}`;
+  const normalizedId = id !== undefined && id !== null ? String(id).trim() : "";
+  return normalizedId ? `${base}/${encodeURIComponent(normalizedId)}` : base;
+};
+
+const PRODUCTS_PER_CATEGORY_PAGE = 24;
+
+// Real products for a category/general listing page, for server-rendered
+// internal links (audit B2 -- "likely the single biggest lever for moving
+// indexation off ~1%"). Mirrors the exact endpoints Cards.jsx itself calls:
+// a real leaf/parent category ID goes through product_type_ids (not the
+// confusingly-named /client-products/category, which is a free-text name
+// search, not a category filter); no category means the plain product feed.
+const fetchCategoryProducts = async (categoryId) => {
+  try {
+    const url = categoryId
+      ? `${BACKEND_URL}/api/params-products?product_type_ids=${encodeURIComponent(
+          categoryId,
+        )}&page=1&limit=${PRODUCTS_PER_CATEGORY_PAGE}`
+      : `${BACKEND_URL}/api/client-products?page=1&limit=${PRODUCTS_PER_CATEGORY_PAGE}&filter=true`;
+    const payload = await fetchJson(url);
+    const products = Array.isArray(payload?.data) ? payload.data : [];
+    return products
+      .map((product) => {
+        const id = product?.meta?.id;
+        const name = product?.slug || product?.overview?.originalName || product?.overview?.name;
+        if (!id || !name) return null;
+        return { label: cleanText(name), href: toProductUrl(name, id) };
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
 };
 
 const escapeHtml = (value) =>
@@ -286,11 +378,36 @@ ${HOME_CATEGORY_LINKS.map(
 </ul>
 </nav>`;
 
-const renderPageBody = ({ path, displayName, description, breadcrumbItems }) => `
+// Real, crawlable links from a category/shop listing page to the products
+// and sibling categories it actually contains (audit B2). Rendered as plain
+// <ul><a> lists, same pattern as the homepage's category nav above -- these
+// are the internal link graph the audit found completely missing, with the
+// XML sitemap left as the only non-JS discovery path to any product.
+const renderCatalogueLinks = (products, siblingCategories) => {
+  if (!products.length && !siblingCategories.length) return "";
+  const productList = products.length
+    ? `<nav aria-label="Products in this category">
+<ul>
+${products.map((item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join("\n")}
+</ul>
+</nav>`
+    : "";
+  const siblingList = siblingCategories.length
+    ? `<nav aria-label="Related categories">
+<ul>
+${siblingCategories.map((item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join("\n")}
+</ul>
+</nav>`
+    : "";
+  return `${productList}\n${siblingList}`;
+};
+
+const renderPageBody = ({ path, displayName, description, breadcrumbItems, catalogueLinks }) => `
 <div data-ssr-content="page">
 ${breadcrumbItems.length ? `<nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>\n` : ""}<h1>${escapeHtml(displayName)}</h1>
 <p>${escapeHtml(description)}</p>
 ${path === "/" ? renderHomeCategoryLinks() : ""}
+${catalogueLinks || ""}
 </div>`;
 
 // Query params that don't create a distinct, thin/duplicate variant of a
@@ -521,6 +638,24 @@ export default async function handler(req, res) {
 <meta name="twitter:url" content="${escapeHtml(canonical)}">
 ${jsonLdTags}`;
 
+  // Real internal links from category/listing pages to their products and
+  // sibling categories (audit B2). Only fetched for pages that are actually
+  // indexable -- a noindex faceted/invalid-category variant gets no product
+  // links, since there is nothing to gain from spending a backend call on a
+  // page Google won't index anyway. STATIC_PAGES entries whose real listing
+  // is "all products" (Promotional/Clothing/Headwear behave exactly like
+  // plain /shop -- see src/components/shop/Cards.jsx's isTopLevel check)
+  // reuse the general product feed; a real /shop?category=X leaf/parent ID
+  // gets its own category-filtered feed plus sibling-category links.
+  const CATALOGUE_LISTING_PATHS = new Set(["/shop", "/promotional", "/Clothing", "/Headwear"]);
+  let catalogueLinks = "";
+  if (CATALOGUE_LISTING_PATHS.has(path) && page.robots !== "noindex, follow") {
+    const categoryForFetch = path === "/shop" && isValidCategory ? category : "";
+    const products = await fetchCategoryProducts(categoryForFetch);
+    const siblingCategories = categoryForFetch ? buildSiblingCategoryLinks(categoryForFetch) : [];
+    catalogueLinks = renderCatalogueLinks(products, siblingCategories);
+  }
+
   const displayName = title.replace(SITE_SUFFIX, "").trim() || title;
   const breadcrumbItems = buildBreadcrumbItems(path, page.entityType, displayName);
   const bodyContent = renderPageBody({
@@ -528,6 +663,7 @@ ${jsonLdTags}`;
     displayName,
     description,
     breadcrumbItems,
+    catalogueLinks,
   });
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
