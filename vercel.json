@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm run vercel-build",
   "functions": {
     "api/sitemap-index.js": {
       "maxDuration": 60
@@ -11,13 +12,13 @@
     },
     "api/seo-page.js": {
       "maxDuration": 60,
-      "includeFiles": "dist/index.html"
+      "includeFiles": "dist/_shell.html"
     },
     "api/product-page.js": {
-      "includeFiles": "dist/index.html"
+      "includeFiles": "dist/_shell.html"
     },
     "api/app-shell.js": {
-      "includeFiles": "dist/index.html"
+      "includeFiles": "dist/_shell.html"
     }
   },
   "rewrites": [

@@ -504,17 +504,17 @@ const hasShopFilterParams = (query) =>
   });
 
 // Reads the built SPA shell straight off disk instead of self-fetching "/"
-// over HTTP. On Vercel, a request matching an actual static file (dist/
-// index.html at "/") is served directly and never reaches rewrites at all —
-// so as long as any function depends on fetching "/" live, "/" itself can
-// never be rewritten to a function. Reading the on-disk build artifact
-// removes that dependency entirely and is what makes the "/" → seo-page
-// rewrite (see vercel.json) safe to add. Cached in module scope so warm
-// lambda instances pay the disk read only once.
+// over HTTP or reading dist/index.html directly. Vercel serves an exact
+// static-file match (dist/index.html at "/") before ever consulting
+// vercel.json's rewrites, regardless of what any function depends on --
+// so the "vercel-build" script (see package.json) copies index.html to
+// this filename and deletes the original, leaving no static file at "/"
+// for Vercel to intercept the "/" -> seo-page rewrite with. Cached in
+// module scope so warm lambda instances pay the disk read only once.
 let cachedShell = null;
 const getShell = () => {
   if (!cachedShell) {
-    cachedShell = readFileSync(join(process.cwd(), "dist", "index.html"), "utf8");
+    cachedShell = readFileSync(join(process.cwd(), "dist", "_shell.html"), "utf8");
   }
   return cachedShell;
 };
