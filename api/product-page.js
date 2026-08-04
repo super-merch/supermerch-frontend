@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 const SITE_URL = "https://www.supermerch.com.au";
 const BACKEND_URL =
   process.env.BACKEND_URL ||
@@ -211,14 +214,20 @@ const getSeoOverride = async (entityId) => {
   }
 };
 
-const getShell = async (req) => {
-  const host = req.headers["x-forwarded-host"] || req.headers.host;
-  const protocol = host?.includes("localhost") ? "http" : "https";
-  const response = await fetchWithTimeout(`${protocol}://${host}/`, {
-    headers: { "x-seo-shell-request": "1" },
-  });
-  if (!response.ok) throw new Error(`Application shell returned ${response.status}`);
-  return response.text();
+// Reads the built SPA shell straight off disk instead of self-fetching "/"
+// over HTTP. On Vercel, a request matching an actual static file (dist/
+// index.html at "/") is served directly and never reaches rewrites at all —
+// so as long as any function depends on fetching "/" live, "/" itself can
+// never be rewritten to a function. Reading the on-disk build artifact
+// removes that dependency entirely and is what makes the "/" → seo-page
+// rewrite (see vercel.json) safe to add. Cached in module scope so warm
+// lambda instances pay the disk read only once.
+let cachedShell = null;
+const getShell = () => {
+  if (!cachedShell) {
+    cachedShell = readFileSync(join(process.cwd(), "dist", "index.html"), "utf8");
+  }
+  return cachedShell;
 };
 
 const errorHead = (status) => {
@@ -249,7 +258,7 @@ const errorHead = (status) => {
 export default async function handler(req, res) {
   let shell;
   try {
-    shell = await getShell(req);
+    shell = getShell();
   } catch {
     res.status(503).send("Website temporarily unavailable");
     return;

@@ -4,6 +4,8 @@
 // or arbitrary/invalid input (canonicalize to plain /shop, noindex) --
 // admin-override presence must never be used as that validity signal.
 import { isValidCategoryId } from "../src/utils/categoryValidity.js";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const SITE_URL = "https://www.supermerch.com.au";
 const BACKEND_URL =
@@ -259,10 +261,36 @@ const buildBreadcrumbItems = (path, entityType, displayName) => {
   return items;
 };
 
-const renderPageBody = ({ displayName, description, breadcrumbItems }) => `
+// Real, crawlable entry points into the catalogue from the homepage — audit
+// item B1 calls for "real <a href> links to top categories/products" here,
+// not just an H1 and a paragraph. These mirror the top-level STATIC_PAGES
+// categories already server-rendered on their own pages, so every link
+// target already has its own real SSR content behind it.
+const HOME_CATEGORY_LINKS = [
+  { label: "Shop All Products", href: "/shop" },
+  { label: "Promotional Products", href: "/promotional" },
+  { label: "Clothing", href: "/Clothing" },
+  { label: "Headwear", href: "/Headwear" },
+  { label: "Australia Made", href: "/australia-made" },
+  { label: "Deals", href: "/deals" },
+  { label: "Return Gifts", href: "/return-gifts" },
+  { label: "Clearance", href: "/clearance" },
+];
+
+const renderHomeCategoryLinks = () => `
+<nav aria-label="Top categories">
+<ul>
+${HOME_CATEGORY_LINKS.map(
+  (item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`,
+).join("\n")}
+</ul>
+</nav>`;
+
+const renderPageBody = ({ path, displayName, description, breadcrumbItems }) => `
 <div data-ssr-content="page">
 ${breadcrumbItems.length ? `<nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>\n` : ""}<h1>${escapeHtml(displayName)}</h1>
 <p>${escapeHtml(description)}</p>
+${path === "/" ? renderHomeCategoryLinks() : ""}
 </div>`;
 
 // Query params that don't create a distinct, thin/duplicate variant of a
@@ -292,6 +320,22 @@ const hasShopFilterParams = (query) =>
     return !BENIGN_SHOP_PARAMS.has(normalized) && !normalized.startsWith("utm_");
   });
 
+// Reads the built SPA shell straight off disk instead of self-fetching "/"
+// over HTTP. On Vercel, a request matching an actual static file (dist/
+// index.html at "/") is served directly and never reaches rewrites at all —
+// so as long as any function depends on fetching "/" live, "/" itself can
+// never be rewritten to a function. Reading the on-disk build artifact
+// removes that dependency entirely and is what makes the "/" → seo-page
+// rewrite (see vercel.json) safe to add. Cached in module scope so warm
+// lambda instances pay the disk read only once.
+let cachedShell = null;
+const getShell = () => {
+  if (!cachedShell) {
+    cachedShell = readFileSync(join(process.cwd(), "dist", "index.html"), "utf8");
+  }
+  return cachedShell;
+};
+
 export default async function handler(req, res) {
   const rawPath = String(req.query.path || "/");
   const path = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
@@ -303,14 +347,7 @@ export default async function handler(req, res) {
 
   let shell;
   try {
-    const host = req.headers["x-forwarded-host"] || req.headers.host;
-    const protocol = host?.includes("localhost") ? "http" : "https";
-    const response = await fetch(`${protocol}://${host}/`, {
-      headers: { "x-seo-shell-request": "1" },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) throw new Error("Application shell unavailable");
-    shell = await response.text();
+    shell = getShell();
   } catch {
     res.status(503).send("Website temporarily unavailable");
     return;
@@ -487,6 +524,7 @@ ${jsonLdTags}`;
   const displayName = title.replace(SITE_SUFFIX, "").trim() || title;
   const breadcrumbItems = buildBreadcrumbItems(path, page.entityType, displayName);
   const bodyContent = renderPageBody({
+    path,
     displayName,
     description,
     breadcrumbItems,
