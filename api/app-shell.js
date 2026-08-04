@@ -5,7 +5,6 @@ import { join } from "node:path";
 // SEO-critical rewrite list in vercel.json, so they land on this catch-all.
 // None of these are meant to rank, so they get a shell + noindex, not a 404.
 const REAL_APP_ROUTES = [
-  /^\/occasions\/[^/]+$/,
   /^\/quote\/respond\/[^/]+$/,
   /^\/favourites$/,
   /^\/search$/,
@@ -26,7 +25,7 @@ const isRealAppRoute = (path) => REAL_APP_ROUTES.some((pattern) => pattern.test(
 // Every known, correctly-cased path this catch-all could plausibly see a
 // case-variant typo of (e.g. "/clothing" for "/Clothing"). Mirrors the
 // vercel.json SEO-page rewrite list plus the REAL_APP_ROUTES literals above.
-// Dynamic-segment routes (/occasions/:slug, /quote/respond/:id) are excluded
+// Dynamic-segment routes (/quote/respond/:id) are excluded
 // -- there's no single "correct" casing to redirect an arbitrary slug to.
 const KNOWN_CANONICAL_PATHS = [
   "/shop", "/promotional", "/Clothing", "/Headwear", "/return-gifts",

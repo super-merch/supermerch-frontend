@@ -1,5 +1,16 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import handler from "../../api/product-page";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// api/product-page.js now reads the app shell straight off disk
+// (readFileSync) instead of self-fetching "/" over HTTP, and caches it in
+// module scope for the lifetime of the module (see getShell() in
+// api/product-page.js). To give each test control over the shell content,
+// mock node:fs and force a fresh module instance (via resetModules +
+// dynamic import) per test so the cache never leaks between tests.
+vi.mock("node:fs", () => ({
+  readFileSync: vi.fn(),
+}));
+
+const { readFileSync } = await import("node:fs");
 
 const response = (body, status = 200) => ({
   ok: status >= 200 && status < 300,
@@ -54,7 +65,22 @@ const baseProduct = {
   },
 };
 
+let handler;
+
+// Forces a fresh api/product-page.js module instance with readFileSync
+// stubbed to return `html`, so the module's module-scoped shell cache can
+// never carry a previous test's shell into this one.
+const useShell = async (html) => {
+  vi.resetModules();
+  readFileSync.mockReturnValue(html);
+  handler = (await import("../../api/product-page")).default;
+};
+
 describe("product page handler", () => {
+  beforeEach(async () => {
+    await useShell(SHELL_WITH_ROOT);
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -62,7 +88,6 @@ describe("product page handler", () => {
   it("injects a real H1, description, and breadcrumb links into #root", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: baseProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -90,7 +115,6 @@ describe("product page handler", () => {
   it("keeps the product's category consistent between the visible breadcrumb and the BreadcrumbList JSON-LD, and links use the real type_id, not the display label", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: baseProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -148,7 +172,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: productWithNoTypeId }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -194,7 +217,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: mismatchedTaxonomyProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -232,7 +254,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: idOnlyTaxonomyProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -263,7 +284,6 @@ describe("product page handler", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITH_ROOT))
       .mockResolvedValueOnce(response({ data: hostileProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
@@ -294,9 +314,9 @@ describe("product page handler", () => {
   });
 
   it("fails safely and still returns valid HTML when #root is missing from the page shell", async () => {
+    await useShell(SHELL_WITHOUT_ROOT);
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(response(SHELL_WITHOUT_ROOT))
       .mockResolvedValueOnce(response({ data: baseProduct }))
       .mockResolvedValueOnce(response({ success: false }, 404));
     vi.stubGlobal("fetch", fetchMock);
