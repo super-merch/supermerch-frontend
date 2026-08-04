@@ -146,12 +146,73 @@ const fetchCategoryProducts = async (categoryId) => {
   }
 };
 
+// Real, crawlable posts for the blog index (audit B5 -- "/all-blogs" served
+// zero <a href="/blogs...">  links anywhere in its raw HTML). Reuses the
+// exact same list endpoint/shape the client's BlogContext.fetchBlogs() calls
+// (payload.blogs, falling back to payload.data), and the same "real,
+// published post" gate used when this file adds blog posts to the sitemap
+// (content-sitemap.js): active, non-draft, and past the thin-content
+// threshold, so every link this renders points at a post that is itself
+// indexable rather than compounding the orphaned-content problem.
+const fetchBlogPosts = async () => {
+  try {
+    const payload = await fetchJson(`${BACKEND_URL}/api/blogs/get-blogs`);
+    const posts = Array.isArray(payload?.blogs)
+      ? payload.blogs
+      : Array.isArray(payload?.data)
+        ? payload.data
+        : [];
+    return posts
+      .filter(
+        (post) =>
+          post?.isActive !== false &&
+          post?.status !== "draft" &&
+          wordCount(post?.content) >= 300,
+      )
+      .map((post) => {
+        const id = post?._id || post?.id;
+        const label = cleanText(post?.title);
+        if (!id || !label) return null;
+        return { label, href: `/blogs/${encodeURIComponent(id)}` };
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
+// Same plain <ul><a> nav pattern as renderCatalogueLinks/renderHomeCategoryLinks
+// below, applied to blog posts on the /all-blogs index.
+const renderBlogListLinks = (posts) => {
+  if (!posts.length) return "";
+  return `<nav aria-label="Blog posts">
+<ul>
+${posts.map((item) => `<li><a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a></li>`).join("\n")}
+</ul>
+</nav>`;
+};
+
 const escapeHtml = (value) =>
   String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+// Truncates to `limit` characters without cutting a word in half: backs up
+// to the last whole-word boundary (space) before the limit, then appends a
+// single ellipsis character. Text already at or under the limit is returned
+// unchanged. Used everywhere a title/description/og/twitter string is
+// hard-truncated for display -- never for unrelated slicing (e.g. category
+// ID validation, canonical URL building).
+const truncateAtWordBoundary = (text, limit) => {
+  const value = String(text || "");
+  if (value.length <= limit) return value;
+  const cut = value.slice(0, Math.max(0, limit - 1));
+  const lastSpace = cut.lastIndexOf(" ");
+  const truncated = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${truncated.trimEnd()}\u2026`;
+};
 
 const fetchJson = async (url, timeoutMs = 8000) => {
   const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
@@ -201,7 +262,7 @@ const resolvePage = async (path, category) => {
       entityId: `collection-${slug}`,
       title: `${cleanText(collection.name)} | Super Merch Australia`,
       description:
-        cleanText(collection.shortDescription).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(collection.shortDescription), 160) ||
         `Browse products in our ${cleanText(collection.name)} collection.`,
       image: cleanText(collection.image) || DEFAULT_IMAGE,
     };
@@ -220,7 +281,7 @@ const resolvePage = async (path, category) => {
       entityId: deal.id || deal._id || slug,
       title: `${cleanText(deal.title)} Deal | Super Merch Australia`,
       description:
-        cleanText(deal.description).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(deal.description), 160) ||
         `Explore the ${cleanText(deal.title)} promotional product deal from Super Merch Australia.`,
       image: cleanText(deal.bannerImage) || DEFAULT_IMAGE,
     };
@@ -240,12 +301,17 @@ const resolvePage = async (path, category) => {
       entityId: blog._id || id,
       title: `${title} | Super Merch Australia`,
       description:
-        cleanText(blog.metaDescription || blog.shortDescription || blog.content).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(blog.metaDescription || blog.shortDescription || blog.content), 160) ||
         `Read ${title} from Super Merch Australia.`,
       image:
         cleanText(blog.ogImage || blog.image?.url || blog.image || blog.images?.[0]?.url) ||
         DEFAULT_IMAGE,
       robots: wordCount(blog.content) >= 300 ? "index, follow" : "noindex, follow",
+      // get-blog never returns a separate "published" timestamp -- createdAt
+      // is the closest real field to it, and updatedAt (falling back to
+      // createdAt when a post has never been edited) covers dateModified.
+      datePublished: blog.publishedAt || blog.createdAt || null,
+      dateModified: blog.updatedAt || blog.publishedAt || blog.createdAt || null,
     };
   }
 
@@ -263,7 +329,7 @@ const resolvePage = async (path, category) => {
       entityId: slug,
       title: `${title} | Super Merch Australia`,
       description:
-        cleanText(page.metaDescription || page.description || page.content).slice(0, 160) ||
+        truncateAtWordBoundary(cleanText(page.metaDescription || page.description || page.content), 160) ||
         `Learn more about ${title} from Super Merch Australia.`,
       image: cleanText(page.ogImage || page.image) || DEFAULT_IMAGE,
     };
@@ -514,10 +580,10 @@ export default async function handler(req, res) {
       : await fetchSeoOverride(page.entityType, page.entityId);
   const title = cleanText(override?.metaTitle) || page.title;
   const description =
-    cleanText(override?.metaDescription).slice(0, 160) || page.description;
+    truncateAtWordBoundary(cleanText(override?.metaDescription), 160) || page.description;
   const socialTitle = cleanText(override?.ogTitle) || title;
   const socialDescription =
-    cleanText(override?.ogDescription).slice(0, 200) || description;
+    truncateAtWordBoundary(cleanText(override?.ogDescription), 200) || description;
   const socialImage = cleanText(override?.ogImage) || page.image;
   // A /shop?category=X view is self-canonical whenever it's a real,
   // indexable category (see the robots decision above, which already
@@ -610,6 +676,50 @@ export default async function handler(req, res) {
     }
   }
 
+  // BlogPosting schema for individual posts (audit B5: "add proper Article
+  // schema"). BlogPosting is the more specific, appropriate type for a blog
+  // article vs. the generic Article/CreativeWork. Only emitted for a real
+  // blog post (page.entityType === "blog" is set exclusively by the
+  // blogMatch branch of resolvePage above), and skipped entirely if the
+  // backend never gave us a headline/image to build it from.
+  if (page.entityType === "blog" && title && socialImage) {
+    const headline = title.replace(SITE_SUFFIX, "").trim() || title;
+    const toIsoDate = (value) => {
+      if (!value) return null;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    };
+    const datePublished = toIsoDate(page.datePublished);
+    const dateModified = toIsoDate(page.dateModified) || datePublished;
+    structuredData.push({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline,
+      image: socialImage,
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
+      // Matches the Organization JSON-LD emitted for the homepage above --
+      // same name/logo/url, since there is no separate per-post author.
+      author: {
+        "@type": "Organization",
+        name: "Super Merch",
+        url: `${SITE_URL}/`,
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Super Merch",
+        logo: {
+          "@type": "ImageObject",
+          url: DEFAULT_IMAGE,
+        },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": canonical,
+      },
+    });
+  }
+
   const jsonLdTags = structuredData
     .map(
       (value) =>
@@ -654,6 +764,14 @@ ${jsonLdTags}`;
     const products = await fetchCategoryProducts(categoryForFetch);
     const siblingCategories = categoryForFetch ? buildSiblingCategoryLinks(categoryForFetch) : [];
     catalogueLinks = renderCatalogueLinks(products, siblingCategories);
+  } else if (path === "/all-blogs") {
+    // Audit B5: the blog index rendered zero <a href="/blogs..."> links in
+    // its raw HTML -- server-render the real post list here, same as the
+    // catalogue links above, so posts are actually discoverable off the JS
+    // render path. Fails gracefully (empty links, no page-level failure) if
+    // the blog list endpoint is unreachable -- see fetchBlogPosts().
+    const posts = await fetchBlogPosts();
+    catalogueLinks = renderBlogListLinks(posts);
   }
 
   const displayName = title.replace(SITE_SUFFIX, "").trim() || title;
