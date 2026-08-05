@@ -234,14 +234,20 @@ const getSeoOverride = async (entityId) => {
 // over HTTP or reading dist/index.html directly. Vercel serves an exact
 // static-file match (dist/index.html at "/") before ever consulting
 // vercel.json's rewrites, regardless of what any function depends on --
-// so the "vercel-build" script (see package.json) copies index.html to
-// this filename and deletes the original, leaving no static file at "/"
-// for Vercel to intercept the "/" -> seo-page rewrite with. Cached in
+// so the "vercel-build" script (see package.json) copies index.html here
+// and deletes the original, leaving no static file at "/" for Vercel to
+// intercept the "/" -> seo-page rewrite with. The copy lives outside dist
+// on purpose: files in the public output are reachable as URLs, and an
+// earlier dist/_shell.html left an empty indexable page served at
+// /_shell.html. vercel.json's includeFiles still bundles it in. Cached in
 // module scope so warm lambda instances pay the disk read only once.
 let cachedShell = null;
 const getShell = () => {
   if (!cachedShell) {
-    cachedShell = readFileSync(join(process.cwd(), "dist", "_shell.html"), "utf8");
+    cachedShell = readFileSync(
+      join(process.cwd(), "server-assets", "app-shell.html"),
+      "utf8",
+    );
   }
   return cachedShell;
 };
