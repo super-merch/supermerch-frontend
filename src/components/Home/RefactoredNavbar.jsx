@@ -105,11 +105,16 @@ const buildCategoryColumns = (subTypes = [], maxColumns = 4) => {
 const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
   categories.map((category) => {
     const columns = buildCategoryColumns(category.subTypes, Number(category.menuColumnCount || 4));
+    // parentType can be a fixed string, or a function of (category) => string, so
+    // categories merged from different nav groups (e.g. Headwear nested inside
+    // Clothing) still tag their own type for filtering/breadcrumbs.
+    const resolvedParentType =
+      typeof parentType === "function" ? parentType(category) : parentType;
 
     return {
       id: category.id,
       name: category.name,
-      onClick: () => handlers.onCategory(category.name, category.id, parentType),
+      onClick: () => handlers.onCategory(category.name, category.id, resolvedParentType),
       columns,
       subItems: columns.flatMap((column) =>
         (column.sourceItems || []).map((item) => ({
@@ -121,7 +126,7 @@ const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
               item.name,
               item.id,
               category.name,
-              parentType,
+              resolvedParentType,
             ),
         })),
       ),
@@ -203,7 +208,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     const headwearCategories = allCategories.filter(
       (cat) => resolveNavGroup(cat) === "headwear",
     );
-    const headwearCategory = headwearCategories[0];
 
     const promoDefault = promotionalCategories[0];
     const clothingDefault = clothingCategories[0];
@@ -221,13 +225,6 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         path: clothingDefault
           ? `/promotional?categoryName=${encodeURIComponent(clothingDefault.name)}&category=${encodeURIComponent(clothingDefault.id)}&type=Clothing`
           : "/promotional?type=Clothing",
-        hasSubmenu: true,
-      },
-      {
-        name: "Headwear",
-        path: headwearCategory
-          ? `/promotional?categoryName=${encodeURIComponent(headwearCategory.name)}&category=${encodeURIComponent(headwearCategory.id)}&type=Headwear`
-          : "/promotional?type=Headwear",
         hasSubmenu: true,
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
@@ -262,36 +259,39 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         };
       }
       if (item.name === "Clothing") {
+        // Headwear is nested inside the Clothing dropdown as a single
+        // "Headwear" entry, rather than being its own top-level nav item.
+        // Hovering it (like any other clothing category) reveals all
+        // individual headwear types (Caps, Beanies, Visors, ...) in the
+        // content panel; those still tag themselves as type=Headwear.
+        const headwearEntry =
+          headwearCategories.length > 0
+            ? {
+                id: headwearCategories[0].id,
+                name: "Headwear",
+                menuColumnCount: 4,
+                subTypes: headwearCategories.map((cat) => ({
+                  id: cat.id,
+                  name: cat.name,
+                  menuColumnTitle: "Headwear",
+                  menuColumnColor: "primary",
+                  menuColumnOrder: 0,
+                })),
+              }
+            : null;
+
         const megaMenu = buildDynamicMegaMenu(
-          clothingCategories,
+          headwearEntry ? [...clothingCategories, headwearEntry] : clothingCategories,
           {
             onCategory: handleNameCategories,
             onSubCategory: handleSubCategories,
           },
-          "Clothing",
+          (category) => (category === headwearEntry ? "Headwear" : "Clothing"),
         );
 
         return {
           ...item,
           id: "clothing",
-          submenu: megaMenu,
-          megaMenu: true,
-          onClick: () => handleMenuClick(item),
-        };
-      }
-      if (item.name === "Headwear") {
-        const megaMenu = buildDynamicMegaMenu(
-          headwearCategories,
-          {
-            onCategory: handleNameCategories,
-            onSubCategory: handleSubCategories,
-          },
-          "Headwear",
-        );
-
-        return {
-          ...item,
-          id: "headwear",
           submenu: megaMenu,
           megaMenu: true,
           onClick: () => handleMenuClick(item),

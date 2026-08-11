@@ -451,7 +451,6 @@ const NavigationMenu = ({
                     if (
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
-                      item.name === "Headwear" ||
                       item.name === "Gifts" ||
                       item.name === "Collections"
                     ) {
@@ -464,7 +463,6 @@ const NavigationMenu = ({
                     if (
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
-                      item.name === "Headwear" ||
                       item.name === "Gifts" ||
                       item.name === "Collections"
                     ) {
