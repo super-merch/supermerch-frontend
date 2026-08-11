@@ -1,5 +1,4 @@
 import banner from "@/assets/summer.jpg";
-import BannerSection from "./BannerSection";
 import Blogs from "./Blogs";
 import Brands from "./Brands";
 import GoogleReviewsComponent from "./GoogleReviews";
@@ -7,6 +6,7 @@ import RecentlyViewed from "./RecentlyViewed";
 import HeroWithHotDeals from "./HeroWithHotDeals";
 import HowItWorks from "./HowItWorks";
 import LetsConnect from "./LetsConnect";
+import PopularCategories from "./PopularCategories";
 import TabsCategory from "./TabsCategory";
 import TrendingCarousel from "./TrendingCarousel";
 import { Link } from "react-router-dom";
@@ -25,8 +25,8 @@ const HomeContent = () => {
         <Brands />
       </div>
 
-      {/* Banner Section - 2 banners side by side */}
-      <BannerSection />
+      {/* Popular product categories */}
+      <PopularCategories />
 
       {/* Top selling categories */}
       <TabsCategory />
