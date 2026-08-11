@@ -228,7 +228,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         hasSubmenu: true,
       },
       { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
-      { name: "Express", path: buildExpressPath("sameday"), hasSubmenu: true },
+      { name: "Rush Order", path: buildExpressPath("sameday"), hasSubmenu: true },
       { 
         name: "Collections", 
         hasSubmenu: collections.length > 0,
@@ -311,10 +311,10 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           onClick: () => handleMenuClick(item),
         };
       }
-      if (item.name === "Express") {
+      if (item.name === "Rush Order") {
         return {
           ...item,
-          id: "express",
+          id: "rush-order",
           submenu: EXPRESS_WINDOWS.map((window) => ({
             id: `express-${window.id}`,
             name: window.label,
