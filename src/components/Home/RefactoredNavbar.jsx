@@ -133,6 +133,29 @@ const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
     };
   });
 
+const CLOTHING_MENU_ORDER = [
+  "Shirts & Tee",
+  "Pants & Bottoms",
+  "Workwear",
+  "Jackets",
+  "Jumpers",
+  "Headwear",
+  "Hospitality Wears",
+  "Sportswear",
+  "Footwear",
+  "Clothing Accessories",
+];
+
+const sortByExplicitOrder = (categories, order) =>
+  [...categories].sort((a, b) => {
+    const aIndex = order.indexOf(a.name);
+    const bIndex = order.indexOf(b.name);
+    if (aIndex === -1 && bIndex === -1) return 0;
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+    return aIndex - bIndex;
+  });
+
 const EXPRESS_WINDOWS = [
   { id: "sameday", label: "Same day" },
   { id: "nextday", label: "Next day" },
@@ -280,8 +303,13 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               }
             : null;
 
-        const megaMenu = buildDynamicMegaMenu(
+        const orderedClothingEntries = sortByExplicitOrder(
           headwearEntry ? [...clothingCategories, headwearEntry] : clothingCategories,
+          CLOTHING_MENU_ORDER,
+        );
+
+        const megaMenu = buildDynamicMegaMenu(
+          orderedClothingEntries,
           {
             onCategory: handleNameCategories,
             onSubCategory: handleSubCategories,
