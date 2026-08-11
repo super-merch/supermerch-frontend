@@ -250,7 +250,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           : "/promotional?type=Clothing",
         hasSubmenu: true,
       },
-      { name: "Gifts", path: "/return-gifts", hasSubmenu: true },
+      { name: "Hampers", path: "/return-gifts", hasSubmenu: true },
       { name: "Rush Order", path: buildExpressPath("sameday"), hasSubmenu: true },
       { 
         name: "Collections", 
@@ -325,10 +325,10 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           onClick: () => handleMenuClick(item),
         };
       }
-      if (item.name === "Gifts") {
+      if (item.name === "Hampers") {
         return {
           ...item,
-          id: "gifts",
+          id: "hampers",
           submenu: [
             {
               id: "gift-hampers",
@@ -387,7 +387,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleMenuClick = (item) => {
-    if (item?.name === "Gifts") {
+    if (item?.name === "Hampers") {
       navigate(item.path);
     } else {
       navigate(item.path);

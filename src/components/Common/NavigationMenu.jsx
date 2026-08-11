@@ -451,7 +451,7 @@ const NavigationMenu = ({
                     if (
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
-                      item.name === "Gifts" ||
+                      item.name === "Hampers" ||
                       item.name === "Collections"
                     ) {
                       if (item.submenu?.length > 0) {
@@ -463,7 +463,7 @@ const NavigationMenu = ({
                     if (
                       item.name === "Promotional" ||
                       item.name === "Clothing" ||
-                      item.name === "Gifts" ||
+                      item.name === "Hampers" ||
                       item.name === "Collections"
                     ) {
                       return;
