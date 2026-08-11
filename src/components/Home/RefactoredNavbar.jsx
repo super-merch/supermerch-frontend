@@ -258,7 +258,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         megaMenu: collections.length > 0
       },
       { name: "Clearance", path: "/clearance?category=clearance" },
-      { name: "Deals", path: "/deals" },
+      { name: "Bundle", path: "/deals" },
       { name: "Australia Made", path: "/australia-made" },
     ];
 
