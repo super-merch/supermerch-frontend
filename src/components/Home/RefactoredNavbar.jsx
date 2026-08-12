@@ -31,6 +31,11 @@ import {
 } from "../../redux/slices/filterSlice";
 import { LuX } from "react-icons/lu";
 import LogoutModal from "../Common/LogoutModal";
+import {
+  buildBaseMenuItems,
+  buildHeadwearEntry,
+  CLOTHING_MENU_ORDER,
+} from "./navigationConfig";
 
 const resolveNavGroup = (category) => {
   const explicitGroup = String(category?.navGroup || "").trim().toLowerCase();
@@ -133,19 +138,6 @@ const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
     };
   });
 
-const CLOTHING_MENU_ORDER = [
-  "Shirts & Tee",
-  "Pants & Bottoms",
-  "Workwear",
-  "Jackets",
-  "Jumpers",
-  "Headwear",
-  "Hospitality Wears",
-  "Sportswear",
-  "Footwear",
-  "Clothing Accessories",
-];
-
 const sortByExplicitOrder = (categories, order) =>
   [...categories].sort((a, b) => {
     const aIndex = order.indexOf(a.name);
@@ -235,32 +227,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     const promoDefault = promotionalCategories[0];
     const clothingDefault = clothingCategories[0];
 
-    const baseMenuItems = [
-      {
-        name: "Promotional",
-        path: promoDefault
-          ? `/promotional?categoryName=${encodeURIComponent(promoDefault.name)}&category=${encodeURIComponent(promoDefault.id)}&type=Promotional`
-          : "/promotional?type=Promotional",
-        hasSubmenu: true,
-      },
-      {
-        name: "Clothing",
-        path: clothingDefault
-          ? `/promotional?categoryName=${encodeURIComponent(clothingDefault.name)}&category=${encodeURIComponent(clothingDefault.id)}&type=Clothing`
-          : "/promotional?type=Clothing",
-        hasSubmenu: true,
-      },
-      { name: "Hampers", path: "/return-gifts", hasSubmenu: true },
-      { name: "Rush Order", path: buildExpressPath("sameday"), hasSubmenu: true },
-      { 
-        name: "Collections", 
-        hasSubmenu: collections.length > 0,
-        megaMenu: collections.length > 0
-      },
-      { name: "Clearance", path: "/clearance?category=clearance" },
-      { name: "Bundle", path: "/deals" },
-      { name: "Australia Made", path: "/australia-made" },
-    ];
+    const baseMenuItems = buildBaseMenuItems({
+      promotionalDefault: promoDefault,
+      clothingDefault,
+      collections,
+    });
 
     return baseMenuItems.map((item) => {
       if (item.name === "Promotional") {
@@ -287,21 +258,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
         // Hovering it (like any other clothing category) reveals all
         // individual headwear types (Caps, Beanies, Visors, ...) in the
         // content panel; those still tag themselves as type=Headwear.
-        const headwearEntry =
-          headwearCategories.length > 0
-            ? {
-                id: headwearCategories[0].id,
-                name: "Headwear",
-                menuColumnCount: 4,
-                subTypes: headwearCategories.map((cat) => ({
-                  id: cat.id,
-                  name: cat.name,
-                  menuColumnTitle: "Headwear",
-                  menuColumnColor: "primary",
-                  menuColumnOrder: 0,
-                })),
-              }
-            : null;
+        const headwearEntry = buildHeadwearEntry(headwearCategories);
 
         const orderedClothingEntries = sortByExplicitOrder(
           headwearEntry ? [...clothingCategories, headwearEntry] : clothingCategories,
