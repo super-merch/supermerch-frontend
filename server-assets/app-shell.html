@@ -24,11 +24,11 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://supermerch.com.au/" />
+  <meta property="og:url" content="https://www.supermerch.com.au/" />
   <meta property="og:title" content="Super Merch - Premium Australian Made Promotional Products" />
   <meta property="og:description"
     content="Quality Australian made promotional products and custom merchandise. Get quantity discounts, secure checkout, and fast delivery." />
-  <meta property="og:image" content="https://supermerch.com.au/logo-teal.png" />
+  <meta property="og:image" content="https://www.supermerch.com.au/logo-teal.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Super Merch Australia Logo" />
@@ -37,11 +37,11 @@
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://supermerch.com.au/" />
+  <meta property="twitter:url" content="https://www.supermerch.com.au/" />
   <meta property="twitter:title" content="Super Merch - Premium Australian Made Promotional Products" />
   <meta property="twitter:description"
     content="Quality Australian made promotional products and custom merchandise. Get quantity discounts, secure checkout, and fast delivery." />
-  <meta property="twitter:image" content="https://supermerch.com.au/logo-teal.png" />
+  <meta property="twitter:image" content="https://www.supermerch.com.au/logo-teal.png" />
   <meta property="twitter:image:alt" content="Super Merch Australia Logo" />
 
   <!-- Additional SEO Meta Tags -->
@@ -61,7 +61,24 @@
   <meta name="msapplication-tooltip" content="Australian Made Promotional Products" />
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://supermerch.com.au/" />
+  <link rel="canonical" href="https://www.supermerch.com.au/" />
+
+  <!-- Organization structured data — static so it's present in the raw HTML
+       with no JS required. Fixed, non-dynamic content; kept in sync with the
+       former ORGANIZATION_SCHEMA constant in RouteSeo.jsx. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://www.supermerch.com.au/#organization",
+    "name": "Super Merch",
+    "url": "https://www.supermerch.com.au/",
+    "logo": "https://www.supermerch.com.au/logo-teal.png",
+    "email": "Info@supermerch.com.au",
+    "telephone": "+61466468528",
+    "areaServed": "AU"
+  }
+  </script>
 
   <!-- Preconnect for Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -79,32 +96,18 @@
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
 
   <!-- Stylesheets -->
-  <script type="module" crossorigin src="/assets/index-B9oY6Rz9.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-bidata5Q.css">
+  <script type="module" crossorigin src="/assets/index-CpYBT7P0.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CIysJDOn.css">
 </head>
-<!-- Google tag (gtag.js) — disabled on localhost dev -->
-<script>
-  (function () {
-    const isLocalhost =
-      location.hostname === "localhost" ||
-      location.hostname === "127.0.0.1" ||
-      location.hostname === "::1";
-
-    if (isLocalhost) return;
-
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () {
-      dataLayer.push(arguments);
-    };
-    window.gtag("js", new Date());
-    window.gtag("config", "G-RYN804XC9M");
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://www.googletagmanager.com/gtag/js?id=G-RYN804XC9M";
-    document.head.appendChild(script);
-  })();
-</script>
+<!-- GA4 / Meta Pixel / Clarity are initialized from src/lib/analytics.js
+     (called in main.jsx), driven by VITE_GA_MEASUREMENT_ID /
+     VITE_META_PIXEL_ID / VITE_CLARITY_PROJECT_ID. Each is a no-op if its
+     env var isn't set. See PR description for what to configure in Vercel.
+     NOTE: this used to be a hardcoded gtag snippet with measurement ID
+     G-RYN804XC9M (present since initial project scaffold) — that ID has
+     not been verified as a real property belonging to this business and
+     was not env-driven, so it has been replaced rather than carried
+     forward as a default. -->
 <!--Start of Tawk.to Script-->
 <!-- <script type="text/javascript">
     var Tawk_API = Tawk_API || {},
