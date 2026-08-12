@@ -1,6 +1,58 @@
 import { Link } from "react-router-dom";
 
+
 import { popularCategories } from "./popularCategoriesData";
+import awardsImage from "@/assets/category-awards.jpg";
+import bagsImage from "@/assets/category-bags.jpg";
+import waterBottleImage from "@/assets/category-water-bottle.png";
+import notebookImage from "@/assets/category-notebook.jpg";
+import poloImage from "@/assets/category-polo.jpeg";
+import corporateGiftsImage from "@/assets/category-corporate-gifts.jpg";
+import pensImage from "@/assets/category-pens.jpeg";
+import rushOrderImage from "@/assets/category-rush-order.jpeg";
+
+const categories = [
+  {
+    name: "Corporate Hampers",
+    image: corporateGiftsImage,
+    path: "/return-gifts?page=1",
+  },
+  {
+    name: "Notebooks",
+    image: notebookImage,
+    path: "/promotional?categoryName=Office+%26+Business&category=PR-11&subCategory=Notebooks&type=Promotional&page=1",
+  },
+  {
+    name: "Water Bottles",
+    image: waterBottleImage,
+    path: "/promotional?categoryName=Drinkware&category=PE-02&subCategory=Drink+Bottles&type=Promotional&page=1",
+  },
+  {
+    name: "Pens",
+    image: pensImage,
+    path: "/promotional?categoryName=Writing&category=PY&type=Promotional&page=1",
+  },
+  {
+    name: "Polo Shirts",
+    image: poloImage,
+    path: "/promotional?categoryName=Shirts+%26+Tee&category=PU-03&subCategory=Polo+Shirts&type=Promotional&page=1",
+  },
+  {
+    name: "Bags",
+    image: bagsImage,
+    path: "/promotional?categoryName=Bags&category=PA&type=Promotional&page=1",
+  },
+  {
+    name: "Awards",
+    image: awardsImage,
+    path: "/promotional?categoryName=Exhibitions+%26+Events&category=PF-01&subCategory=Awards+%26+Trophies&type=Promotional&page=1",
+  },
+  {
+    name: "Rush Order",
+    image: rushOrderImage,
+    path: "/24hr-production?expressWindow=sameday&page=1",
+  },
+];
 
 const PopularCategories = () => {
   return (

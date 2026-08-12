@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "vercel-build": "vite build && node scripts/prepare-vercel-shell.mjs",
+    "vercel-build": "NODE_OPTIONS='--max-old-space-size=4096' vite build && node scripts/prepare-vercel-shell.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite preview --host 0.0.0.0",
