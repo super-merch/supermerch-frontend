@@ -2,7 +2,7 @@ import { setMaxPrice, setMinPrice, setMoq } from "@/redux/slices/filterSlice";
 import { buildProductsFilterKey } from "@/utils/productFilterKey";
 import { toProductUrl } from "@/utils/utils";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -72,6 +72,17 @@ const Cards = ({ category = "" }) => {
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
 
+  const RETURN_GIFTS_EXCLUDED = ["jolt charger gift pack", "jelly bean 2 cubes", "jelly bean 4 cubes"];
+
+  const displayProducts = useMemo(() => {
+    const base = accumulatedProducts?.length > 0 ? accumulatedProducts : (getProducts?.data ?? []);
+    if (paginationData.category !== "return-gifts") return base;
+    return base.filter((p) => {
+      const name = p.overview?.name?.toLowerCase() || "";
+      return RETURN_GIFTS_EXCLUDED.every((ex) => !name.includes(ex));
+    });
+  }, [accumulatedProducts, getProducts?.data, paginationData.category]);
+
   const dropdownRef = useRef(null);
   const prevCategoryKeyRef = useRef(null);
   const filtersKeyRef = useRef(null);
@@ -123,7 +134,7 @@ const Cards = ({ category = "" }) => {
     }
 
     let url = "";
-    let searchTerms = ["gift pack", "hampers", "gift"];
+    let searchTerms = ["hamper", "hampers", "gift hamper", "gift box", "gift basket", "gift set", "gift pack"];
     if (paginationData.category === "return-gifts") {
       url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
         ","
@@ -688,12 +699,14 @@ const Cards = ({ category = "" }) => {
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-brand text-base">
                   {!isProductsLoading &&
-                    (getProducts?.item_count ||
-                      getProducts?.totalCount ||
-                      getProducts?.total_count ||
-                      getProducts?.pagination?.totalCount ||
-                      accumulatedProducts.length ||
-                      0)}
+                    (paginationData.category === "return-gifts"
+                      ? displayProducts.length
+                      : (getProducts?.item_count ||
+                          getProducts?.totalCount ||
+                          getProducts?.total_count ||
+                          getProducts?.pagination?.totalCount ||
+                          accumulatedProducts.length ||
+                          0))}
                 </span>
                 <p className="text-sm text-gray-600">
                   {isProductsLoading ? "Loading..." : `product found `}
@@ -714,12 +727,14 @@ const Cards = ({ category = "" }) => {
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-brand">
                   {!isProductsLoading &&
-                    (getProducts?.item_count ||
-                      getProducts?.totalCount ||
-                      getProducts?.total_count ||
-                      getProducts?.pagination?.totalCount ||
-                      accumulatedProducts.length ||
-                      0)}
+                    (paginationData.category === "return-gifts"
+                      ? displayProducts.length
+                      : (getProducts?.item_count ||
+                          getProducts?.totalCount ||
+                          getProducts?.total_count ||
+                          getProducts?.pagination?.totalCount ||
+                          accumulatedProducts.length ||
+                          0))}
                 </span>
                 <p className="">
                   {isProductsLoading ? "Loading..." : `product found`}
@@ -796,20 +811,7 @@ const Cards = ({ category = "" }) => {
             ) : (accumulatedProducts?.length > 0 || getProducts?.data?.length > 0) ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
-                  {(() => {
-                    const base = accumulatedProducts?.length > 0 ? accumulatedProducts : getProducts.data;
-                    const displayProducts = paginationData.category === "return-gifts"
-                      ? base.filter((p) => {
-                          const name = p.overview?.name?.toLowerCase() || "";
-                          return (
-                            !name.includes("jolt charger gift pack") &&
-                            !name.includes("jelly bean 2 cubes") &&
-                            !name.includes("jelly bean 4 cubes")
-                          );
-                        })
-                      : base;
-                    return displayProducts;
-                  })().map((product, index) => {
+                  {displayProducts.map((product, index) => {
                     const productId = product.meta?.id?.toString();
                     return (
                       <div
@@ -851,21 +853,23 @@ const Cards = ({ category = "" }) => {
                   </div>
                 )}
 
-                {accumulatedProducts.length > 0 && !isProductsLoading && (
+                {displayProducts.length > 0 && !isProductsLoading && (
                   <div className="flex justify-center mb-8 mt-2">
                     <p className="text-sm sm:text-base text-gray-600 text-center">
                       Showing{" "}
                       <span className="font-semibold text-gray-900">1</span> -{" "}
                       <span className="font-semibold text-gray-900">
-                        {accumulatedProducts.length}
+                        {displayProducts.length}
                       </span>{" "}
                       of{" "}
                       <span className="font-semibold text-gray-900">
-                        {getProducts?.item_count ||
-                          getProducts?.totalCount ||
-                          getProducts?.total_count ||
-                          getProducts?.pagination?.totalCount ||
-                          accumulatedProducts.length}
+                        {paginationData.category === "return-gifts"
+                          ? displayProducts.length
+                          : (getProducts?.item_count ||
+                              getProducts?.totalCount ||
+                              getProducts?.total_count ||
+                              getProducts?.pagination?.totalCount ||
+                              displayProducts.length)}
                       </span>{" "}
                       products
                     </p>
