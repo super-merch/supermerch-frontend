@@ -690,7 +690,17 @@ const Cards = ({ category = "" }) => {
             ) : accumulatedProducts?.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
-                  {accumulatedProducts.map((product, index) => {
+                  {(paginationData.category === "return-gifts"
+                    ? accumulatedProducts.filter((p) => {
+                        const name = p.overview?.name?.toLowerCase() || "";
+                        return (
+                          !name.includes("jolt charger gift pack") &&
+                          !name.includes("jelly bean 2 cubes") &&
+                          !name.includes("jelly bean 4 cubes")
+                        );
+                      })
+                    : accumulatedProducts
+                  ).map((product, index) => {
                     const productId = product.meta?.id?.toString();
                     return (
                       <div
