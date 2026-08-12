@@ -1,88 +1,112 @@
-import { megaMenu } from "@/assets/assets";
-import { ProductsContext } from "@/context/ProductsContext";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heading } from "../Common";
-import { FaArrowRight, FaBoxOpen } from "react-icons/fa";
-// Assume megaMenu is imported or defined somewhere in your code
-// import megaMenu from './megaMenuData';
-import collection2 from "../../assets/pen.jpg";
-import highlight from "../../assets/highlighter.jpg";
-import pencils from "../../assets/pencil.jpg";
-import misc from "../../assets/images.jpeg";
-import keyring from "../../assets/keyring.jpg";
-import tote from "../../assets/tote.jpg";
-import glass from "../../assets/glass.jpg";
-import bottle from "../../assets/bollte.jpg";
-import bag from "../../assets/bag.jpg";
+import { FaArrowRight } from "react-icons/fa";
+
 import business from "../../assets/business.jpg";
-import outdoor from "../../assets/outdoor.jpg";
-import laynard from "../../assets/laynard.jpg";
-import thumbler from "../../assets/thumbler.jpg";
-import wrist from "../../assets/wrist.jpg";
-import trophy from "../../assets/trophy.jpg";
-import mug from "../../assets/mug.jpg";
+import tradie from "../../assets/bag.jpg";
+import tracksuit from "../../assets/trouser.png";
+import corporate from "../../assets/laptop.jpg";
+import cap from "../../assets/cap.png";
+import lanyard from "../../assets/lanyard.jpg";
+import packing from "../../assets/packing.jpg";
+import notebook from "../../assets/category-notebook.webp";
+import jersey from "../../assets/shirt2.png";
+
+// More ways to shop — Industry
+import industryTrades from "../../assets/mwts-industry-trades.jpg";
+import industryRealEstate from "../../assets/mwts-industry-realestate.jpg";
+import industryIT from "../../assets/mwts-industry-it.jpg";
+import industryHospitality from "../../assets/mwts-industry-hospitality.png";
+
+// More ways to shop — Recipient
+import recipientExecutives from "../../assets/mwts-recipient-executives.png";
+import recipientConference from "../../assets/mwts-recipient-conference.png";
+import recipientStaff from "../../assets/mwts-recipient-staff.jpg";
+import recipientCustomer from "../../assets/mwts-recipient-customer.jpg";
+
+const shopTabs = [
+  {
+    id: "industry",
+    label: "Industry",
+    subCategories: [
+      { label: "Trades", image: industryTrades, path: "/collections/trades?page=1" },
+      { label: "Real Estate", image: industryRealEstate, path: "/collections/real-estate?page=1" },
+      { label: "IT", image: industryIT, path: "/promotional?categoryName=Phone+%26+Technology&category=PS&type=Promotional&page=1" },
+      { label: "Hospitality", image: industryHospitality, path: "/collections/hospitality?page=1" },
+    ],
+  },
+  {
+    id: "recipient",
+    label: "Recipient",
+    subCategories: [
+      { label: "Executives & Top Clients", image: recipientExecutives, path: "/return-gifts?page=1" },
+      { label: "Conference Attendee", image: recipientConference, path: "/collections/conference?page=1" },
+      { label: "Staff & Employees", image: recipientStaff, path: "/promotional?categoryName=Office+%26+Business&category=PR&type=Promotional&page=1" },
+      { label: "Customers", image: recipientCustomer, path: "/promotional?categoryName=Exhibitions+%26+Events&category=PF&type=Promotional&page=1" },
+    ],
+  },
+  {
+    id: "bundles",
+    label: "Bundles",
+    subCategories: [
+      { label: "Tradie", image: tradie, path: "/contact" },
+      { label: "Workwear", image: tracksuit, path: "/contact" },
+      { label: "Corporate", image: corporate, path: "/contact" },
+      { label: "Headwear", image: cap, path: "/contact" },
+    ],
+  },
+  {
+    id: "overseas",
+    label: "Overseas Sourcing",
+    subCategories: [
+      { label: "Lanyards", image: lanyard, path: "/contact" },
+      { label: "Gift Packs", image: packing, path: "/contact" },
+      { label: "Notebooks", image: notebook, path: "/contact" },
+      { label: "Sportswear", image: jersey, path: "/contact" },
+    ],
+  },
+];
 
 const TabsCategory = () => {
   const navigate = useNavigate();
-  const { shopCategory, setShopCategory } = useContext(ProductsContext);
-  // Set the first category (Writing) as default active tab
-  const [activeTab, setActiveTab] = useState(megaMenu[0].id);
+  const [activeTab, setActiveTab] = useState(shopTabs[0].id);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Find the active category object from megaMenu array
-  const activeCategory = megaMenu.find((category) => category.id === activeTab);
+  const activeCategory = shopTabs.find((t) => t.id === activeTab);
 
-  // Handle switching the main category tab
   const handleCategoryClick = (id) => {
     if (id !== activeTab) {
       setIsAnimating(true);
       setActiveTab(id);
-      // Reset animation state after animation completes
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 300);
+      setTimeout(() => setIsAnimating(false), 300);
     }
   };
 
-  // Handler for when a user clicks on a subcategory (like Pens, Pencils, etc.)
   const handleSubCategoryClick = (subCategory) => {
-    const encodedMain = encodeURIComponent(activeCategory.name);
-    // Navigate with query parameters: you can adjust the route as needed
-    navigate(
-      `/category?categoryName=${encodedMain}&subCategory=${subCategory.label}&category=${activeCategory.id}`
-    );
-    setShopCategory(subCategory.label);
-  };
-
-  // Optional: Handler for clicking on a sub-item (e.g., Metal Pens)
-  const handleSubItemClick = (subItem) => {
-    const encodedMain = encodeURIComponent(activeCategory.name);
-    const encodedSubItem = encodeURIComponent(subItem.name);
-    // Navigate to a more detailed page (for example, listing products for this sub-item)
-    navigate(`/category?main=${encodedMain}&item=${encodedSubItem}`);
+    if (subCategory.path) {
+      navigate(subCategory.path);
+    } else {
+      navigate(
+        `/category?categoryName=${encodeURIComponent(activeCategory.label)}&subCategory=${encodeURIComponent(subCategory.label)}`
+      );
+    }
   };
 
   return (
     <>
       <style>{`
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
       <div className="bg-primary/10 py-10">
         <div className="Mycontainer">
-          {/* Header Section */}
+          {/* Header */}
           <div className="mb-0 flex items-center justify-center">
             <Heading
-              title="Top Selling Categories"
+              title="More ways to shop"
               align="center"
               size="default"
               titleClassName="uppercase py-0"
@@ -92,24 +116,24 @@ const TabsCategory = () => {
             />
           </div>
 
-          {/* Main Category Pills */}
+          {/* Tab Pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {megaMenu.slice(0, 4).map((category) => (
+            {shopTabs.map((tab) => (
               <button
-                key={category.id}
-                onClick={() => handleCategoryClick(category.id)}
+                key={tab.id}
+                onClick={() => handleCategoryClick(tab.id)}
                 className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 min-h-[44px] ${
-                  category.id === activeTab
+                  tab.id === activeTab
                     ? "bg-primary text-white shadow-md"
                     : "bg-secondary/10 text-secondary hover:bg-secondary/20"
                 }`}
               >
-                {category.name}
+                {tab.label}
               </button>
             ))}
           </div>
 
-          {/* Subcategories for the active main category */}
+          {/* Subcategory Cards */}
           <div
             className={`mt-4 sm:mt-6 grid grid-cols-2 xl:grid-cols-4 md:grid-cols-3 text-center xl:gap-6 md:gap-6 gap-3 sm:gap-4 transition-all duration-300 ${
               isAnimating
@@ -118,7 +142,7 @@ const TabsCategory = () => {
             }`}
           >
             {activeCategory &&
-              activeCategory.subTypes.slice(0, 4).map((subCategory, index) => (
+              activeCategory.subCategories.map((subCategory, index) => (
                 <div
                   key={`${activeTab}-${subCategory.label}`}
                   onClick={() => handleSubCategoryClick(subCategory)}
@@ -129,7 +153,6 @@ const TabsCategory = () => {
                       : `fadeInUp 0.4s ease-out ${index * 50}ms both`,
                   }}
                 >
-                  {/* Category Badge */}
                   <div className="absolute top-3 right-3 z-10">
                     <span className="bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                       New
@@ -138,29 +161,8 @@ const TabsCategory = () => {
 
                   <div className="overflow-hidden">
                     <img
-                      src={
-                        (subCategory.label === "Pens" && collection2) ||
-                        (subCategory.label === "Highlighter" && highlight) ||
-                        (subCategory.label === "Pencils" && pencils) ||
-                        (subCategory.label === "Misc" && misc) ||
-                        (activeCategory.name == "Writing" && misc) ||
-                        (subCategory.label === "Misc" &&
-                          activeCategory.name == "Bags" &&
-                          bag) ||
-                        (subCategory.label == "Tote Bag" && tote) ||
-                        (subCategory.label == "Business Bag" && business) ||
-                        (subCategory.label == "Outdoor Bag" && outdoor) ||
-                        (subCategory.label == "Bottles" && bottle) ||
-                        (subCategory.label == "Thumblers" && thumbler) ||
-                        (subCategory.label == "Glasses" && glass) ||
-                        (subCategory.label == "Mugs" && mug) ||
-                        (subCategory.label == "WristBands" && wrist) ||
-                        (subCategory.label == "Lanyards, Bagdes and Pins" &&
-                          laynard) ||
-                        (subCategory.label == "Awards" && trophy) ||
-                        (subCategory.label == "Keyrings" && keyring)
-                      }
-                      alt=""
+                      src={subCategory.image}
+                      alt={subCategory.label}
                       className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
@@ -181,7 +183,6 @@ const TabsCategory = () => {
                 </div>
               ))}
           </div>
-          {/* </div> */}
         </div>
       </div>
     </>
