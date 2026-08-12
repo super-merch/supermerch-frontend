@@ -16,21 +16,6 @@ const categories = [
     path: "/promotional?categoryName=Office+%26+Business&category=PR-07&subCategory=Gift+Sets&type=Promotional&page=1",
   },
   {
-    name: "Awards",
-    image: awardsImage,
-    path: "/promotional?categoryName=Exhibitions+%26+Events&category=PF-01&subCategory=Awards+%26+Trophies&type=Promotional&page=1",
-  },
-  {
-    name: "Rush Order",
-    image: rushOrderImage,
-    path: "/24hr-production?expressWindow=sameday&page=1",
-  },
-  {
-    name: "Pens",
-    image: pensImage,
-    path: "/promotional?categoryName=Writing&category=PY&type=Promotional&page=1",
-  },
-  {
     name: "Notebooks",
     image: notebookImage,
     path: "/promotional?categoryName=Office+%26+Business&category=PR-11&subCategory=Notebooks&type=Promotional&page=1",
@@ -41,6 +26,11 @@ const categories = [
     path: "/promotional?categoryName=Drinkware&category=PE&type=Promotional&page=1",
   },
   {
+    name: "Pens",
+    image: pensImage,
+    path: "/promotional?categoryName=Writing&category=PY&type=Promotional&page=1",
+  },
+  {
     name: "Polo Shirts",
     image: poloImage,
     path: "/promotional?categoryName=Shirts+%26+Tee&category=PU-03&subCategory=Polo+Shirts&type=Promotional&page=1",
@@ -49,6 +39,16 @@ const categories = [
     name: "Bags",
     image: bagsImage,
     path: "/promotional?categoryName=Bags&category=PA&type=Promotional&page=1",
+  },
+  {
+    name: "Awards",
+    image: awardsImage,
+    path: "/promotional?categoryName=Exhibitions+%26+Events&category=PF-01&subCategory=Awards+%26+Trophies&type=Promotional&page=1",
+  },
+  {
+    name: "Rush Order",
+    image: rushOrderImage,
+    path: "/24hr-production?expressWindow=sameday&page=1",
   },
 ];
 
