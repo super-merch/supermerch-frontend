@@ -11,7 +11,7 @@ export const popularCategories = [
   {
     name: "Corporate Hampers",
     image: corporateGiftsImage,
-    path: "/promotional?categoryName=Office+%26+Business&category=PR-07&subCategory=Gift+Sets&type=Promotional&page=1",
+    path: "/return-gifts?page=1",
   },
   {
     name: "Notebooks",
