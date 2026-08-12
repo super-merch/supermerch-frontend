@@ -1,5 +1,5 @@
 import React from "react";
-import { LuAlertCircle, LuX } from "react-icons/lu";
+import { LuCircleAlert, LuX } from "react-icons/lu";
 import { motion } from "framer-motion";
 
 const LogoutModal = ({ showLogoutPopup, setShowLogoutPopup, handleLogout }) => {
@@ -27,7 +27,7 @@ const LogoutModal = ({ showLogoutPopup, setShowLogoutPopup, handleLogout }) => {
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-              <LuAlertCircle className="w-5 h-5 text-red-600" />
+              <LuCircleAlert className="w-5 h-5 text-red-600" />
             </div>
             <h3
               id="logout-modal-title"
