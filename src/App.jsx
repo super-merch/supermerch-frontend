@@ -60,9 +60,10 @@ const CollectionDetailPage = lazy(
 );
 
 export const ScrollToTop = () => {
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, [pathname]);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return null;
 };
