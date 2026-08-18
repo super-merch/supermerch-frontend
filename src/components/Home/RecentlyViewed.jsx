@@ -49,7 +49,7 @@ const RecentlyViewed = () => {
   };
 
   return (
-    <div className="w-full py-10 bg-white">
+    <div className="w-full py-10 bg-primary/10">
       <div className="Mycontainer">
         <Heading
           title="Recently Viewed"
