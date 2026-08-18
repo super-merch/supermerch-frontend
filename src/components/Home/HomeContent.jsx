@@ -50,7 +50,7 @@ const HomeContent = () => {
 
       {/* Google Reviews */}
       <GoogleReviewsComponent />
-      <HowItWorks />
+      {/* <HowItWorks /> */}
     </div>
   );
 };
