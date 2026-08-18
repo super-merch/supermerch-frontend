@@ -42,8 +42,8 @@ const HomeContent = () => {
         <Blogs />
       </div>
 
-      {/* Let's Connect - Instagram Posts */}
-      <LetsConnect />
+      {/* Let's Connect - Instagram Posts (hidden) */}
+      {/* <LetsConnect /> */}
 
       {/* Recently Viewed Products */}
       <RecentlyViewed />
