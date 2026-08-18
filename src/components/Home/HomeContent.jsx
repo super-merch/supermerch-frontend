@@ -20,8 +20,10 @@ const HomeContent = () => {
         <TrendingCarousel />
       </div>
 
-      {/* Australia's most loved brands */}
-      <Brands />
+      {/* Australia's most loved brands - moved above Shop by Category */}
+      <div className="py-10">
+        <Brands />
+      </div>
 
       {/* Popular product categories */}
       <PopularCategories />
