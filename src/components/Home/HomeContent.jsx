@@ -31,7 +31,7 @@ const HomeContent = () => {
       {/* Top selling categories */}
       <TabsCategory />
 
-      <Link to="/promotional?categoryName=Headwear&category=PK-03&subCategory=Brim+%26+Bucket+Hats&type=Headwear&page=1"> <img src={banner} alt="Home" className="w-full h-2/3" /> </Link>
+      {/* <Link to="/promotional?categoryName=Headwear&category=PK-03&subCategory=Brim+%26+Bucket+Hats&type=Headwear&page=1"> <img src={banner} alt="Home" className="w-full h-2/3" /> </Link> */}
       {/* SHOP OUR BEST SELLERS - moved above Shop by Category */}
       {/* <div className="my-4">
         <ShopOurBestSellers />
