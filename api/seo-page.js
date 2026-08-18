@@ -469,7 +469,7 @@ ${siblingCategories.map((item) => `<li><a href="${escapeHtml(item.href)}">${esca
 };
 
 const renderPageBody = ({ path, displayName, description, breadcrumbItems, catalogueLinks }) => `
-<div data-ssr-content="page">
+<div data-ssr-content="page" style="display:none">
 ${breadcrumbItems.length ? `<nav aria-label="Breadcrumb">${renderBreadcrumbLinks(breadcrumbItems)}</nav>\n` : ""}<h1>${escapeHtml(displayName)}</h1>
 <p>${escapeHtml(description)}</p>
 ${path === "/" ? renderHomeCategoryLinks() : ""}
