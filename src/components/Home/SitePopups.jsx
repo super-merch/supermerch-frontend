@@ -9,6 +9,14 @@ const SitePopups = () => {
   const [activePopup, setActivePopup] = useState(null);
   const navigate = useNavigate();
 
+  // Email-gate state (for coupon popups)
+  const [emailInput, setEmailInput] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [revealedCoupon, setRevealedCoupon] = useState(null);
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
   useEffect(() => {
     const fetchPopups = async () => {
       try {
@@ -42,7 +50,54 @@ const SitePopups = () => {
   const closePopup = useCallback(() => {
     if (activePopup) markSeen(activePopup);
     setActivePopup(null);
+    setEmailInput("");
+    setEmailError("");
+    setEmailLoading(false);
+    setRevealedCoupon(null);
+    setAlreadySubscribed(false);
+    setAgreedToTerms(false);
   }, [activePopup, markSeen]);
+
+  const handleEmailSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    setEmailError("");
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailInput.trim()) {
+      setEmailError("Email is required");
+      return;
+    }
+    if (!emailPattern.test(emailInput.trim())) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+    if (!agreedToTerms) {
+      setEmailError("Please agree to the terms and conditions");
+      return;
+    }
+
+    setEmailLoading(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/subscription/request-coupon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailInput.trim().toLowerCase() }),
+      });
+      const data = await res.json();
+
+      if (data.duplicate) {
+        setAlreadySubscribed(true);
+      } else if (data.success) {
+        setRevealedCoupon(data.couponCode || activePopup?.couponCode);
+      } else {
+        setEmailError(data.message || "Something went wrong. Please try again.");
+      }
+    } catch {
+      setEmailError("Connection failed. Please try again.");
+    } finally {
+      setEmailLoading(false);
+    }
+  }, [emailInput, backendUrl, activePopup]);
 
   // Allow header/top-banner CTA to open an admin-managed pop-up immediately.
   useEffect(() => {
@@ -140,16 +195,69 @@ const SitePopups = () => {
             <p className="text-sm text-gray-600 mb-4">{activePopup.description}</p>
           )}
 
-          {/* Coupon Code */}
-          {activePopup.couponCode && (
-            <div className="mb-4 px-4 py-2 bg-gray-100 rounded-lg inline-block">
-              <p className="text-xs text-gray-500 mb-1">Use code</p>
-              <p className="text-lg font-bold text-primary tracking-wider">{activePopup.couponCode}</p>
-            </div>
-          )}
+          {/* Coupon email-gate */}
+          {activePopup.couponCode ? (
+            alreadySubscribed ? (
+              <div className="mb-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                This email is already in our system. Check your inbox for your coupon code.
+              </div>
+            ) : revealedCoupon ? (
+              <div className="mb-4 px-4 py-3 bg-gray-100 rounded-lg">
+                <p className="text-xs text-gray-500 mb-1">Your coupon code</p>
+                <p className="text-xl font-bold text-primary tracking-wider">{revealedCoupon}</p>
+                <p className="text-xs text-gray-400 mt-1">A copy has been sent to your email.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleEmailSubmit} className="mb-4 text-left" noValidate>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Enter your email to reveal the code
+                </label>
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => { setEmailInput(e.target.value); setEmailError(""); }}
+                  placeholder="you@example.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                  disabled={emailLoading}
+                />
+                <label className="flex items-start gap-2 mt-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => { setAgreedToTerms(e.target.checked); setEmailError(""); }}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary cursor-pointer"
+                    disabled={emailLoading}
+                  />
+                  <span className="text-xs text-gray-500 leading-relaxed">
+                    I agree to the{" "}
+                    <a
+                      href="/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:text-primary/80"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      terms and conditions
+                    </a>{" "}
+                    and consent to receive marketing emails.
+                  </span>
+                </label>
+                {emailError && (
+                  <p className="mt-1 text-xs text-red-500">{emailError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={emailLoading}
+                  className="w-full mt-3 px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors duration-200 text-sm disabled:opacity-60"
+                >
+                  {emailLoading ? "Checking…" : "Get My Coupon"}
+                </button>
+              </form>
+            )
+          ) : null}
 
-          {/* CTA Button */}
-          {activePopup.ctaText && (
+          {/* CTA Button (only shown after coupon revealed or when no coupon gate) */}
+          {activePopup.ctaText && (!activePopup.couponCode || revealedCoupon || alreadySubscribed) && (
             <button
               onClick={() => {
                 closePopup();

@@ -320,75 +320,20 @@ const MiniNav = () => {
   const handleSearch = () => {
     navigate(`/search?search=${inputValue}`);
   };
-  const [coupenModel, setCoupenModel] = useState(false);
-  const [coupen, setCoupen] = useState("");
   const [discount, setDiscount] = useState("");
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-  const fetchCurrentCoupon = async () => {
-    try {
-      setCoupenLoading(true);
-      const response = await fetch(`${API_BASE}/api/coupen/get`);
-      const data = await response.json();
-      if (response.ok) {
-        setCoupen(data[0].coupen);
-        setDiscount(data[0].discount);
-        setCoupenLoading(false);
-      }
-      setCoupenLoading(false);
-    } catch (error) {
-      setCoupenLoading(false);
-      console.error("Error fetching current coupon:", error);
-    }
-  };
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/coupen/get`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.[0]?.discount) setDiscount(data[0].discount); })
+      .catch(() => {});
+  }, [API_BASE]);
 
   return (
     <>
       <div className="bg-line">
-        {coupenModel && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">
-                🎁 Get Your Coupon!
-              </h2>
-              <p className="text-lg font-bold text-primary">
-                {coupenLoading
-                  ? "Loading..."
-                  : coupen
-                    ? coupen
-                    : "No Coupen available"}
-              </p>
-              <p className="text-sm text-gray-600">
-                Add this coupon at checkout to enjoy{" "}
-                <strong>
-                  {coupenLoading
-                    ? "Loading..."
-                    : discount
-                      ? discount + "%"
-                      : "No Discount"}
-                </strong>
-                .
-                {coupen && (
-                  <p
-                    className="text-primary block cursor-pointer"
-                    onClick={() => {
-                      navigator.clipboard.writeText(coupen);
-                      toast.success("Copied to clipboard");
-                    }}
-                  >
-                    Copy Coupen
-                  </p>
-                )}
-              </p>
-              <button
-                onClick={() => setCoupenModel(false)}
-                className="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition duration-200"
-              >
-                Got It
-              </button>
-            </div>
-          </div>
-        )}
         <div className="flex items-center justify-between gap-6 pt-2 text-white Mycontainer">
           <Link to={"/"} className="relative z-10">
             <img
@@ -652,10 +597,7 @@ const MiniNav = () => {
             {discount ? discount : "0"}% OFF + FREE Shipping on $150
           </h1>
           <div
-            onClick={() => {
-              setCoupenModel(true);
-              fetchCurrentCoupon();
-            }}
+            onClick={() => window.dispatchEvent(new Event("triggerDiscountModal"))}
             className="flex items-center gap-2 px-4 py-1 border-2 border-smallHeader"
           >
             <IoPricetagSharp className="text-sm font-bold lg:text-lg md:text-lg text-smallHeader" />
