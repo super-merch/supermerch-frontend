@@ -426,54 +426,31 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     <>
       {/* Main Navbar */}
       <div
-        className="bg-white border-b border-gray-200 shadow-sm sm:py-2 pb-4"
+        className="bg-white shadow-sm"
         data-chat-offset="main-nav"
       >
-        <div className="flex items-center justify-between gap-3 !px-0 md:px-0 Mycontainer flex-wrap">
-          {/* Mobile Menu Button */}
-          <div className="xl:hidden flex items-center">
-            <Sheet
-              open={isSheetOpen}
-              onOpenChange={setIsSheetOpen}
-            >
+        {/* Row 1: Logo + Search + Icons */}
+        <div className="flex items-center gap-3 Mycontainer px-4 lg:px-8 py-3">
+          {/* Mobile hamburger */}
+          <div className="lg:hidden flex-shrink-0">
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </SheetTrigger>
-              <SheetContent
-                className="overflow-y-auto w-[90vw] sm:w-[450px] bg-white p-0 border-none scrollbar-hide"
-                side="left"
-              >
+              <SheetContent className="overflow-y-auto w-[90vw] sm:w-[450px] bg-white p-0 border-none scrollbar-hide" side="left">
                 <div className="p-6 border-b border-gray-100">
                   <SheetHeader>
                     <SheetTitle className="text-2xl text-primary font-bold">
-                      <img
-                        src={supermerch}
-                        alt="SuperMerch"
-                        className="h-16 w-auto object-contain"
-                      />
+                      <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
                     </SheetTitle>
                   </SheetHeader>
                 </div>
                 <div className="py-4">
                   <NavigationMenu
                     menuItems={menuItems}
-                    onItemClick={(item) => {
-                      handleMenuClick(item);
-                      setIsSheetOpen(false);
-                    }}
+                    onItemClick={(item) => { handleMenuClick(item); setIsSheetOpen(false); }}
                     onSubItemClick={() => setIsSheetOpen(false)}
                     variant="vertical"
                     size="default"
@@ -484,18 +461,13 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             </Sheet>
           </div>
 
-          {/* Navigation Menu - Desktop */}
-          <div className="hidden xl:block">
-            <NavigationMenu
-              menuItems={menuItems}
-              onItemClick={handleMenuClick}
-              size="default"
-              className="justify-start"
-            />
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <img src={supermerch} alt="SuperMerch" className="h-14 w-auto object-contain" />
           </div>
 
-          {/* Search Bar - Center */}
-          <div className="w-full flex-1 mx-2 sm:mx-4 order-3 lg:order-2">
+          {/* Search Bar */}
+          <div className="flex-1 mx-2 lg:mx-6">
             <SearchBar
               onSearch={handleSearch}
               categoryData={v1categories}
@@ -506,14 +478,26 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             />
           </div>
 
-          {/* User Actions - Right */}
-          <div className="flex items-center gap-3 order-2 lg:order-3">
+          {/* User Actions */}
+          <div className="flex-shrink-0">
             <UserActions
               isAuthenticated={!!token}
               onLogout={() => setNavbarLogout(true)}
               cartQuantity={totalQuantity}
               favouriteQuantity={favouriteQuantity}
               size="default"
+            />
+          </div>
+        </div>
+
+        {/* Row 2: Nav items — desktop only */}
+        <div className="hidden lg:block">
+          <div className="Mycontainer px-4 lg:px-8">
+            <NavigationMenu
+              menuItems={menuItems}
+              onItemClick={handleMenuClick}
+              size="default"
+              className="justify-center"
             />
           </div>
         </div>

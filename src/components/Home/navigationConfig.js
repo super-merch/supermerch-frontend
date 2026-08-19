@@ -54,12 +54,6 @@ export const buildBaseMenuItems = ({
     path: "/24hr-production?expressWindow=sameday",
     hasSubmenu: true,
   },
-  {
-    name: "Collections",
-    hasSubmenu: collections.length > 0,
-    megaMenu: collections.length > 0,
-  },
-  { name: "Clearance", path: "/clearance?category=clearance" },
   { name: "Bundle", path: "/deals" },
-  { name: "Australia Made", path: "/australia-made" },
+  { name: "Clearance", path: "/clearance?category=clearance" },
 ];

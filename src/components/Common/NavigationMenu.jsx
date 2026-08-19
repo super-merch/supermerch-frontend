@@ -423,8 +423,8 @@ const NavigationMenu = ({
   }
 
   return (
-    <nav className={`${className}`}>
-      <ul className="space-y-3 xl:space-y-0 xl:flex xl:items-center xl:gap-1">
+    <nav>
+      <ul className={`space-y-3 lg:space-y-0 lg:flex lg:items-center lg:gap-1 ${className}`}>
         {menuItems.map((item) => {
           const isSubmenuVisible = isDesktop
             ? hoveredItem === item.id
