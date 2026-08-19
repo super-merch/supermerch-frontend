@@ -431,45 +431,48 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       >
         {/* Row 1: Logo + Search + Icons */}
         <div className="Mycontainer px-4 lg:px-8 py-3">
-          {/* Top line: hamburger + logo + icons */}
+          {/* Top line: hamburger + logo | search (desktop) | icons */}
           <div className="flex items-center gap-3">
-            {/* Mobile hamburger */}
-            <div className="lg:hidden flex-shrink-0">
-              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </SheetTrigger>
-                <SheetContent className="overflow-y-auto w-[90vw] sm:w-[450px] bg-white p-0 border-none scrollbar-hide" side="left">
-                  <div className="p-6 border-b border-gray-100">
-                    <SheetHeader>
-                      <SheetTitle className="text-2xl text-primary font-bold">
-                        <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
-                      </SheetTitle>
-                    </SheetHeader>
-                  </div>
-                  <div className="py-4">
-                    <NavigationMenu
-                      menuItems={menuItems}
-                      onItemClick={(item) => { handleMenuClick(item); setIsSheetOpen(false); }}
-                      onSubItemClick={() => setIsSheetOpen(false)}
-                      variant="vertical"
-                      size="default"
-                      className="px-2"
-                    />
-                  </div>
-                </SheetContent>
-              </Sheet>
+            {/* Left: hamburger + logo */}
+            <div className="flex items-center gap-3 xl:flex-1">
+              {/* Mobile hamburger */}
+              <div className="lg:hidden flex-shrink-0">
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                  <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </SheetTrigger>
+                  <SheetContent className="overflow-y-auto w-[90vw] sm:w-[450px] bg-white p-0 border-none scrollbar-hide" side="left">
+                    <div className="p-6 border-b border-gray-100">
+                      <SheetHeader>
+                        <SheetTitle className="text-2xl text-primary font-bold">
+                          <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
+                        </SheetTitle>
+                      </SheetHeader>
+                    </div>
+                    <div className="py-4">
+                      <NavigationMenu
+                        menuItems={menuItems}
+                        onItemClick={(item) => { handleMenuClick(item); setIsSheetOpen(false); }}
+                        onSubItemClick={() => setIsSheetOpen(false)}
+                        variant="vertical"
+                        size="default"
+                        className="px-2"
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
+              {/* Logo */}
+              <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
+                <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
+              </div>
             </div>
 
-            {/* Logo */}
-            <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
-              <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
-            </div>
-
-            {/* Search Bar — desktop only inline */}
-            <div className="hidden lg:flex flex-1 max-w-lg mx-6">
+            {/* Centre: Search Bar — desktop only */}
+            <div className="hidden xl:flex w-full max-w-lg">
               <SearchBar
                 onSearch={handleSearch}
                 categoryData={v1categories}
@@ -480,11 +483,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               />
             </div>
 
-            {/* Spacer on mobile to push icons right */}
-            <div className="flex-1 lg:hidden" />
+            {/* Spacer on smaller screens to push icons right */}
+            <div className="flex-1 xl:hidden" />
 
-            {/* Reorder + User Actions */}
-            <div className="flex-shrink-0 flex items-center gap-3">
+            {/* Right: Reorder + User Actions */}
+            <div className="flex-shrink-0 xl:flex-1 flex items-center justify-end gap-3">
               <button
                 onClick={() => navigate("/user/orders")}
                 className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full border border-primary text-primary text-sm font-medium hover:bg-primary hover:text-white transition-all duration-200"
@@ -504,8 +507,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             </div>
           </div>
 
-          {/* Search bar — mobile only, below the top line */}
-          <div className="lg:hidden mt-2">
+          {/* Search bar — below the top line on smaller screens */}
+          <div className="xl:hidden mt-2">
             <SearchBar
               onSearch={handleSearch}
               categoryData={v1categories}
