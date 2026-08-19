@@ -4,17 +4,17 @@ import { popularCategories } from "./popularCategoriesData";
 
 const PopularCategories = () => {
   return (
-    <div className="Mycontainer py-8">
-      <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-6 md:mb-8 text-center">
+    <div className="Mycontainer py-6 px-4 md:px-8">
+      <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4 md:mb-6 text-center">
         POPULAR PRODUCT CATEGORIES
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 xl:gap-6">
+      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
         {popularCategories.map((category) => (
           <Link
             key={category.name}
             to={category.path}
             aria-label={`Shop ${category.name}`}
-            className="relative bg-white rounded-2xl overflow-hidden cursor-pointer border border-secondary/10 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-primary group"
+            className="relative bg-white rounded-xl overflow-hidden cursor-pointer border border-secondary/10 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-primary group"
           >
             <div className="overflow-hidden">
               <img
@@ -22,16 +22,16 @@ const PopularCategories = () => {
                 alt={category.name}
                 loading="lazy"
                 decoding="async"
-                width="800"
-                height="800"
+                width="400"
+                height="400"
                 className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-500"
                 onError={(e) => {
                   e.target.src = "/noimage.png";
                 }}
               />
             </div>
-            <div className="p-4">
-              <h3 className="text-secondary text-base font-semibold text-center group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.5rem]">
+            <div className="p-2">
+              <h3 className="text-secondary text-xs font-semibold text-center group-hover:text-primary transition-colors duration-300 line-clamp-2">
                 {category.name}
               </h3>
             </div>
