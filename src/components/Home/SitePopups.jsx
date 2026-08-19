@@ -199,7 +199,7 @@ const SitePopups = () => {
           {activePopup.couponCode ? (
             alreadySubscribed ? (
               <div className="mb-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                This email is already in our system. Check your inbox for your coupon code.
+                This email is already in our system.
               </div>
             ) : revealedCoupon ? (
               <div className="mb-4 px-4 py-3 bg-gray-100 rounded-lg">
@@ -261,7 +261,7 @@ const SitePopups = () => {
             <button
               onClick={() => {
                 closePopup();
-                if (activePopup.ctaLink) navigate(activePopup.ctaLink);
+                if (activePopup.ctaLink && !alreadySubscribed) navigate(activePopup.ctaLink);
               }}
               className="w-full mt-2 px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors duration-200 text-sm"
             >
