@@ -11,12 +11,12 @@ import packing from "../../assets/packing.jpg";
 import notebook from "../../assets/category-notebook.webp";
 import jersey from "../../assets/shirt2.png";
 
-import industryTrades from "../../assets/mwts-industry-trades.jpg";
-import industryRealEstate from "../../assets/mwts-industry-realestate.jpg";
+import industryTrades from "../../assets/mwts-industry-trades-new.jpg";
+import industryRealEstate from "../../assets/mwts-industry-realestate-new.jpg";
 import industryIT from "../../assets/mwts-industry-it.jpg";
-import industryHospitality from "../../assets/mwts-industry-hospitality.png";
+import industryHospitality from "../../assets/mwts-industry-hospitality-new.jpg";
 
-import recipientExecutives from "../../assets/mwts-recipient-executives.png";
+import recipientExecutives from "../../assets/mwts-recipient-executives-new.jpg";
 import recipientConference from "../../assets/mwts-recipient-conference.png";
 import recipientStaff from "../../assets/mwts-recipient-staff.jpg";
 import recipientCustomer from "../../assets/mwts-recipient-customer.jpg";
