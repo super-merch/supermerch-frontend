@@ -97,11 +97,10 @@ const UserActions = ({
       {!isAuthenticated ? (
         <Link
           to="/login"
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all duration-200"
         >
-          <HiOutlineUser
-            className={`${currentSize.icon} text-customBlue hover:text-primary transition-colors text-xl md:text-2xl lg:text-3xl`}
-          />
+          <HiOutlineUser className="text-lg shrink-0" />
+          <span className="hidden sm:inline whitespace-nowrap">Sign In</span>
         </Link>
       ) : (
         <div className="relative" ref={dropdownRef}>

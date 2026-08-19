@@ -489,8 +489,8 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             {/* Right: Reorder + User Actions */}
             <div className="flex-shrink-0 xl:flex-1 flex items-center justify-end gap-3">
               <button
-                onClick={() => navigate("/user/orders")}
-                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full border border-primary text-primary text-sm font-medium hover:bg-primary hover:text-white transition-all duration-200"
+                onClick={() => token ? navigate("/user/orders") : navigate("/login?redirect=/user/orders")}
+                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

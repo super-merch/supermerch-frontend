@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
@@ -57,6 +57,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -92,7 +94,7 @@ const Login = () => {
           dispatch(initializeCartFromStorage({ email: user.email }));
           dispatch(loadFavouritesFromDB(user.email));
         }
-        navigate("/");
+        navigate(redirectTo);
       }
     } catch (err) {
       setError(err?.response?.data?.message);
