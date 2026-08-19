@@ -51,12 +51,12 @@ const TopBanner = ({ onCouponClick }) => {
             {promoText}
           </span>
 
-          {/* Vertical separator */}
+          {/* Vertical separator — desktop only */}
           <div className="hidden sm:block w-px h-4 bg-white/30"></div>
 
-          {/* Coupon section */}
+          {/* Coupon section — desktop only */}
           <div
-            className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            className="hidden sm:flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleCouponClick}
           >
             <span className="underline text-white text-sm md:text-lg font-medium whitespace-nowrap">
