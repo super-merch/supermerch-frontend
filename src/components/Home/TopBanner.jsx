@@ -1,6 +1,5 @@
 import React from "react";
 import { FaTag, FaFacebookF, FaInstagram, FaEnvelope } from "react-icons/fa";
-import { Logo } from "../Common";
 import useCmsData from "../../hooks/useCmsData";
 
 const ICON_MAP = { FaFacebookF, FaInstagram, FaEnvelope };
@@ -42,11 +41,6 @@ const TopBanner = ({ onCouponClick }) => {
         </div>
       ) : (
       <div className="Mycontainer flex flex-wrap md:flex-nowrap md:items-center justify-between gap-2 md:gap-0  md:px-0">
-        {/* Left side - Super Merch Logo */}
-        <div className="flex items-center order-1 min-w-0 md:min-w-fit">
-          <Logo size="default" logoClassName="brightness-0 invert" />
-        </div>
-
         {/* Center - Promotion text */}
         <div className="order-3 md:order-2 w-full md:w-auto flex items-center justify-between md:justify-center md:text-center md:flex-1 gap-3">
           {/* Promotion text */}
