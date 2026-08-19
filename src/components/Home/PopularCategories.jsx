@@ -8,7 +8,7 @@ const PopularCategories = () => {
       <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4 md:mb-6 text-center">
         POPULAR PRODUCT CATEGORIES
       </h2>
-      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
+      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
         {popularCategories.map((category) => (
           <Link
             key={category.name}
