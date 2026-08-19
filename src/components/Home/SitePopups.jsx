@@ -97,7 +97,7 @@ const SitePopups = () => {
     } finally {
       setEmailLoading(false);
     }
-  }, [emailInput, backendUrl, activePopup]);
+  }, [emailInput, backendUrl, activePopup, agreedToTerms]);
 
   // Allow header/top-banner CTA to open an admin-managed pop-up immediately.
   useEffect(() => {
