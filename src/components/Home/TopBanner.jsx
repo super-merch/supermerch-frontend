@@ -40,51 +40,42 @@ const TopBanner = ({ onCouponClick }) => {
           </div>
         </div>
       ) : (
-      <div className="Mycontainer flex flex-wrap md:flex-nowrap md:items-center justify-between gap-2 md:gap-0  md:px-0">
-        {/* Center - Promotion text */}
-        <div className="order-3 md:order-2 w-full md:w-auto flex items-center justify-between md:justify-center md:text-center md:flex-1 gap-3">
-          {/* Promotion text */}
+      <div className="Mycontainer flex items-center justify-between gap-3">
+        {/* Promotion text */}
+        <span
+          className="flex-1 min-w-0 text-white text-xs sm:text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity truncate"
+          onClick={handleCouponClick}
+        >
+          {promoText}
+        </span>
+
+        {/* Vertical separator + CTA — desktop only */}
+        <div className="hidden sm:flex items-center gap-3 shrink-0">
+          <div className="w-px h-4 bg-white/30"></div>
           <span
-            className="flex items-center text-white text-sm md:text-lg font-medium cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
+            className="underline text-white text-sm md:text-lg font-medium whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleCouponClick}
           >
-            {promoText}
+            {ctaText}
           </span>
-
-          {/* Vertical separator — desktop only */}
-          <div className="hidden sm:block w-px h-4 bg-white/30"></div>
-
-          {/* Coupon section — desktop only */}
-          <div
-            className="hidden sm:flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={handleCouponClick}
-          >
-            <span className="underline text-white text-sm md:text-lg font-medium whitespace-nowrap">
-              {ctaText}
-            </span>
-          </div>
         </div>
 
-        {/* Right side - Social media icons */}
-        <div className="flex items-center gap-3 md:gap-5 order-2 md:order-3 ml-auto shrink-0">
-          {socialLinks.length > 0 ? (
-            socialLinks.map((link, i) => {
-              const IconComp = ICON_MAP[link.icon] || FaEnvelope;
-              return (
-                <a
-                  key={i}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:opacity-80 transition-opacity"
-                >
-                  <IconComp className="text-base sm:text-3xl" />
-                </a>
-              );
-            })
-          ) : (
-            <></>
-          )}
+        {/* Social media icons */}
+        <div className="flex items-center gap-3 md:gap-5 shrink-0">
+          {socialLinks.map((link, i) => {
+            const IconComp = ICON_MAP[link.icon] || FaEnvelope;
+            return (
+              <a
+                key={i}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:opacity-80 transition-opacity"
+              >
+                <IconComp className="text-base sm:text-xl" />
+              </a>
+            );
+          })}
         </div>
       </div>
       )}
