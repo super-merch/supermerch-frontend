@@ -21,6 +21,18 @@
       "includeFiles": "server-assets/app-shell.html"
     }
   },
+  "redirects": [
+    {
+      "source": "/book",
+      "destination": "https://calendar.google.com/appointments/schedules/AcZssZ3sab5Mqxn8uu1502FYaXKsl52Fcv4D4Y_aGW5ATKcq4gR8NxYyqMs8KVZWk9VHrra5tEO_YeaF",
+      "permanent": false
+    },
+    {
+      "source": "/Book",
+      "destination": "https://calendar.google.com/appointments/schedules/AcZssZ3sab5Mqxn8uu1502FYaXKsl52Fcv4D4Y_aGW5ATKcq4gR8NxYyqMs8KVZWk9VHrra5tEO_YeaF",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/sitemap.xml",
