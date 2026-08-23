@@ -57,6 +57,9 @@ const Cards = ({ category = "" }) => {
     getProducts,
     productsLoading,
     productsFetching,
+    productsIsError,
+    productsError,
+    refetchProducts,
   } = useContext(ProductsContext);
   const isProductsLoading = productsLoading || productsFetching;
   const { backendUrl } = useContext(AppContext);
@@ -806,6 +809,28 @@ const Cards = ({ category = "" }) => {
               Array.from({ length: 20 }, (_, index) => (
                 <SkeletonLoadingCards key={index} />
               ))
+            ) : productsIsError ? (
+              <div
+                className="col-span-full mx-auto my-10 max-w-xl rounded-lg border border-red-200 bg-red-50 p-6 text-center"
+                role="alert"
+              >
+                <h2 className="mb-2 text-xl font-semibold text-gray-900">
+                  Products are temporarily unavailable
+                </h2>
+                <p className="mb-4 text-gray-700">
+                  We couldn&apos;t load this catalogue. Your filters have been preserved.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => refetchProducts()}
+                  className="rounded-lg bg-primary px-5 py-2.5 font-medium text-white hover:bg-primary/90"
+                >
+                  Try again
+                </button>
+                {import.meta.env.DEV && productsError?.message ? (
+                  <p className="mt-3 text-xs text-gray-500">{productsError.message}</p>
+                ) : null}
+              </div>
             ) : (accumulatedProducts?.length > 0 || getProducts?.data?.length > 0) ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
