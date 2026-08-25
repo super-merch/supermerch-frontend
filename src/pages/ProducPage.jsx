@@ -17,7 +17,7 @@ const ProducPage = ({ product }) => {
       <ProductNavigate product={product} />
       <ProductDetails product={product} />
       {/* <DescripTabs/> */}
-      <div className="">
+      <div className="mt-16">
         <TabsButtons />
       </div>
     </div>
