@@ -145,17 +145,23 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
           </span>
         ))}
 
-        {specialTags.map((name) => (
-          <span
-            key={name}
-            className="inline-flex items-center px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] md:text-xs font-semibold border shadow-sm overflow-hidden"
-            style={{ backgroundColor: "#10b981", color: "#ffffff", borderColor: "#10b981" }}
-            title={name}
-          >
-            <span className="truncate max-w-[72px] sm:max-w-[120px]">{name}</span>
-          </span>
-        ))}
       </div>
+
+      {/* Special Tags - Top Right */}
+      {specialTags.length > 0 && (
+        <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 flex flex-col items-end gap-1 pointer-events-none">
+          {specialTags.map((name) => (
+            <span
+              key={name}
+              className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] md:text-xs font-semibold border shadow-sm overflow-hidden"
+              style={{ backgroundColor: "#10b981", color: "#ffffff", borderColor: "#10b981" }}
+              title={name}
+            >
+              <span className="truncate max-w-[72px] sm:max-w-[120px]">{name}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Favorite Button - Top Right */}
       <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20">
