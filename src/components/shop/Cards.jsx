@@ -51,6 +51,11 @@ const Cards = ({ category = "" }) => {
   const limit = parseInt(searchParams.get("limit")) || 20;
   const pageLimit = limit;
 
+  const isMetalPens = urlCategoryParam === "PY-06";
+  const gridCols = isMetalPens
+    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4"
+    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4";
+
   const {
     paginationData,
     setPaginationData,
@@ -798,7 +803,7 @@ const Cards = ({ category = "" }) => {
           </div>
           <div
             className={`${isProductsLoading
-              ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full"
+              ? `grid ${gridCols} gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-10 mt-3 w-full`
               : ""
               }`}
           >
@@ -808,7 +813,7 @@ const Cards = ({ category = "" }) => {
               ))
             ) : (accumulatedProducts?.length > 0 || getProducts?.data?.length > 0) ? (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full">
+                <div className={`grid ${gridCols} gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 md:mt-5 mt-3 w-full`}>
                   {displayProducts.map((product, index) => {
                     const productId = product.meta?.id?.toString();
                     return (
