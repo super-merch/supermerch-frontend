@@ -35,6 +35,9 @@ const UserProducts = () => {
   const [reOrderLoading, setReOrderLoading] = useState(false);
   const [editableProducts, setEditableProducts] = useState([]);
   const [productDetails, setProductDetails] = useState({});
+  // Lines whose live product could not be resolved — discontinued, or from a
+  // supplier that has been switched off. Shown but excluded from the re-order.
+  const [unavailableIds, setUnavailableIds] = useState(new Set());
   const [popupLoading, setPopupLoading] = useState(false);
 
   // Proof review state
@@ -331,13 +334,40 @@ const openReOrderModal = useCallback(async () => {
   try {
     const ids = [...new Set((selectedOrder?.products || []).map((p) => p.id))];
     const details = {};
-    await Promise.all(
+    const unavailable = new Set();
+
+    // allSettled, not all: a product can legitimately no longer resolve — it
+    // has been discontinued, or its supplier has been switched off — and with
+    // Promise.all a single 404 rejected the whole batch, so EVERY line lost its
+    // details and silently fell back to the prices frozen in the old order.
+    const results = await Promise.allSettled(
       ids.map(async (id) => {
         const { data } = await axios.get(`${backendUrl}/api/single-product/${id}`);
-        details[id] = data.data;
+        return { id, product: data?.data };
       })
     );
+
+    results.forEach((result, index) => {
+      const id = ids[index];
+      if (result.status === "fulfilled" && result.value?.product) {
+        details[id] = result.value.product;
+      } else {
+        // Cannot be reordered: we have no live price for it, and quoting the
+        // old one would sell at a price we can no longer honour.
+        unavailable.add(id);
+      }
+    });
+
     setProductDetails(details);
+    setUnavailableIds(unavailable);
+
+    if (unavailable.size > 0) {
+      toast.error(
+        unavailable.size === ids.length
+          ? "None of these items are available to re-order."
+          : `${unavailable.size} item${unavailable.size > 1 ? "s are" : " is"} no longer available and will not be re-ordered.`
+      );
+    }
   } catch (err) {
     console.error("Failed to fetch product details:", err);
     toast.error("Failed to load product details.")
@@ -394,14 +424,34 @@ const removeEditableProduct = (index) => {
 };
 
 const getEditableProductTotal = () => {
-  const subtotal = editableProducts.reduce((sum, p) => sum + (p.subTotal || 0), 0);
+  // Unavailable lines are excluded from the re-order, so they must not appear
+  // in the total either — otherwise the customer is quoted a figure they will
+  // never be charged.
+  const subtotal = editableProducts
+    .filter((p) => !unavailableIds.has(p.id))
+    .reduce((sum, p) => sum + (p.subTotal || 0), 0);
   return subtotal;
 };
+
+const unavailableCount = editableProducts.filter((p) =>
+  unavailableIds.has(p.id)
+).length;
+const orderableCount = editableProducts.length - unavailableCount;
 
 
 const handleReOrder = async () => {
   if (editableProducts.length === 0) {
     return toast.error("No products to re-order.")
+  }
+
+  // Drop anything we could not price live. Reordering these would charge the
+  // price frozen in the original order, which we may no longer be able to
+  // honour — the supplier may have been switched off entirely.
+  const orderableProducts = editableProducts.filter(
+    (p) => !unavailableIds.has(p.id)
+  );
+  if (orderableProducts.length === 0) {
+    return toast.error("None of these items are available to re-order.");
   }
   setReOrderLoading(true);
   const token = localStorage.getItem("token");
@@ -412,7 +462,7 @@ const handleReOrder = async () => {
   try {
     const checkoutData = {
       ...selectedOrder,
-      products: editableProducts,
+      products: orderableProducts,
       paymentStatus: "Paid",
       // Coupons are not re-applied on re-orders — the Stripe session is
       // created without one, so the server must not recompute a discount.
@@ -427,7 +477,7 @@ const handleReOrder = async () => {
       import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
     );
     const body = {
-      products: editableProducts.map((p) => ({
+      products: orderableProducts.map((p) => ({
         id: p.id,
         name: p.name,
         image: p.image,
@@ -1113,6 +1163,10 @@ return (
               <div className="space-y-4">
                 {editableProducts.map((product, index) => {
                   const detail = productDetails[product.id];
+                  // No live product means no live price. Show the line so the
+                  // customer can see what is missing, but keep it out of the
+                  // re-order rather than charging the old price.
+                  const isUnavailable = unavailableIds.has(product.id);
                   const colors = detail ? getColorsFromProduct(detail) : [];
                   const parsedSizes = detail ? extractSizesFromProduct(detail) : [];
                   const sizes =
@@ -1127,7 +1181,22 @@ return (
                         : [];
 
                   return (
-                    <div key={index} className="border rounded-lg p-4 relative">
+                    <div
+                      key={index}
+                      className={`border rounded-lg p-4 relative ${
+                        isUnavailable ? "bg-gray-50 border-gray-300" : ""
+                      }`}
+                    >
+                      {isUnavailable && (
+                        <div className="mb-3 flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2">
+                          <FaTimesCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
+                          <p className="text-xs text-amber-800">
+                            <span className="font-semibold">No longer available.</span>{" "}
+                            This item won&apos;t be included in your re-order. Everything else below will be.
+                          </p>
+                        </div>
+                      )}
+
                       {/* Remove button */}
                       {editableProducts.length > 1 && (
                         <button
@@ -1294,10 +1363,18 @@ return (
                 </button>
                 <button
                   onClick={handleReOrder}
-                  disabled={reOrderLoading}
+                  // Only blocked when NOTHING can be re-ordered. A single dead
+                  // line must not stop the customer reordering the rest.
+                  disabled={reOrderLoading || orderableCount === 0}
                   className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {reOrderLoading ? "Re-ordering..." : "Confirm Re-order"}
+                  {reOrderLoading
+                    ? "Re-ordering..."
+                    : orderableCount === 0
+                      ? "Nothing available"
+                      : unavailableCount > 0
+                        ? `Re-order ${orderableCount} of ${editableProducts.length} items`
+                        : "Confirm Re-order"}
                 </button>
               </div>
             </div>
