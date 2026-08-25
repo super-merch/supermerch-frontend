@@ -394,6 +394,17 @@ export function mapSingleProductToWorkwearModel(singleProduct, v1categories = []
     primaryImage: { imageUrl: images[0] || "" },
     availableColors: colors,
     priceTiers: tiers,
+    /**
+     * The supplier declined to publish a price. 1,596 products carry this —
+     * every one of them headwear, from the four regional Headwear Stockists.
+     * Their price breaks are empty, so the page was rendering the resulting
+     * zero as "$0.00 per unit" and offering an Add to Cart button.
+     *
+     * Read from the server's explicit flag rather than inferred from a zero: a
+     * zero could arise for other reasons, and "ask us" is a deliberate signal.
+     */
+    isPriceOnApplication:
+      singleProduct?.pricingSummary?.isPriceOnApplication === true,
     mainCategory: {
       name: catMeta?.name || catMeta?.label || "Products",
       slug: catMeta?.slug || catMeta?.id || "all",

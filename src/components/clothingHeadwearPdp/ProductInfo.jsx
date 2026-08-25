@@ -59,6 +59,13 @@ export default function ProductInfo({
 
     // Use price tiers from product data
     const pricingTiers = product.priceTiers || [];
+
+    /**
+     * The supplier publishes no price for this product — "price on
+     * application". Taken from the server's explicit flag rather than inferred
+     * from a zero, since a zero could arise for other reasons.
+     */
+    const isPriceOnApplication = product.isPriceOnApplication === true;
     const visiblePricingTiers = showAllPricingTiers
         ? pricingTiers
         : pricingTiers.slice(0, 1);
@@ -423,7 +430,46 @@ export default function ProductInfo({
                 </div>
             )}
 
-            {/* Price Tiers Display */}
+            {/*
+              * Price on application: the supplier publishes no price for this
+              * product, so there is nothing to show. Every one of the 1,596
+              * products in this state is headwear from the four regional
+              * Headwear Stockists, and their price breaks are empty — which the
+              * page previously rendered as "$0.00 per unit" with an Add to Cart
+              * button beside it.
+              *
+              * Showing a quote request instead keeps the lead, which matters
+              * because most of SuperMerch's revenue comes through quotes rather
+              * than the cart.
+              */}
+            {isPriceOnApplication ? (
+                <div className="border-t-2 border-[#E5E7EB] pt-3 sm:pt-4">
+                    <div className="bg-[#F0F9FF] border border-[#BAE6FD] rounded-lg p-3 sm:p-4">
+                        <p
+                            className="text-[#0C4A6E] font-bold text-lg sm:text-xl mb-1"
+                            style={{ fontFamily: "Inter, sans-serif" }}
+                        >
+                            Contact us for pricing
+                        </p>
+                        <p
+                            className="text-[#075985] text-xs sm:text-sm mb-3"
+                            style={{ fontFamily: "Inter, sans-serif" }}
+                        >
+                            This product is priced on application. Tell us the
+                            quantity, colours and branding you need and we will
+                            come back with a price.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={onGetExpressQuote}
+                            className="w-full sm:w-auto bg-[#0369A1] hover:bg-[#075985] text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors"
+                            style={{ fontFamily: "Inter, sans-serif" }}
+                        >
+                            Request a quote
+                        </button>
+                    </div>
+                </div>
+            ) : (
             <div className="border-t-2 border-[#E5E7EB] pt-3 sm:pt-4">
                 {/* Main Price Display */}
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
@@ -582,6 +628,7 @@ export default function ProductInfo({
                     </div>
                 )}
             </div>
+            )}
 
             {/* Size & Quantities Section - Redesigned */}
             <div className="border-t border-[#E5E7EB] pt-3 sm:pt-4">
@@ -1011,6 +1058,9 @@ export default function ProductInfo({
                             <button
                                 onClick={onAddToCart}
                                 disabled={
+                                    // Nothing can be added to a cart at a price
+                                    // the supplier has not given us.
+                                    isPriceOnApplication ||
                                     !product.inStock ||
                                     !hasSelection ||
                                     selectedColors.length === 0 ||
