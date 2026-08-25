@@ -1992,8 +1992,8 @@ const ProductDetails = () => {
         />
       )}
       {/* Services */}
-      <Services />
-      <img src={banner} alt="Home" className="w-full h-auto my-10" />
+      {/* <Services /> */}
+      {/* <img src={banner} alt="Home" className="w-full h-auto my-10" /> */}
       {/* Size Guide Modal */}
       {showSizeGuide && (
         <SizeGuideModal
