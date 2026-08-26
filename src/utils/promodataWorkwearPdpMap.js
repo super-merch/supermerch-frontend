@@ -1,4 +1,5 @@
 import { getCategoryMeta } from "@/utils/categoryMeta";
+import { isProductPriceOnApplication } from "@/utils/utils";
 
 const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
 
@@ -400,11 +401,13 @@ export function mapSingleProductToWorkwearModel(singleProduct, v1categories = []
      * Their price breaks are empty, so the page was rendering the resulting
      * zero as "$0.00 per unit" and offering an Add to Cart button.
      *
-     * Read from the server's explicit flag rather than inferred from a zero: a
-     * zero could arise for other reasons, and "ask us" is a deliberate signal.
+     * The server's explicit flag is authoritative, but it does not exist in
+     * the deployed API response yet — it arrives with backend #86. Reading
+     * only the flag left this page inert on live data, so the shared
+     * predicate is used instead: it prefers the flag and falls back to
+     * "no usable base-price break anywhere on the product".
      */
-    isPriceOnApplication:
-      singleProduct?.pricingSummary?.isPriceOnApplication === true,
+    isPriceOnApplication: isProductPriceOnApplication(singleProduct),
     mainCategory: {
       name: catMeta?.name || catMeta?.label || "Products",
       slug: catMeta?.slug || catMeta?.id || "all",

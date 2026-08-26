@@ -1,5 +1,57 @@
 import { colornames } from "color-name-list";
 
+/**
+ * "The first price group" and "the price" are not the same thing.
+ *
+ * Eight catalogue products carry an empty first group — or a full ladder of
+ * zeros — with the real price sitting in a later one. Every surface that read
+ * the first group and found nothing concluded the product had no price and
+ * showed Contact Us, even though it is perfectly sellable. Podium Kids S/S
+ * Poly Polo has four empty groups before the $8.80 one.
+ *
+ * So: a usable break is a finite price above zero, and it counts wherever on
+ * the product it happens to live.
+ */
+const usableBreakPrices = (product) =>
+  (product?.product?.prices?.price_groups || [])
+    .flatMap((group) => group?.base_price?.price_breaks || [])
+    .map((priceBreak) => Number(priceBreak?.price))
+    .filter((price) => Number.isFinite(price) && price > 0);
+
+/**
+ * The first base-price group that actually carries a price. Callers used
+ * `find((group) => group?.base_price)`, which stops at the first group that
+ * merely HAS the block — including an empty one — and then reads 0 out of it.
+ */
+export const getPricedBaseGroup = (product) =>
+  (product?.product?.prices?.price_groups || []).find((group) =>
+    (group?.base_price?.price_breaks || []).some((priceBreak) => {
+      const price = Number(priceBreak?.price);
+      return Number.isFinite(price) && price > 0;
+    }),
+  ) || null;
+
+/** The cheapest real base price on the product, or null if it has none. */
+export const getMinUsableBasePrice = (product) => {
+  const prices = usableBreakPrices(product);
+  return prices.length ? Math.min(...prices) : null;
+};
+
+/**
+ * The single definition of "we cannot price this, ask us".
+ *
+ * There were four slightly different versions of this test across the cards,
+ * the carousel and the two product pages, which is how the promotional page
+ * came to disagree with its own quote modal. One fact, one function.
+ *
+ * `pricingSummary.isPriceOnApplication` is authoritative but only exists once
+ * backend #86 ships; until then the break check is what actually fires.
+ */
+export const isProductPriceOnApplication = (product) =>
+  product?.pricingSummary?.isPriceOnApplication === true ||
+  getMinUsableBasePrice(product) === null;
+
+
 export const getProductPrice = (product, id,isClothing) => {
   const summaryFinal = Number(product?.pricingSummary?.finalMinPrice);
   if (Number.isFinite(summaryFinal) && summaryFinal > 0) {
@@ -7,10 +59,14 @@ export const getProductPrice = (product, id,isClothing) => {
   }
 
   const priceGroups = product?.product?.prices?.price_groups || [];
-  const basePrice = priceGroups.find((group) => group?.base_price) || {};
   const additionalPrice =
     priceGroups.find((group) => group?.additions?.length > 0) || {};
   const firstPrintPrice = additionalPrice?.additions?.[0]?.price_breaks
+  // Deliberately still ONE group's ladder, not the cheapest across all of
+  // them — widening it would quietly restate prices on the 8,969 multi-group
+  // products. The only change is which group: the first that actually
+  // carries a price rather than the first that merely has the block.
+  const basePrice = getPricedBaseGroup(product) || {};
   const priceBreaks = basePrice.base_price?.price_breaks || [];
   const prices = priceBreaks
     .map((breakItem) => breakItem.price)

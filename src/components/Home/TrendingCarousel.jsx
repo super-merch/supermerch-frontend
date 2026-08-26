@@ -1,4 +1,4 @@
-import { slugify, toProductUrl } from "@/utils/utils";
+import { getMinUsableBasePrice, isProductPriceOnApplication, slugify, toProductUrl } from "@/utils/utils";
 import { useContext, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { FaFire } from "react-icons/fa";
@@ -143,23 +143,12 @@ const TrendingCarousel = () => {
                   className="blog-swiper"
                 >
                   {trendingProducts.map((product, slideIndex) => {
-                    const priceGroups =
-                      product.product?.prices?.price_groups || [];
-                    const basePrice =
-                      priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks =
-                      basePrice.base_price?.price_breaks || [];
-                    const prices = priceBreaks
-                      .map((breakItem) => breakItem.price)
-                      .filter((price) => price !== undefined);
-                    const minPrice = prices.length ? Math.min(...prices) : 0;
-                    // No price breaks means the supplier publishes no price, and
-                    // `prices.length ? … : 0` turned that into "From $0.00" on
-                    // the home page. Verified live on Promo Stylus Pen II.
+                    // This read the first group and turned an absent price into
+                    // 0, which is how "From $0.00" reached the home page.
+                    // Verified live on Promo Stylus Pen II.
                     const isPriceOnApplication =
-                      product?.pricingSummary?.isPriceOnApplication === true ||
-                      !prices.length ||
-                      minPrice <= 0;
+                      isProductPriceOnApplication(product);
+                    const minPrice = getMinUsableBasePrice(product) ?? 0;
                     const isFavourited = favouriteItems?.some(
                       (item) => item.meta?.id === product?.meta?.id,
                     );

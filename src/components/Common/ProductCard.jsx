@@ -1,6 +1,7 @@
 import {
   findNearestColor,
   getProductPrice,
+  isProductPriceOnApplication,
   is24HrProduct,
   isProductCategory,
   toProductUrl,
@@ -260,9 +261,7 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
                 * for "no price" and did not cover the shape "no price" actually
                 * takes for these 1,596 products.
                 */}
-              {productPrice == 0 ||
-              !Number.isFinite(Number(productPrice)) ||
-              product?.pricingSummary?.isPriceOnApplication === true ? (
+              {isProductPriceOnApplication(product) ? (
                 <p className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
                   Contact Us
                 </p>

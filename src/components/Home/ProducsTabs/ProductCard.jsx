@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import noimage from "/noimage.png";
-import { getProductPrice, slugify, toProductUrl } from "@/utils/utils";
+import { getProductPrice, isProductPriceOnApplication, slugify, toProductUrl } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
@@ -47,10 +47,7 @@ const ProductCard = ({
    * that one was given the on-application guard, so a product with no supplier
    * price still advertised "Starting From $0.00" here.
    */
-  const isPriceOnApplication =
-    product?.pricingSummary?.isPriceOnApplication === true ||
-    !Number.isFinite(finalPrice) ||
-    finalPrice <= 0;
+  const isPriceOnApplication = isProductPriceOnApplication(product);
   const is24HrProduct = (() => {
     if (product?.supplier?.supplier === "Promo Brands") return false;
 

@@ -2,6 +2,7 @@ import LoadingOverlay from "@/components/Common/LoadingOverlay";
 import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
 import {
   getProductPrice,
+  isProductPriceOnApplication,
   isProductCategory,
   findNearestColor,
   getProductCategory,
