@@ -112,13 +112,24 @@ const QuoteFormModal = ({
               <div className="flex items-center justify-between gap-2">
                 <span className="text-gray-600">Quantity</span>
 
-                {showQuoteForm?.from === "lowMOQ" ? (
+                {/*
+                  * Editable for price-on-application as well as low-MOQ.
+                  *
+                  * On a POA product the quantity selector is hidden — there is
+                  * no price to attach to a quantity — so this would otherwise
+                  * always read "1". The panel that sent the customer here says
+                  * "tell us the quantity you need", and a quote for one cap
+                  * when they wanted five hundred is not a usable lead.
+                  */}
+                {showQuoteForm?.from === "lowMOQ" || isPriceOnApplication ? (
                   <input
                     type="number"
+                    min="1"
                     value={currentQuantity}
-                    onChange={(e) =>
-                      setCurrentQuantity(parseInt(e.target.value))
-                    }
+                    onChange={(e) => {
+                      const parsed = parseInt(e.target.value, 10);
+                      setCurrentQuantity(Number.isFinite(parsed) && parsed > 0 ? parsed : 1);
+                    }}
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 ) : (

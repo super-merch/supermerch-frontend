@@ -94,6 +94,14 @@ export default function ClothingHeadwearWorkwearPdp() {
   );
 
   const [selectedColor, setSelectedColor] = useState("");
+  /**
+   * ONE source for this fact. It was being read from two places — the mapped
+   * product in some components and the raw API response here — which is two
+   * ways for the same question to be answered differently. The mapper already
+   * derives it from pricingSummary; everything else reads the mapped value.
+   */
+  const isPriceOnApplication = workwearProduct?.isPriceOnApplication === true;
+
   const [sizeQuantities, setSizeQuantities] = useState({});
   const [addingToCart, setAddingToCart] = useState(false);
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
@@ -608,7 +616,7 @@ export default function ClothingHeadwearWorkwearPdp() {
      * only by coincidence: this states the reason, and gives the customer the
      * message that matches what the page is telling them.
      */
-    if (singleProduct?.pricingSummary?.isPriceOnApplication) {
+    if (isPriceOnApplication) {
       toast.error("This product is priced on application — please request a quote.");
       return;
     }
@@ -742,7 +750,7 @@ export default function ClothingHeadwearWorkwearPdp() {
      * that says "contact us for pricing". Same reason as handleAddToCart:
      * state the actual reason rather than relying on a zero.
      */
-    if (singleProduct?.pricingSummary?.isPriceOnApplication) {
+    if (isPriceOnApplication) {
       toast.error("This product is priced on application — please request a quote.");
       return;
     }
@@ -951,9 +959,7 @@ export default function ClothingHeadwearWorkwearPdp() {
             currentQuantity={quoteQuantity}
             discountedUnitPrice={getEstimatedUnitPrice(quoteQuantity)}
             currentPrice={getEstimatedUnitPrice(quoteQuantity) * quoteQuantity}
-            isPriceOnApplication={
-              singleProduct?.pricingSummary?.isPriceOnApplication === true
-            }
+            isPriceOnApplication={isPriceOnApplication}
             formData={quoteFormData}
             handleChange={handleQuoteChange}
             handleDragEnter2={handleQuoteDragEnter}
