@@ -29,6 +29,7 @@ import {
   extractSizesForSelectedColor,
   extractSizesFromProduct,
   findPriceGroupForColor,
+  isColorPriceOnApplication,
   getBasePriceBreaksForColor,
   getDefaultPrintMethod,
   getPriceForQuantity,
@@ -94,13 +95,6 @@ export default function ClothingHeadwearWorkwearPdp() {
   );
 
   const [selectedColor, setSelectedColor] = useState("");
-  /**
-   * ONE source for this fact. It was being read from two places — the mapped
-   * product in some components and the raw API response here — which is two
-   * ways for the same question to be answered differently. The mapper already
-   * derives it from pricingSummary; everything else reads the mapped value.
-   */
-  const isPriceOnApplication = workwearProduct?.isPriceOnApplication === true;
 
   const [sizeQuantities, setSizeQuantities] = useState({});
   const [addingToCart, setAddingToCart] = useState(false);
@@ -141,6 +135,19 @@ export default function ClothingHeadwearWorkwearPdp() {
   // group (PromoData prices vary per colour and groups are NOT index-aligned).
   const selectedColorName =
     workwearProduct?.availableColors?.find((c) => c.id === selectedColor)?.name || "";
+
+  /**
+   * Product-level "no price at all", OR the specific colour the customer has
+   * chosen having none. The second is invisible to every product-level check
+   * and is what puts $0.00 back on screen after a colour click.
+   *
+   * Declared here rather than with the other state deliberately: it depends
+   * on selectedColorName, and `const` has no hoisting, so deriving it earlier
+   * throws before the page renders.
+   */
+  const isPriceOnApplication =
+    workwearProduct?.isPriceOnApplication === true ||
+    isColorPriceOnApplication(singleProduct, selectedColorName);
 
   // Price tiers for the SELECTED colour. Falls back to the cheapest group's
   // tiers when nothing is selected so the "from" price stays honest.

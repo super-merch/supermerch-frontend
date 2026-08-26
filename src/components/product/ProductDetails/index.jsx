@@ -12,6 +12,7 @@ import { getArtworkSource } from "@/utils/categoryMeta";
 import {
   extractSizesFromProduct as extractSizesFromPromodata,
   findPriceGroupForColor,
+  isColorPriceOnApplication,
 } from "@/utils/promodataWorkwearPdpMap";
 import { parseLeadTime, calculateEstimatedDelivery } from "@/utils/deliveryCalculations";
 import axios, { all } from "axios";
@@ -1032,12 +1033,15 @@ const ProductDetails = () => {
    * showing. Confirmed live on product 260.
    *
    * `pricingSummary.isPriceOnApplication` only exists once backend #86 ships;
-   * until then the numeric fallback is what actually fires.
+   * until then the break check inside the shared predicate is what fires.
+   *
+   * The colour check is the second half: a product can be priced overall and
+   * still have colours the supplier never priced, which no product-level test
+   * can see.
    */
   const isPriceOnApplication =
-    single_product?.pricingSummary?.isPriceOnApplication === true ||
-    !Number.isFinite(Number(productPrice)) ||
-    Number(productPrice) <= 0;
+    isProductPriceOnApplication(single_product) ||
+    isColorPriceOnApplication(single_product, selectedColor);
 
   const uniquePriceGroups = availablePriceGroups.filter(
     (group, index, self) =>

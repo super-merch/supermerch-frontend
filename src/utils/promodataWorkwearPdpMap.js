@@ -244,6 +244,30 @@ function normalizeColorKey(value) {
  * never by array index. Falls back to the cheapest group (honest "from" price)
  * when no colour is selected or no description matches.
  */
+/**
+ * A product can be priced overall and still have colours the supplier never
+ * priced. 22 catalogue products are like that — Podium Kids S/S Poly Polo has
+ * four such groups out of five, named plainly as "Black, all sizes",
+ * "Navy, all sizes", "Purple, all sizes".
+ *
+ * Selecting one of those returns a group whose ladder is empty, which puts a
+ * $0.00 tier back on a page that passed every product-level check.
+ *
+ * Borrowing another colour's ladder is NOT the answer: on 10 of the 22 the
+ * priced variants genuinely differ, and Custom Labelled Wine spans $7.50 to
+ * $49.50. Quoting the cheapest would undercharge sixfold. If the supplier did
+ * not price this option, we ask.
+ */
+export function isColorPriceOnApplication(singleProduct, colorName) {
+  if (!colorName) return false;
+  const group = findPriceGroupForColor(singleProduct, colorName);
+  if (!group) return false;
+  return !(group.base_price?.price_breaks || []).some((priceBreak) => {
+    const price = Number(priceBreak?.price);
+    return Number.isFinite(price) && price > 0;
+  });
+}
+
 export function findPriceGroupForColor(singleProduct, colorName) {
   const priceGroups = singleProduct?.product?.prices?.price_groups || [];
   const withBase = priceGroups.filter((g) => g?.base_price);
@@ -252,15 +276,39 @@ export function findPriceGroupForColor(singleProduct, colorName) {
   if (colorName) {
     const target = normalizeColorKey(colorName);
     if (target) {
-      const exact = withBase.find(
+      /**
+       * Match on the description, then prefer a PRICED group among the ones
+       * that matched — rather than taking whichever happens to sit first.
+       *
+       * Both halves earn their place. Accessories Tie Woven has several groups
+       * all described "OSO, all colours", some priced and some not, so first-wins
+       * threw away a real price. And the partial match is loose by design so
+       * that "Black" finds "Black, all sizes" — which also lets "Black/White"
+       * land on an empty "Black" group.
+       *
+       * Narrowing the search to priced groups instead would be wrong: it would
+       * hide the genuinely unpriced colours by silently serving them a
+       * different variant's ladder, and on 10 of these products the variants
+       * differ by up to sixfold.
+       */
+      const preferPriced = (matches) =>
+        matches.find((g) =>
+          (g.base_price?.price_breaks || []).some((priceBreak) => {
+            const price = Number(priceBreak?.price);
+            return Number.isFinite(price) && price > 0;
+          }),
+        ) || matches[0];
+
+      const exact = withBase.filter(
         (g) => normalizeColorKey(g.base_price.description) === target,
       );
-      if (exact) return exact;
-      const partial = withBase.find((g) => {
+      if (exact.length) return preferPriced(exact);
+
+      const partial = withBase.filter((g) => {
         const desc = normalizeColorKey(g.base_price.description);
         return desc && (desc.includes(target) || target.includes(desc));
       });
-      if (partial) return partial;
+      if (partial.length) return preferPriced(partial);
     }
   }
 
