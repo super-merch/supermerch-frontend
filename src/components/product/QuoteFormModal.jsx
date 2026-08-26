@@ -11,6 +11,8 @@ const QuoteFormModal = ({
   currentQuantity,
   discountedUnitPrice,
   currentPrice,
+  // Defaults false so every existing caller is unaffected.
+  isPriceOnApplication = false,
   formData,
   handleChange,
   handleDragEnter2,
@@ -123,18 +125,34 @@ const QuoteFormModal = ({
                   <span className="font-semibold">{currentQuantity}</span>
                 )}
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Unit Price</span>
-                <span className="font-semibold">
-                  ${discountedUnitPrice?.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Total</span>
-                <span className="font-extrabold text-smallHeader">
-                  ${currentPrice?.toFixed(2)}
-                </span>
-              </div>
+              {/*
+                * Price on application: the supplier gives no price, so there is
+                * nothing to show. Without this the modal renders $0.00 for both
+                * lines — which would reintroduce the exact defect the "Contact
+                * us for pricing" panel exists to fix, one click after the
+                * customer clicks Request a quote.
+                */}
+              {isPriceOnApplication ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Price</span>
+                  <span className="font-semibold">On application</span>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Unit Price</span>
+                    <span className="font-semibold">
+                      ${discountedUnitPrice?.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Total</span>
+                    <span className="font-extrabold text-smallHeader">
+                      ${currentPrice?.toFixed(2)}
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Artwork</span>
                 <span className="font-medium text-primary text-xs truncate max-w-[150px]">

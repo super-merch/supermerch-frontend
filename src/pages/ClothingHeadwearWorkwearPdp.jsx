@@ -718,6 +718,21 @@ export default function ClothingHeadwearWorkwearPdp() {
 
   const handleBuySample = async () => {
     if (!singleProduct || !workwearProduct) return;
+
+    /**
+     * The third route into the cart. "Buy 1 sample" IS rendered on these
+     * products, and this handler dispatches addToCart directly.
+     *
+     * The `unit <= 0` check below already stopped it — but only by
+     * coincidence, and it told the customer "pricing not available" on a page
+     * that says "contact us for pricing". Same reason as handleAddToCart:
+     * state the actual reason rather than relying on a zero.
+     */
+    if (singleProduct?.pricingSummary?.isPriceOnApplication) {
+      toast.error("This product is priced on application — please request a quote.");
+      return;
+    }
+
     const sampleVariant = quoteSelection.variant;
     if (!sampleVariant) {
       toast.error("Please select a colour/size first");
@@ -922,6 +937,9 @@ export default function ClothingHeadwearWorkwearPdp() {
             currentQuantity={quoteQuantity}
             discountedUnitPrice={getEstimatedUnitPrice(quoteQuantity)}
             currentPrice={getEstimatedUnitPrice(quoteQuantity) * quoteQuantity}
+            isPriceOnApplication={
+              singleProduct?.pricingSummary?.isPriceOnApplication === true
+            }
             formData={quoteFormData}
             handleChange={handleQuoteChange}
             handleDragEnter2={handleQuoteDragEnter}
