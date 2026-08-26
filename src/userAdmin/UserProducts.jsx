@@ -387,6 +387,8 @@ const openReOrderModal = useCallback(async () => {
 
   const details = {};
   const status = {};
+  // Products that identified themselves, pending a live price.
+  const priced = {};
 
   results.forEach((result, index) => {
     const id = ids[index];
@@ -410,6 +412,14 @@ const openReOrderModal = useCallback(async () => {
 
       if (identifies) {
         details[id] = returned;
+        // AVAILABLE has to mean PRICEABLE, not merely "the server named this
+        // product". Identity alone left two ways to charge the wrong amount:
+        // an untouched line kept the price frozen in the historical order even
+        // though the live price had moved, and a product whose current data
+        // carries no price breaks went to zero the moment anyone touched the
+        // quantity. Resolving the price here settles both - if we cannot price
+        // it now, we will not sell it now.
+        priced[id] = returned;
         status[id] = LINE_STATUS.AVAILABLE;
       } else if (returned) {
         // Answered, but not about this product. We cannot call that gone, and
@@ -432,6 +442,39 @@ const openReOrderModal = useCallback(async () => {
         ? LINE_STATUS.UNAVAILABLE
         : LINE_STATUS.UNVERIFIED;
   });
+
+  // Reprice every identified line against its CURRENT price breaks, using the
+  // quantity already on the order. A line we cannot price is demoted to
+  // UNVERIFIED, which blocks confirmation rather than falling back to the old
+  // price - falling back to the old price is the entire defect this PR exists
+  // to remove, and doing it for "available" lines was leaving it half-fixed.
+  const repriced = new Map();
+  for (const [id, detail] of Object.entries(priced)) {
+    const line = (selectedOrder?.products || []).find((p) => p.id === id);
+    const quantity = line?.quantity;
+    const unitPrice = isOrderableQuantity(quantity)
+      ? resolveUnitPrice(detail, quantity)
+      : null;
+    if (unitPrice === null) {
+      status[id] = LINE_STATUS.UNVERIFIED;
+    } else {
+      repriced.set(id, unitPrice);
+    }
+  }
+
+  if (repriced.size > 0) {
+    setEditableProducts((prev) =>
+      prev.map((p) => {
+        if (!repriced.has(p.id)) return p;
+        const unitPrice = repriced.get(p.id);
+        return {
+          ...p,
+          price: unitPrice,
+          subTotal: unitPrice * Number(p.quantity),
+        };
+      })
+    );
+  }
 
   setProductDetails(details);
   setLineStatus(status);
@@ -483,6 +526,35 @@ useEffect(() => {
 ]);
 
 
+/**
+ * The live unit price for a quantity, or null when the product cannot be
+ * priced at all.
+ *
+ * null is the important part. getPriceForQuantity returns 0 for an empty
+ * price-break list, which is indistinguishable from a genuinely free product
+ * and was being written straight onto the line - so touching the quantity on a
+ * product with no current price breaks silently set its price to zero and the
+ * line stayed confirmable. Separating "no price" from "price of zero" is what
+ * lets the caller refuse instead of charging nothing.
+ */
+const resolveUnitPrice = (detail, quantity) => {
+  const baseGroup = detail?.product?.prices?.price_groups?.find(
+    (g) => g.base_price
+  );
+  const priceBreaks = baseGroup?.base_price?.price_breaks;
+  if (!priceBreaks?.length) return null;
+  const unitPrice = getPriceForQuantity(Number(quantity), priceBreaks);
+  return Number.isFinite(unitPrice) ? unitPrice : null;
+};
+
+// A quantity has to be a whole number of at least one before it can be
+// ordered. min="1" on the input does not enforce this - React's onChange
+// accepts 0 and "" happily, and Confirm was never gated on HTML validity.
+const isOrderableQuantity = (value) => {
+  const q = Number(value);
+  return Number.isInteger(q) && q >= 1;
+};
+
 const updateEditableProduct = (index, field, value) => {
   setEditableProducts((prev) => {
     const updated = [...prev];
@@ -490,12 +562,10 @@ const updateEditableProduct = (index, field, value) => {
 
     if (field === "quantity") {
       const detail = productDetails[updated[index].id];
-      if (detail) {
-        const baseGroup = detail.product?.prices?.price_groups?.find(
-          (g) => g.base_price
-        );
-        const priceBreaks = baseGroup?.base_price?.price_breaks || [];
-        const unitPrice = getPriceForQuantity(Number(value), priceBreaks);
+      const unitPrice = isOrderableQuantity(value)
+        ? resolveUnitPrice(detail, value)
+        : null;
+      if (unitPrice !== null) {
         updated[index].price = unitPrice;
         updated[index].subTotal = unitPrice * Number(value);
       }
@@ -572,8 +642,28 @@ const unresolvedCount = editableProducts.filter(
     lineStatus[p.id] === LINE_STATUS.UNKNOWN ||
     lineStatus[p.id] === undefined
 ).length;
+
+// A quantity of 0 or "" is not a small order, it is an invalid one, and the
+// three places that see it disagree about what it means. This modal treated it
+// as zero units and quoted $0. The checkout controller computes its subtotal
+// and GST with (Number(quantity) || 0) but bills Stripe with
+// (Number(quantity) || 1), so the customer is charged for one unit of
+// something the quote priced at nothing. The order-save path then reconstructs
+// one unit, expects GST on it, finds the paid amount does not match, and
+// rejects the order - taking the money and losing the record.
+//
+// None of that is fixable from here: two of those coercions are in a
+// controller reserved for the pricing branch. What IS fixable from here is
+// refusing to send an invalid quantity in the first place.
+const invalidQuantityCount = editableProducts.filter(
+  (p) => isLineOrderable(p) && !isOrderableQuantity(p.quantity)
+).length;
+
 const canConfirmReorder =
-  !popupLoading && unresolvedCount === 0 && orderableCount > 0;
+  !popupLoading &&
+  unresolvedCount === 0 &&
+  invalidQuantityCount === 0 &&
+  orderableCount > 0;
 
 
 const handleReOrder = async () => {
@@ -597,6 +687,12 @@ const handleReOrder = async () => {
   if (unresolvedCount > 0) {
     return toast.error(
       "Still checking availability for some items. Please try again in a moment."
+    );
+  }
+
+  if (invalidQuantityCount > 0) {
+    return toast.error(
+      "Enter a quantity of at least 1 for every item you want to re-order."
     );
   }
 
@@ -1542,6 +1638,13 @@ return (
                         ${t.total.toFixed(2)}
                       </span>
                     </div>
+                    {unresolvedCount > 0 && (
+                      <p className="mt-2 text-xs text-amber-700">
+                        This is the total for the items we could verify. One or
+                        more items could not be checked, so it is not the final
+                        amount for this re-order.
+                      </p>
+                    )}
                     {unavailableCount > 0 && (
                       <p className="mt-2 text-xs text-gray-500">
                         {unavailableCount} item{unavailableCount > 1 ? "s are" : " is"} no
