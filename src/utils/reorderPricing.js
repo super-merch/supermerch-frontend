@@ -116,3 +116,43 @@ export const computeReorderTotals = ({
   const gst = (preTax * pct) / 100;
   return { subtotal, setupFee: fee, shipping: ship, gstPercent: pct, gst, total: preTax + gst };
 };
+
+/**
+ * Reprice the lines whose live detail we successfully resolved.
+ *
+ * Extracted and made pure because the previous version of this lived inline
+ * and iterated `Object.entries(pricedById)` — whose keys are ALWAYS STRINGS.
+ * It then compared them with `p.id === id`, so a numeric product id never
+ * matched its own line: every line fell through to "cannot price", was
+ * demoted to UNVERIFIED, and nothing could be re-ordered at all. Fail-closed,
+ * so nobody was overcharged, but the whole feature was dead.
+ *
+ * The helper tests did not catch it because they tested the pricing functions
+ * and not the loop that calls them. Hence this function, and hence the tests
+ * that pass it numeric ids.
+ *
+ * Takes a Map keyed by the ORIGINAL id value — no string coercion anywhere —
+ * and returns:
+ *   repriced     Map of id -> live unit price, for lines we can sell
+ *   unpriceable  array of ids that identified but cannot be priced now,
+ *                which the caller must demote rather than sell at the old price
+ */
+export const repriceLines = (pricedById, orderLines = []) => {
+  const repriced = new Map();
+  const unpriceable = [];
+
+  for (const [id, detail] of pricedById) {
+    const line = orderLines.find((l) => l.id === id);
+    const quantity = line?.quantity;
+    const unitPrice = isOrderableQuantity(quantity)
+      ? resolveUnitPrice(detail, quantity)
+      : null;
+    if (unitPrice === null) {
+      unpriceable.push(id);
+    } else {
+      repriced.set(id, unitPrice);
+    }
+  }
+
+  return { repriced, unpriceable };
+};

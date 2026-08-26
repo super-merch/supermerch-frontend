@@ -11,6 +11,7 @@ import {
   computeReorderTotals,
   identifiesProduct,
   isOrderableQuantity,
+  repriceLines,
   resolveUnitPrice,
 } from "../utils/reorderPricing";
 import { loadStripe } from "@stripe/stripe-js";
@@ -385,7 +386,11 @@ const openReOrderModal = useCallback(async () => {
   const details = {};
   const status = {};
   // Products that identified themselves, pending a live price.
-  const priced = {};
+  //
+  // A Map keyed by the ORIGINAL id, not a plain object. Object keys are always
+  // strings, so a numeric product id came back out of Object.entries() as
+  // "123" and then failed every `p.id === id` comparison against its own line.
+  const priced = new Map();
 
   results.forEach((result, index) => {
     const id = ids[index];
@@ -409,7 +414,7 @@ const openReOrderModal = useCallback(async () => {
         // carries no price breaks went to zero the moment anyone touched the
         // quantity. Resolving the price here settles both - if we cannot price
         // it now, we will not sell it now.
-        priced[id] = returned;
+        priced.set(id, returned);
         status[id] = LINE_STATUS.AVAILABLE;
       } else if (returned) {
         // Answered, but not about this product. We cannot call that gone, and
@@ -438,18 +443,12 @@ const openReOrderModal = useCallback(async () => {
   // UNVERIFIED, which blocks confirmation rather than falling back to the old
   // price - falling back to the old price is the entire defect this PR exists
   // to remove, and doing it for "available" lines was leaving it half-fixed.
-  const repriced = new Map();
-  for (const [id, detail] of Object.entries(priced)) {
-    const line = (selectedOrder?.products || []).find((p) => p.id === id);
-    const quantity = line?.quantity;
-    const unitPrice = isOrderableQuantity(quantity)
-      ? resolveUnitPrice(detail, quantity)
-      : null;
-    if (unitPrice === null) {
-      status[id] = LINE_STATUS.UNVERIFIED;
-    } else {
-      repriced.set(id, unitPrice);
-    }
+  const { repriced, unpriceable } = repriceLines(
+    priced,
+    selectedOrder?.products || []
+  );
+  for (const id of unpriceable) {
+    status[id] = LINE_STATUS.UNVERIFIED;
   }
 
   if (repriced.size > 0) {
