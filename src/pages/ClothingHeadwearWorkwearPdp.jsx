@@ -588,6 +588,17 @@ export default function ClothingHeadwearWorkwearPdp() {
   const handleAddToCart = async () => {
     if (!singleProduct || !workwearProduct || !colorVariants) return;
 
+    /**
+     * Price on application — the supplier gives no price, so there is nothing
+     * to charge. The empty-price-breaks check below would catch this too, but
+     * only by coincidence: this states the reason, and gives the customer the
+     * message that matches what the page is telling them.
+     */
+    if (singleProduct?.pricingSummary?.isPriceOnApplication) {
+      toast.error("This product is priced on application — please request a quote.");
+      return;
+    }
+
     const baseBreaks = getBasePriceBreaksForColor(singleProduct, selectedColorName);
 
     if (!baseBreaks.length) {

@@ -42,6 +42,19 @@ export default function StickyAddToCart({
 
   if (!hasSelection) return null;
 
+  /**
+   * Price-on-application products have no price, so there is nothing for this
+   * bar to show and nothing to add.
+   *
+   * The main Add to Cart button is inside the block replaced by the "Contact
+   * us" panel, so it disappears on its own. This one does not: the size and
+   * quantity selectors are still rendered, so a customer on mobile could pick a
+   * colour and quantity, and this bar would slide up showing $0.00 with a
+   * working button. Hiding the price without hiding every way to buy would be
+   * worse than leaving it alone.
+   */
+  if (product.isPriceOnApplication) return null;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#CBD5E1] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-40 lg:hidden safe-area-bottom">
       <div className="max-w-7xl mx-auto px-3 py-3">
