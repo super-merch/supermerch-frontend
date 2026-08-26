@@ -392,9 +392,29 @@ const openReOrderModal = useCallback(async () => {
     const id = ids[index];
 
     if (result.status === "fulfilled") {
-      if (result.value?.product) {
-        details[id] = result.value.product;
+      // Truthiness is not identification. A 200 carrying {}, [], or some
+      // other product is truthy, and treating that as AVAILABLE would let the
+      // line be charged at the price frozen in the old order on the strength of
+      // a response that never confirmed this product exists. For a path built
+      // to fail closed, the response has to actually name the thing we asked
+      // about.
+      const returned = result.value?.product;
+      const returnedId = returned?.meta?.id ?? returned?.id;
+      const identifies =
+        returned &&
+        typeof returned === "object" &&
+        !Array.isArray(returned) &&
+        returnedId !== undefined &&
+        returnedId !== null &&
+        String(returnedId) === String(id);
+
+      if (identifies) {
+        details[id] = returned;
         status[id] = LINE_STATUS.AVAILABLE;
+      } else if (returned) {
+        // Answered, but not about this product. We cannot call that gone, and
+        // we certainly cannot call it available.
+        status[id] = LINE_STATUS.UNVERIFIED;
       } else {
         // 200 with no product is the backend saying it has nothing to sell.
         status[id] = LINE_STATUS.UNAVAILABLE;
@@ -433,6 +453,14 @@ const openReOrderModal = useCallback(async () => {
 }, [selectedOrder, backendUrl, reorderStorageKey]);
 
 const closeReOrderModal = useCallback(() => {
+  // Bump the generation so any lookup still in flight discards itself when it
+  // lands. Without this, closing was not a cancellation: the batch continued,
+  // then wrote its statuses and fired a toast about an order the customer had
+  // already dismissed - and did the same after the component unmounted. It
+  // could not re-open the payment hole, because the next open resets everything
+  // to UNKNOWN behind a fresh generation, but it is still a stale write and the
+  // guard already existed for exactly this shape of problem.
+  reorderRequestRef.current += 1;
   sessionStorage.removeItem(reorderStorageKey);
   setReOrderModal(false);
 }, [reorderStorageKey]);
@@ -488,9 +516,46 @@ const isLineOrderable = (product) =>
 const getEditableProductTotal = () => {
   // Excluded lines must not appear in the total either — otherwise the
   // customer is quoted a figure they will never be charged.
+  //
+  // Quantised to cents per line, because that is what the server does before
+  // it builds the Stripe line items. Summing raw floats here and cents there
+  // is how a quote drifts from a charge by a cent.
   return editableProducts
     .filter(isLineOrderable)
-    .reduce((sum, p) => sum + (p.subTotal || 0), 0);
+    .reduce(
+      (sum, p) =>
+        sum +
+        (Math.round((Number(p.price) || 0) * 100) / 100) *
+          (Number(p.quantity) || 0),
+      0
+    );
+};
+
+/**
+ * What the customer will ACTUALLY be charged, computed the same way the server
+ * computes it.
+ *
+ * The bug this replaces: the modal subtracted excluded lines from the subtotal
+ * but then added the ORIGINAL order's GST, while the server recalculates GST
+ * from whatever products it is sent. Two $100 lines with $20 GST, one line now
+ * unavailable, and the modal said $120 while Stripe charged $110. The setup fee
+ * was not shown at all, yet was still sent and still charged — so the quote
+ * could be wrong in either direction.
+ *
+ * Mirrors controllers/checkoutSessionController.js:
+ *   base   = subtotal + setupFee
+ *   preTax = base - couponDiscount + shipping   (no coupon on a re-order)
+ *   gst    = preTax * gstPercent / 100
+ * Change one and change the other, or this silently drifts back apart.
+ */
+const getReorderTotals = () => {
+  const subtotal = getEditableProductTotal();
+  const setupFee = Number(selectedOrder?.setupFee) || 0;
+  const shipping = Number(selectedOrder?.shipping) || 0;
+  const gstPercent = Number(selectedOrder?.gstPercent) || 10;
+  const preTax = Math.max(subtotal + setupFee, 0) + shipping;
+  const gst = (preTax * gstPercent) / 100;
+  return { subtotal, setupFee, shipping, gstPercent, gst, total: preTax + gst };
 };
 
 const orderableCount = editableProducts.filter(isLineOrderable).length;
@@ -519,8 +584,16 @@ const handleReOrder = async () => {
   // Drop anything we could not price live. Reordering these would charge the
   // price frozen in the original order, which we may no longer be able to
   // honour — the supplier may have been switched off entirely.
-  // Re-check at submit, not just at render. The button is disabled in these
-  // cases, but a disabled button is a UI convenience, not a guarantee.
+  //
+  // This re-reads the STATUS at submit rather than trusting the disabled
+  // button, which is a UI convenience and not a guarantee. It is NOT a fresh
+  // availability check, and an earlier comment here wrongly implied it was.
+  // The lookup happens when the modal opens, so a product can be withdrawn
+  // while the modal sits open and still reach checkout. Narrowing that window
+  // with a second fetch here would not close it either — only the server
+  // creating the Stripe session can, because it is the last point that sees
+  // the order before money moves. That belongs with the server-side pricing
+  // work, and is tracked there rather than papered over here.
   if (unresolvedCount > 0) {
     return toast.error(
       "Still checking availability for some items. Please try again in a moment."
@@ -1272,7 +1345,7 @@ return (
                           <FaTimesCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
                           <p className="text-xs text-amber-800">
                             <span className="font-semibold">No longer available.</span>{" "}
-                            This item won&apos;t be included in your re-order. Everything else below will be.
+                            This item won&apos;t be included in your re-order. The other available items still will be.
                           </p>
                         </div>
                       )}
@@ -1428,24 +1501,58 @@ return (
           {/* Footer with totals */}
           {!popupLoading && editableProducts.length > 0 && (
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-              <div className="flex items-center justify-between mb-1 text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${getEditableProductTotal().toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between mb-1 text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">${selectedOrder?.shipping?.toFixed?.(2) ?? selectedOrder?.shipping}</span>
-              </div>
-              <div className="flex items-center justify-between mb-3 text-sm">
-                <span className="text-gray-600">GST</span>
-                <span className="font-medium">${selectedOrder?.gst?.toFixed?.(2) ?? selectedOrder?.gst}</span>
-              </div>
-              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                <span className="font-semibold text-gray-900">Total</span>
-                <span className="text-lg font-bold text-gray-900">
-                  ${(getEditableProductTotal() + (selectedOrder?.shipping || 0) + (selectedOrder?.gst || 0)).toFixed(2)}
-                </span>
-              </div>
+              {/* Every figure here comes from getReorderTotals(), which mirrors
+                  the server's own calculation. What this panel shows is what
+                  Stripe will charge. It previously showed the ORIGINAL order's
+                  GST beside a subtotal that had excluded lines removed, and did
+                  not show the setup fee at all despite still sending it. */}
+              {(() => {
+                const t = getReorderTotals();
+                return (
+                  <>
+                    <div className="flex items-center justify-between mb-1 text-sm">
+                      <span className="text-gray-600">
+                        Subtotal
+                        {unavailableCount > 0 && (
+                          <span className="text-gray-500">
+                            {" "}
+                            ({orderableCount} of {editableProducts.length} items)
+                          </span>
+                        )}
+                      </span>
+                      <span className="font-medium">${t.subtotal.toFixed(2)}</span>
+                    </div>
+                    {t.setupFee > 0 && (
+                      <div className="flex items-center justify-between mb-1 text-sm">
+                        <span className="text-gray-600">Setup fee</span>
+                        <span className="font-medium">${t.setupFee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-1 text-sm">
+                      <span className="text-gray-600">Shipping</span>
+                      <span className="font-medium">${t.shipping.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between mb-3 text-sm">
+                      <span className="text-gray-600">GST ({t.gstPercent}%)</span>
+                      <span className="font-medium">${t.gst.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                      <span className="font-semibold text-gray-900">Total</span>
+                      <span className="text-lg font-bold text-gray-900">
+                        ${t.total.toFixed(2)}
+                      </span>
+                    </div>
+                    {unavailableCount > 0 && (
+                      <p className="mt-2 text-xs text-gray-500">
+                        {unavailableCount} item{unavailableCount > 1 ? "s are" : " is"} no
+                        longer available and {unavailableCount > 1 ? "have" : "has"} been
+                        removed. Shipping and any setup fee are carried over from your
+                        original order.
+                      </p>
+                    )}
+                  </>
+                );
+              })()}
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   onClick={closeReOrderModal}
@@ -1456,8 +1563,12 @@ return (
                 </button>
                 <button
                   onClick={handleReOrder}
-                  // Only blocked when NOTHING can be re-ordered. A single dead
-                  // line must not stop the customer reordering the rest.
+                  // A single dead line must not stop the customer reordering
+                  // the rest — but anything we could not CHECK does block, for
+                  // every line, because a partial order built on an unknown is
+                  // a guess about what the customer wanted. So this is blocked
+                  // when nothing is orderable OR when any line is still
+                  // unresolved; see canConfirmReorder.
                   disabled={reOrderLoading || !canConfirmReorder}
                   className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
