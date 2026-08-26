@@ -7,6 +7,12 @@ import { FaCheckCircle, FaTimesCircle, FaCommentDots, FaImage, FaClock } from "r
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  computeReorderTotals,
+  identifiesProduct,
+  isOrderableQuantity,
+  resolveUnitPrice,
+} from "../utils/reorderPricing";
 import { loadStripe } from "@stripe/stripe-js";
 import { slugify, toProductUrl } from "@/utils/utils";
 
@@ -229,15 +235,6 @@ const UserProducts = () => {
     };
   }, [orderId, userOrder, loading, backendUrl]);
 
-  const getPriceForQuantity = (quantity, priceBreaks) => {
-    if (!priceBreaks?.length) return 0;
-    const sorted = [...priceBreaks].sort((a, b) => a.qty - b.qty);
-    for (let i = sorted.length - 1; i >= 0; i--) {
-      if (quantity >= sorted[i].qty) return sorted[i].price;
-    }
-    return sorted[0]?.price || 0;
-  };
-
   const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
 
   const extractSizesFromProduct = (productData) => {
@@ -401,14 +398,7 @@ const openReOrderModal = useCallback(async () => {
       // to fail closed, the response has to actually name the thing we asked
       // about.
       const returned = result.value?.product;
-      const returnedId = returned?.meta?.id ?? returned?.id;
-      const identifies =
-        returned &&
-        typeof returned === "object" &&
-        !Array.isArray(returned) &&
-        returnedId !== undefined &&
-        returnedId !== null &&
-        String(returnedId) === String(id);
+      const identifies = identifiesProduct(returned, id);
 
       if (identifies) {
         details[id] = returned;
@@ -526,35 +516,6 @@ useEffect(() => {
 ]);
 
 
-/**
- * The live unit price for a quantity, or null when the product cannot be
- * priced at all.
- *
- * null is the important part. getPriceForQuantity returns 0 for an empty
- * price-break list, which is indistinguishable from a genuinely free product
- * and was being written straight onto the line - so touching the quantity on a
- * product with no current price breaks silently set its price to zero and the
- * line stayed confirmable. Separating "no price" from "price of zero" is what
- * lets the caller refuse instead of charging nothing.
- */
-const resolveUnitPrice = (detail, quantity) => {
-  const baseGroup = detail?.product?.prices?.price_groups?.find(
-    (g) => g.base_price
-  );
-  const priceBreaks = baseGroup?.base_price?.price_breaks;
-  if (!priceBreaks?.length) return null;
-  const unitPrice = getPriceForQuantity(Number(quantity), priceBreaks);
-  return Number.isFinite(unitPrice) ? unitPrice : null;
-};
-
-// A quantity has to be a whole number of at least one before it can be
-// ordered. min="1" on the input does not enforce this - React's onChange
-// accepts 0 and "" happily, and Confirm was never gated on HTML validity.
-const isOrderableQuantity = (value) => {
-  const q = Number(value);
-  return Number.isInteger(q) && q >= 1;
-};
-
 const updateEditableProduct = (index, field, value) => {
   setEditableProducts((prev) => {
     const updated = [...prev];
@@ -590,15 +551,9 @@ const getEditableProductTotal = () => {
   // Quantised to cents per line, because that is what the server does before
   // it builds the Stripe line items. Summing raw floats here and cents there
   // is how a quote drifts from a charge by a cent.
-  return editableProducts
-    .filter(isLineOrderable)
-    .reduce(
-      (sum, p) =>
-        sum +
-        (Math.round((Number(p.price) || 0) * 100) / 100) *
-          (Number(p.quantity) || 0),
-      0
-    );
+  return computeReorderTotals({
+    orderableLines: editableProducts.filter(isLineOrderable),
+  }).subtotal;
 };
 
 /**
@@ -618,15 +573,13 @@ const getEditableProductTotal = () => {
  *   gst    = preTax * gstPercent / 100
  * Change one and change the other, or this silently drifts back apart.
  */
-const getReorderTotals = () => {
-  const subtotal = getEditableProductTotal();
-  const setupFee = Number(selectedOrder?.setupFee) || 0;
-  const shipping = Number(selectedOrder?.shipping) || 0;
-  const gstPercent = Number(selectedOrder?.gstPercent) || 10;
-  const preTax = Math.max(subtotal + setupFee, 0) + shipping;
-  const gst = (preTax * gstPercent) / 100;
-  return { subtotal, setupFee, shipping, gstPercent, gst, total: preTax + gst };
-};
+const getReorderTotals = () =>
+  computeReorderTotals({
+    orderableLines: editableProducts.filter(isLineOrderable),
+    setupFee: selectedOrder?.setupFee,
+    shipping: selectedOrder?.shipping,
+    gstPercent: selectedOrder?.gstPercent,
+  });
 
 const orderableCount = editableProducts.filter(isLineOrderable).length;
 const unavailableCount = editableProducts.filter(
