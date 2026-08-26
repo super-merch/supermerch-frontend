@@ -32,7 +32,18 @@ export const getPriceForQuantity = (quantity, priceBreaks) => {
 };
 
 /**
- * The live unit price for a quantity, or null when the product cannot be priced.
+ * The base-price unit rate for a quantity, or null when there is no ladder.
+ *
+ * NOT THE PRICE OF A CONFIGURED LINE, and do not use it as one. It reads the
+ * first price group carrying a base_price and knows nothing about colour or
+ * decoration. The storefront selects the group by COLOUR
+ * (findPriceGroupForColor) and then ADDS the decoration price on top, so on a
+ * branded line this returns a number that is too low.
+ *
+ * It is used only where that was already the behaviour — recalculating after
+ * the customer edits a quantity — and its one improvement there is the null
+ * return below. Pricing a configured line properly belongs with the
+ * server-side pricing model, not a second simplified copy here.
  *
  * null is the whole point. getPriceForQuantity returns 0 for an empty
  * price-break list, which is indistinguishable from a genuinely free product,
@@ -115,44 +126,4 @@ export const computeReorderTotals = ({
   const preTax = Math.max(subtotal + fee, 0) + ship;
   const gst = (preTax * pct) / 100;
   return { subtotal, setupFee: fee, shipping: ship, gstPercent: pct, gst, total: preTax + gst };
-};
-
-/**
- * Reprice the lines whose live detail we successfully resolved.
- *
- * Extracted and made pure because the previous version of this lived inline
- * and iterated `Object.entries(pricedById)` — whose keys are ALWAYS STRINGS.
- * It then compared them with `p.id === id`, so a numeric product id never
- * matched its own line: every line fell through to "cannot price", was
- * demoted to UNVERIFIED, and nothing could be re-ordered at all. Fail-closed,
- * so nobody was overcharged, but the whole feature was dead.
- *
- * The helper tests did not catch it because they tested the pricing functions
- * and not the loop that calls them. Hence this function, and hence the tests
- * that pass it numeric ids.
- *
- * Takes a Map keyed by the ORIGINAL id value — no string coercion anywhere —
- * and returns:
- *   repriced     Map of id -> live unit price, for lines we can sell
- *   unpriceable  array of ids that identified but cannot be priced now,
- *                which the caller must demote rather than sell at the old price
- */
-export const repriceLines = (pricedById, orderLines = []) => {
-  const repriced = new Map();
-  const unpriceable = [];
-
-  for (const [id, detail] of pricedById) {
-    const line = orderLines.find((l) => l.id === id);
-    const quantity = line?.quantity;
-    const unitPrice = isOrderableQuantity(quantity)
-      ? resolveUnitPrice(detail, quantity)
-      : null;
-    if (unitPrice === null) {
-      unpriceable.push(id);
-    } else {
-      repriced.set(id, unitPrice);
-    }
-  }
-
-  return { repriced, unpriceable };
 };

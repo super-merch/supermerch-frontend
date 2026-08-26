@@ -4,7 +4,6 @@ import {
   getPriceForQuantity,
   identifiesProduct,
   isOrderableQuantity,
-  repriceLines,
   resolveUnitPrice,
 } from "../utils/reorderPricing";
 
@@ -74,19 +73,27 @@ describe("resolveUnitPrice separates 'cannot price' from 'costs nothing'", () =>
     expect(resolveUnitPrice(productWith(LADDER), 50)).toBe(7.0);
   });
 
-  it("finds the base price group among several", () => {
+  it("returns the BASE rate only, which is not a configured line price", () => {
+    // Pinning the limitation rather than dressing it up as a feature. The
+    // earlier version of this test asserted that base-only "wins" over a
+    // sibling decoration group, which validated the wrong abstraction and gave
+    // false confidence: the storefront selects the group by COLOUR and then
+    // ADDS the decoration on top, so on a branded line the real unit price is
+    // higher than this.
     const multi = {
       meta: { id: 9 },
       product: {
         prices: {
           price_groups: [
-            { decoration: { price_breaks: [{ qty: 1, price: 99 }] } },
             { base_price: { price_breaks: LADDER } },
+            { decoration: { price_breaks: [{ qty: 100, price: 2.0 }] } },
           ],
         },
       },
     };
     expect(resolveUnitPrice(multi, 100)).toBe(6.0);
+    // The line a customer actually buys, decorated, costs 6 + 2 = 8. This
+    // helper does not know that, and callers must not treat it as a sale price.
   });
 });
 
@@ -230,121 +237,4 @@ describe("computeReorderTotals matches what the server will charge", () => {
   });
 });
 
-describe("the repricing rule the lookup applies", () => {
-  // CRITICAL 1: repricing lived only inside the quantity-change handler, so a
-  // customer who opened a re-order and pressed Confirm paid the price frozen in
-  // the historical order.
-  it("a live price change is picked up without touching the quantity", () => {
-    const historicalLine = { id: 123, price: 5.0, quantity: 100 };
-    const liveDetail = productWith([{ qty: 100, price: 6.0 }], 123);
 
-    const unitPrice = resolveUnitPrice(liveDetail, historicalLine.quantity);
-    expect(unitPrice).toBe(6.0);
-
-    const repriced = { ...historicalLine, price: unitPrice };
-    const quoted = computeReorderTotals({ orderableLines: [repriced], gstPercent: 10 });
-    const stale = computeReorderTotals({ orderableLines: [historicalLine], gstPercent: 10 });
-
-    expect(quoted.subtotal).toBe(600); // what it costs now
-    expect(stale.subtotal).toBe(500); // what the customer used to be charged
-  });
-
-  it("an unpriceable product is refused rather than repriced to zero", () => {
-    const historicalLine = { id: 123, price: 5.0, quantity: 100 };
-    const liveDetail = productWith([], 123); // still exists, no current ladder
-
-    expect(identifiesProduct(liveDetail, 123)).toBe(true); // identity alone says yes
-    expect(resolveUnitPrice(liveDetail, historicalLine.quantity)).toBeNull(); // pricing says no
-  });
-});
-
-describe("repriceLines — the loop, not just the functions", () => {
-  // This block exists because the first version of these tests proved the
-  // pricing functions and never exercised the loop that calls them. The loop
-  // iterated Object.entries(), whose keys are ALWAYS STRINGS, and then compared
-  // them with `p.id === id`. With numeric product ids nothing ever matched its
-  // own line: every line fell through to "cannot price", was demoted to
-  // UNVERIFIED, and the whole re-order feature was dead. Fail-closed, so nobody
-  // was overcharged — but a green test suite said it was fine.
-  const detail = productWith(LADDER, 123);
-
-  it("reprices a line whose id is a NUMBER", () => {
-    const priced = new Map([[123, detail]]);
-    const lines = [{ id: 123, price: 5.0, quantity: 100 }];
-
-    const { repriced, unpriceable } = repriceLines(priced, lines);
-
-    expect(unpriceable).toEqual([]);
-    expect(repriced.get(123)).toBe(6.0); // live price, not the historical 5.00
-  });
-
-  it("reprices a line whose id is a STRING", () => {
-    const priced = new Map([["abc-123", productWith(LADDER, "abc-123")]]);
-    const lines = [{ id: "abc-123", price: 5.0, quantity: 100 }];
-
-    const { repriced } = repriceLines(priced, lines);
-    expect(repriced.get("abc-123")).toBe(6.0);
-  });
-
-  it("does not silently lose a numeric id to string coercion", () => {
-    // The exact regression, stated as an invariant: the key that comes back out
-    // must be the key that went in, same type included.
-    const priced = new Map([[123, detail]]);
-    const { repriced } = repriceLines(priced, [{ id: 123, quantity: 100 }]);
-
-    expect([...repriced.keys()]).toEqual([123]);
-    expect(repriced.has("123")).toBe(false);
-    expect(repriced.has(123)).toBe(true);
-  });
-
-  it("marks a line unpriceable rather than repricing it to zero", () => {
-    const priced = new Map([[123, productWith([], 123)]]);
-    const { repriced, unpriceable } = repriceLines(priced, [
-      { id: 123, price: 5.0, quantity: 100 },
-    ]);
-
-    expect(unpriceable).toEqual([123]);
-    expect(repriced.size).toBe(0);
-  });
-
-  it("marks a line unpriceable when its quantity is invalid", () => {
-    const priced = new Map([[123, detail]]);
-    for (const bad of [0, "", null, undefined, 1.5]) {
-      const { unpriceable } = repriceLines(priced, [{ id: 123, quantity: bad }]);
-      expect(unpriceable).toEqual([123]);
-    }
-  });
-
-  it("marks a line unpriceable when it has no matching order line at all", () => {
-    const priced = new Map([[999, detail]]);
-    const { repriced, unpriceable } = repriceLines(priced, [{ id: 123, quantity: 100 }]);
-
-    expect(unpriceable).toEqual([999]);
-    expect(repriced.size).toBe(0);
-  });
-
-  it("handles a mixed batch without letting one bad line affect the others", () => {
-    const priced = new Map([
-      [1, productWith(LADDER, 1)],
-      [2, productWith([], 2)], // identified, cannot be priced
-      [3, productWith(LADDER, 3)],
-    ]);
-    const lines = [
-      { id: 1, quantity: 100 },
-      { id: 2, quantity: 100 },
-      { id: 3, quantity: 50 },
-    ];
-
-    const { repriced, unpriceable } = repriceLines(priced, lines);
-
-    expect(repriced.get(1)).toBe(6.0);
-    expect(repriced.get(3)).toBe(7.0);
-    expect(unpriceable).toEqual([2]);
-  });
-
-  it("copes with an empty batch", () => {
-    const { repriced, unpriceable } = repriceLines(new Map(), []);
-    expect(repriced.size).toBe(0);
-    expect(unpriceable).toEqual([]);
-  });
-});

@@ -11,7 +11,6 @@ import {
   computeReorderTotals,
   identifiesProduct,
   isOrderableQuantity,
-  repriceLines,
   resolveUnitPrice,
 } from "../utils/reorderPricing";
 import { loadStripe } from "@stripe/stripe-js";
@@ -385,12 +384,7 @@ const openReOrderModal = useCallback(async () => {
 
   const details = {};
   const status = {};
-  // Products that identified themselves, pending a live price.
-  //
-  // A Map keyed by the ORIGINAL id, not a plain object. Object keys are always
-  // strings, so a numeric product id came back out of Object.entries() as
-  // "123" and then failed every `p.id === id` comparison against its own line.
-  const priced = new Map();
+
 
   results.forEach((result, index) => {
     const id = ids[index];
@@ -414,7 +408,6 @@ const openReOrderModal = useCallback(async () => {
         // carries no price breaks went to zero the moment anyone touched the
         // quantity. Resolving the price here settles both - if we cannot price
         // it now, we will not sell it now.
-        priced.set(id, returned);
         status[id] = LINE_STATUS.AVAILABLE;
       } else if (returned) {
         // Answered, but not about this product. We cannot call that gone, and
@@ -438,33 +431,24 @@ const openReOrderModal = useCallback(async () => {
         : LINE_STATUS.UNVERIFIED;
   });
 
-  // Reprice every identified line against its CURRENT price breaks, using the
-  // quantity already on the order. A line we cannot price is demoted to
-  // UNVERIFIED, which blocks confirmation rather than falling back to the old
-  // price - falling back to the old price is the entire defect this PR exists
-  // to remove, and doing it for "available" lines was leaving it half-fixed.
-  const { repriced, unpriceable } = repriceLines(
-    priced,
-    selectedOrder?.products || []
-  );
-  for (const id of unpriceable) {
-    status[id] = LINE_STATUS.UNVERIFIED;
-  }
-
-  if (repriced.size > 0) {
-    setEditableProducts((prev) =>
-      prev.map((p) => {
-        if (!repriced.has(p.id)) return p;
-        const unitPrice = repriced.get(p.id);
-        return {
-          ...p,
-          price: unitPrice,
-          subTotal: unitPrice * Number(p.quantity),
-        };
-      })
-    );
-  }
-
+  // NOT REPRICED HERE, DELIBERATELY. See the note in utils/reorderPricing.js.
+  //
+  // A previous version of this reset each line to a freshly resolved price and
+  // it was WORSE than the stale price it replaced: the resolver reads the first
+  // base-price group and ignores both the line's colour and its decoration,
+  // while the storefront matches the group by colour and ADDS the decoration.
+  // On a business where nearly every line is branded, that silently
+  // undercharged every decorated re-order. It also applied one price per
+  // product id to every variant line sharing that id, which could move the
+  // total in either direction by hundreds of dollars.
+  //
+  // Pricing a configured line correctly needs colour matching, decoration and
+  // setup fees across two different product structures - the model the
+  // server-side pricing branch is centralising. A simplified second copy of it
+  // living here is how the existing mispricing defects were created, so this
+  // no longer guesses. Re-order still carries the historical price; that is
+  // unchanged from today and is tracked as a critical for the pricing branch,
+  // where the whole model already lives.
   setProductDetails(details);
   setLineStatus(status);
   setPopupLoading(false);
