@@ -153,7 +153,13 @@ const TrendingCarousel = () => {
                       .map((breakItem) => breakItem.price)
                       .filter((price) => price !== undefined);
                     const minPrice = prices.length ? Math.min(...prices) : 0;
-                    const maxPrice = prices.length ? Math.max(...prices) : 0;
+                    // No price breaks means the supplier publishes no price, and
+                    // `prices.length ? … : 0` turned that into "From $0.00" on
+                    // the home page. Verified live on Promo Stylus Pen II.
+                    const isPriceOnApplication =
+                      product?.pricingSummary?.isPriceOnApplication === true ||
+                      !prices.length ||
+                      minPrice <= 0;
                     const isFavourited = favouriteItems?.some(
                       (item) => item.meta?.id === product?.meta?.id,
                     );
@@ -218,10 +224,9 @@ const TrendingCarousel = () => {
                             </p>
                             <div className="mt-1">
                               <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
-                                From $
-                                {minPrice === maxPrice
-                                  ? minPrice.toFixed(2)
-                                  : minPrice.toFixed(2)}
+                                {isPriceOnApplication
+                                  ? "Contact Us"
+                                  : `From $${minPrice.toFixed(2)}`}
                               </h4>
                             </div>
                           </div>
