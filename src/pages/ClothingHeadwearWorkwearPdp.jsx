@@ -475,14 +475,15 @@ export default function ClothingHeadwearWorkwearPdp() {
        * is labelled as one rather than sent empty.
        */
       /**
-       * A price-on-application quote stores price 0 and totalPrice 0, because
-       * the backend Quote schema requires both and there is genuinely no price.
-       * Hiding the zeros on screen without marking the record would just move
-       * the defect: staff would open the quote and read $0.00 as a real figure.
+       * A price-on-application quote has no price to send. The backend now
+       * takes an explicit `isPriceOnApplication` flag and stores null rather
+       * than 0, so no downstream reader has to guess whether 0 means free.
        *
-       * So the record says what it is. Changing the schema to allow an absent
-       * price is the better long-term fix and is on the backlog; this makes the
-       * lead unambiguous without touching a shared contract.
+       * The marker in the comment stays as deploy-order insurance: this
+       * frontend goes live the moment it merges, while the backend needs a
+       * manual pull and restart. Until that restart the flag is ignored and 0
+       * is stored again, and the marker is the only thing telling staff the
+       * figure is not real.
        */
       const customerNote =
         quoteFormData.comment?.trim() || "No additional comments provided.";
@@ -505,6 +506,7 @@ export default function ClothingHeadwearWorkwearPdp() {
       fd.append("size", quoteSelection.variant?.size?.name || "");
       fd.append("logoColor", "1 Colour Print");
       fd.append("description", singleProduct?.product?.description || "");
+      if (isPriceOnApplication) fd.append("isPriceOnApplication", "true");
       if (quoteFile) fd.append("file", quoteFile);
 
       await axios.post(`${backendUrl}/api/checkout/quote`, fd);

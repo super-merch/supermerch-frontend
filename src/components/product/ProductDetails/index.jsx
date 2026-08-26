@@ -951,7 +951,9 @@ const ProductDetails = () => {
           formData1.append("customizationPosition", selectedPosition.positionName);
         }
       }
-      formData1.append("description", single_product?.product?.description);
+      // Without the fallback a missing supplier description is appended as the
+      // literal string "undefined" — 885 catalogue products have none.
+      formData1.append("description", single_product?.product?.description || "");
 
       if (selectedFile2) {
         formData1.append("file", selectedFile2);
