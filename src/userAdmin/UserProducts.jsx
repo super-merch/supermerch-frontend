@@ -10,6 +10,16 @@ import { toast } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
 import { slugify, toProductUrl } from "@/utils/utils";
 
+const LINE_STATUS = {
+  UNKNOWN: "unknown",
+  AVAILABLE: "available",
+  UNAVAILABLE: "unavailable",
+  UNVERIFIED: "unverified",
+};
+
+// One stalled lookup must not hold the whole modal open indefinitely.
+const REORDER_LOOKUP_TIMEOUT_MS = 15000;
+
 const UserProducts = () => {
   const { userOrder, loading, user, loadUserOrder } = useContext(AuthContext);
   const { marginAdd, marginApi } = useContext(ProductsContext);
@@ -35,9 +45,28 @@ const UserProducts = () => {
   const [reOrderLoading, setReOrderLoading] = useState(false);
   const [editableProducts, setEditableProducts] = useState([]);
   const [productDetails, setProductDetails] = useState({});
-  // Lines whose live product could not be resolved — discontinued, or from a
-  // supplier that has been switched off. Shown but excluded from the re-order.
-  const [unavailableIds, setUnavailableIds] = useState(new Set());
+
+  // Availability is FOUR states, not two. The obvious design — a Set of
+  // unavailable ids — quietly means "anything not in the Set is fine", so a
+  // product is presumed orderable before it has been checked at all, and a
+  // network blip is indistinguishable from a product that genuinely cannot be
+  // sold. Both of those let a switched-off product through to Stripe.
+  //
+  //   UNKNOWN     not checked yet, or a check is in flight
+  //   AVAILABLE   live lookup succeeded and returned a usable product
+  //   UNAVAILABLE the backend says no — 404/410, or 200 with no product
+  //   UNVERIFIED  we could not find out: timeout, 5xx, offline, rate limited
+  //
+  // Only AVAILABLE may be ordered. UNAVAILABLE is excluded and the rest of the
+  // order proceeds. UNKNOWN or UNVERIFIED blocks Confirm entirely rather than
+  // silently turning the customer's re-order into a partial one.
+  const [lineStatus, setLineStatus] = useState({});
+
+  // Guards against an obsolete lookup committing over the current one. Opening
+  // order A, closing it and opening order B, then having A's slow response land
+  // would otherwise overwrite B's availability and make a switched-off product
+  // orderable again.
+  const reorderRequestRef = useRef(0);
   const [popupLoading, setPopupLoading] = useState(false);
 
   // Proof review state
@@ -327,52 +356,80 @@ const openReOrderModal = useCallback(async () => {
 
   sessionStorage.setItem(reorderStorageKey, "1");
 
+  const requestId = ++reorderRequestRef.current;
+  const ids = [...new Set((selectedOrder?.products || []).map((p) => p.id))];
+
   setReOrderModal(true);
   setPopupLoading(true);
   setEditableProducts((selectedOrder?.products || []).map((p) => ({ ...p })));
 
-  try {
-    const ids = [...new Set((selectedOrder?.products || []).map((p) => p.id))];
-    const details = {};
-    const unavailable = new Set();
+  // Reset to UNKNOWN before anything is checked. Carrying the previous order's
+  // verdicts over would present a stale result as current truth.
+  setProductDetails({});
+  setLineStatus(ids.reduce((acc, id) => ({ ...acc, [id]: LINE_STATUS.UNKNOWN }), {}));
 
-    // allSettled, not all: a product can legitimately no longer resolve — it
-    // has been discontinued, or its supplier has been switched off — and with
-    // Promise.all a single 404 rejected the whole batch, so EVERY line lost its
-    // details and silently fell back to the prices frozen in the old order.
-    const results = await Promise.allSettled(
-      ids.map(async (id) => {
-        const { data } = await axios.get(`${backendUrl}/api/single-product/${id}`);
-        return { id, product: data?.data };
-      })
-    );
-
-    results.forEach((result, index) => {
-      const id = ids[index];
-      if (result.status === "fulfilled" && result.value?.product) {
-        details[id] = result.value.product;
-      } else {
-        // Cannot be reordered: we have no live price for it, and quoting the
-        // old one would sell at a price we can no longer honour.
-        unavailable.add(id);
-      }
-    });
-
-    setProductDetails(details);
-    setUnavailableIds(unavailable);
-
-    if (unavailable.size > 0) {
-      toast.error(
-        unavailable.size === ids.length
-          ? "None of these items are available to re-order."
-          : `${unavailable.size} item${unavailable.size > 1 ? "s are" : " is"} no longer available and will not be re-ordered.`
+  // allSettled, not all: a single 404 previously rejected the whole batch, so
+  // EVERY line lost its details and fell back to the prices frozen in the old
+  // order. Each request is bounded so one stalled lookup cannot hold the
+  // others hostage indefinitely.
+  const results = await Promise.allSettled(
+    ids.map(async (id) => {
+      const { data } = await axios.get(
+        `${backendUrl}/api/single-product/${id}`,
+        { timeout: REORDER_LOOKUP_TIMEOUT_MS }
       );
+      return { id, product: data?.data };
+    })
+  );
+
+  // A newer open superseded this one — discard rather than overwrite it.
+  if (requestId !== reorderRequestRef.current) return;
+
+  const details = {};
+  const status = {};
+
+  results.forEach((result, index) => {
+    const id = ids[index];
+
+    if (result.status === "fulfilled") {
+      if (result.value?.product) {
+        details[id] = result.value.product;
+        status[id] = LINE_STATUS.AVAILABLE;
+      } else {
+        // 200 with no product is the backend saying it has nothing to sell.
+        status[id] = LINE_STATUS.UNAVAILABLE;
+      }
+      return;
     }
-  } catch (err) {
-    console.error("Failed to fetch product details:", err);
-    toast.error("Failed to load product details.")
-  }
+
+    // Distinguish "the answer is no" from "we could not get an answer".
+    // Treating an outage as unavailability would tell a customer their
+    // perfectly saleable products are gone — and during a full outage, that
+    // every item is gone, which is simply false.
+    const httpStatus = result.reason?.response?.status;
+    status[id] =
+      httpStatus === 404 || httpStatus === 410
+        ? LINE_STATUS.UNAVAILABLE
+        : LINE_STATUS.UNVERIFIED;
+  });
+
+  setProductDetails(details);
+  setLineStatus(status);
   setPopupLoading(false);
+
+  const counts = Object.values(status);
+  const unavailable = counts.filter((s) => s === LINE_STATUS.UNAVAILABLE).length;
+  const unverified = counts.filter((s) => s === LINE_STATUS.UNVERIFIED).length;
+
+  if (unverified > 0) {
+    toast.error("Couldn't check availability for every item. Please try again.");
+  } else if (unavailable > 0) {
+    toast.error(
+      unavailable === ids.length
+        ? "None of these items are available to re-order."
+        : `${unavailable} item${unavailable > 1 ? "s are" : " is"} no longer available and will not be re-ordered.`
+    );
+  }
 }, [selectedOrder, backendUrl, reorderStorageKey]);
 
 const closeReOrderModal = useCallback(() => {
@@ -423,20 +480,35 @@ const removeEditableProduct = (index) => {
   setEditableProducts((prev) => prev.filter((_, i) => i !== index));
 };
 
+// Only a line we have positively verified may be ordered. Everything else —
+// unavailable, unverified, or not yet checked — is excluded from the money.
+const isLineOrderable = (product) =>
+  lineStatus[product.id] === LINE_STATUS.AVAILABLE;
+
 const getEditableProductTotal = () => {
-  // Unavailable lines are excluded from the re-order, so they must not appear
-  // in the total either — otherwise the customer is quoted a figure they will
-  // never be charged.
-  const subtotal = editableProducts
-    .filter((p) => !unavailableIds.has(p.id))
+  // Excluded lines must not appear in the total either — otherwise the
+  // customer is quoted a figure they will never be charged.
+  return editableProducts
+    .filter(isLineOrderable)
     .reduce((sum, p) => sum + (p.subTotal || 0), 0);
-  return subtotal;
 };
 
-const unavailableCount = editableProducts.filter((p) =>
-  unavailableIds.has(p.id)
+const orderableCount = editableProducts.filter(isLineOrderable).length;
+const unavailableCount = editableProducts.filter(
+  (p) => lineStatus[p.id] === LINE_STATUS.UNAVAILABLE
 ).length;
-const orderableCount = editableProducts.length - unavailableCount;
+// Anything we could not check, or have not checked yet. These block the whole
+// re-order rather than being quietly dropped: turning "we don't know" into a
+// partial order would charge for some items and silently abandon others the
+// customer still wants.
+const unresolvedCount = editableProducts.filter(
+  (p) =>
+    lineStatus[p.id] === LINE_STATUS.UNVERIFIED ||
+    lineStatus[p.id] === LINE_STATUS.UNKNOWN ||
+    lineStatus[p.id] === undefined
+).length;
+const canConfirmReorder =
+  !popupLoading && unresolvedCount === 0 && orderableCount > 0;
 
 
 const handleReOrder = async () => {
@@ -447,9 +519,15 @@ const handleReOrder = async () => {
   // Drop anything we could not price live. Reordering these would charge the
   // price frozen in the original order, which we may no longer be able to
   // honour — the supplier may have been switched off entirely.
-  const orderableProducts = editableProducts.filter(
-    (p) => !unavailableIds.has(p.id)
-  );
+  // Re-check at submit, not just at render. The button is disabled in these
+  // cases, but a disabled button is a UI convenience, not a guarantee.
+  if (unresolvedCount > 0) {
+    return toast.error(
+      "Still checking availability for some items. Please try again in a moment."
+    );
+  }
+
+  const orderableProducts = editableProducts.filter(isLineOrderable);
   if (orderableProducts.length === 0) {
     return toast.error("None of these items are available to re-order.");
   }
@@ -1166,7 +1244,9 @@ return (
                   // No live product means no live price. Show the line so the
                   // customer can see what is missing, but keep it out of the
                   // re-order rather than charging the old price.
-                  const isUnavailable = unavailableIds.has(product.id);
+                  const status = lineStatus[product.id];
+                  const isUnavailable = status === LINE_STATUS.UNAVAILABLE;
+                  const isUnverified = status === LINE_STATUS.UNVERIFIED;
                   const colors = detail ? getColorsFromProduct(detail) : [];
                   const parsedSizes = detail ? extractSizesFromProduct(detail) : [];
                   const sizes =
@@ -1193,6 +1273,19 @@ return (
                           <p className="text-xs text-amber-800">
                             <span className="font-semibold">No longer available.</span>{" "}
                             This item won&apos;t be included in your re-order. Everything else below will be.
+                          </p>
+                        </div>
+                      )}
+
+                      {isUnverified && (
+                        <div className="mb-3 flex items-start gap-2 rounded border border-red-200 bg-red-50 px-3 py-2">
+                          <FaTimesCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-600" />
+                          <p className="text-xs text-red-800">
+                            <span className="font-semibold">
+                              Couldn&apos;t check availability.
+                            </span>{" "}
+                            We don&apos;t know whether this item can still be ordered, so
+                            we&apos;ve paused the re-order rather than guess. Close and try again.
                           </p>
                         </div>
                       )}
@@ -1365,16 +1458,18 @@ return (
                   onClick={handleReOrder}
                   // Only blocked when NOTHING can be re-ordered. A single dead
                   // line must not stop the customer reordering the rest.
-                  disabled={reOrderLoading || orderableCount === 0}
+                  disabled={reOrderLoading || !canConfirmReorder}
                   className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {reOrderLoading
                     ? "Re-ordering..."
-                    : orderableCount === 0
-                      ? "Nothing available"
-                      : unavailableCount > 0
-                        ? `Re-order ${orderableCount} of ${editableProducts.length} items`
-                        : "Confirm Re-order"}
+                    : unresolvedCount > 0
+                      ? "Can't check availability"
+                      : orderableCount === 0
+                        ? "Nothing available"
+                        : unavailableCount > 0
+                          ? `Re-order ${orderableCount} of ${editableProducts.length} items`
+                          : "Confirm Re-order"}
                 </button>
               </div>
             </div>
