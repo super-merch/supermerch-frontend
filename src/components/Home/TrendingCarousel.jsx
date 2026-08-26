@@ -1,4 +1,4 @@
-import { slugify, toProductUrl } from "@/utils/utils";
+import { getMinUsableBasePrice, isProductPriceOnApplication, slugify, toProductUrl } from "@/utils/utils";
 import { useContext, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { FaFire } from "react-icons/fa";
@@ -143,17 +143,12 @@ const TrendingCarousel = () => {
                   className="blog-swiper"
                 >
                   {trendingProducts.map((product, slideIndex) => {
-                    const priceGroups =
-                      product.product?.prices?.price_groups || [];
-                    const basePrice =
-                      priceGroups.find((group) => group?.base_price) || {};
-                    const priceBreaks =
-                      basePrice.base_price?.price_breaks || [];
-                    const prices = priceBreaks
-                      .map((breakItem) => breakItem.price)
-                      .filter((price) => price !== undefined);
-                    const minPrice = prices.length ? Math.min(...prices) : 0;
-                    const maxPrice = prices.length ? Math.max(...prices) : 0;
+                    // This read the first group and turned an absent price into
+                    // 0, which is how "From $0.00" reached the home page.
+                    // Verified live on Promo Stylus Pen II.
+                    const isPriceOnApplication =
+                      isProductPriceOnApplication(product);
+                    const minPrice = getMinUsableBasePrice(product) ?? 0;
                     const isFavourited = favouriteItems?.some(
                       (item) => item.meta?.id === product?.meta?.id,
                     );
@@ -218,10 +213,9 @@ const TrendingCarousel = () => {
                             </p>
                             <div className="mt-1">
                               <h4 className="text-sm font-bold text-primary group-hover:text-primary/90 transition-colors duration-300">
-                                From $
-                                {minPrice === maxPrice
-                                  ? minPrice.toFixed(2)
-                                  : minPrice.toFixed(2)}
+                                {isPriceOnApplication
+                                  ? "Contact Us"
+                                  : `From $${minPrice.toFixed(2)}`}
                               </h4>
                             </div>
                           </div>

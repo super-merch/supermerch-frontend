@@ -2,6 +2,7 @@ import LoadingOverlay from "@/components/Common/LoadingOverlay";
 import RecommendationsStrip from "@/components/Common/RecommendationsStrip";
 import {
   getProductPrice,
+  isProductPriceOnApplication,
   isProductCategory,
   findNearestColor,
   getProductCategory,
@@ -11,6 +12,7 @@ import { getArtworkSource } from "@/utils/categoryMeta";
 import {
   extractSizesFromProduct as extractSizesFromPromodata,
   findPriceGroupForColor,
+  isColorPriceOnApplication,
 } from "@/utils/promodataWorkwearPdpMap";
 import { parseLeadTime, calculateEstimatedDelivery } from "@/utils/deliveryCalculations";
 import axios, { all } from "axios";
@@ -922,7 +924,15 @@ const ProductDetails = () => {
       formData1.append("email", formData.email);
       formData1.append("phone", formData.phone);
       formData1.append("delivery", formData.delivery);
-      formData1.append("comment", formData.comment);
+      // Same defect as the clothing PDP: the backend Quote schema requires
+      // `comment`, the form does not, so a blank "Additional Comments" returns
+      // 500 and the enquiry is lost. Fixed here too rather than leaving one of
+      // the two quote forms broken — this is the promotional path, which is
+      // where most quote volume comes from.
+      formData1.append(
+        "comment",
+        formData.comment?.trim() || "No additional comments provided.",
+      );
       formData1.append("product", single_product?.product?.name);
       formData1.append("productId", single_product?.meta?.id);
       // Use the currently selected values
@@ -943,7 +953,12 @@ const ProductDetails = () => {
           formData1.append("customizationPosition", selectedPosition.positionName);
         }
       }
-      formData1.append("description", single_product?.product?.description);
+      // Without the fallback a missing supplier description is appended as the
+      // literal string "undefined" — 885 catalogue products have none.
+      formData1.append("description", single_product?.product?.description || "");
+      if (isPriceOnApplication) {
+        formData1.append("isPriceOnApplication", "true");
+      }
 
       if (selectedFile2) {
         formData1.append("file", selectedFile2);
@@ -1011,6 +1026,22 @@ const ProductDetails = () => {
 
   const setupFee = getSetupFee();
   const productPrice = getProductPrice(single_product, productId);
+  /**
+   * `handleAddToCart` already treats a zero price as on-application and opens
+   * the quote form, but the modal was never told, so it rendered "Unit Price
+   * $0.00 / Total $0.00" — the same figure the clothing page was fixed to stop
+   * showing. Confirmed live on product 260.
+   *
+   * `pricingSummary.isPriceOnApplication` only exists once backend #86 ships;
+   * until then the break check inside the shared predicate is what fires.
+   *
+   * The colour check is the second half: a product can be priced overall and
+   * still have colours the supplier never priced, which no product-level test
+   * can see.
+   */
+  const isPriceOnApplication =
+    isProductPriceOnApplication(single_product) ||
+    isColorPriceOnApplication(single_product, selectedColor);
 
   const uniquePriceGroups = availablePriceGroups.filter(
     (group, index, self) =>
@@ -1966,6 +1997,7 @@ const ProductDetails = () => {
             selectedAdminCustomization,
             selectedPosition,
             currentQuantity,
+            isPriceOnApplication,
             discountedUnitPrice,
             currentPrice,
             formData,

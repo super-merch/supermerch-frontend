@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import noimage from "/noimage.png";
-import { getProductPrice, slugify, toProductUrl } from "@/utils/utils";
+import { getProductPrice, isProductPriceOnApplication, slugify, toProductUrl } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToFavourite } from "@/redux/slices/favouriteSlice";
@@ -41,6 +41,13 @@ const ProductCard = ({
   };
   const finalPrice = Number(product?.pricingSummary?.finalMinPrice) || getProductPrice(product, product.meta.id);
   const strikePrice = Number(product?.pricingSummary?.marginAdjustedMinPrice) || null;
+  /**
+   * This is the second product card in the codebase — the home page and shop
+   * category tabs use this one, everything else uses Common/ProductCard. Only
+   * that one was given the on-application guard, so a product with no supplier
+   * price still advertised "Starting From $0.00" here.
+   */
+  const isPriceOnApplication = isProductPriceOnApplication(product);
   const is24HrProduct = (() => {
     if (product?.supplier?.supplier === "Promo Brands") return false;
 
@@ -162,6 +169,10 @@ const ProductCard = ({
 
             <div className="">
               <h2 className="text-xs sm:text-base font-bold text-primary">
+                {isPriceOnApplication ? (
+                  "Contact Us"
+                ) : (
+                  <>
                 Starting From{" "}
                 {discountPct > 0 ? (
                   <>
@@ -176,6 +187,8 @@ const ProductCard = ({
                   <span className="text-xs sm:text-sm font-bold text-primary">
                     ${finalPrice.toFixed(2)}
                   </span>
+                )}
+                  </>
                 )}
               </h2>
             </div>

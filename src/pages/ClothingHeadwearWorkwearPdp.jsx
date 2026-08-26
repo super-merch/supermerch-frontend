@@ -29,6 +29,7 @@ import {
   extractSizesForSelectedColor,
   extractSizesFromProduct,
   findPriceGroupForColor,
+  isColorPriceOnApplication,
   getBasePriceBreaksForColor,
   getDefaultPrintMethod,
   getPriceForQuantity,
@@ -94,6 +95,7 @@ export default function ClothingHeadwearWorkwearPdp() {
   );
 
   const [selectedColor, setSelectedColor] = useState("");
+
   const [sizeQuantities, setSizeQuantities] = useState({});
   const [addingToCart, setAddingToCart] = useState(false);
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
@@ -133,6 +135,19 @@ export default function ClothingHeadwearWorkwearPdp() {
   // group (PromoData prices vary per colour and groups are NOT index-aligned).
   const selectedColorName =
     workwearProduct?.availableColors?.find((c) => c.id === selectedColor)?.name || "";
+
+  /**
+   * Product-level "no price at all", OR the specific colour the customer has
+   * chosen having none. The second is invisible to every product-level check
+   * and is what puts $0.00 back on screen after a colour click.
+   *
+   * Declared here rather than with the other state deliberately: it depends
+   * on selectedColorName, and `const` has no hoisting, so deriving it earlier
+   * throws before the page renders.
+   */
+  const isPriceOnApplication =
+    workwearProduct?.isPriceOnApplication === true ||
+    isColorPriceOnApplication(singleProduct, selectedColorName);
 
   // Price tiers for the SELECTED colour. Falls back to the cheapest group's
   // tiers when nothing is selected so the "from" price stays honest.
@@ -455,7 +470,36 @@ export default function ClothingHeadwearWorkwearPdp() {
       fd.append("email", quoteFormData.email);
       fd.append("phone", quoteFormData.phone);
       fd.append("delivery", quoteFormData.delivery);
-      fd.append("comment", quoteFormData.comment || "");
+      /**
+       * The backend Quote schema declares `comment` as required, but the form
+       * labels it "Additional Comments", does not mark it required, and does
+       * not validate it — so a customer who fills in every visible field and
+       * leaves this blank gets a 500 and loses the enquiry.
+       *
+       * Pre-existing, but this PR makes the quote path the PRIMARY call to
+       * action for 1,596 products whose entire commercial justification is that
+       * they convert into leads. A blank note is a legitimate submission, so it
+       * is labelled as one rather than sent empty.
+       */
+      /**
+       * A price-on-application quote has no price to send. The backend now
+       * takes an explicit `isPriceOnApplication` flag and stores null rather
+       * than 0, so no downstream reader has to guess whether 0 means free.
+       *
+       * The marker in the comment stays as deploy-order insurance: this
+       * frontend goes live the moment it merges, while the backend needs a
+       * manual pull and restart. Until that restart the flag is ignored and 0
+       * is stored again, and the marker is the only thing telling staff the
+       * figure is not real.
+       */
+      const customerNote =
+        quoteFormData.comment?.trim() || "No additional comments provided.";
+      fd.append(
+        "comment",
+        isPriceOnApplication
+          ? `[PRICE ON APPLICATION - no supplier price available, quote manually] ${customerNote}`
+          : customerNote,
+      );
       fd.append("product", singleProduct?.product?.name || workwearProduct?.name || "");
       fd.append("productId", String(singleProduct?.meta?.id || ""));
       fd.append("price", Number(unit.toFixed(2)));
@@ -469,6 +513,7 @@ export default function ClothingHeadwearWorkwearPdp() {
       fd.append("size", quoteSelection.variant?.size?.name || "");
       fd.append("logoColor", "1 Colour Print");
       fd.append("description", singleProduct?.product?.description || "");
+      if (isPriceOnApplication) fd.append("isPriceOnApplication", "true");
       if (quoteFile) fd.append("file", quoteFile);
 
       await axios.post(`${backendUrl}/api/checkout/quote`, fd);
@@ -587,6 +632,17 @@ export default function ClothingHeadwearWorkwearPdp() {
 
   const handleAddToCart = async () => {
     if (!singleProduct || !workwearProduct || !colorVariants) return;
+
+    /**
+     * Price on application — the supplier gives no price, so there is nothing
+     * to charge. The empty-price-breaks check below would catch this too, but
+     * only by coincidence: this states the reason, and gives the customer the
+     * message that matches what the page is telling them.
+     */
+    if (isPriceOnApplication) {
+      toast.error("This product is priced on application — please request a quote.");
+      return;
+    }
 
     const baseBreaks = getBasePriceBreaksForColor(singleProduct, selectedColorName);
 
@@ -707,6 +763,21 @@ export default function ClothingHeadwearWorkwearPdp() {
 
   const handleBuySample = async () => {
     if (!singleProduct || !workwearProduct) return;
+
+    /**
+     * The third route into the cart. "Buy 1 sample" IS rendered on these
+     * products, and this handler dispatches addToCart directly.
+     *
+     * The `unit <= 0` check below already stopped it — but only by
+     * coincidence, and it told the customer "pricing not available" on a page
+     * that says "contact us for pricing". Same reason as handleAddToCart:
+     * state the actual reason rather than relying on a zero.
+     */
+    if (isPriceOnApplication) {
+      toast.error("This product is priced on application — please request a quote.");
+      return;
+    }
+
     const sampleVariant = quoteSelection.variant;
     if (!sampleVariant) {
       toast.error("Please select a colour/size first");
@@ -911,6 +982,7 @@ export default function ClothingHeadwearWorkwearPdp() {
             currentQuantity={quoteQuantity}
             discountedUnitPrice={getEstimatedUnitPrice(quoteQuantity)}
             currentPrice={getEstimatedUnitPrice(quoteQuantity) * quoteQuantity}
+            isPriceOnApplication={isPriceOnApplication}
             formData={quoteFormData}
             handleChange={handleQuoteChange}
             handleDragEnter2={handleQuoteDragEnter}
