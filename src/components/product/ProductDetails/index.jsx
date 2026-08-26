@@ -922,7 +922,15 @@ const ProductDetails = () => {
       formData1.append("email", formData.email);
       formData1.append("phone", formData.phone);
       formData1.append("delivery", formData.delivery);
-      formData1.append("comment", formData.comment);
+      // Same defect as the clothing PDP: the backend Quote schema requires
+      // `comment`, the form does not, so a blank "Additional Comments" returns
+      // 500 and the enquiry is lost. Fixed here too rather than leaving one of
+      // the two quote forms broken — this is the promotional path, which is
+      // where most quote volume comes from.
+      formData1.append(
+        "comment",
+        formData.comment?.trim() || "No additional comments provided.",
+      );
       formData1.append("product", single_product?.product?.name);
       formData1.append("productId", single_product?.meta?.id);
       // Use the currently selected values

@@ -630,6 +630,19 @@ export default function ProductInfo({
             </div>
             )}
 
+            {/*
+              * Everything that prices, quantifies or buys is hidden for a
+              * price-on-application product — sizes, customisation, View
+              * Pricing and Add to Cart.
+              *
+              * Disabling the button alone was not enough. The tier builder
+              * synthesises a zero tier when there are no price breaks, so
+              * selecting a colour and quantity put $0.00 back on the button
+              * label and into the volume-pricing modal — the exact figure the
+              * Contact us panel exists to remove, one interaction later.
+              */}
+            {!isPriceOnApplication && (
+              <>
             {/* Size & Quantities Section - Redesigned */}
             <div className="border-t border-[#E5E7EB] pt-3 sm:pt-4">
                 <div className="flex items-center justify-between mb-2 sm:mb-3">
@@ -1121,6 +1134,8 @@ export default function ProductInfo({
                     );
                 })()}
             </div>
+              </>
+            )}
 
             {/* Delivery Options Section */}
             {deliveryOptions.length > 0 && (

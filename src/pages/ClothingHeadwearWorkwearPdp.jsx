@@ -455,7 +455,21 @@ export default function ClothingHeadwearWorkwearPdp() {
       fd.append("email", quoteFormData.email);
       fd.append("phone", quoteFormData.phone);
       fd.append("delivery", quoteFormData.delivery);
-      fd.append("comment", quoteFormData.comment || "");
+      /**
+       * The backend Quote schema declares `comment` as required, but the form
+       * labels it "Additional Comments", does not mark it required, and does
+       * not validate it — so a customer who fills in every visible field and
+       * leaves this blank gets a 500 and loses the enquiry.
+       *
+       * Pre-existing, but this PR makes the quote path the PRIMARY call to
+       * action for 1,596 products whose entire commercial justification is that
+       * they convert into leads. A blank note is a legitimate submission, so it
+       * is labelled as one rather than sent empty.
+       */
+      fd.append(
+        "comment",
+        quoteFormData.comment?.trim() || "No additional comments provided.",
+      );
       fd.append("product", singleProduct?.product?.name || workwearProduct?.name || "");
       fd.append("productId", String(singleProduct?.meta?.id || ""));
       fd.append("price", Number(unit.toFixed(2)));
