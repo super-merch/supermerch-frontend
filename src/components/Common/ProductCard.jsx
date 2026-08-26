@@ -248,7 +248,21 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
 
             {/* Pricing */}
             <div className="w-full flex flex-col items-center justify-center gap-0.5 sm:gap-1 flex-shrink-0">
-              {productPrice == 0 ? (
+              {/*
+                * `productPrice == 0` was the whole guard, and it does not fire
+                * for a price-on-application product: those have NO price
+                * breaks, so productPrice is `undefined`, and `undefined == 0`
+                * is false in JavaScript. The card would fall through and render
+                * "Starting From $0.00".
+                *
+                * No POA product appeared in 500 sampled listing entries, so
+                * this may never have been reachable — but the guard was written
+                * for "no price" and did not cover the shape "no price" actually
+                * takes for these 1,596 products.
+                */}
+              {productPrice == 0 ||
+              !Number.isFinite(Number(productPrice)) ||
+              product?.pricingSummary?.isPriceOnApplication === true ? (
                 <p className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">
                   Contact Us
                 </p>

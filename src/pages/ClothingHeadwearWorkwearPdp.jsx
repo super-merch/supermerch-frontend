@@ -474,9 +474,23 @@ export default function ClothingHeadwearWorkwearPdp() {
        * they convert into leads. A blank note is a legitimate submission, so it
        * is labelled as one rather than sent empty.
        */
+      /**
+       * A price-on-application quote stores price 0 and totalPrice 0, because
+       * the backend Quote schema requires both and there is genuinely no price.
+       * Hiding the zeros on screen without marking the record would just move
+       * the defect: staff would open the quote and read $0.00 as a real figure.
+       *
+       * So the record says what it is. Changing the schema to allow an absent
+       * price is the better long-term fix and is on the backlog; this makes the
+       * lead unambiguous without touching a shared contract.
+       */
+      const customerNote =
+        quoteFormData.comment?.trim() || "No additional comments provided.";
       fd.append(
         "comment",
-        quoteFormData.comment?.trim() || "No additional comments provided.",
+        isPriceOnApplication
+          ? `[PRICE ON APPLICATION - no supplier price available, quote manually] ${customerNote}`
+          : customerNote,
       );
       fd.append("product", singleProduct?.product?.name || workwearProduct?.name || "");
       fd.append("productId", String(singleProduct?.meta?.id || ""));
