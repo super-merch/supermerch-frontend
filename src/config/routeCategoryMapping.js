@@ -25,7 +25,13 @@ export const ROUTE_CATEGORY_MAPPING = {
   },
   "/return-gifts": {
     type: "return-gifts",
-    categoryId: null, // Return gifts might be a special category
+    // Note: this file is not currently imported anywhere in the app, so
+    // categoryId here has no runtime effect. The actual product source for
+    // /return-gifts lives in src/config/returnGiftsConfig.js
+    // (RETURN_GIFTS_SUBCATEGORY_ID), consumed by ProductsContext.jsx and
+    // Cards.jsx - a real SubCategory (promodata type_id "PM-17",
+    // "Home & Living > Hampers"), not a keyword search.
+    categoryId: null,
     categoryName: "Return Gifts",
     description: "Return Gifts Products",
   },

@@ -1,8 +1,9 @@
 import { setMaxPrice, setMinPrice, setMoq } from "@/redux/slices/filterSlice";
 import { buildProductsFilterKey } from "@/utils/productFilterKey";
 import { toProductUrl } from "@/utils/utils";
+import { RETURN_GIFTS_SUBCATEGORY_ID } from "../../config/returnGiftsConfig";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -77,16 +78,12 @@ const Cards = ({ category = "" }) => {
     pageFromURL || paginationData?.page || paginationData?.currentPage
   );
 
-  const RETURN_GIFTS_EXCLUDED = ["jolt charger gift pack", "jelly bean 2 cubes", "jelly bean 4 cubes"];
-
-  const displayProducts = useMemo(() => {
-    const base = accumulatedProducts?.length > 0 ? accumulatedProducts : (getProducts?.data ?? []);
-    if (paginationData.category !== "return-gifts") return base;
-    return base.filter((p) => {
-      const name = p.overview?.name?.toLowerCase() || "";
-      return RETURN_GIFTS_EXCLUDED.every((ex) => !name.includes(ex));
-    });
-  }, [accumulatedProducts, getProducts?.data, paginationData.category]);
+  // Return Gifts now sources from a real product-type filter (SubCategory
+  // "Return Gifts", promodata type_id "PM-17" - see
+  // src/config/returnGiftsConfig.js), so the products returned are already
+  // exactly the "Home & Living > Hampers" lineup. The keyword-search era's
+  // per-product name-exclusion hack is no longer needed.
+  const displayProducts = accumulatedProducts?.length > 0 ? accumulatedProducts : (getProducts?.data ?? []);
 
   const dropdownRef = useRef(null);
   const prevCategoryKeyRef = useRef(null);
@@ -139,11 +136,17 @@ const Cards = ({ category = "" }) => {
     }
 
     let url = "";
-    let searchTerms = ["hamper", "hampers", "gift hamper", "gift box", "gift basket", "gift set", "gift pack"];
     if (paginationData.category === "return-gifts") {
-      url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
-        ","
-      )}&page=${page}&limit=${limit}`;
+      // Real category filter, not a keyword hack: resolves to the
+      // "Return Gifts" SubCategory (promodata type_id "PM-17",
+      // "Home & Living > Hampers"), same product_type_ids mechanism as
+      // every other product-type listing page. See
+      // src/config/returnGiftsConfig.js for details.
+      const returnGiftsParams = new URLSearchParams(params);
+      returnGiftsParams.set("product_type_ids", RETURN_GIFTS_SUBCATEGORY_ID);
+      returnGiftsParams.set("page", page.toString());
+      returnGiftsParams.set("limit", limit.toString());
+      url = `${backendUrl}/api/params-products?${returnGiftsParams.toString()}`;
     } else if (paginationData.category === "australia") {
       url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
     } else if (paginationData.category === "24hr-production") {

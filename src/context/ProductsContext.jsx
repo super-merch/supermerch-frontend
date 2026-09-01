@@ -2,6 +2,7 @@ import { createContext, useCallback, useEffect, useMemo, useRef, useState } from
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { RETURN_GIFTS_SUBCATEGORY_ID } from "../config/returnGiftsConfig";
 
 export const ProductsContext = createContext();
 
@@ -144,7 +145,6 @@ const ProductsContextProvider = ({ children }) => {
         }
 
         let url = "";
-        let searchTerms = ["gift pack", "HAM10"];
         if (paginationData.category === "australia") {
             url = `${backendUrl}/api/australia/get-products?${params.toString()}`;
         } else if (paginationData.category === "24hr-production") {
@@ -160,9 +160,14 @@ const ProductsContextProvider = ({ children }) => {
         } else if (paginationData.category === "allProducts") {
             url = `${backendUrl}/api/client-products?${params.toString()}`;
         } else if (paginationData.category === "return-gifts") {
-            url = `${backendUrl}/api/client-products/search?searchTerms=${searchTerms.join(
-                ","
-            )}&page=${paginationData.page}&limit=${paginationData.limit}`;
+            // Real category filter, not a keyword hack: resolves to the
+            // "Return Gifts" SubCategory (promodata type_id "PM-17",
+            // "Home & Living > Hampers"), same product_type_ids mechanism as
+            // every other product-type listing page. See
+            // src/config/returnGiftsConfig.js for details.
+            const returnGiftsParams = new URLSearchParams(params);
+            returnGiftsParams.set("product_type_ids", RETURN_GIFTS_SUBCATEGORY_ID);
+            url = `${backendUrl}/api/params-products?${returnGiftsParams.toString()}`;
         } else if (paginationData.category === "collection" && paginationData.collectionSlug) {
             url = `${backendUrl}/api/public/collection/${paginationData.collectionSlug}?${params.toString()}`;
         } else if (paginationData.category) {
