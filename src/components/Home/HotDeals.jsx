@@ -11,11 +11,21 @@ const HotDeals = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    // Temporarily disabled: the only featured deal currently returned by the
-    // backend has incorrect pricing/imagery. Leaving `deals` empty renders
-    // the existing "no deals" fallback below. Re-enable once the featured
-    // deal data is corrected.
-    setLoading(false);
+    const fetchDeals = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/frontend/deals?limit=4`);
+        const result = await response.json();
+        if (result.success) {
+          setDeals(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching bundle deals:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeals();
   }, [backendUrl]);
 
   return (
@@ -23,7 +33,7 @@ const HotDeals = () => {
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <FaFire className="text-orange-500 text-lg animate-pulse hover:animate-bounce transition-all duration-300" />
-        <h3 className="text-lg font-bold text-gray-800">HOT DEALS</h3>
+        <h3 className="text-lg font-bold text-gray-800">BUNDLE DEALS</h3>
       </div>
 
       {/* Hot Deals List */}
@@ -140,7 +150,7 @@ const HotDeals = () => {
           to="/deals"
           className="text-sm text-secondary hover:text-primary font-medium transition-colors"
         >
-          View All Hot Deals →
+          View All Bundle Deals →
         </Link>
       </div>
     </div>
