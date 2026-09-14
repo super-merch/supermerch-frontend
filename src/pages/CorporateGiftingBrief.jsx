@@ -16,8 +16,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 const FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLScSBInnD9hgicM4FHVfCXJyyYEd8XRBiiUEOZ2x4_XYfbXR0Q/formResponse";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 /* Google Form field ids. Do not change these unless the form's questions are rebuilt. */
 const ENTRY = {
   who: "1464033638",
@@ -263,6 +261,7 @@ export default function CorporateGiftingBrief() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const pickTimeoutRef = useRef(null);
+  const emailInputRef = useRef(null);
 
   const q = QUESTIONS[step];
 
@@ -284,12 +283,15 @@ export default function CorporateGiftingBrief() {
       else fd.append(`entry.${ENTRY[k]}`, v);
     });
     ["name", "company", "email", "phone"].forEach((k) => {
-      if (details[k]) fd.append(`entry.${ENTRY[k]}`, details[k]);
+      const v = details[k].trim();
+      if (v) fd.append(`entry.${ENTRY[k]}`, v);
     });
     // Google Forms sends no CORS headers, so a resolved fetch is opaque and
-    // does not prove Google accepted the data. A REJECTED fetch, though, does
-    // prove the request never left the browser (offline, DNS failure, an
-    // extension or proxy blocking it) - worth surfacing rather than swallowing.
+    // does not prove Google accepted the data. A REJECTED fetch means the
+    // request most likely never completed (offline, DNS failure, an
+    // extension or proxy blocking it) - worth surfacing rather than
+    // swallowing, though it isn't absolute proof: the request could in
+    // principle have reached Google before the response connection failed.
     await fetch(FORM_ACTION, { method: "POST", mode: "no-cors", body: fd });
   }, [answers, details]);
 
@@ -305,8 +307,7 @@ export default function CorporateGiftingBrief() {
         setError(`${missing.l} is needed so we can send your quote.`);
         return;
       }
-      const emailField = q.fields.find((f) => f.type === "email");
-      if (emailField && details[emailField.k].trim() && !EMAIL_RE.test(details[emailField.k].trim())) {
+      if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
         setError("Enter a valid email address.");
         return;
       }
@@ -354,11 +355,12 @@ export default function CorporateGiftingBrief() {
       if (done) return;
       const active = document.activeElement;
       const tag = active && active.tagName;
-      const onOption = active && active.classList && active.classList.contains("sgb-opt");
-      // An option button handles its own Enter-to-click activation natively;
-      // hijacking it here (as this used to) silently ate that keypress
-      // whenever nothing was selected yet, since advance() has nothing to do.
-      if (e.key === "Enter" && tag !== "TEXTAREA" && !onOption) { e.preventDefault(); advance(); }
+      // Buttons and links handle their own Enter-to-click activation
+      // natively; hijacking that here (as this used to, unconditionally)
+      // silently ate the keypress on an option with nothing selected yet,
+      // and made Enter on a focused Back button advance instead of go back.
+      const onControl = tag === "BUTTON" || tag === "A";
+      if (e.key === "Enter" && tag !== "TEXTAREA" && !onControl) { e.preventDefault(); advance(); }
       if (q.o && /^[1-9]$/.test(e.key) && tag !== "INPUT" && tag !== "TEXTAREA") {
         const opt = q.o[Number(e.key) - 1];
         if (opt) pick(opt);
@@ -458,6 +460,7 @@ export default function CorporateGiftingBrief() {
                     <div className="sgb-field" key={f.k}>
                       <label htmlFor={`sgb-${f.k}`}>{f.l}{f.req ? " *" : ""}</label>
                       <input id={`sgb-${f.k}`} type={f.type} value={details[f.k]}
+                        ref={f.type === "email" ? emailInputRef : undefined}
                         onChange={(e) => setDetails((p) => ({ ...p, [f.k]: e.target.value }))} />
                     </div>
                   ))
@@ -467,7 +470,14 @@ export default function CorporateGiftingBrief() {
 
               <div className="sgb-nav">
                 {step > 0 ? (
-                  <button type="button" className="sgb-back" onClick={() => { setError(""); setStep((s) => s - 1); }}>Back</button>
+                  <button type="button" className="sgb-back" onClick={() => {
+                    if (pickTimeoutRef.current) {
+                      clearTimeout(pickTimeoutRef.current);
+                      pickTimeoutRef.current = null;
+                    }
+                    setError("");
+                    setStep((s) => s - 1);
+                  }}>Back</button>
                 ) : null}
                 <button type="button" className="sgb-next" onClick={advance} disabled={submitting}>
                   {submitting ? "Sending…" : step === QUESTIONS.length - 1 ? "Send my brief" : "Next"}
