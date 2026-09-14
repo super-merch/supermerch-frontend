@@ -11,10 +11,12 @@
  * since the app already loads its base font (Figtree) that way.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 const FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLScSBInnD9hgicM4FHVfCXJyyYEd8XRBiiUEOZ2x4_XYfbXR0Q/formResponse";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /* Google Form field ids. Do not change these unless the form's questions are rebuilt. */
 const ENTRY = {
@@ -127,14 +129,14 @@ const QUESTIONS = [
     k: "release",
     t: "All in one go, or stored and released over time?",
     h: "We can hold your stock and ship it as you need it.",
-    o: ["All in one go", "Store them and release in batches", "Not sure, tell me how storage works"],
+    o: ["All in one go", "Store them and release in batches as we need them", "Not sure, tell me how storage works"],
   },
   {
     k: "delivery",
     t: "Where should the gifts be delivered?",
     o: [
-      "Direct to each recipient, we will supply addresses",
-      "Everything to us in one bulk shipment",
+      "Ship directly to each recipient, we will supply the addresses",
+      "Deliver everything to us in one bulk shipment",
       "A mix of both",
       "Not sure yet",
     ],
@@ -259,10 +261,12 @@ export default function CorporateGiftingBrief() {
   const [details, setDetails] = useState({ name: "", company: "", email: "", phone: "" });
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const pickTimeoutRef = useRef(null);
 
   const q = QUESTIONS[step];
 
-  const submit = useCallback(() => {
+  const submit = useCallback(async () => {
     const fd = new FormData();
     Object.keys(LABELS).forEach((k) => {
       const v = answers[k];
@@ -282,11 +286,18 @@ export default function CorporateGiftingBrief() {
     ["name", "company", "email", "phone"].forEach((k) => {
       if (details[k]) fd.append(`entry.${ENTRY[k]}`, details[k]);
     });
-    // Google Forms does not send CORS headers; no-cors is fire-and-forget and always resolves.
-    fetch(FORM_ACTION, { method: "POST", mode: "no-cors", body: fd }).catch(() => {});
+    // Google Forms sends no CORS headers, so a resolved fetch is opaque and
+    // does not prove Google accepted the data. A REJECTED fetch, though, does
+    // prove the request never left the browser (offline, DNS failure, an
+    // extension or proxy blocking it) - worth surfacing rather than swallowing.
+    await fetch(FORM_ACTION, { method: "POST", mode: "no-cors", body: fd });
   }, [answers, details]);
 
   const advance = useCallback(() => {
+    if (pickTimeoutRef.current) {
+      clearTimeout(pickTimeoutRef.current);
+      pickTimeoutRef.current = null;
+    }
     setError("");
     if (q.fields) {
       const missing = q.fields.find((f) => f.req && !details[f.k].trim());
@@ -294,9 +305,22 @@ export default function CorporateGiftingBrief() {
         setError(`${missing.l} is needed so we can send your quote.`);
         return;
       }
-      submit();
-      setDone(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const emailField = q.fields.find((f) => f.type === "email");
+      if (emailField && details[emailField.k].trim() && !EMAIL_RE.test(details[emailField.k].trim())) {
+        setError("Enter a valid email address.");
+        return;
+      }
+      if (submitting) return;
+      setSubmitting(true);
+      submit()
+        .then(() => {
+          setDone(true);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        })
+        .catch(() => {
+          setSubmitting(false);
+          setError("Something went wrong sending your brief. Check your connection and try again.");
+        });
       return;
     }
     if (q.o) {
@@ -305,7 +329,7 @@ export default function CorporateGiftingBrief() {
     }
     setStep((s) => s + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [q, answers, details, submit]);
+  }, [q, answers, details, submit, submitting]);
 
   const pick = (opt) => {
     setAnswers((prev) => {
@@ -315,14 +339,26 @@ export default function CorporateGiftingBrief() {
       }
       return { ...prev, [q.k]: opt };
     });
-    if (!q.multi) setTimeout(() => { setStep((s) => Math.min(s + 1, QUESTIONS.length - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }, 180);
+    if (!q.multi) {
+      if (pickTimeoutRef.current) clearTimeout(pickTimeoutRef.current);
+      pickTimeoutRef.current = setTimeout(() => {
+        pickTimeoutRef.current = null;
+        setStep((s) => Math.min(s + 1, QUESTIONS.length - 1));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 180);
+    }
   };
 
   useEffect(() => {
     const onKey = (e) => {
       if (done) return;
-      const tag = document.activeElement && document.activeElement.tagName;
-      if (e.key === "Enter" && tag !== "TEXTAREA") { e.preventDefault(); advance(); }
+      const active = document.activeElement;
+      const tag = active && active.tagName;
+      const onOption = active && active.classList && active.classList.contains("sgb-opt");
+      // An option button handles its own Enter-to-click activation natively;
+      // hijacking it here (as this used to) silently ate that keypress
+      // whenever nothing was selected yet, since advance() has nothing to do.
+      if (e.key === "Enter" && tag !== "TEXTAREA" && !onOption) { e.preventDefault(); advance(); }
       if (q.o && /^[1-9]$/.test(e.key) && tag !== "INPUT" && tag !== "TEXTAREA") {
         const opt = q.o[Number(e.key) - 1];
         if (opt) pick(opt);
@@ -431,10 +467,10 @@ export default function CorporateGiftingBrief() {
 
               <div className="sgb-nav">
                 {step > 0 ? (
-                  <button type="button" className="sgb-back" onClick={() => setStep((s) => s - 1)}>Back</button>
+                  <button type="button" className="sgb-back" onClick={() => { setError(""); setStep((s) => s - 1); }}>Back</button>
                 ) : null}
-                <button type="button" className="sgb-next" onClick={advance}>
-                  {step === QUESTIONS.length - 1 ? "Send my brief" : "Next"}
+                <button type="button" className="sgb-next" onClick={advance} disabled={submitting}>
+                  {submitting ? "Sending…" : step === QUESTIONS.length - 1 ? "Send my brief" : "Next"}
                 </button>
                 <span className="sgb-enter">Press <kbd>Enter</kbd> to continue</span>
               </div>
