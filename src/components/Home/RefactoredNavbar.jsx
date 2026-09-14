@@ -244,6 +244,15 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           "Promotional",
         );
 
+        // Plain link appended after the dynamic category tree, rather than
+        // a fake category, so it survives untouched no matter how the live
+        // catalogue categories change.
+        megaMenu.push({
+          id: "corporate-gifting-brief",
+          name: "Corporate Gifting Brief",
+          onClick: () => navigate("/corporate-gifting-brief"),
+        });
+
         return {
           ...item,
           id: "promotional",
@@ -291,6 +300,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
               id: "gift-hampers",
               name: "Gift Hampers",
               onClick: () => handleMenuClick(item),
+            },
+            {
+              id: "corporate-gifting-brief",
+              name: "Corporate Gifting Brief",
+              onClick: () => navigate("/corporate-gifting-brief"),
             },
           ],
           onClick: () => handleMenuClick(item),
