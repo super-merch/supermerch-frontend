@@ -2,7 +2,8 @@
  * Corporate Gifting Brief — one question per screen.
  *
  * Self-contained: no Tailwind, no UI library, no new dependencies.
- * Submissions POST into the existing Google Form, so answers keep landing in
+ * Submissions go through api/submit-corporate-gifting-brief.js, which POSTs
+ * into the existing Google Form server-side, so answers keep landing in
  * "Corporate Gifting Brief - Responses" in the info@supermerch.com.au Drive.
  *
  * Routed at /corporate-gifting-brief.
@@ -12,9 +13,6 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-
-const FORM_ACTION =
-  "https://docs.google.com/forms/d/e/1FAIpQLScSBInnD9hgicM4FHVfCXJyyYEd8XRBiiUEOZ2x4_XYfbXR0Q/formResponse";
 
 /* Google Form field ids. Do not change these unless the form's questions are rebuilt. */
 const ENTRY = {
@@ -266,33 +264,41 @@ export default function CorporateGiftingBrief() {
   const q = QUESTIONS[step];
 
   const submit = useCallback(async () => {
-    const fd = new FormData();
+    const fields = {};
     Object.keys(LABELS).forEach((k) => {
       const v = answers[k];
       if (!v || (Array.isArray(v) && !v.length)) return;
       if (k === "when") {
         const [y, m, d] = String(v).split("-");
         if (y && m && d) {
-          fd.append(`entry.${ENTRY.when}_year`, y);
-          fd.append(`entry.${ENTRY.when}_month`, String(Number(m)));
-          fd.append(`entry.${ENTRY.when}_day`, String(Number(d)));
+          fields[`${ENTRY.when}_year`] = y;
+          fields[`${ENTRY.when}_month`] = String(Number(m));
+          fields[`${ENTRY.when}_day`] = String(Number(d));
         }
         return;
       }
-      if (Array.isArray(v)) v.forEach((one) => fd.append(`entry.${ENTRY[k]}`, one));
-      else fd.append(`entry.${ENTRY[k]}`, v);
+      fields[ENTRY[k]] = v;
     });
     ["name", "company", "email", "phone"].forEach((k) => {
       const v = details[k].trim();
-      if (v) fd.append(`entry.${ENTRY[k]}`, v);
+      if (v) fields[ENTRY[k]] = v;
     });
-    // Google Forms sends no CORS headers, so a resolved fetch is opaque and
-    // does not prove Google accepted the data. A REJECTED fetch means the
-    // request most likely never completed (offline, DNS failure, an
-    // extension or proxy blocking it) - worth surfacing rather than
-    // swallowing, though it isn't absolute proof: the request could in
-    // principle have reached Google before the response connection failed.
-    await fetch(FORM_ACTION, { method: "POST", mode: "no-cors", body: fd });
+    // Submitted server-side (api/submit-corporate-gifting-brief.js) rather
+    // than posted directly to Google from here: the live Google Form is
+    // paginated (12 pages), and a raw browser POST has no way to obtain the
+    // session token Google requires for anything past page 1 - it would
+    // silently record only the first answer while still reporting "sent".
+    // The server fetches a fresh token and can read Google's real response,
+    // so a failure here is a genuine failure, not a guess.
+    const res = await fetch("/api/submit-corporate-gifting-brief", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `submit_failed_${res.status}`);
+    }
   }, [answers, details]);
 
   const advance = useCallback(() => {
