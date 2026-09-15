@@ -1,7 +1,12 @@
 /**
- * Corporate Gifting Brief — one question per screen.
+ * Corporate Gifting Brief — single page.
  *
- * Self-contained: no Tailwind, no UI library, no new dependencies.
+ * Self-contained: no Tailwind, no UI library, no new dependencies. Everything
+ * is visible at once with one Submit button, rather than the earlier
+ * one-question-per-screen wizard — simpler, and removes a whole category of
+ * step-navigation bugs (auto-advance races, Back-button state, keyboard
+ * shortcuts) that came with the stepped version.
+ *
  * Submissions go through api/submit-corporate-gifting-brief.js, which POSTs
  * into the existing Google Form server-side, so answers keep landing in
  * "Corporate Gifting Brief - Responses" in the info@supermerch.com.au Drive.
@@ -12,7 +17,7 @@
  * since the app already loads its base font (Figtree) that way.
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 
 /* Google Form field ids. Do not change these unless the form's questions are rebuilt. */
 const ENTRY = {
@@ -36,6 +41,7 @@ const ENTRY = {
 const QUESTIONS = [
   {
     k: "who",
+    req: true,
     t: "Who is going to receive these gifts?",
     h: "Tick all that apply.",
     multi: true,
@@ -50,6 +56,7 @@ const QUESTIONS = [
   },
   {
     k: "occasion",
+    req: true,
     t: "What is the occasion?",
     h: "Tick all that apply.",
     multi: true,
@@ -64,6 +71,7 @@ const QUESTIONS = [
   },
   {
     k: "qty",
+    req: true,
     t: "Roughly how many gifts do you need?",
     h: "A ballpark is fine. Larger runs unlock better pricing.",
     o: ["1 to 24", "25 to 49", "50 to 99", "100 to 249", "250 to 499", "500 or more", "Not sure yet"],
@@ -76,6 +84,7 @@ const QUESTIONS = [
   },
   {
     k: "budget",
+    req: true,
     t: "What budget per gift do you have in mind?",
     h: "Per gift, excluding GST and delivery.",
     o: [
@@ -91,6 +100,7 @@ const QUESTIONS = [
   },
   {
     k: "style",
+    req: true,
     t: "What kind of gifting are you looking for?",
     h: "Tick anything that appeals and we will narrow it down.",
     multi: true,
@@ -106,11 +116,13 @@ const QUESTIONS = [
   },
   {
     k: "alcohol",
+    req: true,
     t: "With or without alcohol?",
     o: ["With alcohol", "Without alcohol", "A mix, some of each", "Depends on the recipient, let us discuss"],
   },
   {
     k: "branding",
+    req: true,
     t: "How would you like it branded?",
     o: [
       "Our logo on the gift itself",
@@ -123,12 +135,14 @@ const QUESTIONS = [
   },
   {
     k: "release",
+    req: true,
     t: "All in one go, or stored and released over time?",
     h: "We can hold your stock and ship it as you need it.",
     o: ["All in one go", "Store them and release in batches as we need them", "Not sure, tell me how storage works"],
   },
   {
     k: "delivery",
+    req: true,
     t: "Where should the gifts be delivered?",
     o: [
       "Ship directly to each recipient, we will supply the addresses",
@@ -143,16 +157,13 @@ const QUESTIONS = [
     h: "Dietary, cultural or company restrictions, a theme you have in mind, or what has worked before.",
     area: true,
   },
-  {
-    k: "details",
-    t: "Last one. How do we reach you?",
-    fields: [
-      { k: "name", l: "Your name", type: "text", req: true },
-      { k: "company", l: "Company", type: "text", req: true },
-      { k: "email", l: "Email", type: "email", req: true },
-      { k: "phone", l: "Best contact number", type: "tel" },
-    ],
-  },
+];
+
+const CONTACT_FIELDS = [
+  { k: "name", l: "Your name", type: "text", req: true },
+  { k: "company", l: "Company", type: "text", req: true },
+  { k: "email", l: "Email", type: "email", req: true },
+  { k: "phone", l: "Best contact number", type: "tel" },
 ];
 
 const LABELS = {
@@ -171,7 +182,7 @@ const LABELS = {
 
 const CSS = `
 .sgb{--paper:#FAF7F2;--card:#FFF;--ink:#0D2A27;--soft:#5B716D;--teal:#009688;--wash:#E9F4F1;
-  --line:#DCE5E2;--focus:#00796B;
+  --line:#DCE5E2;--focus:#00796B;--err:#C0392B;
   background:var(--paper);color:var(--ink);min-height:100vh;
   font-family:Karla,-apple-system,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .sgb *{box-sizing:border-box}
@@ -180,20 +191,21 @@ const CSS = `
 .sgb-mark{width:34px;height:34px;flex-shrink:0}
 .sgb-brand b{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:19px;display:block;letter-spacing:-.01em}
 .sgb-brand span{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
-.sgb-prog{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.sgb-track{flex:1;height:3px;background:var(--line);border-radius:99px;overflow:hidden}
-.sgb-fill{height:100%;background:var(--teal);transition:width .45s cubic-bezier(.4,0,.2,1)}
-.sgb-count{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);
-  font-variant-numeric:tabular-nums;white-space:nowrap}
-.sgb-card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:34px 34px 30px;
+.sgb-card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:36px 34px;
   box-shadow:0 1px 2px rgba(13,42,39,.05),0 12px 34px -18px rgba(13,42,39,.3)}
-.sgb-eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:12px}
-.sgb-card h1{font-family:Fraunces,Georgia,serif;font-weight:400;font-size:30px;line-height:1.22;margin:0;
+.sgb-eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:10px}
+.sgb-card h1{font-family:Fraunces,Georgia,serif;font-weight:400;font-size:30px;line-height:1.22;margin:0 0 8px;
   letter-spacing:-.015em;text-wrap:balance}
-.sgb-hint{color:var(--soft);font-size:14.5px;margin:10px 0 0;line-height:1.55}
-.sgb-opts{display:flex;flex-direction:column;gap:7px;margin-top:24px}
+.sgb-intro{color:var(--soft);font-size:14.5px;line-height:1.55;margin:0}
+.sgb-q{padding-block:26px;border-bottom:1px solid var(--line)}
+.sgb-q:first-of-type{padding-top:30px}
+.sgb-qlabel{display:block;font-family:Fraunces,Georgia,serif;font-weight:500;font-size:17px;line-height:1.4;margin:0}
+.sgb-hint{color:var(--soft);font-size:13.5px;margin:6px 0 0;line-height:1.5}
+.sgb-q-missing .sgb-qlabel{color:var(--err)}
+.sgb-q-missing{border-left:2px solid var(--err);margin-left:-16px;padding-left:14px}
+.sgb-opts{display:flex;flex-direction:column;gap:7px;margin-top:16px}
 .sgb-opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:transparent;
-  border:1px solid var(--line);border-radius:2px;padding:13px 15px;font:inherit;font-size:15px;color:var(--ink);
+  border:1px solid var(--line);border-radius:2px;padding:12px 15px;font:inherit;font-size:15px;color:var(--ink);
   cursor:pointer;transition:border-color .14s,background .14s}
 .sgb-opt:hover{border-color:var(--teal);background:var(--wash)}
 .sgb-opt:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
@@ -203,35 +215,32 @@ const CSS = `
 .sgb-opt[aria-pressed="true"] .sgb-box{background:var(--teal);border-color:var(--teal)}
 .sgb-tick{width:10px;height:10px;opacity:0;transition:opacity .12s}
 .sgb-opt[aria-pressed="true"] .sgb-tick{opacity:1}
-.sgb-key{margin-left:auto;font-size:11px;color:var(--soft);opacity:.7;font-variant-numeric:tabular-nums}
-.sgb-field{margin-top:20px}
+.sgb-field{margin-top:16px;max-width:320px}
 .sgb-field label{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:2px}
 .sgb input,.sgb textarea{width:100%;font:inherit;font-size:15.5px;color:var(--ink);background:transparent;
   border:0;border-bottom:1.5px solid var(--line);padding:11px 2px;border-radius:0;transition:border-color .15s}
 .sgb input:focus,.sgb textarea:focus{outline:none;border-bottom-color:var(--teal)}
-.sgb textarea{border:1px solid var(--line);padding:12px;min-height:110px;resize:vertical;line-height:1.55}
-.sgb-nav{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap}
-.sgb-next{background:var(--teal);color:#fff;border:0;border-radius:2px;padding:12px 26px;font:inherit;
-  font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;display:inline-block}
+.sgb textarea{border:1px solid var(--line);padding:12px;min-height:100px;resize:vertical;line-height:1.55;max-width:none}
+.sgb-contact .sgb-field{max-width:none}
+.sgb-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.sgb-next{background:var(--teal);color:#fff;border:0;border-radius:2px;padding:14px 30px;font:inherit;
+  font-weight:700;font-size:15.5px;cursor:pointer;display:inline-block;margin-top:28px}
 .sgb-next:hover{background:var(--focus)}
 .sgb-next:disabled{opacity:.35;cursor:not-allowed}
-.sgb-back{background:none;border:0;color:var(--soft);font:inherit;font-size:14px;cursor:pointer;padding:12px 4px;
-  text-decoration:underline;text-underline-offset:3px}
-.sgb-enter{margin-left:auto;font-size:11.5px;color:var(--soft)}
-.sgb-enter kbd{font-family:inherit;border:1px solid var(--line);border-radius:2px;padding:1px 5px;font-size:10.5px}
 .sgb-sum{margin-top:22px;border-top:1px solid var(--line)}
 .sgb-row{display:flex;gap:18px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 .sgb-row dt{flex:0 0 40%;color:var(--soft);margin:0}
 .sgb-row dd{margin:0;flex:1}
 .sgb-foot{margin-top:26px;font-size:12.5px;color:var(--soft);text-align:center;line-height:1.7}
 .sgb-foot a{color:var(--teal)}
-.sgb-err{color:#C0392B;font-size:13px;margin-top:14px}
+.sgb-err{color:var(--err);font-size:14px;margin-top:24px;padding:12px 14px;background:#FBEAEA;border-radius:2px}
 @media (max-width:560px){
-  .sgb-card{padding:26px 20px 24px}
+  .sgb-card{padding:28px 20px}
   .sgb-card h1{font-size:25px}
   .sgb-row{flex-direction:column;gap:2px}
   .sgb-row dt{flex:none}
-  .sgb-key{display:none}
+  .sgb-contact-grid{grid-template-columns:1fr}
+  .sgb-q-missing{margin-left:-12px;padding-left:10px}
 }
 @media (prefers-reduced-motion:reduce){.sgb *{transition:none!important}}
 `;
@@ -251,23 +260,33 @@ const Mark = () => (
   </svg>
 );
 
+const isEmpty = (v) => !v || (Array.isArray(v) && !v.length);
+
 export default function CorporateGiftingBrief() {
-  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [details, setDetails] = useState({ name: "", company: "", email: "", phone: "" });
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const pickTimeoutRef = useRef(null);
+  const [attempted, setAttempted] = useState(false);
   const emailInputRef = useRef(null);
+  const sectionRefs = useRef({});
 
-  const q = QUESTIONS[step];
+  const toggle = (qKey, opt, multi) => {
+    setAnswers((prev) => {
+      if (multi) {
+        const list = prev[qKey] || [];
+        return { ...prev, [qKey]: list.includes(opt) ? list.filter((x) => x !== opt) : [...list, opt] };
+      }
+      return { ...prev, [qKey]: opt };
+    });
+  };
 
   const submit = useCallback(async () => {
     const fields = {};
     Object.keys(LABELS).forEach((k) => {
       const v = answers[k];
-      if (!v || (Array.isArray(v) && !v.length)) return;
+      if (isEmpty(v)) return;
       if (k === "when") {
         const [y, m, d] = String(v).split("-");
         if (y && m && d) {
@@ -301,82 +320,35 @@ export default function CorporateGiftingBrief() {
     }
   }, [answers, details]);
 
-  const advance = useCallback(() => {
-    if (pickTimeoutRef.current) {
-      clearTimeout(pickTimeoutRef.current);
-      pickTimeoutRef.current = null;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError("");
-    if (q.fields) {
-      const missing = q.fields.find((f) => f.req && !details[f.k].trim());
-      if (missing) {
-        setError(`${missing.l} is needed so we can send your quote.`);
-        return;
-      }
-      if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
-        setError("Enter a valid email address.");
-        return;
-      }
-      if (submitting) return;
-      setSubmitting(true);
-      submit()
-        .then(() => {
-          setDone(true);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        })
-        .catch(() => {
-          setSubmitting(false);
-          setError("Something went wrong sending your brief. Check your connection and try again.");
-        });
+    setAttempted(true);
+
+    const missingQuestion = QUESTIONS.find((q) => q.req && isEmpty(answers[q.k]));
+    const missingContact = CONTACT_FIELDS.find((f) => f.req && !details[f.k].trim());
+    const firstMissingKey = missingQuestion?.k || missingContact?.k;
+    if (firstMissingKey) {
+      setError("Please fill in the highlighted fields before sending.");
+      sectionRefs.current[firstMissingKey]?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    if (q.o) {
-      const v = answers[q.k];
-      if (!v || (Array.isArray(v) && !v.length)) return;
+    if (emailInputRef.current && !emailInputRef.current.checkValidity()) {
+      setError("Enter a valid email address.");
+      sectionRefs.current.email?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
     }
-    setStep((s) => s + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [q, answers, details, submit, submitting]);
-
-  const pick = (opt) => {
-    setAnswers((prev) => {
-      if (q.multi) {
-        const list = prev[q.k] || [];
-        return { ...prev, [q.k]: list.includes(opt) ? list.filter((x) => x !== opt) : [...list, opt] };
-      }
-      return { ...prev, [q.k]: opt };
-    });
-    if (!q.multi) {
-      if (pickTimeoutRef.current) clearTimeout(pickTimeoutRef.current);
-      pickTimeoutRef.current = setTimeout(() => {
-        pickTimeoutRef.current = null;
-        setStep((s) => Math.min(s + 1, QUESTIONS.length - 1));
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 180);
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await submit();
+      setDone(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      setSubmitting(false);
+      setError("Something went wrong sending your brief. Check your connection and try again.");
     }
   };
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (done) return;
-      const active = document.activeElement;
-      const tag = active && active.tagName;
-      // Buttons and links handle their own Enter-to-click activation
-      // natively; hijacking that here (as this used to, unconditionally)
-      // silently ate the keypress on an option with nothing selected yet,
-      // and made Enter on a focused Back button advance instead of go back.
-      const onControl = tag === "BUTTON" || tag === "A";
-      if (e.key === "Enter" && tag !== "TEXTAREA" && !onControl) { e.preventDefault(); advance(); }
-      if (q.o && /^[1-9]$/.test(e.key) && tag !== "INPUT" && tag !== "TEXTAREA") {
-        const opt = q.o[Number(e.key) - 1];
-        if (opt) pick(opt);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
-
-  const pct = done ? 100 : (step / QUESTIONS.length) * 100 + 8;
 
   return (
     <div className="sgb">
@@ -390,25 +362,18 @@ export default function CorporateGiftingBrief() {
           </div>
         </div>
 
-        <div className="sgb-prog">
-          <div className="sgb-track"><div className="sgb-fill" style={{ width: `${pct}%` }} /></div>
-          <div className="sgb-count">
-            {done ? "Complete" : `${String(step + 1).padStart(2, "0")} / ${QUESTIONS.length}`}
-          </div>
-        </div>
-
         <div className="sgb-card">
           {done ? (
             <>
               <div className="sgb-eyebrow">Brief received</div>
               <h1>Thanks{details.name ? `, ${details.name.split(" ")[0]}` : ""}. We have your brief.</h1>
-              <p className="sgb-hint">
+              <p className="sgb-intro">
                 We come back within one business day with two or three gift concepts, pricing and lead times.
               </p>
               <dl className="sgb-sum">
                 {Object.keys(LABELS).map((k) => {
                   const v = answers[k];
-                  if (!v || (Array.isArray(v) && !v.length)) return null;
+                  if (isEmpty(v)) return null;
                   return (
                     <div className="sgb-row" key={k}>
                       <dt>{LABELS[k]}</dt>
@@ -427,75 +392,101 @@ export default function CorporateGiftingBrief() {
             </>
           ) : (
             <>
-              <div className="sgb-eyebrow">Question {step + 1}</div>
-              <h1>{q.t}</h1>
-              {q.h ? <p className="sgb-hint">{q.h}</p> : null}
+              <div className="sgb-eyebrow">Corporate Gifting Brief</div>
+              <h1>Tell us what you need</h1>
+              <p className="sgb-intro">
+                Answer the questions below and we will come back with tailored gift concepts, pricing and lead times.
+                Fields marked * are required.
+              </p>
 
-              {q.o ? (
-                <div className="sgb-opts">
-                  {q.o.map((opt, n) => {
-                    const on = q.multi ? (answers[q.k] || []).includes(opt) : answers[q.k] === opt;
-                    return (
-                      <button type="button" key={opt} className="sgb-opt" aria-pressed={on} onClick={() => pick(opt)}>
-                        <span className={`sgb-box${q.multi ? "" : " round"}`}><Tick /></span>
-                        {opt}
-                        <span className="sgb-key">{n + 1}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : null}
+              <form onSubmit={handleSubmit} noValidate>
+                {QUESTIONS.map((q) => {
+                  const missing = attempted && q.req && isEmpty(answers[q.k]);
+                  return (
+                    <div
+                      key={q.k}
+                      className={`sgb-q${missing ? " sgb-q-missing" : ""}`}
+                      ref={(el) => { sectionRefs.current[q.k] = el; }}
+                    >
+                      <label className="sgb-qlabel">{q.t}{q.req ? " *" : ""}</label>
+                      {q.h ? <p className="sgb-hint">{q.h}</p> : null}
 
-              {q.date ? (
-                <div className="sgb-field">
-                  <label htmlFor="sgb-date">Date needed</label>
-                  <input id="sgb-date" type="date" value={answers.when || ""}
-                    onChange={(e) => setAnswers((p) => ({ ...p, when: e.target.value }))} />
-                </div>
-              ) : null}
+                      {q.o ? (
+                        <div className="sgb-opts">
+                          {q.o.map((opt) => {
+                            const on = q.multi ? (answers[q.k] || []).includes(opt) : answers[q.k] === opt;
+                            return (
+                              <button
+                                type="button"
+                                key={opt}
+                                className="sgb-opt"
+                                aria-pressed={on}
+                                onClick={() => toggle(q.k, opt, q.multi)}
+                              >
+                                <span className={`sgb-box${q.multi ? "" : " round"}`}><Tick /></span>
+                                {opt}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : null}
 
-              {q.area ? (
-                <div className="sgb-field">
-                  <textarea value={answers.notes || ""} placeholder="Optional, but it helps us quote accurately."
-                    onChange={(e) => setAnswers((p) => ({ ...p, notes: e.target.value }))} />
-                </div>
-              ) : null}
+                      {q.date ? (
+                        <div className="sgb-field">
+                          <input
+                            type="date"
+                            aria-label={q.t}
+                            value={answers.when || ""}
+                            onChange={(e) => setAnswers((p) => ({ ...p, when: e.target.value }))}
+                          />
+                        </div>
+                      ) : null}
 
-              {q.fields
-                ? q.fields.map((f) => (
-                    <div className="sgb-field" key={f.k}>
-                      <label htmlFor={`sgb-${f.k}`}>{f.l}{f.req ? " *" : ""}</label>
-                      <input id={`sgb-${f.k}`} type={f.type} value={details[f.k]}
-                        ref={f.type === "email" ? emailInputRef : undefined}
-                        onChange={(e) => setDetails((p) => ({ ...p, [f.k]: e.target.value }))} />
+                      {q.area ? (
+                        <div className="sgb-field">
+                          <textarea
+                            value={answers.notes || ""}
+                            placeholder="Optional, but it helps us quote accurately."
+                            onChange={(e) => setAnswers((p) => ({ ...p, notes: e.target.value }))}
+                          />
+                        </div>
+                      ) : null}
                     </div>
-                  ))
-                : null}
+                  );
+                })}
 
-              {error ? <p className="sgb-err">{error}</p> : null}
+                <div
+                  className={`sgb-q sgb-contact${attempted && CONTACT_FIELDS.some((f) => f.req && !details[f.k].trim()) ? " sgb-q-missing" : ""}`}
+                >
+                  <label className="sgb-qlabel">How do we reach you?</label>
+                  <div className="sgb-contact-grid">
+                    {CONTACT_FIELDS.map((f) => (
+                      <div className="sgb-field" key={f.k} ref={(el) => { sectionRefs.current[f.k] = el; }}>
+                        <label htmlFor={`sgb-${f.k}`}>{f.l}{f.req ? " *" : ""}</label>
+                        <input
+                          id={`sgb-${f.k}`}
+                          type={f.type}
+                          value={details[f.k]}
+                          ref={f.type === "email" ? emailInputRef : undefined}
+                          onChange={(e) => setDetails((p) => ({ ...p, [f.k]: e.target.value }))}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-              <div className="sgb-nav">
-                {step > 0 ? (
-                  <button type="button" className="sgb-back" onClick={() => {
-                    if (pickTimeoutRef.current) {
-                      clearTimeout(pickTimeoutRef.current);
-                      pickTimeoutRef.current = null;
-                    }
-                    setError("");
-                    setStep((s) => s - 1);
-                  }}>Back</button>
-                ) : null}
-                <button type="button" className="sgb-next" onClick={advance} disabled={submitting}>
-                  {submitting ? "Sending…" : step === QUESTIONS.length - 1 ? "Send my brief" : "Next"}
+                {error ? <p className="sgb-err">{error}</p> : null}
+
+                <button type="submit" className="sgb-next" disabled={submitting}>
+                  {submitting ? "Sending…" : "Send my brief"}
                 </button>
-                <span className="sgb-enter">Press <kbd>Enter</kbd> to continue</span>
-              </div>
+              </form>
             </>
           )}
         </div>
 
         <p className="sgb-foot">
-          Two minutes, one question at a time. Nothing is sent until the last step.
+          Nothing is sent until you click &ldquo;Send my brief.&rdquo;
           <br />Super Merch &middot; Sydney, Australia &middot;{" "}
           <a href="mailto:info@supermerch.com.au">info@supermerch.com.au</a>
         </p>
