@@ -1,359 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { toProductUrl } from "@/utils/utils";
+import { useLocation } from "react-router-dom";
+import { orbStyles } from "./chatStyles";
+import { useChatSession } from "./useChatSession";
+import ChatConversation from "./ChatConversation";
 
-// Siri-like orb animation styles
-const orbStyles = `
-  @keyframes orbRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  @keyframes orbPulse {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.05); opacity: 1; }
-  }
-  @keyframes orbGlow {
-    0%, 100% { box-shadow: 0 0 15px rgba(255, 100, 150, 0.5), 0 0 30px rgba(100, 200, 255, 0.3); }
-    33% { box-shadow: 0 0 15px rgba(100, 255, 200, 0.5), 0 0 30px rgba(255, 150, 100, 0.3); }
-    66% { box-shadow: 0 0 15px rgba(150, 100, 255, 0.5), 0 0 30px rgba(255, 200, 100, 0.3); }
-  }
-  .ai-orb {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: conic-gradient(
-      from 0deg,
-      #ff6b9d,
-      #ffa64d,
-      #ffed4a,
-      #4ade80,
-      #22d3ee,
-      #818cf8,
-      #e879f9,
-      #ff6b9d
-    );
-    animation: orbRotate 3s linear infinite, orbPulse 2s ease-in-out infinite, orbGlow 3s ease-in-out infinite;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-  }
-  .ai-orb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 25px rgba(255, 100, 150, 0.6), 0 0 50px rgba(100, 200, 255, 0.4);
-  }
-  .ai-orb:disabled {
-    cursor: not-allowed;
-  }
-  .ai-orb.loading {
-    animation: orbRotate 0.8s linear infinite, orbPulse 0.5s ease-in-out infinite, orbGlow 1s ease-in-out infinite;
-  }
-  .ai-orb-inner {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2) 50%, transparent 70%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  @keyframes aiPing {
-    0% { transform: scale(0.85); opacity: 0.7; }
-    70% { transform: scale(1.55); opacity: 0; }
-    100% { transform: scale(1.7); opacity: 0; }
-  }
-  @keyframes aiOrbit {
-    0% { transform: translate(-50%, -50%) rotate(0deg) translateX(18px); }
-    100% { transform: translate(-50%, -50%) rotate(360deg) translateX(18px); }
-  }
-  @keyframes chatHeaderShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  @keyframes chatShimmer {
-    0% { transform: translateX(-140%); opacity: 0; }
-    35% { opacity: 0.6; }
-    100% { transform: translateX(220%); opacity: 0; }
-  }
-  @keyframes chatPop {
-    0% { opacity: 0; transform: translateY(6px) scale(0.98); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes onlinePulse {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.4); opacity: 0.6; }
-  }
-  @keyframes aiWave {
-    0%, 100% { transform: scaleY(0.5); opacity: 0.6; }
-    50% { transform: scaleY(1.2); opacity: 1; }
-  }
-  .chatbot-fab {
-    position: relative;
-    overflow: visible;
-    isolation: isolate;
-  }
-  .chatbot-fab::before {
-    content: "";
-    position: absolute;
-    inset: -8px;
-    border-radius: 9999px;
-    background: conic-gradient(
-      from 0deg,
-      rgba(255, 110, 160, 0.7),
-      rgba(255, 190, 120, 0.7),
-      rgba(80, 220, 255, 0.7),
-      rgba(130, 140, 255, 0.7),
-      rgba(255, 110, 160, 0.7)
-    );
-    filter: blur(8px);
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: -2;
-    pointer-events: none;
-  }
-  .chatbot-fab::after {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: 9999px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    opacity: 0;
-    transform: scale(0.9);
-    z-index: -1;
-    pointer-events: none;
-  }
-  .chatbot-fab:hover::before,
-  .chatbot-fab:focus-visible::before {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
-  .chatbot-fab:hover::after,
-  .chatbot-fab:focus-visible::after {
-    opacity: 0.7;
-    animation: aiPing 1.6s ease-out infinite;
-  }
-  .chatbot-fab-orbit {
-    position: absolute;
-    inset: -6px;
-    border-radius: 9999px;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .chatbot-fab:hover .chatbot-fab-orbit,
-  .chatbot-fab:focus-visible .chatbot-fab-orbit {
-    opacity: 1;
-  }
-  .orbit-dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    border-radius: 9999px;
-    background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.2));
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-    animation: aiOrbit 2.6s linear infinite;
-  }
-  .orbit-dot-2 {
-    width: 4px;
-    height: 4px;
-    animation-delay: -0.9s;
-  }
-  .orbit-dot-3 {
-    width: 5px;
-    height: 5px;
-    animation-delay: -1.7s;
-  }
-  .chat-header {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(120deg, #0f766e, #0ea5a4, #38bdf8, #14b8a6);
-    background-size: 220% 220%;
-    animation: chatHeaderShift 10s ease infinite;
-  }
-  .chat-header::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -60%;
-    height: 100%;
-    width: 40%;
-    background: linear-gradient(
-      120deg,
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 0.35),
-      rgba(255, 255, 255, 0)
-    );
-    animation: chatShimmer 4.8s ease infinite;
-    pointer-events: none;
-  }
-  .chat-history {
-    background-color: #f8fafc;
-    background-image: radial-gradient(rgba(15, 118, 110, 0.08) 1px, transparent 1px);
-    background-size: 18px 18px;
-  }
-  .chat-message {
-    animation: chatPop 0.25s ease-out;
-  }
-  .chat-bubble {
-    border-radius: 16px;
-    padding: 8px 12px;
-    font-size: 0.875rem;
-    line-height: 1.35rem;
-  }
-  .chat-bubble-user {
-    color: #fff;
-    background: linear-gradient(135deg, #0ea5a4, #38bdf8);
-    box-shadow: 0 8px 18px rgba(14, 165, 164, 0.25);
-  }
-  .chat-bubble-assistant {
-    color: #0f172a;
-    background: #ffffff;
-    border-left: 3px solid rgba(20, 184, 166, 0.7);
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-  }
-  .ai-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 9999px;
-    background: conic-gradient(from 180deg, #38bdf8, #14b8a6, #0ea5a4, #38bdf8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
-    flex-shrink: 0;
-  }
-  .ai-avatar.ai-avatar-sm {
-    width: 26px;
-    height: 26px;
-  }
-  .ai-avatar-inner {
-    width: 14px;
-    height: 14px;
-    border-radius: 9999px;
-    background: radial-gradient(circle at 30% 30%, #ffffff, rgba(255, 255, 255, 0.25));
-  }
-  .online-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 9999px;
-    background: #22c55e;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
-    animation: onlinePulse 2s ease-in-out infinite;
-  }
-  .chat-product-card {
-    border: 1px solid rgba(148, 163, 184, 0.25);
-    background: #ffffff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-  .chat-product-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(14, 165, 164, 0.45);
-    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12);
-  }
-  .chat-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border-radius: 9999px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    transition: all 0.2s ease;
-  }
-  .chat-chip:hover,
-  .chat-chip:focus-visible {
-    color: #0f766e;
-    border-color: transparent;
-    background: linear-gradient(#ffffff, #ffffff) padding-box,
-      linear-gradient(120deg, #38bdf8, #34d399) border-box;
-    box-shadow: 0 6px 16px rgba(14, 165, 164, 0.2);
-  }
-  .chat-input-shell {
-    padding: 1px;
-    border-radius: 9999px;
-    background: linear-gradient(120deg, rgba(14, 165, 164, 0.5), rgba(56, 189, 248, 0.4));
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-  }
-  .chat-input-shell:focus-within {
-    box-shadow: 0 0 0 3px rgba(14, 165, 164, 0.2), 0 12px 22px rgba(14, 165, 164, 0.18);
-    transform: translateY(-1px);
-  }
-  .chat-input-body {
-    border-radius: 9999px;
-    background: #f1f5f9;
-  }
-  .ai-wave {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 4px;
-    height: 16px;
-  }
-  .ai-wave-bar {
-    width: 4px;
-    height: 12px;
-    border-radius: 9999px;
-    background: linear-gradient(180deg, #38bdf8, #14b8a6);
-    animation: aiWave 1.2s ease-in-out infinite;
-  }
-  .ai-wave-bar:nth-child(2) {
-    animation-delay: 0.15s;
-  }
-  .ai-wave-bar:nth-child(3) {
-    animation-delay: 0.3s;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .chatbot-fab::before,
-    .chatbot-fab::after,
-    .orbit-dot,
-    .chat-message,
-    .ai-wave-bar,
-    .chat-header::after,
-    .chat-header,
-    .online-dot {
-      animation: none !important;
-      transition: none !important;
-    }
-  }
-`;
-
-const BOT_API_URL =
-  import.meta.env.VITE_BOT_API_URL || "";
-
-const SESSION_STORAGE_KEY = "supermerch.chatSessionId";
 const DEFAULT_MARGIN = 10;
 const DEFAULT_POPULAR_QUERIES = [
-  "pen",
-  "water bottle",
-  "tote bag",
-  "hoodie",
-  "notebook",
-  "mug",
-  "keyring",
-  "usb drive",
+  "What's a good gift for a client under $20?",
+  "I need 100 branded pens for a conference",
+  "Show me eco-friendly tote bags",
+  "What's trending right now?",
+  "Best options for a staff welcome pack",
+  "Do you have any low minimum order items?",
 ];
-
-const HISTORY_STORAGE_KEY = "supermerch.chatHistory";
 
 const ChatWidget = () => {
   const location = useLocation();
+  const { history, loading, error, visibleCounts, sendQuery, loadMore } = useChatSession();
   const [open, setOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(HISTORY_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [error, setError] = useState("");
-  const [visibleCounts, setVisibleCounts] = useState({});
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenOffset, setFullscreenOffset] = useState(0);
   const [expandedPosition, setExpandedPosition] = useState(null);
@@ -366,36 +32,11 @@ const ChatWidget = () => {
   const expandedCardRef = useRef(null);
   const historyRef = useRef(null);
   const scrollTopRef = useRef(0);
+  const prevHistoryLengthRef = useRef(0);
   const ignoreNextToggleRef = useRef(false);
-  const sessionIdRef = useRef("");
   const inputRef = useRef(null);
-  const abortControllerRef = useRef(null);
   const fullscreenOffsetRef = useRef(0);
   const prevLocationKeyRef = useRef(`${location.pathname}${location.search}`);
-
-  const getSessionId = () => {
-    if (sessionIdRef.current) return sessionIdRef.current;
-    let sessionId = "";
-    try {
-      const existing = localStorage.getItem(SESSION_STORAGE_KEY);
-      if (existing) {
-        sessionId = existing;
-      } else {
-        sessionId =
-          typeof crypto !== "undefined" && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-      }
-    } catch {
-      sessionId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    }
-    sessionIdRef.current = sessionId;
-    return sessionId;
-  };
-
-  const makeId = () =>
-    `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
   const closeChat = () => {
     ignoreNextToggleRef.current = true;
@@ -407,85 +48,27 @@ const ChatWidget = () => {
     }, 0);
   };
 
-  const buildProductUrl = (item) => {
-    if (item?.url && item.url.includes("/product/")) {
-      return item.url;
-    }
-    const name = item?.name || "";
-    if (!name) {
-      return item?.url || "#";
-    }
-    return toProductUrl(name);
-  };
-
-  const sendQuery = async (nextQuery) => {
-    const trimmed = nextQuery.trim();
-    if (!trimmed) return;
-
-    // Cancel any in-flight request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    abortControllerRef.current = new AbortController();
-
-    setLoading(true);
-    setError("");
-    setHistory((prev) => [
-      ...prev,
-      { id: makeId(), role: "user", text: trimmed },
-    ]);
-    setQuery("");
-
-    try {
-      const res = await fetch(`${BOT_API_URL}/api/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Session-Id": getSessionId(),
-        },
-        body: JSON.stringify({ query: trimmed }),
-        signal: abortControllerRef.current.signal,
-      });
-
-      if (!res.ok) throw new Error("Chat request failed");
-      const data = await res.json();
-      const displayLimit = Number(data.display_limit) || 10;
-      const assistantId = makeId();
-      setHistory((prev) => [
-        ...prev,
-        {
-          id: assistantId,
-          role: "assistant",
-          text: data.message || "",
-          items: data.items || [],
-          extras: data.extras || [],
-          popularQueries: data.popular_queries || [],
-          similarQueries: data.similar_queries || [],
-          displayLimit,
-        },
-      ]);
-      setUnreadCount((c) => c + 1);
-      setVisibleCounts((prev) => ({
-        ...prev,
-        [assistantId]: displayLimit,
-      }));
-    } catch (err) {
-      // Don't show error for aborted requests
-      if (err.name === "AbortError") return;
-      setError("Could not reach the merch assistant. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleSend = async (text) => {
+    const replied = await sendQuery(text);
+    if (replied) setUnreadCount((c) => c + 1);
   };
 
   const handleChipClick = async (term) => {
     if (!term || loading) return;
-    await sendQuery(term);
+    await handleSend(term);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await sendQuery(query);
+    // Guards the same race handleChipClick already guards against: the
+    // submit button's `disabled={loading}` only takes effect once React
+    // re-renders, so a fast double-submit (double-click, or Enter racing a
+    // click) can fire twice before that happens — sending two independent
+    // requests and rendering two answers back to back.
+    if (loading) return;
+    const submitted = query;
+    setQuery("");
+    await handleSend(submitted);
   };
 
   // Keep ref in sync for use in drag handlers (avoids stale closure)
@@ -506,14 +89,6 @@ const ChatWidget = () => {
       y: Math.min(Math.max(DEFAULT_MARGIN, next.y), maxY),
     };
   };
-
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
-    } catch {
-      // Ignore storage errors.
-    }
-  }, [history]);
 
   useEffect(() => {
     if (open) {
@@ -611,8 +186,13 @@ const ChatWidget = () => {
     if (!open) return;
     const node = historyRef.current;
     if (!node) return;
+    const isNewMessage = history.length > prevHistoryLengthRef.current;
+    prevHistoryLengthRef.current = history.length;
     const frame = requestAnimationFrame(() => {
-      node.scrollTop = scrollTopRef.current;
+      // A new message (user turn or reply) scrolls to the bottom so it's
+      // actually visible; otherwise (e.g. re-opening the panel) restore
+      // wherever the visitor had manually scrolled to.
+      node.scrollTop = isNewMessage ? node.scrollHeight : scrollTopRef.current;
     });
     return () => cancelAnimationFrame(frame);
   }, [open, history.length]);
@@ -783,7 +363,7 @@ const ChatWidget = () => {
                       </div>
                     )}
                     <div className="text-xs uppercase tracking-wide text-gray-500">
-                      Popular searches
+                      Try asking
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {DEFAULT_POPULAR_QUERIES.map((term) => (
@@ -825,179 +405,16 @@ const ChatWidget = () => {
                   </div>
                 )}
 
-                {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
-
-                {history.map((entry) => {
-                  if (entry.role === "user") {
-                    return (
-                      <div key={entry.id} className="mt-3 flex justify-end chat-message">
-                        <div className="chat-bubble chat-bubble-user max-w-[85%]">
-                          {entry.text}
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div key={entry.id} className="mt-3 chat-message">
-                      <div className="flex items-start gap-2">
-                        <div className="ai-avatar ai-avatar-sm" aria-hidden="true">
-                          <div className="ai-avatar-inner" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          {entry.text && (
-                            <div className="chat-bubble chat-bubble-assistant">
-                              {entry.text}
-                            </div>
-                          )}
-
-                          {!!entry.items?.length && (
-                            <div className="mt-3 grid gap-2">
-                              {(() => {
-                                const currentCount =
-                                  visibleCounts[entry.id] ??
-                                  entry.displayLimit ??
-                                  10;
-                                const visibleCount = Math.min(
-                                  currentCount,
-                                  entry.items.length
-                                );
-                                return entry.items.slice(0, visibleCount).map((item) => (
-                                  <Link
-                                    key={item.id}
-                                    to={buildProductUrl(item)}
-                                    state={{ productId: item.id }}
-                                    onClick={closeChat}
-                                    className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
-                                  >
-                                    <img
-                                      src={item.image || "/noimage.png"}
-                                      alt={item.name}
-                                      className="w-12 h-12 object-contain bg-white rounded"
-                                      onLoad={recalcPanelPosition}
-                                    />
-                                    <div className="min-w-0">
-                                      <div className="text-sm font-medium text-gray-900 truncate">
-                                        {item.name}
-                                      </div>
-                                      <div className="text-xs text-gray-500">
-                                        {item.price ? `$${item.price}` : "Contact for price"}
-                                      </div>
-                                    </div>
-                                  </Link>
-                                ));
-                              })()}
-                            </div>
-                          )}
-
-                          {Array.isArray(entry.items) && (() => {
-                            const itemCount = entry.items.length;
-                            const current =
-                              visibleCounts[entry.id] ?? entry.displayLimit ?? 10;
-                            const canLoadMore = itemCount > 0 && current < itemCount;
-                            if (!canLoadMore) return null;
-                            return (
-                              <button
-                                type="button"
-                                className="mt-3 text-sm font-semibold text-primary hover:underline"
-                                onClick={() => {
-                                  setVisibleCounts((prev) => {
-                                    const next = Math.min(itemCount, current + 10);
-                                    return { ...prev, [entry.id]: next };
-                                  });
-                                }}
-                              >
-                                Load more
-                              </button>
-                            );
-                          })()}
-
-                          {!!entry.extras?.length && (
-                            <div className="mt-4">
-                              <div className="text-xs uppercase tracking-wide text-gray-500">
-                                Presentation extras
-                              </div>
-                              <div className="mt-2 grid gap-2">
-                                {entry.extras.slice(0, 4).map((item) => (
-                                  <Link
-                                    key={item.id}
-                                    to={buildProductUrl(item)}
-                                    state={{ productId: item.id }}
-                                    onClick={closeChat}
-                                    className="chat-product-card flex items-center gap-3 p-2 rounded-lg"
-                                  >
-                                    <img
-                                      src={item.image || "/noimage.png"}
-                                      alt={item.name}
-                                      className="w-12 h-12 object-contain bg-white rounded"
-                                      onLoad={recalcPanelPosition}
-                                    />
-                                    <div className="min-w-0">
-                                      <div className="text-sm font-medium text-gray-900 truncate">
-                                        {item.name}
-                                      </div>
-                                      <div className="text-xs text-gray-500">
-                                        {item.price ? `$${item.price}` : "Contact for price"}
-                                      </div>
-                                    </div>
-                                  </Link>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {!!(entry.similarQueries?.length || entry.popularQueries?.length) && (
-                            <div className="mt-3">
-                              <div className="text-xs uppercase tracking-wide text-gray-500">
-                                {entry.items?.length && entry.similarQueries?.length
-                                  ? "Similar searches"
-                                  : "Popular searches"}
-                              </div>
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {(entry.similarQueries?.length
-                                  ? entry.similarQueries
-                                  : entry.popularQueries
-                                ).map((term) => (
-                                  <button
-                                    key={term}
-                                    type="button"
-                                    onClick={() => handleChipClick(term)}
-                                    className="chat-chip px-2.5 py-1 text-xs"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      viewBox="0 0 24 24"
-                                      className="h-3 w-3 text-primary"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    >
-                                      <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" />
-                                    </svg>
-                                    {term}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {loading && (
-                  <div className="mt-3 inline-flex items-center gap-3 text-sm text-gray-600 bg-white/90 rounded-lg px-3 py-2 border border-gray-100 shadow-sm">
-                    <span>Assistant is typing</span>
-                    <span className="ai-wave" aria-hidden="true">
-                      <span className="ai-wave-bar" />
-                      <span className="ai-wave-bar" />
-                      <span className="ai-wave-bar" />
-                    </span>
-                  </div>
-                )}
+                <ChatConversation
+                  history={history}
+                  loading={loading}
+                  error={error}
+                  visibleCounts={visibleCounts}
+                  onLoadMore={loadMore}
+                  onChipClick={handleChipClick}
+                  onProductClick={closeChat}
+                  onImageLoad={recalcPanelPosition}
+                />
               </div>
 
               <form
