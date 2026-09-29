@@ -56,6 +56,27 @@ function extractProducts(toolCalls, replyText) {
   return winner.named;
 }
 
+// Real bug this fixed: asking "show me more options" returned the SAME
+// products again — the underlying catalog search is deterministic (same
+// query -> same top results every time), and nothing tracked which products
+// had already been shown across turns. The widget carries each assistant
+// bubble's real product ids forward in `history`; collect them here so the
+// agent can mechanically exclude them from its next search, rather than
+// relying on the model noticing/avoiding its own earlier picks from prose
+// alone.
+export function extractPreviouslyShownIds(history) {
+  if (!Array.isArray(history)) return [];
+  return [
+    ...new Set(
+      history
+        .slice(-MAX_HISTORY_TURNS)
+        .filter((h) => h && h.role === "assistant" && Array.isArray(h.items))
+        .flatMap((h) => h.items.map((item) => item?.id))
+        .filter((id) => id != null)
+    ),
+  ];
+}
+
 function toWidgetItem(p) {
   return {
     id: p.id,
@@ -90,6 +111,8 @@ export default async function handler(req, res) {
         .map((h) => ({ role: h.role, content: h.text }))
     : [];
 
+  const previouslyShownIds = extractPreviouslyShownIds(history);
+
   res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
   res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
@@ -102,6 +125,7 @@ export default async function handler(req, res) {
       userMessage: trimmedQuery,
       history: trimmedHistory,
       sessionId,
+      excludeIds: previouslyShownIds,
       onDelta: (text) => sendEvent({ type: "delta", text }),
       onStatus: (text) => sendEvent({ type: "status", text }),
     });

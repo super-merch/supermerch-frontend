@@ -166,13 +166,22 @@ export function useChatSession() {
       // model answered from nothing and returned unrelated products.
       // Collapse consecutive same-role bubbles back into one turn first, so
       // trimming operates on actual turns again.
+      // Real bug this fixed: asking "show me more options" after a
+      // recommendation returned the SAME products again — the underlying
+      // catalog search is deterministic, and the server never knew which
+      // products it had already shown (only the plain reply text travelled
+      // with history, never `items`). Carrying each assistant bubble's real
+      // product ids forward lets the server mechanically exclude them from
+      // the next search, rather than relying on the model remembering/
+      // avoiding its own earlier picks from prose alone.
       const mergedTurns = [];
-      for (const { role, text } of history) {
+      for (const { role, text, items } of history) {
         const last = mergedTurns[mergedTurns.length - 1];
         if (last && last.role === role) {
           last.text = `${last.text}\n\n${text}`;
+          if (items?.length) last.items = [...(last.items || []), ...items];
         } else {
-          mergedTurns.push({ role, text });
+          mergedTurns.push({ role, text, items: items?.length ? items : undefined });
         }
       }
       const recentHistory = mergedTurns.slice(-8);

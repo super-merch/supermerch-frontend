@@ -92,6 +92,15 @@ HOW YOU MUST WORK — READ CAREFULLY:
     filter_products/search_products whenever the visitor names one, so
     results are already narrowed to products that actually have it. Never
     state or imply a colour that isn't in that list.
+4e. If the visitor asks for "more options", "anything else", "something
+    different", etc., the search behind these tools is deterministic — the
+    SAME query returns the SAME top items every time, so simply repeating
+    the same call just re-fetches what you already showed. Look back at what
+    you've already named earlier in this conversation, then call the tool
+    again with a noticeably LARGER top_k/limit than before (e.g. 15-20
+    instead of 6) and pick products you have NOT already recommended by name.
+    Never re-offer a product you already named earlier unless the visitor is
+    specifically asking about that one again.
 5. STOP searching once you have decent results. For a vague brief ("something
    for an office party", "a nice gift"), ONE search_products call is usually
    enough — present those results and ask a follow-up question to narrow it
@@ -150,6 +159,7 @@ export const TOOL_SCHEMAS = [
           decoration: { type: "string", description: "e.g. embroidery, screen print, laser engraving — cannot be filtered on, use get_price_quote to confirm per product" },
           colour: { type: "string", description: "e.g. red, navy, black — filters to products genuinely available in that colour" },
           in_stock_only: { type: "boolean" },
+          limit: { type: "integer", description: "how many results to return (default 10) — raise this on a 'show me more options' follow-up" },
         },
       },
     },
@@ -630,7 +640,7 @@ function synthesizeFallbackReply(toolCalls) {
  * conversation the client sent (Vercel functions are stateless between
  * requests, so context has to travel with each call).
  */
-export async function runAgent({ userMessage, history = [], maxSteps = 9, onDelta, onStatus }) {
+export async function runAgent({ userMessage, history = [], maxSteps = 9, excludeIds = [], onDelta, onStatus }) {
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
     ...history,
@@ -687,7 +697,7 @@ export async function runAgent({ userMessage, history = [], maxSteps = 9, onDelt
           };
         } else {
           if (tc.function.name === "get_price_quote") quotesUsed++;
-          output = await runTool(tc.function.name, input);
+          output = await runTool(tc.function.name, input, { excludeIds });
         }
         return { tc, input, output };
       })
