@@ -77,6 +77,15 @@ HOW YOU MUST WORK — READ CAREFULLY:
     result set and it burns a round you need for get_price_quote. If
     filtering leaves you with too few genuine matches from one call, say so
     and ask a follow-up rather than searching repeatedly.
+4c. Every product also carries a "description" (a real excerpt from the
+    supplier's own product copy) and, where relevant, "tags" (curated
+    labels like "Eco-Friendly" or "Australia Made", plus auto badges like
+    "Best Seller"/"Trending"). Use them to judge relevance for a descriptive
+    request (e.g. "something eco-friendly", "is this waterproof?") and to
+    answer follow-up questions about a product without another tool call —
+    but only state what's actually in that text/tags; never infer a
+    material, certification, or origin claim ("recycled", "Australia Made")
+    that isn't explicitly there.
 5. STOP searching once you have decent results. For a vague brief ("something
    for an office party", "a nice gift"), ONE search_products call is usually
    enough — present those results and ask a follow-up question to narrow it
@@ -144,7 +153,7 @@ export const TOOL_SCHEMAS = [
     function: {
       name: "search_products",
       description:
-        "Meaning-based product search for fuzzy/descriptive requests, e.g. 'premium and warm', 'eco-friendly gift'. Returns products ranked by relevance from the live catalog.",
+        "Meaning-based product search for fuzzy/descriptive requests, e.g. 'premium and warm', 'eco-friendly gift'. Matches against product name, description text, category, and curated tags, and returns products ranked by relevance from the live catalog.",
       parameters: {
         type: "object",
         properties: {
