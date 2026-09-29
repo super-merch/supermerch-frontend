@@ -18,22 +18,28 @@ export const DEFAULT_POPULAR_QUERIES = [
 ];
 
 async function filter_products({ category, quantity, max_unit_price, decoration, colour, in_stock_only }) {
+  // Real fix: `colour` used to be accepted here and then silently dropped —
+  // the live API's own `colors[]` filter genuinely works (confirmed by
+  // curling it directly), it just was never wired through. `decoration`
+  // still can't be filtered this way — decoration/pricing only exists per
+  // price_group on the full product detail, not on the search result shape.
   const results = await catalogApi.searchProducts({
     category,
     minPrice: null,
     maxPrice: max_unit_price,
+    colour,
     limit: 10,
   });
   let filtered = results;
   if (quantity) filtered = filtered.filter((p) => quantity >= (p.moq || 0));
   if (in_stock_only) filtered = filtered.filter((p) => p.in_stock);
-  return { count: filtered.length, products: filtered, note: colour || decoration
-    ? "Colour/decoration availability must be confirmed per-product via get_price_quote; this list is filtered on category/quantity/price only."
+  return { count: filtered.length, products: filtered, note: decoration
+    ? "Decoration availability must be confirmed per-product via get_price_quote; this list is filtered on category/quantity/price/colour only."
     : undefined };
 }
 
-async function search_products({ query, top_k = 6 }) {
-  const results = await catalogApi.searchProducts({ searchTerm: query, limit: top_k });
+async function search_products({ query, top_k = 6, colour }) {
+  const results = await catalogApi.searchProducts({ searchTerm: query, colour, limit: top_k });
   return { count: results.length, products: results };
 }
 
