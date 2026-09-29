@@ -84,6 +84,17 @@ export function toCardShape(rawProduct) {
     .filter(Boolean);
   const specialTags = rawProduct.specialTags || [];
   const tags = [...new Set([...curatedTags, ...specialTags])];
+  // Real product colour variants (e.g. a pen sold in 11 colours) — already
+  // returned by both the search/category and single-product endpoints as
+  // `product.colours.list`, just never surfaced to the model before, so it
+  // had no way to answer "is this available in red?" without guessing.
+  const colours = [
+    ...new Set(
+      (rawProduct.product?.colours?.list || [])
+        .map((c) => c?.name)
+        .filter(Boolean)
+    ),
+  ];
   return {
     id: rawProduct.meta?.id ?? null, // the numeric id /api/single-product/:id expects
     name: overview.name || rawProduct.product?.name || "Unnamed product",
@@ -104,6 +115,7 @@ export function toCardShape(rawProduct) {
     moq: overview.min_qty ?? 0,
     supplier: overview.supplier || null,
     in_stock: rawProduct.meta?.discontinued === false,
+    colours: colours.length > 0 ? colours : undefined,
   };
 }
 
@@ -168,7 +180,13 @@ function resolveCategoryIds(categoryQuery, index) {
 /**
  * Live keyword/category search — the ground truth for "what products exist".
  */
-export async function searchProducts({ searchTerm, category, minPrice, maxPrice, limit = 10 }) {
+export async function searchProducts({ searchTerm, category, minPrice, maxPrice, colour, limit = 10 }) {
+  // The live API's own colour filter — confirmed directly (curled the
+  // endpoint): `colors[]=Red` on `/api/client-products/search` genuinely
+  // narrows results to products that carry that colour. Not previously
+  // wired up even though the tool schema already accepted a `colour` arg.
+  const colorParam = colour ? { "colors[]": colour } : {};
+
   if (category) {
     const index = await getCategoryIndex();
     const categoryIds = resolveCategoryIds(category, index);
@@ -194,6 +212,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
             page: 1,
             limit: perCategoryLimit,
             filter: true,
+            ...colorParam,
           }).then((data) => (data.data || []).map(toCardShape))
         )
       );
@@ -221,6 +240,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
       page: 1,
       limit,
       filter: true,
+      ...colorParam,
     });
     return (data.data || []).map(toCardShape);
   }
@@ -233,6 +253,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
     page: 1,
     limit,
     filter: true,
+    ...colorParam,
   });
   let results = (data.data || []).map(toCardShape);
 
@@ -255,7 +276,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
     const seenIds = new Set();
     for (const word of words) {
       if (merged.length >= limit) break;
-      const wordData = await apiGet(path, { searchTerm: word, page: 1, limit, filter: true });
+      const wordData = await apiGet(path, { searchTerm: word, page: 1, limit, filter: true, ...colorParam });
       for (const raw of wordData.data || []) {
         const card = toCardShape(raw);
         if (card.id != null && !seenIds.has(card.id)) {

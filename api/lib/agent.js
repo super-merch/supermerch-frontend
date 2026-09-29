@@ -86,6 +86,12 @@ HOW YOU MUST WORK — READ CAREFULLY:
     but only state what's actually in that text/tags; never infer a
     material, certification, or origin claim ("recycled", "Australia Made")
     that isn't explicitly there.
+4d. Every product also carries a "colours" field listing every colour it's
+    genuinely available in (from the real catalog, not a guess) — use it to
+    answer "does this come in red?" directly, and pass a "colour" argument to
+    filter_products/search_products whenever the visitor names one, so
+    results are already narrowed to products that actually have it. Never
+    state or imply a colour that isn't in that list.
 5. STOP searching once you have decent results. For a vague brief ("something
    for an office party", "a nice gift"), ONE search_products call is usually
    enough — present those results and ask a follow-up question to narrow it
@@ -134,15 +140,15 @@ export const TOOL_SCHEMAS = [
     function: {
       name: "filter_products",
       description:
-        "Exact product search on hard constraints: category, quantity, and/or a per-unit budget. Returns real products from the live catalog with an indicative starting price and MOQ. Empty list if nothing qualifies.",
+        "Exact product search on hard constraints: category, quantity, colour, and/or a per-unit budget. Returns real products from the live catalog with an indicative starting price and MOQ. Empty list if nothing qualifies.",
       parameters: {
         type: "object",
         properties: {
           category: { type: "string", description: "e.g. hoodie, cap, tote bag, mug, pen" },
           quantity: { type: "integer", description: "number of units the visitor wants" },
           max_unit_price: { type: "number", description: "budget per unit in AUD" },
-          decoration: { type: "string", description: "e.g. embroidery, screen print, laser engraving" },
-          colour: { type: "string" },
+          decoration: { type: "string", description: "e.g. embroidery, screen print, laser engraving — cannot be filtered on, use get_price_quote to confirm per product" },
+          colour: { type: "string", description: "e.g. red, navy, black — filters to products genuinely available in that colour" },
           in_stock_only: { type: "boolean" },
         },
       },
@@ -159,6 +165,7 @@ export const TOOL_SCHEMAS = [
         properties: {
           query: { type: "string", description: "the visitor's descriptive request in natural language" },
           top_k: { type: "integer", description: "how many results to return (default 6)" },
+          colour: { type: "string", description: "e.g. red, navy, black — filters to products genuinely available in that colour" },
         },
         required: ["query"],
       },
