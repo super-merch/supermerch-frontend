@@ -54,10 +54,36 @@ function unitPriceAtQty(priceBreaks, qty) {
   };
 }
 
+// Descriptions in the supplier feed are often HTML-formatted and can run to
+// several paragraphs — way more than the model needs to judge relevance or
+// answer a follow-up question, and expensive to include verbatim across up
+// to ~10 products in one tool result. Strip markup and cap the length.
+const MAX_DESCRIPTION_CHARS = 220;
+function toDescriptionExcerpt(rawDescription) {
+  const text = String(rawDescription || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!text) return null;
+  return text.length > MAX_DESCRIPTION_CHARS
+    ? `${text.slice(0, MAX_DESCRIPTION_CHARS).trimEnd()}…`
+    : text;
+}
+
 export function toCardShape(rawProduct) {
   const overview = rawProduct.overview || {};
   const pricing = rawProduct.pricingSummary || {};
   const categorisation = rawProduct.product?.categorisation || {};
+  // productTags (curated, admin-assigned via the Product Tags screen — e.g.
+  // "Eco-Friendly", "Executive Gifts") and specialTags (auto-derived badges
+  // like "Australia Made"/"Best Seller"/"Trending") are already attached to
+  // every product the live API returns (see attachProductTags on the
+  // backend) — just weren't being surfaced to the model before.
+  const curatedTags = (rawProduct.productTags || [])
+    .map((t) => t?.name)
+    .filter(Boolean);
+  const specialTags = rawProduct.specialTags || [];
+  const tags = [...new Set([...curatedTags, ...specialTags])];
   // Real product colour variants (e.g. a pen sold in 11 colours) — already
   // returned by both the search/category and single-product endpoints as
   // `product.colours.list`, just never surfaced to the model before, so it
@@ -82,6 +108,8 @@ export function toCardShape(rawProduct) {
       categorisation.product_type?.type_name ||
       categorisation.promodata_product_type?.type_name ||
       null,
+    description: toDescriptionExcerpt(rawProduct.product?.description),
+    tags: tags.length > 0 ? tags : undefined,
     image: overview.hero_image || rawProduct.product?.images?.[0] || null,
     price: pricing.finalMinPrice ?? null,
     moq: overview.min_qty ?? 0,
