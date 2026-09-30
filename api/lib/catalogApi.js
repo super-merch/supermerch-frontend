@@ -54,6 +54,23 @@ function unitPriceAtQty(priceBreaks, qty) {
   };
 }
 
+// `overview.min_qty` is never populated by the live API — confirmed across
+// every product checked (candles, pens, unrelated categories), it's always
+// 0 regardless of the product's real minimum order quantity. The only
+// trustworthy MOQ is the lowest qty in the product's own price breaks (the
+// same source the storefront's product tiles use for "Min Qty" — see
+// getPriceQuote's error path below, which already derives it this way).
+// Lead time isn't on `overview` at all; it only lives on the price group.
+function deriveMoqAndLeadTime(rawProduct) {
+  const priceGroups = rawProduct.product?.prices?.price_groups || [];
+  const group = pickPriceGroup(priceGroups, null);
+  const breaks = group?.base_price?.price_breaks || [];
+  return {
+    moq: breaks.length ? Math.min(...breaks.map((b) => b.qty)) : null,
+    lead_time: group?.base_price?.lead_time || null,
+  };
+}
+
 // Descriptions in the supplier feed are often HTML-formatted and can run to
 // several paragraphs — way more than the model needs to judge relevance or
 // answer a follow-up question, and expensive to include verbatim across up
@@ -95,6 +112,7 @@ export function toCardShape(rawProduct) {
         .filter(Boolean)
     ),
   ];
+  const { moq, lead_time } = deriveMoqAndLeadTime(rawProduct);
   return {
     id: rawProduct.meta?.id ?? null, // the numeric id /api/single-product/:id expects
     name: overview.name || rawProduct.product?.name || "Unnamed product",
@@ -112,7 +130,8 @@ export function toCardShape(rawProduct) {
     tags: tags.length > 0 ? tags : undefined,
     image: overview.hero_image || rawProduct.product?.images?.[0] || null,
     price: pricing.finalMinPrice ?? null,
-    moq: overview.min_qty ?? 0,
+    moq: moq ?? overview.min_qty ?? 0,
+    lead_time: lead_time || undefined,
     supplier: overview.supplier || null,
     in_stock: rawProduct.meta?.discontinued === false,
     colours: colours.length > 0 ? colours : undefined,

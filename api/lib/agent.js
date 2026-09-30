@@ -149,7 +149,7 @@ export const TOOL_SCHEMAS = [
     function: {
       name: "filter_products",
       description:
-        "Exact product search on hard constraints: category, quantity, colour, and/or a per-unit budget. Returns real products from the live catalog with an indicative starting price and MOQ. Empty list if nothing qualifies.",
+        "Exact product search on hard constraints: category, quantity, colour, and/or a per-unit budget. Returns real products from the live catalog with an indicative starting price, real MOQ, and lead time. Empty list if nothing qualifies.",
       parameters: {
         type: "object",
         properties: {
