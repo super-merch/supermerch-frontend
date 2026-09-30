@@ -86,7 +86,7 @@ export default function ChatConversation({
         const currentCount = visibleCounts[entry.id] ?? entry.displayLimit ?? 10;
         const visibleItems = entry.items?.slice(0, Math.min(currentCount, itemCount)) || [];
         const canLoadMore = itemCount > 0 && currentCount < itemCount;
-        const chips = entry.similarQueries?.length ? entry.similarQueries : entry.popularQueries;
+        const chips = entry.similarQueries;
 
         return (
           <div key={entry.id} className="mt-3 chat-message">
@@ -142,9 +142,7 @@ export default function ChatConversation({
                 {!!chips?.length && (
                   <div className="mt-3">
                     <div className="text-xs uppercase tracking-wide text-gray-500">
-                      {entry.items?.length && entry.similarQueries?.length
-                        ? "Similar searches"
-                        : "Popular searches"}
+                      Similar searches
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {chips.map((term) => (
