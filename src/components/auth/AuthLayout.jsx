@@ -6,7 +6,7 @@ const AuthLayout = ({ children, title, subtitle, linkText, linkPath, linkLabel }
     <div
       className="min-h-screen flex items-start justify-center px-8 pt-20 pb-8 relative"
       style={{
-        backgroundImage: `url('/authimg/authbg.png')`,
+        backgroundImage: `url('/authimg/authbg.webp')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

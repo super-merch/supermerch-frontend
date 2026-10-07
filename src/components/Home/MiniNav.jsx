@@ -25,7 +25,7 @@ import {
   fetchcategoryProduct,
   matchProduct,
 } from "@/redux/slices/categorySlice";
-import supermerch from "../../assets/supermerch.png";
+import supermerch from "../../assets/supermerch.webp";
 import { clearFavourites } from "@/redux/slices/favouriteSlice";
 import { clearCart, clearCurrentUser } from "@/redux/slices/cartSlice";
 import { toast } from "react-toastify";
