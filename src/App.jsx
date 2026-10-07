@@ -8,11 +8,16 @@ import { useLocation } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import { HelmetProvider } from "react-helmet-async";
-import ChatWidget from "./components/Chat/ChatWidget";
 import SitePopups from "./components/Home/SitePopups";
 import RouteSeo from "./components/Common/RouteSeo";
 import CookieConsentBanner from "./components/Common/CookieConsentBanner";
 import { trackPageView } from "./lib/analytics";
+
+// ChatWidget renders on every page (not inside a route), but pulls in
+// react-markdown/remark-gfm to render the bot's replies — only needed once
+// the widget actually mounts, not on initial page load. Lazy-loading it cut
+// the main bundle from ~605KB to ~248KB gzipped.
+const ChatWidget = lazy(() => import("./components/Chat/ChatWidget"));
 
 // Home and the product detail page are the highest-traffic routes, but they
 // are also (via their shared sub-components) the biggest pullers of heavy
@@ -192,7 +197,7 @@ const App = () => {
       </HelmetProvider>
       {/* <Sidebar /> */}
       {/* <Sidebar /> */}
-      <ChatWidget />
+      <Suspense fallback={null}><ChatWidget /></Suspense>
       <SitePopups />
       <CookieConsentBanner />
       <Footer />
