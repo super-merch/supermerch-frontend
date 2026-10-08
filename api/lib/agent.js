@@ -340,6 +340,29 @@ function hasGibberishNoise(text) {
   return letters / nonWs.length < 0.4;
 }
 
+// A fifth failure mode, reported live: the model answers a product request
+// with ONLY a stalling line — "Got it! I'll look for black hoodies in large
+// size... One moment while I check the options available." — and emits NO
+// tool_calls alongside it. Since a round with zero tool_calls is exactly what
+// the loop below treats as "the real final answer" (see the isLastStep
+// comment further down), that stall gets sent to the visitor as the
+// complete reply, the promised search never actually runs, and the
+// conversation just ends there — the visitor has to notice and re-ask.
+// Caught twice in the same conversation (once after a plain request, once
+// after a correction — "these are not Large size" -> "Let me check again...
+// One moment please." -> nothing). None of the glitch guards above catch
+// this: the text is coherent, properly-cased prose, well over the length
+// floor, with no repetition or noise — it's just a promise with nothing
+// behind it. Only flag content that is BOTH stall-phrased AND short, so a
+// genuine longer answer that happens to open with "let me check" (and then
+// actually answers) is never rejected.
+const STALL_PATTERN =
+  /\b(one (moment|sec|second)|hold on|hang (on|tight)|give me a (moment|sec|second)|checking (that|this|now|the options)|let me (check|look|take a look|see)|i('| a)?ll (check|look|take a look|get back to you))\b/i;
+function isStallWithoutAnswer(text) {
+  const t = text.trim();
+  return t.length > 0 && t.length < 220 && STALL_PATTERN.test(t);
+}
+
 // Reads one completion via the streaming API (still requested with
 // stream:true — that's what lets us validate a full round before deciding
 // whether to show or retry it, see below) and returns the reassembled
@@ -351,6 +374,10 @@ function hasGibberishNoise(text) {
 // something on the round that has the real answer.
 async function callLLM(messages, onDelta, { toolChoice = "auto" } = {}) {
   let lastErr;
+  // Mutable per-attempt override — left alone unless the stall check below
+  // fires, in which case a retry is forced to actually invoke a tool instead
+  // of risking the exact same stall coming back from another "auto" round.
+  let effectiveToolChoice = toolChoice;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     // The SDK's own `timeout` option (set on the client) didn't catch this in
     // testing — a stream that stalls mid-response after starting normally
@@ -365,7 +392,7 @@ async function callLLM(messages, onDelta, { toolChoice = "auto" } = {}) {
           model: MODEL,
           messages,
           tools: TOOL_SCHEMAS,
-          tool_choice: toolChoice,
+          tool_choice: effectiveToolChoice,
           temperature: 0.3,
           stream: true,
         },
@@ -492,6 +519,18 @@ async function callLLM(messages, onDelta, { toolChoice = "auto" } = {}) {
       }
       if (toolCalls.length === 0 && hasGibberishNoise(content)) {
         throw Object.assign(new Error(`Gibberish-noise glitch: ${JSON.stringify(content.slice(0, 200))}`), {
+          status: 503,
+        });
+      }
+      // toolChoice (not effectiveToolChoice) reflects what the CALLER asked
+      // for this step — on the forced-final-answer step it's "none", where a
+      // stall-shaped sentence is expected and fine to show as-is (it's the
+      // best the model can do with tools off). Everywhere else, a stall with
+      // no tool call means the visitor's actual request never got answered
+      // — force the retry to really call something instead of accepting it.
+      if (toolCalls.length === 0 && toolChoice !== "none" && isStallWithoutAnswer(content)) {
+        effectiveToolChoice = "required";
+        throw Object.assign(new Error(`Stalled without calling a tool: ${JSON.stringify(content)}`), {
           status: 503,
         });
       }
