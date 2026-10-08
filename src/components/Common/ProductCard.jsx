@@ -81,14 +81,16 @@ const ProductCard = ({ product, favSet = new Set(), onViewProduct, priority = fa
     ? product.specialTags.filter(t => !["24 Hour Production", "Clothing"].includes(t)).slice(0, 2)
     : [];
 
-  // Extract unique colors
+  // Extract unique colors. colorObj.colours may be missing — a custom
+  // (non-PromoData) product can have just { name } — so fall back through
+  // appa_colours / name rather than crashing the whole card on .includes().
   const uniqueColors =
     product?.product?.colours?.list?.length > 1
       ? [
         ...new Set(
-          product?.product?.colours?.list
-            .flatMap((colorObj) => colorObj.colours)
-            .filter((color) => !color.includes(" "))
+          product.product.colours.list
+            .flatMap((colorObj) => colorObj?.colours || colorObj?.appa_colours || (colorObj?.name ? [colorObj.name] : []))
+            .filter((color) => typeof color === "string" && !color.includes(" "))
         ),
       ]
       : [];

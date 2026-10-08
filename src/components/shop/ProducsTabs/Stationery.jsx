@@ -193,7 +193,7 @@ const Stationery = ({ activeTab }) => {
                             product?.product?.colours?.list
                               .slice(0, 15) // Limit to 15 colors
                               .flatMap((colorObj, index) =>
-                                colorObj.colours.map((color, subIndex) => (
+                                (colorObj.colours || colorObj.appa_colours || (colorObj.name ? [colorObj.name] : [])).map((color, subIndex) => (
                                   <div
                                     key={`${index}-${subIndex}`}
                                     style={{

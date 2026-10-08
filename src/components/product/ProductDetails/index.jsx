@@ -790,11 +790,14 @@ const ProductDetails = () => {
     if (!product?.colours?.list) return {};
 
     return product.colours.list.reduce((acc, colorObj) => {
-      const colorName = colorObj.name || colorObj.colours.join("/");
-      acc[colorName] = colorObj.image || normalizedImages[0] || noimage;
+      // colorObj.colours may be missing — a custom (non-PromoData) product
+      // can have just { name } — so never assume it's an array here.
+      const colourNames = colorObj?.colours || colorObj?.appa_colours || [];
+      const colorName = colorObj?.name || colourNames.join("/");
+      acc[colorName] = colorObj?.image || normalizedImages[0] || noimage;
       // Also map individual color names for backwards compatibility
-      colorObj.colours.forEach((color) => {
-        if (!acc[color]) acc[color] = colorObj.image || normalizedImages[0] || noimage;
+      colourNames.forEach((color) => {
+        if (!acc[color]) acc[color] = colorObj?.image || normalizedImages[0] || noimage;
       });
       return acc;
     }, {});
@@ -1719,7 +1722,7 @@ const ProductDetails = () => {
                         // Deduplicate by colorObj.name (the combo name e.g. "Black/Heather Grey")
                         const seen = new Set();
                         const uniqueColorObjs = single_product?.product?.colours?.list.filter((colorObj) => {
-                          const key = colorObj.name || colorObj.colours.join("/");
+                          const key = colorObj?.name || (colorObj?.colours || []).join("/");
                           if (seen.has(key)) return false;
                           seen.add(key);
                           return true;
@@ -1727,8 +1730,8 @@ const ProductDetails = () => {
 
                         return uniqueColorObjs.length > 0 ? (
                           uniqueColorObjs.map((colorObj, index) => {
-                            const colorName = colorObj.name || colorObj.colours.join("/");
-                            const colours = colorObj.colours || [];
+                            const colours = colorObj?.colours || colorObj?.appa_colours || [];
+                            const colorName = colorObj?.name || colours.join("/");
                             const isSelected = selectedColor === colorName;
                             const isSingleColor = colours.length <= 1;
                             const color1 = findNearestColor(colours[0]);
