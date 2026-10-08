@@ -31,10 +31,31 @@ const SearchBar = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const suggestionTimerRef = useRef(null);
+  // Bumped on every submit/close so a suggestions fetch already in flight at
+  // that moment can't land afterward and reopen the dropdown — see
+  // closeSuggestions() and fetchSuggestions() below.
+  const suggestionRequestIdRef = useRef(0);
   const wrapperRef = categoryDropdownRef;
   const location = useLocation();
   const prevLocationRef = useRef(location.pathname);
   const inputValueRef = useRef("");
+
+  // Clears any pending/in-flight suggestions work and hides the dropdown.
+  // Submitting a search (Enter or the search icon) must call this, not just
+  // setIsSuggestionsOpen(false) — a suggestions fetch triggered by the
+  // keystroke just before submit can still resolve after navigation and
+  // reopen the dropdown as an overlay on top of the results page.
+  const closeSuggestions = useCallback(() => {
+    if (suggestionTimerRef.current) {
+      clearTimeout(suggestionTimerRef.current);
+      suggestionTimerRef.current = null;
+    }
+    suggestionRequestIdRef.current += 1;
+    setIsSuggestionsOpen(false);
+    setSuggestions([]);
+    setHighlightedIndex(-1);
+  }, []);
+
   // Close category dropdown & suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -46,9 +67,7 @@ const SearchBar = ({
 
         // <-- NEW: also close suggestions when clicking outside
         if (isSuggestionsOpen) {
-          setIsSuggestionsOpen(false);
-          setSuggestions([]);
-          setHighlightedIndex(-1);
+          closeSuggestions();
         }
       }
     };
@@ -57,7 +76,7 @@ const SearchBar = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isSuggestionsOpen]);
+  }, [isSuggestionsOpen, closeSuggestions]);
 
   const fetchSuggestions = async (q) => {
     if (!q || q.trim().length === 0) {
@@ -66,6 +85,7 @@ const SearchBar = ({
       setIsSuggestionsOpen(false);
       return;
     }
+    const requestId = (suggestionRequestIdRef.current += 1);
     try {
       setSuggestionLoading(true);
       const limit = 10;
@@ -75,6 +95,10 @@ const SearchBar = ({
         }`
       );
       const json = await resp.json();
+      // A submit/close happened while this request was in flight — drop the
+      // result instead of reopening the dropdown out from under it.
+      if (requestId !== suggestionRequestIdRef.current) return;
+
       const resultType = json?.resultType || "product";
       setSuggestionResultType(resultType);
 
@@ -90,12 +114,15 @@ const SearchBar = ({
       setIsSuggestionsOpen(items.length > 0);
       setHighlightedIndex(-1);
     } catch (err) {
+      if (requestId !== suggestionRequestIdRef.current) return;
       console.warn("suggestion fetch error:", err);
       setSuggestions([]);
       setSuggestionResultType("none");
       setIsSuggestionsOpen(false);
     } finally {
-      setSuggestionLoading(false);
+      if (requestId === suggestionRequestIdRef.current) {
+        setSuggestionLoading(false);
+      }
     }
   };
 
@@ -210,10 +237,10 @@ const SearchBar = ({
   };
 
   const handleSearch = (searchValue = inputValue) => {
-    // Close suggestions when searching
-    // setIsSuggestionsOpen(false);
-    // setSuggestions([]);
-    setHighlightedIndex(-1);
+    // Every submission path funnels through here, so this is the one place
+    // that reliably closes the dropdown and cancels any suggestions fetch
+    // still in flight (see closeSuggestions()).
+    closeSuggestions();
 
     if (!searchValue.trim()) {
       onSearch("");
@@ -240,22 +267,17 @@ const SearchBar = ({
       ) {
         const sel = suggestions[highlightedIndex];
         setInputValue(sel.name || sel.sku || "");
-        setIsSuggestionsOpen(false);
-        setSuggestions([]);
-        setHighlightedIndex(-1);
+        closeSuggestions();
         onSearch(sel.name || sel.sku || "");
         return;
       }
-      setIsSuggestionsOpen(false);
 
-      // Clear debounce timer and search immediately (this will close suggestions)
+      // Clear debounce timer and search immediately (handleSearch closes suggestions)
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       handleSearch();
     } else if (e.key === "Escape") {
       if (isSuggestionsOpen) {
-        setIsSuggestionsOpen(false);
-        setSuggestions([]);
-        setHighlightedIndex(-1);
+        closeSuggestions();
         return;
       }
       if (collapsible && onToggle) onToggle(false);
@@ -369,13 +391,11 @@ const SearchBar = ({
                     ev.preventDefault();
                     if (s.type === "main-category" || s.type === "sub-category") {
                       setInputValue(s.name);
-                      setIsSuggestionsOpen(false);
-                      setSuggestions([]);
+                      closeSuggestions();
                       onSearch(s.name);
                     } else {
                       setInputValue(s.name || s.sku || "");
-                      setIsSuggestionsOpen(false);
-                      setSuggestions([]);
+                      closeSuggestions();
                       onSearch(s.name || s.sku || "");
                     }
                   }}
@@ -419,8 +439,8 @@ const SearchBar = ({
           <div className="flex items-center gap-2 ml-2">
             <IoSearchSharp
               onClick={() => {
-                handleSearch;
-                setIsSuggestionsOpen(false);
+                if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+                handleSearch();
               }}
               className="text-primary text-xl cursor-pointer hover:text-blue-700 transition-colors"
             />
@@ -564,13 +584,11 @@ const SearchBar = ({
                   ev.preventDefault();
                   if (s.type === "main-category" || s.type === "sub-category") {
                     setInputValue(s.name);
-                    setIsSuggestionsOpen(false);
-                    setSuggestions([]);
+                    closeSuggestions();
                     onSearch(s.name);
                   } else {
                     setInputValue(s.name || s.sku || "");
-                    setIsSuggestionsOpen(false);
-                    setSuggestions([]);
+                    closeSuggestions();
                     onSearch(s.name || s.sku || "");
                   }
                 }}
@@ -612,12 +630,11 @@ const SearchBar = ({
         <div className="flex items-center gap-2 ml-2 flex-shrink-0">
           <button
             onClick={() => {
-              // Clear debounce timer and search immediately
+              // Clear debounce timer and search immediately (handleSearch closes suggestions)
               if (debounceTimerRef.current) {
                 clearTimeout(debounceTimerRef.current);
               }
               handleSearch();
-              setIsSuggestionsOpen(false);
             }}
             className="text-primary hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded-lg transition-all duration-200 flex-shrink-0"
           >
