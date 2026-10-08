@@ -41,28 +41,29 @@ async function filter_products({ category, quantity, max_unit_price, decoration,
   // `limit` used to be hardcoded to 10 with no way for the model to ask for
   // more on a "show me more options" follow-up (see withoutPreviouslyShown).
   //
-  // Real bug this fixed: with a `quantity` given, the live catalog's default
-  // sort order frequently front-loads high-MOQ premium variants (confirmed
-  // live — "Drink Bottles" at the default `limit` of 10 returned 10 products
-  // in a row with MOQ 100-500, even though 73 of the category's first 100
-  // products have MOQ<=50). Filtering by quantity AFTER truncating to
-  // `limit` meant the MOQ filter had nothing to find in that unlucky batch
-  // and a genuinely well-stocked category came back looking completely
-  // empty. Fetch a much larger raw pool whenever quantity is a real
-  // constraint, so the filter below has enough candidates to actually find
-  // matches in, then slice back down to the requested `limit` for display.
-  const fetchLimit = quantity ? Math.max(limit, 40) : limit;
+  // Real bug this fixed: `quantity` used to only be applied as a client-side
+  // filter AFTER the live catalog had already truncated to `limit` — but its
+  // default sort order frequently front-loads high-MOQ premium variants
+  // (confirmed live: "Drink Bottles" at the default `limit` of 10 returned
+  // 10 products in a row with MOQ 100-500, even though 73 of the category's
+  // first 100 products have MOQ<=50). An unlucky batch order could make a
+  // genuinely well-stocked category look completely empty. `quantity` is now
+  // passed straight through as the live API's own `moq` filter (see
+  // catalogApi.js — same param the storefront's own category sidebar uses),
+  // so the API only returns qualifying products in the first place; the
+  // client-side filter below stays on as a defensive backstop, not the
+  // primary mechanism.
   const results = await catalogApi.searchProducts({
     category,
     minPrice: null,
     maxPrice: max_unit_price,
     colour,
-    limit: fetchLimit,
+    quantity,
+    limit,
   });
   let filtered = results;
   if (quantity) filtered = filtered.filter((p) => quantity >= (p.moq || 0));
   if (in_stock_only) filtered = filtered.filter((p) => p.in_stock);
-  filtered = filtered.slice(0, limit);
   const { products: deduped, excludedCount } = withoutPreviouslyShown(filtered, excludeIds);
   const notes = [];
   if (decoration) notes.push("Decoration availability must be confirmed per-product via get_price_quote; this list is filtered on category/quantity/price/colour only.");

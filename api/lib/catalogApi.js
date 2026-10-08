@@ -230,12 +230,28 @@ function resolveCategoryIds(categoryQuery, index) {
 /**
  * Live keyword/category search — the ground truth for "what products exist".
  */
-export async function searchProducts({ searchTerm, category, minPrice, maxPrice, colour, limit = 10 }) {
+export async function searchProducts({ searchTerm, category, minPrice, maxPrice, colour, quantity, limit = 10 }) {
   // The live API's own colour filter — confirmed directly (curled the
   // endpoint): `colors[]=Red` on `/api/client-products/search` genuinely
   // narrows results to products that carry that colour. Not previously
   // wired up even though the tool schema already accepted a `colour` arg.
   const colorParam = colour ? { "colors[]": colour } : {};
+  // The live API's own MOQ filter — confirmed directly (curled the endpoint,
+  // and confirmed it's the same `moq` param the storefront's own category
+  // sidebar/Finder send, see src/config/quantityOptions.js): `moq=50` on
+  // either `/api/client-products` or `/api/client-products/search` genuinely
+  // narrows results server-side to products whose minimum order quantity is
+  // at or below that number. Real bug this fixed: `quantity` used to only be
+  // applied as a client-side filter AFTER truncating to `limit` — but the
+  // API's own default sort order frequently front-loads high-MOQ premium
+  // variants (confirmed live: "Drink Bottles"' first 10-16 results, default
+  // order, were ALL MOQ 100-500, despite the category having 70+ products
+  // with MOQ<=50 overall) — so a small, unlucky batch could make a
+  // genuinely well-stocked category look completely empty once filtered.
+  // Asking the API to only return qualifying products in the first place
+  // removes the guesswork entirely; tools.js still re-checks `moq` on the
+  // result client-side as a defensive backstop, same as it always did.
+  const moqParam = quantity ? { moq: quantity } : {};
 
   if (category) {
     const index = await getCategoryIndex();
@@ -263,6 +279,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
             limit: perCategoryLimit,
             filter: true,
             ...colorParam,
+            ...moqParam,
           }).then((data) => (data.data || []).map(toCardShape))
         )
       );
@@ -291,6 +308,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
       limit,
       filter: true,
       ...colorParam,
+      ...moqParam,
     });
     return (data.data || []).map(toCardShape);
   }
@@ -304,6 +322,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
     limit,
     filter: true,
     ...colorParam,
+    ...moqParam,
   });
   let results = (data.data || []).map(toCardShape);
 
@@ -326,7 +345,7 @@ export async function searchProducts({ searchTerm, category, minPrice, maxPrice,
     const seenIds = new Set();
     for (const word of words) {
       if (merged.length >= limit) break;
-      const wordData = await apiGet(path, { searchTerm: word, page: 1, limit, filter: true, ...colorParam });
+      const wordData = await apiGet(path, { searchTerm: word, page: 1, limit, filter: true, ...colorParam, ...moqParam });
       for (const raw of wordData.data || []) {
         const card = toCardShape(raw);
         if (card.id != null && !seenIds.has(card.id)) {
