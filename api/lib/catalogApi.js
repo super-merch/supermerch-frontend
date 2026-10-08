@@ -171,9 +171,28 @@ async function getCategoryIndex() {
 // rule, and extractProducts' name-based card filtering in chat.js). Casting
 // a slightly wide net here and letting that existing judgement narrow it is
 // simpler and more consistent than duplicating a denylist in two places.
+// Confirmed live: "water bottle" has no real category called that — the
+// catalog's own name is "Drink Bottles". A plain word-overlap match on
+// "bottle" alone pulled in FOUR unrelated accessory categories alongside it
+// ("Bottle Coolers", "Bottled Water", "Bottle Opener Keyrings", "Bottle
+// Openers"), splitting the (small, per-category) fetch budget five ways —
+// the genuine category got starved down to 2 results, both of which
+// happened to carry a high MOQ, so a 50-unit request came back completely
+// empty despite the real category having 70+ products that qualify. A
+// handful of common customer-vocabulary mismatches like this are cheap to
+// special-case rather than trying to solve naming drift generically.
+const CATEGORY_QUERY_ALIASES = [
+  [/\bwater bottles?\b/g, "drink bottle"],
+  [/\bdrinking bottles?\b/g, "drink bottle"],
+];
+function applyAliases(categoryQuery) {
+  let q = categoryQuery.toLowerCase();
+  for (const [pattern, replacement] of CATEGORY_QUERY_ALIASES) q = q.replace(pattern, replacement);
+  return q;
+}
+
 function resolveCategoryIds(categoryQuery, index) {
-  const words = categoryQuery
-    .toLowerCase()
+  const words = applyAliases(categoryQuery)
     .split(/\s+/)
     .filter((w) => w.length > 2);
   if (words.length === 0) return [];
@@ -189,10 +208,22 @@ function resolveCategoryIds(categoryQuery, index) {
   // "pens" search.
   const sameWord = (a, b) =>
     a === b || a === `${b}s` || a === `${b}es` || b === `${a}s` || b === `${a}es`;
-  const matches = index.filter((c) => {
+  const overlapCount = (c) => {
     const nameWords = c.name.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-    return words.some((w) => nameWords.some((nw) => sameWord(w, nw)));
-  });
+    return words.filter((w) => nameWords.some((nw) => sameWord(w, nw))).length;
+  };
+  // Real bug this fixed (same "water bottle" case): a single ambiguous word
+  // like "bottle" legitimately overlaps several unrelated categories. When
+  // the query has more than one word, prefer categories that match ALL of
+  // them over ones that only partly overlap — "Tote Bags" over "Lunch Bags"
+  // for "tote bag", "Drink Bottles" over "Bottle Openers" for "drink
+  // bottle" (post-alias). Only fall back to "any word matches" (the
+  // original behaviour) when nothing achieves full overlap, so a single-word
+  // query like "pen" still merges every pen category as before.
+  const scored = index.map((c) => ({ c, score: overlapCount(c) })).filter((s) => s.score > 0);
+  const bestScore = words.length > 1 ? words.length : 1;
+  const fullMatches = scored.filter((s) => s.score >= bestScore);
+  const matches = (fullMatches.length > 0 ? fullMatches : scored).map((s) => s.c);
   return matches.slice(0, 6).map((c) => c.id);
 }
 
