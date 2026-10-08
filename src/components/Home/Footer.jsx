@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import apple from "../../assets/apple.png";
 import gpay from "../../assets/gpay.png";
 import paypal from "../../assets/paypal.png";
-import supermerch from "../../assets/supermerch.png";
+import supermerch from "../../assets/supermerch.webp";
 import visa from "../../assets/visa.png";
 import PopUps from "./PopUps";
 import { FaFacebookF, FaInstagram } from "react-icons/fa6";

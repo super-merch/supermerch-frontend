@@ -22,7 +22,7 @@ const FALLBACK_FEATURES = [
     title: "Merchandise for Every Brief",
     description:
       "Choose from promotional products, uniforms, workwear, corporate gifts, signage and awards for Australian organisations.",
-    imageUrl: "/about1.png",
+    imageUrl: "/about1.webp",
     icon: FaTags,
     color: "from-teal-500 to-emerald-600",
   },
@@ -30,7 +30,7 @@ const FALLBACK_FEATURES = [
     title: "Flexible Turnaround Options",
     description:
       "Select express products for urgent campaigns or use longer lead times when value and customisation are the priority.",
-    imageUrl: "/about2.png",
+    imageUrl: "/about2.webp",
     icon: FaTruck,
     color: "from-blue-500 to-cyan-600",
   },
@@ -38,7 +38,7 @@ const FALLBACK_FEATURES = [
     title: "Practical Branding Support",
     description:
       "Our team helps with product selection, artwork, decoration methods and delivery so your merchandise suits its intended use.",
-    imageUrl: "/about3.png",
+    imageUrl: "/about3.webp",
     icon: FaHandshake,
     color: "from-violet-500 to-purple-600",
   },

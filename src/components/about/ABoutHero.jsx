@@ -27,7 +27,7 @@ const ABoutHero = () => {
         <div className="relative mb-16">
           <div className="relative rounded-3xl overflow-hidden shadow-2xl">
             <img
-              src="/group2.png"
+              src="/group2.webp"
               alt="Super Merch Team"
               className="w-full h-auto object-cover"
             />

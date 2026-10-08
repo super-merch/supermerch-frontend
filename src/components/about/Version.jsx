@@ -109,7 +109,7 @@ const Version = () => {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="/group.png"
+                src="/group.webp"
                 alt="SuperMerch Vision"
                 className="w-full h-auto object-cover"
               />

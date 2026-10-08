@@ -27,7 +27,7 @@ const Stable = () => {
           <div className="relative order-2 lg:order-1">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="/about5.png"
+                src="/about5.webp"
                 alt="Inclusive Workplace at SuperMerch"
                 className="w-full h-auto object-cover"
               />

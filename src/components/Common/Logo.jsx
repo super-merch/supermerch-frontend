@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import supermerch from "../../assets/supermerch.png";
+import supermerch from "../../assets/supermerch.webp";
 
 const Logo = ({
   className = "",

@@ -11,19 +11,19 @@ const LetsConnect = () => {
   const fallbackPosts = [
     {
       id: "fallback-1",
-      image: "/shirt.png",
+      image: "/shirt.webp",
       caption: "Custom T-Shirts - Perfect for your team branding! 👕✨",
       link: "https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw",
     },
     {
       id: "fallback-2",
-      image: "/cap.png",
+      image: "/cap.webp",
       caption: "Premium Quality Caps - Make a statement with your logo! 🧢",
       link: "https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw",
     },
     {
       id: "fallback-3",
-      image: "/bags.png",
+      image: "/bags.webp",
       caption: "Eco-friendly Bags - Sustainable promotional products! 👜",
       link: "https://www.instagram.com/supermerch_official?igsh=N2FnNndiaHNsbnkw",
     },
