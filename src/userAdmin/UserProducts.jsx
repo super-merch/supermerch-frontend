@@ -249,7 +249,7 @@ const UserProducts = () => {
   const getColorsFromProduct = (productData) => {
     if (!productData?.product?.colours?.list) return [];
     return productData.product.colours.list
-      .flatMap((colorObj) => colorObj.colours)
+      .flatMap((colorObj) => colorObj?.colours || colorObj?.appa_colours || (colorObj?.name ? [colorObj.name] : []))
       .filter((color, index, array) => array.indexOf(color) === index);
   };
 
