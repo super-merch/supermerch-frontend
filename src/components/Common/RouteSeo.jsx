@@ -354,6 +354,22 @@ const RouteSeo = () => {
         robots: "noindex, nofollow",
       },
     },
+    "/corporate-gifting-brief": {
+      entityType: "cmsPage",
+      entityId: "corporate-gifting-brief",
+      fallback: {
+        ...makeFallback({
+          title: "Corporate Gifting Brief | Super Merch Australia",
+          description: "Answer a few quick questions and we will come back with tailored corporate gift concepts, pricing and lead times.",
+          keywords: "corporate gifting, corporate gift hampers, gifting enquiry",
+          path: "/corporate-gifting-brief",
+        }),
+        // Matches the noindex,follow set server-side in api/app-shell.js's
+        // REAL_APP_ROUTES branch -- deliberately not on the indexable
+        // seo-page.js path yet, so both sides must agree on that.
+        robots: "noindex, follow",
+      },
+    },
   };
 
   const dynamicCategoryPaths = [

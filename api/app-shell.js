@@ -6,6 +6,7 @@ import { join } from "node:path";
 // None of these are meant to rank, so they get a shell + noindex, not a 404.
 const REAL_APP_ROUTES = [
   /^\/quote\/respond\/[^/]+$/,
+  /^\/corporate-gifting-brief$/,
   /^\/favourites$/,
   /^\/search$/,
   /^\/success$/,
@@ -32,6 +33,7 @@ const KNOWN_CANONICAL_PATHS = [
   "/24hr-production", "/deals", "/hot-deals", "/australia-made", "/clearance",
   "/category", "/about", "/contact", "/all-blogs", "/faqs", "/artwork-policy",
   "/refund-policy", "/privacy", "/terms", "/help-center", "/pms",
+  "/corporate-gifting-brief",
   "/favourites", "/search", "/success", "/cancel", "/cart", "/checkout",
   "/upload-artwork", "/mail-offer", "/track-order", "/signup", "/login",
   "/my-account",
