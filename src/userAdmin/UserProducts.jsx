@@ -7,8 +7,24 @@ import { FaCheckCircle, FaTimesCircle, FaCommentDots, FaImage, FaClock } from "r
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  computeReorderTotals,
+  identifiesProduct,
+  isOrderableQuantity,
+  resolveUnitPrice,
+} from "../utils/reorderPricing";
 import { loadStripe } from "@stripe/stripe-js";
 import { slugify, toProductUrl } from "@/utils/utils";
+
+const LINE_STATUS = {
+  UNKNOWN: "unknown",
+  AVAILABLE: "available",
+  UNAVAILABLE: "unavailable",
+  UNVERIFIED: "unverified",
+};
+
+// One stalled lookup must not hold the whole modal open indefinitely.
+const REORDER_LOOKUP_TIMEOUT_MS = 15000;
 
 const UserProducts = () => {
   const { userOrder, loading, user, loadUserOrder } = useContext(AuthContext);
@@ -35,6 +51,28 @@ const UserProducts = () => {
   const [reOrderLoading, setReOrderLoading] = useState(false);
   const [editableProducts, setEditableProducts] = useState([]);
   const [productDetails, setProductDetails] = useState({});
+
+  // Availability is FOUR states, not two. The obvious design — a Set of
+  // unavailable ids — quietly means "anything not in the Set is fine", so a
+  // product is presumed orderable before it has been checked at all, and a
+  // network blip is indistinguishable from a product that genuinely cannot be
+  // sold. Both of those let a switched-off product through to Stripe.
+  //
+  //   UNKNOWN     not checked yet, or a check is in flight
+  //   AVAILABLE   live lookup succeeded and returned a usable product
+  //   UNAVAILABLE the backend says no — 404/410, or 200 with no product
+  //   UNVERIFIED  we could not find out: timeout, 5xx, offline, rate limited
+  //
+  // Only AVAILABLE may be ordered. UNAVAILABLE is excluded and the rest of the
+  // order proceeds. UNKNOWN or UNVERIFIED blocks Confirm entirely rather than
+  // silently turning the customer's re-order into a partial one.
+  const [lineStatus, setLineStatus] = useState({});
+
+  // Guards against an obsolete lookup committing over the current one. Opening
+  // order A, closing it and opening order B, then having A's slow response land
+  // would otherwise overwrite B's availability and make a switched-off product
+  // orderable again.
+  const reorderRequestRef = useRef(0);
   const [popupLoading, setPopupLoading] = useState(false);
 
   // Proof review state
@@ -197,15 +235,6 @@ const UserProducts = () => {
     };
   }, [orderId, userOrder, loading, backendUrl]);
 
-  const getPriceForQuantity = (quantity, priceBreaks) => {
-    if (!priceBreaks?.length) return 0;
-    const sorted = [...priceBreaks].sort((a, b) => a.qty - b.qty);
-    for (let i = sorted.length - 1; i >= 0; i--) {
-      if (quantity >= sorted[i].qty) return sorted[i].price;
-    }
-    return sorted[0]?.price || 0;
-  };
-
   const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
 
   const extractSizesFromProduct = (productData) => {
@@ -324,28 +353,130 @@ const openReOrderModal = useCallback(async () => {
 
   sessionStorage.setItem(reorderStorageKey, "1");
 
+  const requestId = ++reorderRequestRef.current;
+  const ids = [...new Set((selectedOrder?.products || []).map((p) => p.id))];
+
   setReOrderModal(true);
   setPopupLoading(true);
   setEditableProducts((selectedOrder?.products || []).map((p) => ({ ...p })));
 
-  try {
-    const ids = [...new Set((selectedOrder?.products || []).map((p) => p.id))];
-    const details = {};
-    await Promise.all(
-      ids.map(async (id) => {
-        const { data } = await axios.get(`${backendUrl}/api/single-product/${id}`);
-        details[id] = data.data;
-      })
-    );
-    setProductDetails(details);
-  } catch (err) {
-    console.error("Failed to fetch product details:", err);
-    toast.error("Failed to load product details.")
-  }
+  // Reset to UNKNOWN before anything is checked. Carrying the previous order's
+  // verdicts over would present a stale result as current truth.
+  setProductDetails({});
+  setLineStatus(ids.reduce((acc, id) => ({ ...acc, [id]: LINE_STATUS.UNKNOWN }), {}));
+
+  // allSettled, not all: a single 404 previously rejected the whole batch, so
+  // EVERY line lost its details and fell back to the prices frozen in the old
+  // order. Each request is bounded so one stalled lookup cannot hold the
+  // others hostage indefinitely.
+  const results = await Promise.allSettled(
+    ids.map(async (id) => {
+      const { data } = await axios.get(
+        `${backendUrl}/api/single-product/${id}`,
+        { timeout: REORDER_LOOKUP_TIMEOUT_MS }
+      );
+      return { id, product: data?.data };
+    })
+  );
+
+  // A newer open superseded this one — discard rather than overwrite it.
+  if (requestId !== reorderRequestRef.current) return;
+
+  const details = {};
+  const status = {};
+
+
+  results.forEach((result, index) => {
+    const id = ids[index];
+
+    if (result.status === "fulfilled") {
+      // Truthiness is not identification. A 200 carrying {}, [], or some
+      // other product is truthy, and treating that as AVAILABLE would let the
+      // line be charged at the price frozen in the old order on the strength of
+      // a response that never confirmed this product exists. For a path built
+      // to fail closed, the response has to actually name the thing we asked
+      // about.
+      const returned = result.value?.product;
+      const identifies = identifiesProduct(returned, id);
+
+      if (identifies) {
+        details[id] = returned;
+        // AVAILABLE has to mean PRICEABLE, not merely "the server named this
+        // product". Identity alone left two ways to charge the wrong amount:
+        // an untouched line kept the price frozen in the historical order even
+        // though the live price had moved, and a product whose current data
+        // carries no price breaks went to zero the moment anyone touched the
+        // quantity. Resolving the price here settles both - if we cannot price
+        // it now, we will not sell it now.
+        status[id] = LINE_STATUS.AVAILABLE;
+      } else if (returned) {
+        // Answered, but not about this product. We cannot call that gone, and
+        // we certainly cannot call it available.
+        status[id] = LINE_STATUS.UNVERIFIED;
+      } else {
+        // 200 with no product is the backend saying it has nothing to sell.
+        status[id] = LINE_STATUS.UNAVAILABLE;
+      }
+      return;
+    }
+
+    // Distinguish "the answer is no" from "we could not get an answer".
+    // Treating an outage as unavailability would tell a customer their
+    // perfectly saleable products are gone — and during a full outage, that
+    // every item is gone, which is simply false.
+    const httpStatus = result.reason?.response?.status;
+    status[id] =
+      httpStatus === 404 || httpStatus === 410
+        ? LINE_STATUS.UNAVAILABLE
+        : LINE_STATUS.UNVERIFIED;
+  });
+
+  // NOT REPRICED HERE, DELIBERATELY. See the note in utils/reorderPricing.js.
+  //
+  // A previous version of this reset each line to a freshly resolved price and
+  // it was WORSE than the stale price it replaced: the resolver reads the first
+  // base-price group and ignores both the line's colour and its decoration,
+  // while the storefront matches the group by colour and ADDS the decoration.
+  // On a business where nearly every line is branded, that silently
+  // undercharged every decorated re-order. It also applied one price per
+  // product id to every variant line sharing that id, which could move the
+  // total in either direction by hundreds of dollars.
+  //
+  // Pricing a configured line correctly needs colour matching, decoration and
+  // setup fees across two different product structures - the model the
+  // server-side pricing branch is centralising. A simplified second copy of it
+  // living here is how the existing mispricing defects were created, so this
+  // no longer guesses. Re-order still carries the historical price; that is
+  // unchanged from today and is tracked as a critical for the pricing branch,
+  // where the whole model already lives.
+  setProductDetails(details);
+  setLineStatus(status);
   setPopupLoading(false);
+
+  const counts = Object.values(status);
+  const unavailable = counts.filter((s) => s === LINE_STATUS.UNAVAILABLE).length;
+  const unverified = counts.filter((s) => s === LINE_STATUS.UNVERIFIED).length;
+
+  if (unverified > 0) {
+    toast.error("Couldn't check availability for every item. Please try again.");
+  } else if (unavailable > 0) {
+    toast.error(
+      unavailable === ids.length
+        ? "None of these items are available to re-order."
+        : `${unavailable} item${unavailable > 1 ? "s are" : " is"} no longer available and will not be re-ordered.`
+    );
+  }
 }, [selectedOrder, backendUrl, reorderStorageKey]);
 
 const closeReOrderModal = useCallback(() => {
+  // Bump the generation so any lookup still in flight discards itself when it
+  // lands. Without this, closing was not a cancellation: the batch continued,
+  // then wrote its statuses and fired a toast about an order the customer had
+  // already dismissed - and did the same after the component unmounted. It
+  // could not re-open the payment hole, because the next open resets everything
+  // to UNKNOWN behind a fresh generation, but it is still a stale write and the
+  // guard already existed for exactly this shape of problem.
+  reorderRequestRef.current += 1;
   sessionStorage.removeItem(reorderStorageKey);
   setReOrderModal(false);
 }, [reorderStorageKey]);
@@ -375,12 +506,10 @@ const updateEditableProduct = (index, field, value) => {
 
     if (field === "quantity") {
       const detail = productDetails[updated[index].id];
-      if (detail) {
-        const baseGroup = detail.product?.prices?.price_groups?.find(
-          (g) => g.base_price
-        );
-        const priceBreaks = baseGroup?.base_price?.price_breaks || [];
-        const unitPrice = getPriceForQuantity(Number(value), priceBreaks);
+      const unitPrice = isOrderableQuantity(value)
+        ? resolveUnitPrice(detail, value)
+        : null;
+      if (unitPrice !== null) {
         updated[index].price = unitPrice;
         updated[index].subTotal = unitPrice * Number(value);
       }
@@ -393,15 +522,119 @@ const removeEditableProduct = (index) => {
   setEditableProducts((prev) => prev.filter((_, i) => i !== index));
 };
 
+// Only a line we have positively verified may be ordered. Everything else —
+// unavailable, unverified, or not yet checked — is excluded from the money.
+const isLineOrderable = (product) =>
+  lineStatus[product.id] === LINE_STATUS.AVAILABLE;
+
 const getEditableProductTotal = () => {
-  const subtotal = editableProducts.reduce((sum, p) => sum + (p.subTotal || 0), 0);
-  return subtotal;
+  // Excluded lines must not appear in the total either — otherwise the
+  // customer is quoted a figure they will never be charged.
+  //
+  // Quantised to cents per line, because that is what the server does before
+  // it builds the Stripe line items. Summing raw floats here and cents there
+  // is how a quote drifts from a charge by a cent.
+  return computeReorderTotals({
+    orderableLines: editableProducts.filter(isLineOrderable),
+  }).subtotal;
 };
+
+/**
+ * What the customer will ACTUALLY be charged, computed the same way the server
+ * computes it.
+ *
+ * The bug this replaces: the modal subtracted excluded lines from the subtotal
+ * but then added the ORIGINAL order's GST, while the server recalculates GST
+ * from whatever products it is sent. Two $100 lines with $20 GST, one line now
+ * unavailable, and the modal said $120 while Stripe charged $110. The setup fee
+ * was not shown at all, yet was still sent and still charged — so the quote
+ * could be wrong in either direction.
+ *
+ * Mirrors controllers/checkoutSessionController.js:
+ *   base   = subtotal + setupFee
+ *   preTax = base - couponDiscount + shipping   (no coupon on a re-order)
+ *   gst    = preTax * gstPercent / 100
+ * Change one and change the other, or this silently drifts back apart.
+ */
+const getReorderTotals = () =>
+  computeReorderTotals({
+    orderableLines: editableProducts.filter(isLineOrderable),
+    setupFee: selectedOrder?.setupFee,
+    shipping: selectedOrder?.shipping,
+    gstPercent: selectedOrder?.gstPercent,
+  });
+
+const orderableCount = editableProducts.filter(isLineOrderable).length;
+const unavailableCount = editableProducts.filter(
+  (p) => lineStatus[p.id] === LINE_STATUS.UNAVAILABLE
+).length;
+// Anything we could not check, or have not checked yet. These block the whole
+// re-order rather than being quietly dropped: turning "we don't know" into a
+// partial order would charge for some items and silently abandon others the
+// customer still wants.
+const unresolvedCount = editableProducts.filter(
+  (p) =>
+    lineStatus[p.id] === LINE_STATUS.UNVERIFIED ||
+    lineStatus[p.id] === LINE_STATUS.UNKNOWN ||
+    lineStatus[p.id] === undefined
+).length;
+
+// A quantity of 0 or "" is not a small order, it is an invalid one, and the
+// three places that see it disagree about what it means. This modal treated it
+// as zero units and quoted $0. The checkout controller computes its subtotal
+// and GST with (Number(quantity) || 0) but bills Stripe with
+// (Number(quantity) || 1), so the customer is charged for one unit of
+// something the quote priced at nothing. The order-save path then reconstructs
+// one unit, expects GST on it, finds the paid amount does not match, and
+// rejects the order - taking the money and losing the record.
+//
+// None of that is fixable from here: two of those coercions are in a
+// controller reserved for the pricing branch. What IS fixable from here is
+// refusing to send an invalid quantity in the first place.
+const invalidQuantityCount = editableProducts.filter(
+  (p) => isLineOrderable(p) && !isOrderableQuantity(p.quantity)
+).length;
+
+const canConfirmReorder =
+  !popupLoading &&
+  unresolvedCount === 0 &&
+  invalidQuantityCount === 0 &&
+  orderableCount > 0;
 
 
 const handleReOrder = async () => {
   if (editableProducts.length === 0) {
     return toast.error("No products to re-order.")
+  }
+
+  // Drop anything we could not price live. Reordering these would charge the
+  // price frozen in the original order, which we may no longer be able to
+  // honour — the supplier may have been switched off entirely.
+  //
+  // This re-reads the STATUS at submit rather than trusting the disabled
+  // button, which is a UI convenience and not a guarantee. It is NOT a fresh
+  // availability check, and an earlier comment here wrongly implied it was.
+  // The lookup happens when the modal opens, so a product can be withdrawn
+  // while the modal sits open and still reach checkout. Narrowing that window
+  // with a second fetch here would not close it either — only the server
+  // creating the Stripe session can, because it is the last point that sees
+  // the order before money moves. That belongs with the server-side pricing
+  // work, and is tracked there rather than papered over here.
+  if (unresolvedCount > 0) {
+    return toast.error(
+      "Still checking availability for some items. Please try again in a moment."
+    );
+  }
+
+  if (invalidQuantityCount > 0) {
+    return toast.error(
+      "Enter a quantity of at least 1 for every item you want to re-order."
+    );
+  }
+
+  const orderableProducts = editableProducts.filter(isLineOrderable);
+  if (orderableProducts.length === 0) {
+    return toast.error("None of these items are available to re-order.");
   }
   setReOrderLoading(true);
   const token = localStorage.getItem("token");
@@ -412,7 +645,7 @@ const handleReOrder = async () => {
   try {
     const checkoutData = {
       ...selectedOrder,
-      products: editableProducts,
+      products: orderableProducts,
       paymentStatus: "Paid",
       // Coupons are not re-applied on re-orders — the Stripe session is
       // created without one, so the server must not recompute a discount.
@@ -427,7 +660,7 @@ const handleReOrder = async () => {
       import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
     );
     const body = {
-      products: editableProducts.map((p) => ({
+      products: orderableProducts.map((p) => ({
         id: p.id,
         name: p.name,
         image: p.image,
@@ -1113,6 +1346,12 @@ return (
               <div className="space-y-4">
                 {editableProducts.map((product, index) => {
                   const detail = productDetails[product.id];
+                  // No live product means no live price. Show the line so the
+                  // customer can see what is missing, but keep it out of the
+                  // re-order rather than charging the old price.
+                  const status = lineStatus[product.id];
+                  const isUnavailable = status === LINE_STATUS.UNAVAILABLE;
+                  const isUnverified = status === LINE_STATUS.UNVERIFIED;
                   const colors = detail ? getColorsFromProduct(detail) : [];
                   const parsedSizes = detail ? extractSizesFromProduct(detail) : [];
                   const sizes =
@@ -1127,7 +1366,35 @@ return (
                         : [];
 
                   return (
-                    <div key={index} className="border rounded-lg p-4 relative">
+                    <div
+                      key={index}
+                      className={`border rounded-lg p-4 relative ${
+                        isUnavailable ? "bg-gray-50 border-gray-300" : ""
+                      }`}
+                    >
+                      {isUnavailable && (
+                        <div className="mb-3 flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2">
+                          <FaTimesCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
+                          <p className="text-xs text-amber-800">
+                            <span className="font-semibold">No longer available.</span>{" "}
+                            This item won&apos;t be included in your re-order. The other available items still will be.
+                          </p>
+                        </div>
+                      )}
+
+                      {isUnverified && (
+                        <div className="mb-3 flex items-start gap-2 rounded border border-red-200 bg-red-50 px-3 py-2">
+                          <FaTimesCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-600" />
+                          <p className="text-xs text-red-800">
+                            <span className="font-semibold">
+                              Couldn&apos;t check availability.
+                            </span>{" "}
+                            We don&apos;t know whether this item can still be ordered, so
+                            we&apos;ve paused the re-order rather than guess. Close and try again.
+                          </p>
+                        </div>
+                      )}
+
                       {/* Remove button */}
                       {editableProducts.length > 1 && (
                         <button
@@ -1266,24 +1533,65 @@ return (
           {/* Footer with totals */}
           {!popupLoading && editableProducts.length > 0 && (
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-              <div className="flex items-center justify-between mb-1 text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${getEditableProductTotal().toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between mb-1 text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">${selectedOrder?.shipping?.toFixed?.(2) ?? selectedOrder?.shipping}</span>
-              </div>
-              <div className="flex items-center justify-between mb-3 text-sm">
-                <span className="text-gray-600">GST</span>
-                <span className="font-medium">${selectedOrder?.gst?.toFixed?.(2) ?? selectedOrder?.gst}</span>
-              </div>
-              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                <span className="font-semibold text-gray-900">Total</span>
-                <span className="text-lg font-bold text-gray-900">
-                  ${(getEditableProductTotal() + (selectedOrder?.shipping || 0) + (selectedOrder?.gst || 0)).toFixed(2)}
-                </span>
-              </div>
+              {/* Every figure here comes from getReorderTotals(), which mirrors
+                  the server's own calculation. What this panel shows is what
+                  Stripe will charge. It previously showed the ORIGINAL order's
+                  GST beside a subtotal that had excluded lines removed, and did
+                  not show the setup fee at all despite still sending it. */}
+              {(() => {
+                const t = getReorderTotals();
+                return (
+                  <>
+                    <div className="flex items-center justify-between mb-1 text-sm">
+                      <span className="text-gray-600">
+                        Subtotal
+                        {unavailableCount > 0 && (
+                          <span className="text-gray-500">
+                            {" "}
+                            ({orderableCount} of {editableProducts.length} items)
+                          </span>
+                        )}
+                      </span>
+                      <span className="font-medium">${t.subtotal.toFixed(2)}</span>
+                    </div>
+                    {t.setupFee > 0 && (
+                      <div className="flex items-center justify-between mb-1 text-sm">
+                        <span className="text-gray-600">Setup fee</span>
+                        <span className="font-medium">${t.setupFee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-1 text-sm">
+                      <span className="text-gray-600">Shipping</span>
+                      <span className="font-medium">${t.shipping.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between mb-3 text-sm">
+                      <span className="text-gray-600">GST ({t.gstPercent}%)</span>
+                      <span className="font-medium">${t.gst.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                      <span className="font-semibold text-gray-900">Total</span>
+                      <span className="text-lg font-bold text-gray-900">
+                        ${t.total.toFixed(2)}
+                      </span>
+                    </div>
+                    {unresolvedCount > 0 && (
+                      <p className="mt-2 text-xs text-amber-700">
+                        This is the total for the items we could verify. One or
+                        more items could not be checked, so it is not the final
+                        amount for this re-order.
+                      </p>
+                    )}
+                    {unavailableCount > 0 && (
+                      <p className="mt-2 text-xs text-gray-500">
+                        {unavailableCount} item{unavailableCount > 1 ? "s are" : " is"} no
+                        longer available and {unavailableCount > 1 ? "have" : "has"} been
+                        removed. Shipping and any setup fee are carried over from your
+                        original order.
+                      </p>
+                    )}
+                  </>
+                );
+              })()}
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   onClick={closeReOrderModal}
@@ -1294,10 +1602,24 @@ return (
                 </button>
                 <button
                   onClick={handleReOrder}
-                  disabled={reOrderLoading}
+                  // A single dead line must not stop the customer reordering
+                  // the rest — but anything we could not CHECK does block, for
+                  // every line, because a partial order built on an unknown is
+                  // a guess about what the customer wanted. So this is blocked
+                  // when nothing is orderable OR when any line is still
+                  // unresolved; see canConfirmReorder.
+                  disabled={reOrderLoading || !canConfirmReorder}
                   className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {reOrderLoading ? "Re-ordering..." : "Confirm Re-order"}
+                  {reOrderLoading
+                    ? "Re-ordering..."
+                    : unresolvedCount > 0
+                      ? "Can't check availability"
+                      : orderableCount === 0
+                        ? "Nothing available"
+                        : unavailableCount > 0
+                          ? `Re-order ${orderableCount} of ${editableProducts.length} items`
+                          : "Confirm Re-order"}
                 </button>
               </div>
             </div>
