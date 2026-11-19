@@ -63,6 +63,7 @@ const DealDetailPage = lazy(() => import("./pages/DealDetailPage"));
 const CollectionDetailPage = lazy(
   () => import("./pages/Collections/CollectionDetailPage"),
 );
+const CorporateGiftingBrief = lazy(() => import("./pages/CorporateGiftingBrief"));
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -186,6 +187,7 @@ const App = () => {
             <Route path="/track-order" element={<TrackOrder />} />
             <Route path="/page/:slug" element={<CmsPage />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/corporate-gifting-brief" element={<CorporateGiftingBrief />} />
             <Route path="/" element={<Home />} />
             {token && <Route path="/my-account" element={<Sidebar />} />}
             {/* <Route path="/order-details/:id" element={<UserProducts />} /> */}
