@@ -16,6 +16,7 @@ import ProductCard from "../Common/ProductCard";
 import SkeletonLoadingCards from "../Common/SkeletonLoadingCards";
 import UnifiedSidebar from "../shared/UnifiedSidebar";
 import CategoryFinder from "./CategoryFinder";
+import DidYouMean from "./DidYouMean";
 const Cards = ({ category = "" }) => {
 
   const location = useLocation();
@@ -728,6 +729,13 @@ const Cards = ({ category = "" }) => {
                     : ""}
                 </p>
               </div>
+              {isSearchRoute && !isProductsLoading && (
+                <DidYouMean
+                  suggestion={getProducts?.didYouMean}
+                  searched={searchParams.get("search")}
+                  className="mt-1"
+                />
+              )}
             </div>
           </div>
           <div className="hidden lg:block">
@@ -753,6 +761,13 @@ const Cards = ({ category = "" }) => {
                         : ` below $${maxPrice}`
                     : ""}
                 </p>
+                {isSearchRoute && !isProductsLoading && (
+                  <DidYouMean
+                    suggestion={getProducts?.didYouMean}
+                    searched={searchParams.get("search")}
+                    className="ml-3"
+                  />
+                )}
               </div>
 
               <div className="flex items-center gap-3">
