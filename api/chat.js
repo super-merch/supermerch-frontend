@@ -13,6 +13,7 @@
 
 import { runAgent, FALLBACK_CONTACT_LINE } from "./lib/agent.js";
 import { DEFAULT_POPULAR_QUERIES } from "./lib/tools.js";
+import { notifyChatFailure } from "./lib/alerts.js";
 
 const MAX_QUERY_LENGTH = 500;
 const MAX_HISTORY_TURNS = 8; // trims what the client sends, if it sends more
@@ -154,6 +155,10 @@ export default async function handler(req, res) {
       similar_queries: [],
       display_limit: 10,
     });
+    // After the visitor already has their reply event, before ending the
+    // response (Vercel may freeze the function once it ends). Throttled and
+    // capped at a few seconds inside notifyChatFailure; never throws.
+    await notifyChatFailure(err, { query: trimmedQuery, sessionId });
   } finally {
     res.end();
   }
