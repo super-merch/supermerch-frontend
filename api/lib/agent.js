@@ -9,6 +9,7 @@
 
 import OpenAI from "openai";
 import { runTool } from "./tools.js";
+import { isRetryableUpstreamError } from "./upstreamErrors.js";
 
 // A visitor hitting any fallback path (round limit, empty reply, thrown
 // error) previously got a dead end — "let me get a human" with no way to
@@ -35,6 +36,12 @@ const REQUEST_TIMEOUT_MS = 30_000;
 let client = null;
 function getClient() {
   if (!client) {
+    // Checked here rather than left to the SDK: its own "Missing credentials"
+    // error has no status, which the retry loop treats as a network blip and
+    // retries 4 times for nothing. Tagging it lets it fail fast instead.
+    if (!process.env.OPENAI_API_KEY) {
+      throw Object.assign(new Error("OPENAI_API_KEY is not set"), { code: "missing_api_key" });
+    }
     client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: REQUEST_TIMEOUT_MS });
   }
   return client;
@@ -224,7 +231,8 @@ export const TOOL_SCHEMAS = [
 // cannot be invoked"} (confirmed by curling the endpoint directly), on top of
 // the more usual 429/503 "busy" responses supermerch-poc/server.js already
 // retried on. Same backoff shape as that proxy, just widened to cover this.
-const RETRYABLE_STATUSES = new Set([400, 429, 500, 503]);
+// (Status list lives in upstreamErrors.js, alongside the account-problem
+// check that now overrides it — e.g. a 429 "insufficient_quota".)
 const MAX_ATTEMPTS = 4;
 
 // gpt-4o-mini doesn't have the "thinking"-mode latency/leak problems the
@@ -559,11 +567,10 @@ async function callLLM(messages, onDelta, { toolChoice = "auto" } = {}) {
       };
     } catch (err) {
       lastErr = err;
-      // A timeout/connection drop has no HTTP status at all (err.status is
-      // undefined) — that's exactly the kind of transient hiccup we want to
-      // retry too, not just the documented status codes above.
-      const isRetryable = err.status === undefined || RETRYABLE_STATUSES.has(err.status);
-      if (!isRetryable || attempt === MAX_ATTEMPTS) throw err;
+      // Account problems (out of credit, missing/bad key) fail the same way
+      // every time — throw on the first attempt instead of making the
+      // visitor sit through every retry. See upstreamErrors.js.
+      if (!isRetryableUpstreamError(err) || attempt === MAX_ATTEMPTS) throw err;
       const wait = 800 * attempt; // 0.8s, 1.6s, 2.4s
       console.warn(`OpenAI upstream ${err.status ?? err.name ?? "error"} — retry ${attempt}/${MAX_ATTEMPTS - 1} in ${wait}ms`);
       await new Promise((r) => setTimeout(r, wait));

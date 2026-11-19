@@ -16,6 +16,26 @@ function getResend() {
   return resend;
 }
 
+// Internal alert to the team (e.g. "the chatbot is failing"). Goes to
+// ALERT_EMAIL if set, otherwise the same LEAD_NOTIFY_EMAIL inbox. Same Resend
+// test-mode caveat as leads: until a domain is verified at resend.com, only
+// the Resend account's own address can receive mail.
+export async function sendAlertEmail({ subject, text }) {
+  const to = process.env.ALERT_EMAIL || process.env.LEAD_NOTIFY_EMAIL;
+  if (!to || !process.env.RESEND_API_KEY) {
+    console.warn("Alert email skipped: ALERT_EMAIL/LEAD_NOTIFY_EMAIL or RESEND_API_KEY is not set");
+    return { sent: false };
+  }
+  const { error } = await getResend().emails.send({
+    from: process.env.LEAD_NOTIFY_FROM || "Merch Mate <onboarding@resend.dev>",
+    to,
+    subject,
+    text,
+  });
+  if (error) throw new Error(`Resend rejected the email: ${error.message}`);
+  return { sent: true };
+}
+
 export async function sendLeadNotification(lead) {
   const to = process.env.LEAD_NOTIFY_EMAIL;
   if (!to) {

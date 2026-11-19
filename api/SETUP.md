@@ -39,6 +39,11 @@ deployment with no extra server to stand up.
 3. **`LEAD_NOTIFY_EMAIL`** — where captured leads get emailed directly.
    Currently `ankit@supermerch.com.au` in `.env.local` (the only address that
    works without domain verification, per the point above).
+3b. **`ALERT_EMAIL`** (optional) — where "chatbot is failing" alerts go
+   (`api/lib/alerts.js`). Falls back to `LEAD_NOTIFY_EMAIL`. At most one
+   email per 30 minutes per serverless instance; account problems (out of
+   OpenAI credit, missing/invalid key) are spelled out in plain English in
+   the email. Needs `RESEND_API_KEY`, same Resend test-mode limit as leads.
 4. Leave **`VITE_BOT_API_URL`** unset/empty in Vercel — the widget then calls
    same-origin `/api/chat`. **Do not** leave it pointing at
    `api.supermerch.com.au/ai` (that's the dead route).
