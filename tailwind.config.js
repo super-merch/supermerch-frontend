@@ -23,8 +23,20 @@ export default {
           "Segoe UI Symbol",
           "Noto Color Emoji",
         ],
+        display: ['"Bricolage Grotesque"', "Figtree", "sans-serif"],
       },
       colors: {
+        // Homepage redesign palette (additive — existing tokens untouched)
+        sm: {
+          deep: "#0B2623",
+          800: "#164A45",
+          teal: "#2E7770",
+          tint: "#E3EFEC",
+          paper: "#F7F4EE",
+          amber: "#F4B740",
+          muted: "#55625F",
+          line: "#E4E1D9",
+        },
         primary: "#009688",
         secondary: "#333333",
         customBlue: "rgba(12, 0, 71, 1)",

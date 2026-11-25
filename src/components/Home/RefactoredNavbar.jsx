@@ -1,16 +1,9 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { LucideAlertCircle } from "lucide-react";
+import { LucideAlertCircle, Menu, ShoppingCart } from "lucide-react";
 import { googleLogout } from "@react-oauth/google";
 import { motion } from "framer-motion";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -36,6 +29,16 @@ import {
   buildHeadwearEntry,
   CLOTHING_MENU_ORDER,
 } from "./navigationConfig";
+import MobileNavDrawer from "./MobileNavDrawer";
+import MobileBottomBar from "./MobileBottomBar";
+
+// Shop URLs for a category / sub-category. Shared by the click handlers below
+// and the `href`s the mobile drawer renders, so both always match.
+const buildCategoryHref = (titleName, categoryId, parentType) =>
+  `/promotional?categoryName=${encodeURIComponent(titleName)}&category=${categoryId}&type=${encodeURIComponent(parentType || titleName)}`;
+
+const buildSubCategoryHref = (subCategory, categoryId, titleName, parentType) =>
+  `/promotional?categoryName=${encodeURIComponent(titleName)}&category=${categoryId}&subCategory=${encodeURIComponent(subCategory)}&type=${encodeURIComponent(parentType || titleName)}`;
 
 const resolveNavGroup = (category) => {
   const explicitGroup = String(category?.navGroup || "").trim().toLowerCase();
@@ -119,12 +122,14 @@ const buildDynamicMegaMenu = (categories = [], handlers, parentType) =>
     return {
       id: category.id,
       name: category.name,
+      href: buildCategoryHref(category.name, category.id, resolvedParentType),
       onClick: () => handlers.onCategory(category.name, category.id, resolvedParentType),
       columns,
       subItems: columns.flatMap((column) =>
         (column.sourceItems || []).map((item) => ({
           id: item.id,
           name: item.name,
+          href: buildSubCategoryHref(item.name, item.id, category.name, resolvedParentType),
           columnTitle: column.title,
           onClick: () =>
             handlers.onSubCategory(
@@ -184,6 +189,31 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
   // State management
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const location = useLocation();
+  // Element that opened the mobile drawer (header button or bottom tab), so
+  // focus can go back to it when the drawer closes.
+  const menuReturnFocusRef = useRef(null);
+  const mobileSearchRef = useRef(null);
+
+  // Uses the clicked element rather than document.activeElement: Safari
+  // doesn't focus buttons on click, so activeElement would just be <body>.
+  const openMobileMenu = (event) => {
+    menuReturnFocusRef.current = event?.currentTarget ?? document.activeElement;
+    setIsSheetOpen(true);
+  };
+
+  // Close the mobile drawer on any route change (incl. query/hash changes).
+  useEffect(() => {
+    setIsSheetOpen(false);
+  }, [location.pathname, location.search, location.hash]);
+
+  // Bottom tab bar "Search": jump to the header search and focus it.
+  const focusMobileSearch = () => {
+    const input = mobileSearchRef.current?.querySelector("input");
+    if (!input) return;
+    input.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [navbarLogout, setNavbarLogout] = useState(false);
   const [coupenModel, setCoupenModel] = useState(false);
@@ -290,6 +320,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
             {
               id: "gift-hampers",
               name: "Gift Hampers",
+              href: item.path,
               onClick: () => handleMenuClick(item),
             },
           ],
@@ -303,6 +334,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           submenu: EXPRESS_WINDOWS.map((window) => ({
             id: `express-${window.id}`,
             name: window.label,
+            href: buildExpressPath(window.id),
             onClick: () => navigate(buildExpressPath(window.id)),
           })),
           onClick: () => handleMenuClick(item),
@@ -315,6 +347,7 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           submenu: collections.map((col) => ({
             id: `collection-${col.slug}`,
             name: col.name,
+            href: `/collections/${col.slug}`,
             onClick: () => navigate(`/collections/${col.slug}`),
           })),
           onClick: () => handleMenuClick(item),
@@ -352,15 +385,11 @@ const RefactoredNavbar = ({ onCouponClick }) => {
   };
 
   const handleNameCategories = (titleName, NameId, parentType) => {
-    const encodedTitleName = encodeURIComponent(titleName);
-    const encodedType = encodeURIComponent(parentType || titleName);
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
     //also add weather it is promotional, clothing or headwear in url in type
-    navigate(
-      `/promotional?categoryName=${encodedTitleName}&category=${NameId}&type=${encodedType}`,
-    );
+    navigate(buildCategoryHref(titleName, NameId, parentType));
     setSelectedParamCategoryId(NameId);
     setCurrentPage(1);
     setSidebarActiveCategory(titleName);
@@ -373,28 +402,12 @@ const RefactoredNavbar = ({ onCouponClick }) => {
     titleName,
     parentType,
   ) => {
-    const encodedTitleName = encodeURIComponent(titleName);
-    const encodedSubCategory = encodeURIComponent(subCategory);
-    const encodedType = encodeURIComponent(parentType || titleName);
     dispatch(setMinPrice(0));
     dispatch(setMaxPrice(1000));
     dispatch(applyFilters());
 
-    // Determine the correct route based on the category name
-    let targetRoute = "/promotional"; // Default fallback
-
-    // if (titleName === "Clothing") {
-    //   targetRoute = "/Clothing";
-    // } else if (titleName === "Headwear") {
-    //   targetRoute = "/Headwear";
-    // } else if (titleName === "Capital Equipment") {
-    //   targetRoute = "/promotional"; // Keep as promotional for now
-    // }
-    // For all other categories, use /Spromotional
-
-    navigate(
-      `${targetRoute}?categoryName=${encodedTitleName}&category=${categoryId}&subCategory=${encodedSubCategory}&type=${encodedType}`,
-    );
+    // All categories (incl. Clothing/Headwear) use the /promotional route.
+    navigate(buildSubCategoryHref(subCategory, categoryId, titleName, parentType));
     setSelectedParamCategoryId(categoryId);
     setActiveFilterCategory(subCategory);
     setCurrentPage(1);
@@ -431,44 +444,15 @@ const RefactoredNavbar = ({ onCouponClick }) => {
       >
         {/* Row 1: Logo + Search + Icons */}
         <div className="Mycontainer px-4 lg:px-8 py-3">
-          {/* Top line: hamburger + logo | search (desktop) | icons */}
+          {/* Top line: logo | search (desktop) | icons. Below lg: logo | cart + menu */}
           <div className="flex items-center gap-3">
-            {/* Left: hamburger + logo */}
+            {/* Left: logo (the mobile menu button moved to the right; the old
+                Sheet + vertical NavigationMenu drawer is replaced by MobileNavDrawer) */}
             <div className="flex items-center gap-3 xl:flex-1">
-              {/* Mobile hamburger */}
-              <div className="lg:hidden flex-shrink-0">
-                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                  <SheetTrigger className="text-gray-700 focus:outline-none p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </SheetTrigger>
-                  <SheetContent className="overflow-y-auto w-[90vw] sm:w-[450px] bg-white p-0 border-none scrollbar-hide" side="left">
-                    <div className="p-6 border-b border-gray-100">
-                      <SheetHeader>
-                        <SheetTitle className="text-2xl text-primary font-bold">
-                          <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
-                        </SheetTitle>
-                      </SheetHeader>
-                    </div>
-                    <div className="py-4">
-                      <NavigationMenu
-                        menuItems={menuItems}
-                        onItemClick={(item) => { handleMenuClick(item); setIsSheetOpen(false); }}
-                        onSubItemClick={() => setIsSheetOpen(false)}
-                        variant="vertical"
-                        size="default"
-                        className="px-2"
-                      />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-
               {/* Logo */}
-              <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
-                <img src={supermerch} alt="SuperMerch" className="h-16 w-auto object-contain" />
-              </div>
+              <Link to="/" className="flex-shrink-0" aria-label="SuperMerch home">
+                <img src={supermerch} alt="SuperMerch" className="h-12 w-auto object-contain lg:h-16" />
+              </Link>
             </div>
 
             {/* Centre: Search Bar — desktop only */}
@@ -488,27 +472,66 @@ const RefactoredNavbar = ({ onCouponClick }) => {
 
             {/* Right: Reorder + User Actions */}
             <div className="flex-shrink-0 xl:flex-1 flex items-center justify-end gap-3">
+              {/* Reorder + UserActions are desktop-only; on mobile they live in
+                  the drawer and the bottom tab bar. */}
               <button
                 onClick={() => token ? navigate("/my-account#orders") : navigate("/login?redirect=/my-account%23orders")}
-                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all duration-200"
+                className="hidden lg:flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
                 Reorder
               </button>
-              <UserActions
-                isAuthenticated={!!token}
-                onLogout={() => setNavbarLogout(true)}
-                cartQuantity={totalQuantity}
-                favouriteQuantity={favouriteQuantity}
-                size="default"
-              />
+              <div className="hidden lg:contents">
+                <UserActions
+                  isAuthenticated={!!token}
+                  onLogout={() => setNavbarLogout(true)}
+                  cartQuantity={totalQuantity}
+                  favouriteQuantity={favouriteQuantity}
+                  size="default"
+                />
+              </div>
+
+              {/* Mobile: cart + menu */}
+              <div className="flex items-center gap-1 lg:hidden">
+                <Link
+                  to="/cart"
+                  className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-sm-deep transition-colors hover:bg-sm-tint"
+                >
+                  <ShoppingCart className="h-6 w-6" aria-hidden="true" />
+                  <span className="sr-only">
+                    Cart{totalQuantity > 0 ? `, ${totalQuantity} ${totalQuantity === 1 ? "item" : "items"}` : ""}
+                  </span>
+                  {totalQuantity > 0 && (
+                    <span
+                      className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-sm-teal px-1 text-[10px] font-bold text-white"
+                      aria-hidden="true"
+                    >
+                      {totalQuantity > 99 ? "99+" : totalQuantity}
+                    </span>
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  onClick={openMobileMenu}
+                  aria-label="Open menu"
+                  aria-haspopup="dialog"
+                  aria-expanded={isSheetOpen}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-sm-deep transition-colors hover:bg-sm-tint"
+                >
+                  <Menu className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Search bar — below the top line on smaller screens */}
-          <div className="xl:hidden mt-2">
+          {/* Search bar — below the top line on smaller screens (always visible).
+              Input + buttons get 44px tap targets below lg only (no effect at lg+). */}
+          <div
+            ref={mobileSearchRef}
+            className="xl:hidden mt-2 [@media(max-width:1023.98px)]:[&_input]:min-h-[44px] [@media(max-width:1023.98px)]:[&_button]:min-h-[44px] [@media(max-width:1023.98px)]:[&_button]:min-w-[44px]"
+          >
             <SearchBar
               onSearch={handleSearch}
               categoryData={v1categories}
@@ -532,6 +555,23 @@ const RefactoredNavbar = ({ onCouponClick }) => {
           </div>
         </div>
       </div>
+
+      {/* Mobile navigation (below lg only) */}
+      <MobileNavDrawer
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        menuItems={menuItems}
+        isAuthenticated={!!token}
+        onLogout={() => setNavbarLogout(true)}
+        returnFocusRef={menuReturnFocusRef}
+      />
+      <MobileBottomBar
+        cartQuantity={totalQuantity}
+        isAuthenticated={!!token}
+        isMenuOpen={isSheetOpen}
+        onOpenMenu={openMobileMenu}
+        onSearch={focusMobileSearch}
+      />
 
       {/* Logout Confirmation Modal */}
       {navbarLogout && (

@@ -433,3 +433,16 @@ body::-webkit-scrollbar,
   display: none;
 }
 
+
+/* Mobile bottom tab bar (MobileBottomBar.jsx toggles body.has-mobile-tabbar).
+   Below lg: pad the page so the bar never covers content/footer, and lift the
+   chat launcher (ChatWidget reads --chat-launcher-bottom) above the bar. */
+:root {
+  --mobile-tabbar-height: 57px; /* h-14 row + 1px border-top */
+}
+@media (max-width: 1023.98px) {
+  body.has-mobile-tabbar {
+    padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
+    --chat-launcher-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom) + 10px);
+  }
+}

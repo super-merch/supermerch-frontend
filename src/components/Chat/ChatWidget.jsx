@@ -213,7 +213,12 @@ const ChatWidget = () => {
       <div
         ref={widgetRef}
         className="fixed z-50"
-        style={{ right: DEFAULT_MARGIN, bottom: DEFAULT_MARGIN }}
+        // --chat-launcher-bottom is set below lg while the mobile tab bar is
+        // shown (index.css), so the launcher sits above it.
+        style={{
+          right: DEFAULT_MARGIN,
+          bottom: `var(--chat-launcher-bottom, ${DEFAULT_MARGIN}px)`,
+        }}
       >
         {open && (
           <div
