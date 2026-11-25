@@ -1,8 +1,9 @@
-import { FaGoogle } from "react-icons/fa6";
+import PropTypes from "prop-types";
 import { FaStar } from "react-icons/fa";
-import { Heading } from "../Common";
+import { ExternalLink } from "lucide-react";
 
-const GOOGLE_REVIEWS_URL = "https://maps.app.goo.gl/cXd6s7xCWRjYiD1Z7";
+// Exported so the homepage hero's rating badge links to the same profile.
+export const GOOGLE_REVIEWS_URL = "https://maps.app.goo.gl/cXd6s7xCWRjYiD1Z7";
 
 const REVIEWS = [
   {
@@ -52,70 +53,135 @@ const REVIEWS = [
   },
 ];
 
-const StarRating = ({ rating }) => (
-  <div className="flex gap-0.5">
+// Number of review cards shown in the desktop grid. Mobile shows every
+// review in a swipeable row.
+const DESKTOP_REVIEW_COUNT = 3;
+
+const GoogleG = ({ className = "" }) => (
+  <svg viewBox="0 0 48 48" className={className} aria-hidden="true" focusable="false">
+    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+  </svg>
+);
+
+GoogleG.propTypes = { className: PropTypes.string };
+
+const StarRow = ({ rating = 5, label }) => (
+  <div
+    className="flex gap-0.5"
+    {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
+  >
     {Array.from({ length: 5 }).map((_, i) => (
       <FaStar
         key={i}
-        className={i < rating ? "text-yellow-400" : "text-gray-300"}
-        size={14}
+        className={i < rating ? "text-sm-amber" : "text-sm-line"}
+        size={16}
+        aria-hidden="true"
       />
     ))}
   </div>
 );
 
+StarRow.propTypes = {
+  rating: PropTypes.number,
+  label: PropTypes.string,
+};
+
 const ReviewCard = ({ review }) => (
-  <div className="flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 p-5 gap-3 hover:shadow-md transition-shadow duration-200">
-    <div className="flex items-center gap-3">
+  <figure className="flex h-full flex-col rounded-3xl border border-sm-line bg-white p-6">
+    <StarRow rating={review.rating} label={`${review.rating} out of 5 stars`} />
+    <blockquote className="mt-4 text-sm-deep">
+      <p className="line-clamp-5 text-[15px] leading-relaxed">“{review.text}”</p>
+    </blockquote>
+    <figcaption className="mt-auto flex items-center gap-3 pt-6">
       <img
         src={review.avatar}
-        alt={review.name}
-        className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
+        alt=""
+        width={40}
+        height={40}
+        loading="lazy"
+        decoding="async"
+        className="h-10 w-10 flex-shrink-0 rounded-full object-cover"
       />
-      <div className="min-w-0">
-        <p className="font-semibold text-gray-900 text-sm truncate">{review.name}</p>
-        <p className="text-xs text-gray-400">{review.timeAgo}</p>
-      </div>
-      <FaGoogle className="ml-auto text-gray-300 flex-shrink-0" size={16} />
-    </div>
-    <StarRating rating={review.rating} />
-    <p className="text-sm text-gray-600 leading-relaxed line-clamp-5">{review.text}</p>
-  </div>
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-semibold text-sm-deep">
+          {review.name}
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-sm-muted">
+          <GoogleG className="h-3 w-3" />
+          Google review
+        </span>
+      </span>
+    </figcaption>
+  </figure>
 );
 
+ReviewCard.propTypes = {
+  review: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    rating: PropTypes.number.isRequired,
+    text: PropTypes.string.isRequired,
+    avatar: PropTypes.string,
+  }).isRequired,
+};
+
 const GoogleReviewsComponent = () => (
-  <section className="w-full bg-white py-10" aria-labelledby="google-reviews-heading">
-    <div className="Mycontainer">
-      <Heading
-        id="google-reviews-heading"
-        title="Customer Reviews"
-        description="Read verified customer feedback on our Google Business Profile."
-        align="center"
-        size="large"
-        titleClassName="uppercase"
-        descriptionClassName="text-gray-600"
-        containerClassName="mb-8 py-0 !py-0"
-        showUnderline={true}
-      />
-
-      <div className="flex gap-4 overflow-x-auto pb-4 mb-4 scrollbar-hide snap-x snap-mandatory">
-        {REVIEWS.map((review) => (
-          <div key={review.name} className="flex-shrink-0 w-[300px] sm:w-[340px] snap-start">
-            <ReviewCard review={review} />
+  <section className="w-full bg-white py-14 sm:py-20" aria-labelledby="google-reviews-heading">
+    <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+      <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+        {/* Summary panel */}
+        <div className="flex flex-col rounded-3xl bg-sm-tint p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-sm-teal">
+            Customer reviews
+          </p>
+          <h2
+            id="google-reviews-heading"
+            className="mt-3 font-display text-3xl font-bold leading-tight tracking-tight text-sm-deep sm:text-4xl"
+          >
+            Businesses come back to us. Here&apos;s why.
+          </h2>
+          <div className="mt-6">
+            <StarRow />
           </div>
-        ))}
-      </div>
+          <p className="mt-3 flex items-center gap-2 text-sm font-medium text-sm-800">
+            <GoogleG className="h-5 w-5" />
+            Verified Google reviews
+          </p>
+          {/* mt-auto pins the button to the bottom when the panel is stretched */}
+          <div className="mt-auto pt-8">
+            <a
+              href={GOOGLE_REVIEWS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-sm-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-sm-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sm-teal"
+            >
+              Read all reviews on Google
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+        </div>
 
-      <div className="text-center">
-        <a
-          href={GOOGLE_REVIEWS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-[44px] items-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-primary/90 sm:text-base"
-        >
-          <FaGoogle className="mr-2 h-4 w-4" aria-hidden="true" />
-          View Google reviews
-        </a>
+        {/* Review cards: swipeable row below lg, 3-up grid on lg */}
+        <div className="min-w-0 lg:col-span-2">
+          <ul
+            className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-hide sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:h-full lg:snap-none lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pb-0"
+            aria-label="Customer reviews from Google"
+          >
+            {REVIEWS.map((review, index) => (
+              <li
+                key={review.name}
+                className={`w-[85vw] max-w-[360px] flex-shrink-0 snap-start lg:w-auto lg:max-w-none ${
+                  index >= DESKTOP_REVIEW_COUNT ? "lg:hidden" : ""
+                }`}
+              >
+                <ReviewCard review={review} />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   </section>
